@@ -1,0 +1,16 @@
+<package>
+  <description brief="dynamic_tf_publisher">
+
+     dynamic_tf_publisher
+
+  </description>
+  <author>Manabu Saito</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/dynamic_tf_publisher</url>
+  <depend package="tf" />
+  <depend package="geometry_msgs" />
+
+</package>
+
+
