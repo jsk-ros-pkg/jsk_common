@@ -13,11 +13,13 @@ import rospy
 from dynamic_tf_publisher.srv import * # SetDynamicTF
 from geometry_msgs.msg import TransformStamped
 import tf
+import thread
 
 class dynamic_tf_publisher:
     def __init__(self):
         self.cur_tf = dict()
-        self.tf_sleep_time = 1
+        self.tf_sleep_time = 1.0
+        self.lockobj = thread.allocate_lock()
         rospy.Service('/set_dynamic_tf', SetDynamicTF, self.set_tf)
 
     def publish_tf(self,frame_id):
@@ -32,14 +34,18 @@ class dynamic_tf_publisher:
                          pose.header.frame_id)
 
     def set_tf(self,req):
-        print "Latch [%s]"%(req.cur_tf.child_frame_id)
+        print "Latch [%s]/[%shz]"%(req.cur_tf.child_frame_id,req.freq)
         tf_sleep_time = 1.0/req.freq
+        self.lockobj.acquire()
         self.cur_tf[req.cur_tf.child_frame_id] = req.cur_tf
+        self.lockobj.release()
         self.publish_tf(req.cur_tf.child_frame_id)
         return SetDynamicTFResponse()
 
     def publish_and_sleep(self):
+        self.lockobj.acquire()
         map(self.publish_tf, self.cur_tf)
+        self.lockobj.release()
         rospy.sleep(self.tf_sleep_time)
 
 if __name__ == "__main__":
@@ -47,4 +53,5 @@ if __name__ == "__main__":
     pub = dynamic_tf_publisher()
     while not rospy.is_shutdown():
         pub.publish_and_sleep()
+    print "exit"
 
