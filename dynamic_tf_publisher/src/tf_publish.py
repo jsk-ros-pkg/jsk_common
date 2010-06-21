@@ -35,7 +35,7 @@ class dynamic_tf_publisher:
 
     def set_tf(self,req):
         print "Latch [%s]/[%shz]"%(req.cur_tf.child_frame_id,req.freq)
-        tf_sleep_time = 1.0/req.freq
+        self.tf_sleep_time = 1.0/req.freq
         self.lockobj.acquire()
         self.cur_tf[req.cur_tf.child_frame_id] = req.cur_tf
         self.lockobj.release()
