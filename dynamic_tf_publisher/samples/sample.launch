@@ -1,5 +1,6 @@
 <launch>
-  <node name="tf_publisher" pkg="dynamic_tf_publisher" type="tf_publish.py"/>
+  <node name="tf_publisher" pkg="dynamic_tf_publisher"
+	type="tf_publish.py"  output="screen"/>
   <node name="tf_setter" pkg="dynamic_tf_publisher" type="tf_set.py"
 	args="1 2 3 0 0 1.5706 map cup 1000" output="screen"/>
 </launch>

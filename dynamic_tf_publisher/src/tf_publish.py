@@ -13,10 +13,12 @@ import rospy
 from dynamic_tf_publisher.srv import * # SetDynamicTF
 from geometry_msgs.msg import TransformStamped,Quaternion,Vector3
 import tf
+import tf.msg
 import thread
 
 class dynamic_tf_publisher:
     def __init__(self):
+        self.pub_tf = rospy.Publisher("/tf", tf.msg.tfMessage)
         self.cur_tf = dict()
         self.original_parent = dict()
         self.listener = tf.TransformListener()
@@ -26,16 +28,16 @@ class dynamic_tf_publisher:
         rospy.Service('/assoc_tf', AssocTF, self.assoc)
         rospy.Service('/dissoc_tf', DissocTF, self.dissoc)
 
-    def publish_tf(self,frame_id):
-        pose = self.cur_tf[frame_id]
-        br = tf.TransformBroadcaster()
-        pos = pose.transform.translation
-        rot = pose.transform.rotation
-        br.sendTransform((pos.x, pos.y, pos.z),
-                         (rot.x, rot.y, rot.z, rot.w),
-                         rospy.Time.now(),
-                         pose.child_frame_id,
-                         pose.header.frame_id)
+    def publish_tf(self):
+        self.lockobj.acquire()
+        time = rospy.Time.now()
+        tfm = tf.msg.tfMessage()
+        for frame_id in self.cur_tf.keys():
+            pose = self.cur_tf[frame_id]
+            pose.header.stamp = time
+            tfm.transforms.append(pose)
+        self.pub_tf.publish(tfm)
+        self.lockobj.release()
 
     def assoc(self,req):
         if not self.cur_tf.has_key(req.child_frame):
@@ -52,7 +54,7 @@ class dynamic_tf_publisher:
         self.lockobj.acquire()
         self.cur_tf[req.child_frame] = ts
         self.lockobj.release()
-        self.publish_tf(req.child_frame)
+        self.publish_tf()
         return AssocTFResponse()
 
     def dissoc(self,req):
@@ -69,17 +71,16 @@ class dynamic_tf_publisher:
         self.lockobj.acquire()
         self.cur_tf[req.cur_tf.child_frame_id] = req.cur_tf
         self.lockobj.release()
-        self.publish_tf(req.cur_tf.child_frame_id)
+        self.publish_tf()
         return SetDynamicTFResponse()
 
     def publish_and_sleep(self):
-        self.lockobj.acquire()
-        map(self.publish_tf, self.cur_tf)
-        self.lockobj.release()
+        self.publish_tf()
         rospy.sleep(self.tf_sleep_time)
 
+
 if __name__ == "__main__":
-    rospy.init_node('tf_latch_server')
+    rospy.init_node('tf_publish_server')
     pub = dynamic_tf_publisher()
     while not rospy.is_shutdown():
         pub.publish_and_sleep()
