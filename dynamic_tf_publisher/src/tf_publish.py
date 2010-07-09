@@ -11,16 +11,20 @@ import roslib; roslib.load_manifest('dynamic_tf_publisher')
 import rospy
 
 from dynamic_tf_publisher.srv import * # SetDynamicTF
-from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import TransformStamped,Quaternion,Vector3
 import tf
 import thread
 
 class dynamic_tf_publisher:
     def __init__(self):
         self.cur_tf = dict()
+        self.original_parent = dict()
+        self.listener = tf.TransformListener()
         self.tf_sleep_time = 1.0
         self.lockobj = thread.allocate_lock()
         rospy.Service('/set_dynamic_tf', SetDynamicTF, self.set_tf)
+        rospy.Service('/assoc_tf', AssocTF, self.assoc)
+        rospy.Service('/dissoc_tf', DissocTF, self.dissoc)
 
     def publish_tf(self,frame_id):
         pose = self.cur_tf[frame_id]
@@ -32,6 +36,32 @@ class dynamic_tf_publisher:
                          rospy.Time.now(),
                          pose.child_frame_id,
                          pose.header.frame_id)
+
+    def assoc(self,req):
+        if not self.cur_tf.has_key(req.child_frame):
+            return AssocTFResponse()
+        self.listener.waitForTransform(req.parent_frame, req.child_frame, req.header.stamp, rospy.Duration(1.0))
+        ts = TransformStamped()
+        (trans,rot) = self.listener.lookupTransform(req.parent_frame, req.child_frame, req.header.stamp)
+        ts.transform.translation = Vector3(*trans)
+        ts.transform.rotation = Quaternion(*rot)
+        ts.header.stamp = req.header.stamp
+        ts.header.frame_id = req.parent_frame
+        ts.child_frame_id = req.child_frame
+        self.original_parent[req.child_frame] = self.cur_tf[req.child_frame].header.frame_id
+        self.lockobj.acquire()
+        self.cur_tf[req.child_frame] = ts
+        self.lockobj.release()
+        self.publish_tf(req.child_frame)
+        return AssocTFResponse()
+
+    def dissoc(self,req):
+        areq = AssocTFRequest()
+        areq.header = req.header
+        areq.child_frame = req.frame_id
+        areq.parent_frame = self.original_parent[areq.child_frame]
+        self.assoc(areq)
+        return DissocTFResponse()
 
     def set_tf(self,req):
         print "Latch [%s]/[%shz]"%(req.cur_tf.child_frame_id,req.freq)

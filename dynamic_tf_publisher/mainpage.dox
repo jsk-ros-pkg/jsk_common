@@ -2,11 +2,20 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b dynamic_tf_publisher is ... 
+\b dynamic_tf_publisher is a dynamic configuarable transform publisher
 
-<!-- 
-Provide an overview of your package.
--->
+\section To use this package
+Start tf publisher node
+$ rosrun dynamic_tf_publisher tf_publish.py
+
+Transform can be registerd by SetDynamicTF service
+Sample script is tf_set.py (arguments is same as tf/static_transform_publisher)
+
+         room                      room
+           |      assoc
+ turtle2   |      ---->    turtle2
+           |      <----          |
+       carrot    dissoc          carrot
 
 
 \section codeapi Code API
