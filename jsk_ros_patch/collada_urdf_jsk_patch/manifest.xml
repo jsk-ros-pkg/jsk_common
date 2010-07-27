@@ -9,7 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/collada_urdf_jsk_patch</url>
 
-  <depend package="collada_urdf"/>
+  <!-- depend package="collada_urdf"/ -->
 
 </package>
 
