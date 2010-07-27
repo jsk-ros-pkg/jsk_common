@@ -1,0 +1,8 @@
+<stack>
+  <description brief="PDDL planning language">
+    PDDL planning language for task planning.
+  </description>
+  <author> Ryohei Ueda(ueda@jsk.t.u-tokyo.ac.jp)</author>
+  <license>Apache License 2.0</license>
+  <depend stack="ros"/> <!-- rospy -->
+</stack>

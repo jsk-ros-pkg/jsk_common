@@ -1,0 +1,23 @@
+PKGNAME		= hts_engine_API
+
+all: installed.$(PKGNAME)
+
+VER = 1.02
+TARBALL		= build/$(PKGNAME)-$(VER).tar.gz
+TARBALL_URL	= http://downloads.sourceforge.net/hts-engine/$(PKGNAME)-$(VER).tar.gz
+UNPACK_CMD	= tar xzf
+SOURCE_DIR	= build/$(PKGNAME)-$(VER)
+MD5SUM_FILE	= $(PKGNAME)-$(VER).tar.gz.md5sum
+
+include $(shell rospack find mk)/download_unpack_build.mk
+
+installed.$(PKGNAME): $(SOURCE_DIR)/unpacked
+	cd $(SOURCE_DIR) && ./configure --prefix=`rospack find jtalk`/hts_engine_API && make && make install
+	touch installed.$(PKGNAME)
+
+clean:
+	rm -rf build hts_engin_API installed.$(PKGNAME)
+
+wipe: clean
+
+.PHONY : clean wipe

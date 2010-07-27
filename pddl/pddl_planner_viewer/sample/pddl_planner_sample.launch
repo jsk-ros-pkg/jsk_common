@@ -1,0 +1,9 @@
+<launch>
+  <include file="$(find pddl_planner)/launch/pddl_ff.launch" />
+  <node pkg="pddl_planner"
+        type="agentsystem.py"
+        name="$(anon pddl_planner_client)" />
+  <node pkg="pddl_planner_viewer"
+        type="pddl_planner_viewer.py"
+        name="$(anon pddl_planner_viewer)" />
+</launch>
