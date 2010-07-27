@@ -1,0 +1,15 @@
+<package>
+  <description brief="sound_play_jsk_patch">
+
+     sound_play_jsk_patch
+
+  </description>
+  <author>Kei Okada</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sound_play_jsk_patch</url>
+  <depend package="sound_play"/>
+
+</package>
+
+
