@@ -3,3 +3,4 @@ string name
 string parameters
 string precondition
 string effect
+string on_condition
