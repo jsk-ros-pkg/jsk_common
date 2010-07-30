@@ -42,6 +42,7 @@ class dynamic_tf_publisher:
     def assoc(self,req):
         if not self.cur_tf.has_key(req.child_frame):
             return AssocTFResponse()
+        print "assoc %s -> %s"%(req.parent_frame, req.child_frame)
         self.listener.waitForTransform(req.parent_frame, req.child_frame, req.header.stamp, rospy.Duration(1.0))
         ts = TransformStamped()
         (trans,rot) = self.listener.lookupTransform(req.parent_frame, req.child_frame, req.header.stamp)
@@ -50,26 +51,34 @@ class dynamic_tf_publisher:
         ts.header.stamp = req.header.stamp
         ts.header.frame_id = req.parent_frame
         ts.child_frame_id = req.child_frame
-        self.original_parent[req.child_frame] = self.cur_tf[req.child_frame].header.frame_id
         self.lockobj.acquire()
+        self.original_parent[req.child_frame] = self.cur_tf[req.child_frame].header.frame_id
         self.cur_tf[req.child_frame] = ts
         self.lockobj.release()
         self.publish_tf()
         return AssocTFResponse()
 
     def dissoc(self,req):
-        areq = AssocTFRequest()
-        areq.header = req.header
-        areq.child_frame = req.frame_id
-        areq.parent_frame = self.original_parent[areq.child_frame]
-        self.assoc(areq)
+        areq = None
+        self.lockobj.acquire()
+        if self.original_parent.has_key(req.frame_id):
+            areq = AssocTFRequest()
+            areq.header = req.header
+            areq.child_frame = req.frame_id
+            areq.parent_frame = self.original_parent[req.frame_id]
+        self.lockobj.release()
+        if areq:
+            self.assoc(areq)
+            self.original_parent.pop(req.frame_id) # remove 
         return DissocTFResponse()
 
     def set_tf(self,req):
-        print "Latch [%s]/[%shz]"%(req.cur_tf.child_frame_id,req.freq)
-        self.tf_sleep_time = 1.0/req.freq
         self.lockobj.acquire()
-        self.cur_tf[req.cur_tf.child_frame_id] = req.cur_tf
+        # if not assocd
+        if not self.original_parent.has_key(req.cur_tf.child_frame_id):
+            self.tf_sleep_time = 1.0/req.freq
+            self.cur_tf[req.cur_tf.child_frame_id] = req.cur_tf
+            print "Latch [%s]/[%shz]"%(req.cur_tf.child_frame_id,req.freq)
         self.lockobj.release()
         self.publish_tf()
         return SetDynamicTFResponse()
