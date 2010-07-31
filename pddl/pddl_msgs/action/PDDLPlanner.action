@@ -1,9 +1,0 @@
-# goal
-pddl_msgs/PDDLDomain domain
-pddl_msgs/PDDLProblem problem
----
-#result
-#string[] data
-pddl_msgs/PDDLStep[] sequence
----
-#feedback
