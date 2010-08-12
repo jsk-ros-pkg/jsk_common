@@ -8,8 +8,8 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/collada_urdf_jsk_patch</url>
-
-  <!-- depend package="collada_urdf"/ -->
+  <rosdep name="libgts" />
+  <depend package="collada_urdf"/>
 
 </package>
 

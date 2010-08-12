@@ -19,7 +19,7 @@ endif
 	touch patched
 
 installed: $(SVN_DIR) patched2
-	cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH rosmake --rosdep-install
+	cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make
 	touch installed
 
 clean:
