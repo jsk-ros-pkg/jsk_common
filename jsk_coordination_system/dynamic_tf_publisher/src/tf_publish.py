@@ -40,10 +40,12 @@ class dynamic_tf_publisher:
         self.lockobj.release()
 
     def assoc(self,req):
-        if (not self.cur_tf.has_key(req.child_frame)) or self.cur_tf.has_key[req.child_frame] == req.parent_frame:
+        if (not self.cur_tf.has_key(req.child_frame)) or self.cur_tf[req.child_frame] == req.parent_frame:
             return AssocTFResponse()
-        print "assoc %s -> %s"%(req.parent_frame, req.child_frame)
-        self.listener.waitForTransform(req.parent_frame, req.child_frame, req.header.stamp, rospy.Duration(1.0))
+        rospy.loginfo("assoc %s -> %s"%(req.parent_frame, req.child_frame))
+        self.listener.waitForTransform(req.parent_frame,
+                                       req.child_frame,
+                                       req.header.stamp, rospy.Duration(1.0))
         ts = TransformStamped()
         (trans,rot) = self.listener.lookupTransform(req.parent_frame, req.child_frame, req.header.stamp)
         ts.transform.translation = Vector3(*trans)
