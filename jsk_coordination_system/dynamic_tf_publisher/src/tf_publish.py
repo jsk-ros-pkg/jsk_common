@@ -63,7 +63,7 @@ class dynamic_tf_publisher:
 
     def dissoc(self,req):
         areq = None
-        rospy.loginfo("dissoc TF %s"%(req.child_frame))
+        rospy.loginfo("dissoc TF %s" % (req.frame_id))
         self.lockobj.acquire()
         if self.original_parent.has_key(req.frame_id):
             areq = AssocTFRequest()
