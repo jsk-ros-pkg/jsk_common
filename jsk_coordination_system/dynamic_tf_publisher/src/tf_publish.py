@@ -80,11 +80,14 @@ class dynamic_tf_publisher:
         return DissocTFResponse()
 
     def delete(self,req):
-        rospy.loginfo("delete TF %s"%(req.header.child_frame))
+        rospy.loginfo("delete TF %s"%(req.header.frame_id))
         self.lockobj.acquire()
-        del self.original_parent[req.header.frame_id]
-        del self.cur_tf[req.header.frame_id]
+        if self.original_parent.has_key(req.header.frame_id):
+            del self.original_parent[req.header.frame_id]
+        if self.cur_tf.has_key(req.header.frame_id):
+            del self.cur_tf[req.header.frame_id]
         self.lockobj.release()
+        return DeleteTFResponse()
 
     def set_tf(self,req):
         self.lockobj.acquire()
