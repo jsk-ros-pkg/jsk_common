@@ -19,6 +19,7 @@ import thread
 class dynamic_tf_publisher:
     def __init__(self):
         self.pub_tf = rospy.Publisher("/tf", tf.msg.tfMessage)
+        self.pub_tf_mine = rospy.Publisher("~tf", tf.msg.tfMessage)
         self.cur_tf = dict()
         self.original_parent = dict()
         self.listener = tf.TransformListener()
@@ -38,10 +39,12 @@ class dynamic_tf_publisher:
             pose.header.stamp = time
             tfm.transforms.append(pose)
         self.pub_tf.publish(tfm)
+        self.pub_tf_mine.publish(tfm)
         self.lockobj.release()
 
     def assoc(self,req):
         if (not self.cur_tf.has_key(req.child_frame)) or self.cur_tf[req.child_frame] == req.parent_frame:
+            rospy.logwarn("unkown key %s" % (req.child_frame))
             return AssocTFResponse()
         rospy.loginfo("assoc %s -> %s"%(req.parent_frame, req.child_frame))
         self.listener.waitForTransform(req.parent_frame,
