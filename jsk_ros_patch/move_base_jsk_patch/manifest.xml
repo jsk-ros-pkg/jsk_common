@@ -1,0 +1,14 @@
+<package>
+  <description brief="move_base_jsk_patch">
+
+     move_base_jsk_patch
+
+  </description>
+  <author>Manabu Saito</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/move_base_jsk_patch</url>
+
+</package>
+
+

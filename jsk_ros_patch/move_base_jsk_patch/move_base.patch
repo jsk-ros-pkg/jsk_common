@@ -1,0 +1,58 @@
+Index: include/move_base/move_base.h
+===================================================================
+--- include/move_base/move_base.h	(revision 32720)
++++ include/move_base/move_base.h	(working copy)
+@@ -111,7 +111,16 @@
+        */
+       bool clearUnknownService(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+ 
++    private:
+       /**
++       * @brief  A service call that clear all the local costmap (JSK patched)
++       * @param req The service request 
++       * @param resp The service response
++       * @return True if the service call succeeds, false otherwise
++       */
++      bool clearLocalCostmapService(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
++
++      /**
+        * @brief  A service call that can be made when the action is inactive that will return a plan
+        * @param  req The goal request
+        * @param  resp The plan request
+@@ -183,7 +192,7 @@
+       double conservative_reset_dist_, clearing_radius_;
+       ros::Publisher current_goal_pub_, vel_pub_, action_goal_pub_;
+       ros::Subscriber goal_sub_;
+-      ros::ServiceServer make_plan_srv_, clear_unknown_srv_;
++      ros::ServiceServer make_plan_srv_, clear_unknown_srv_, clear_local_costmap_srv_;
+       bool shutdown_costmaps_, clearing_roatation_allowed_, recovery_behavior_enabled_;
+ 
+       MoveBaseState state_;
+Index: src/move_base.cpp
+===================================================================
+--- src/move_base.cpp	(revision 32720)
++++ src/move_base.cpp	(working copy)
+@@ -147,6 +147,9 @@
+     //advertise a service for clearing the costmaps
+     clear_unknown_srv_ = private_nh.advertiseService("clear_unknown_space", &MoveBase::clearUnknownService, this);
+ 
++    //advertise a service for clearing the costmaps
++    clear_local_costmap_srv_ = private_nh.advertiseService("clear_local_costmap", &MoveBase::clearLocalCostmapService, this);
++
+     //initially clear any unknown space around the robot
+     planner_costmap_ros_->clearNonLethalWindow(circumscribed_radius_ * 4, circumscribed_radius_ * 4);
+     controller_costmap_ros_->clearNonLethalWindow(circumscribed_radius_ * 4, circumscribed_radius_ * 4);
+@@ -244,6 +247,13 @@
+     return true;
+   }
+ 
++  bool MoveBase::clearLocalCostmapService(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp){
++    //clear the costmap
++    planner_costmap_ros_->resetMapOutsideWindow(0,0);
++    controller_costmap_ros_->resetMapOutsideWindow(0,0);
++    return true;
++  }
++
+   bool MoveBase::planService(nav_msgs::GetPlan::Request &req, nav_msgs::GetPlan::Response &resp){
+     if(as_->isActive()){
+       ROS_ERROR("move_base must be in an inactive state to make a plan for an external user");
