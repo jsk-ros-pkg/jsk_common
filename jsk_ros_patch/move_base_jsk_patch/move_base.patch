@@ -1,6 +1,6 @@
 Index: include/move_base/move_base.h
 ===================================================================
---- include/move_base/move_base.h	(revision 32720)
+--- include/move_base/move_base.h	(revision 33033)
 +++ include/move_base/move_base.h	(working copy)
 @@ -111,7 +111,16 @@
         */
@@ -28,9 +28,22 @@ Index: include/move_base/move_base.h
        bool shutdown_costmaps_, clearing_roatation_allowed_, recovery_behavior_enabled_;
  
        MoveBaseState state_;
+Index: manifest.xml
+===================================================================
+--- manifest.xml	(revision 33033)
++++ manifest.xml	(working copy)
+@@ -18,7 +18,7 @@
+  <depend package="actionlib"/>
+  <depend package="nav_core"/>
+  <depend package="pluginlib"/>
+- <depend package="costmap_2d"/>
++ <depend package="costmap_2d_jsk_patch"/>
+  <depend package="tf"/>
+  <depend package="nav_msgs"/>
+  <depend package="roslib"/>
 Index: src/move_base.cpp
 ===================================================================
---- src/move_base.cpp	(revision 32720)
+--- src/move_base.cpp	(revision 33033)
 +++ src/move_base.cpp	(working copy)
 @@ -147,6 +147,9 @@
      //advertise a service for clearing the costmaps
