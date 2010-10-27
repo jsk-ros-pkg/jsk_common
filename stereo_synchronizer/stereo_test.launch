@@ -4,7 +4,7 @@
     <!-- camera driver left -->
     <node name="camera1394_left" pkg="camera1394" type="camera1394_node"
 	  respawn="false" output="screen" clear_params="true">
-      <remap from="camera" to="left"/>
+      <remap from="camera" to="left_raw"/>
       <param name="frame_rate" value="7.5"/>
       <param name="video_mode" value="640x480_rgb8"/>
       <param name="guid" value="00b09d01008c8de0"/>
@@ -18,7 +18,7 @@
     <!-- camera driver right -->
     <node name="camera1394_right" pkg="camera1394" type="camera1394_node"
 	  respawn="false" output="screen" clear_params="true">
-      <remap from="camera" to="right"/>
+      <remap from="camera" to="right_raw"/>
       <param name="frame_rate" value="7.5"/>
       <param name="video_mode" value="640x480_rgb8"/>
       <param name="guid" value="00b09d01008c8de1"/>
@@ -30,12 +30,12 @@
     </node>
 
     <!-- synchronizer -->
-    <node name="stereo_synchronizer" pkg="stereo_synchronizer" type="stereo_synchronizer" />
+    <node name="stereo_synchronizer" pkg="stereo_synchronizer" type="stereo_synchronizer"
+	  respawn="false" output="screen" />
 
     <!-- stereo proc -->
-    <node name="stereo_proc" pkg="stereo_image_proc" type="stereo_image_proc">
-      <remap from="left" to="left/synchronized"  />
-      <remap from="right" to="right/synchronized"  />
-    </node>
+    <node name="stereo_proc" pkg="stereo_image_proc" type="stereo_image_proc"
+	  respawn="false" output="screen" />
+
   </group>
 </launch>

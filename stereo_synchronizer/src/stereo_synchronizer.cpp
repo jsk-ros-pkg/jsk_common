@@ -27,15 +27,17 @@ private:
 public:
   StereoSynchronizer () : nh_(), it_(nh_), sync_(15) {
 
+    std::string left_raw = nh_.resolveName("left_raw");
+    std::string right_raw = nh_.resolveName("right_raw");
+    image_sub_l_.subscribe(it_, left_raw  + "/image_raw", 4);
+    info_sub_l_ .subscribe(nh_, left_raw  + "/camera_info", 4);
+    image_sub_r_.subscribe(it_, right_raw + "/image_raw", 4);
+    info_sub_r_ .subscribe(nh_, right_raw + "/camera_info", 4);
+
     left_ns_ = nh_.resolveName("left");
     right_ns_ = nh_.resolveName("right");
-    image_sub_l_.subscribe(it_, left_ns_  + "/image_raw", 4);
-    info_sub_l_ .subscribe(nh_, left_ns_  + "/camera_info", 4);
-    image_sub_r_.subscribe(it_, right_ns_ + "/image_raw", 4);
-    info_sub_r_ .subscribe(nh_, right_ns_ + "/camera_info", 4);
-
-    ros::NodeHandle cam_l_nh = left_ns_ + "/synchronized";
-    ros::NodeHandle cam_r_nh = right_ns_ + "/synchronized";
+    ros::NodeHandle cam_l_nh = left_ns_;
+    ros::NodeHandle cam_r_nh = right_ns_;
     it_l_ = new image_transport::ImageTransport(cam_l_nh);
     it_r_ = new image_transport::ImageTransport(cam_r_nh);
     pub_left_ = it_l_->advertiseCamera("image_raw", 1);
