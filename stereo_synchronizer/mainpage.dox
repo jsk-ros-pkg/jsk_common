@@ -2,12 +2,31 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b stereo_synchronizer is ... 
+\b stereo_synchronizer is synchronizing stamps of stereo camera pairs for
+  using stereo_image_proc or another nodes.
 
 <!-- 
 Provide an overview of your package.
 -->
 
+stereo_synchronizer will subscribe 4 topics.
+Default topic name listed below.
+\verbatim
+/left_raw/image_raw
+/left_raw/camera_info
+/right_raw/image_raw
+/right_raw/camera_info
+\endverbatim
+
+stereo_synchronizer will publish 4 topics.
+Default topic name listed below.
+All topics have the same time stamp.
+\verbatim
+/left/image_raw
+/left/camera_info
+/right/image_raw
+/right/camera_info
+\endverbatim
 
 \section codeapi Code API
 

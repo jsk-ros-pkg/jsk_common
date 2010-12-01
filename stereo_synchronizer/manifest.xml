@@ -4,7 +4,7 @@
      stereo_synchronizer
 
   </description>
-  <author>yohei kakiuchi</author>
+  <author>yohei kakiuchi, JSK</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/stereo_synchronizer</url>
