@@ -1,0 +1,18 @@
+<package>
+  <description>
+  A simple viewer for ROS image topics with draw-on features
+  </description>
+  <author>Kei Okada</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/image_view2</url>
+  <depend package="roscpp"/>
+  <depend package="opencv2"/>
+  <depend package="cv_bridge"/>
+  <depend package="std_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="image_transport"/>
+  <depend package="tf"/>
+  <depend package="image_geometry"/>
+</package>
