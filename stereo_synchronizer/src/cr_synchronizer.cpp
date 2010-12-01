@@ -30,24 +30,27 @@ private:
 public:
   CRSynchronizer () : nh_(), it_(nh_), sync_(15) {
 
+    std::string left_raw = nh_.resolveName("left_raw");
+    std::string right_raw = nh_.resolveName("right_raw");
+    std::string range_raw = nh_.resolveName("range_raw");
+
+    image_sub_left_.subscribe(it_, left_raw  + "/image_raw", 8);
+    info_sub_left_ .subscribe(nh_, left_raw  + "/camera_info", 8);
+
+    image_sub_right_.subscribe(it_, right_raw + "/image_raw", 8);
+    info_sub_right_ .subscribe(nh_, right_raw + "/camera_info", 8);
+
+    image_sub_depth_.subscribe(it_, range_raw + "/distance/image_raw16", 8);
+    image_sub_intent_.subscribe(it_, range_raw + "/intensity/image_raw", 8);
+    image_sub_confi_.subscribe(it_, range_raw + "/confidence/image_raw", 8);
+    info_sub_range_ .subscribe(nh_, range_raw + "/camera_info", 8);
+
     left_ns_ = nh_.resolveName("left");
     right_ns_ = nh_.resolveName("right");
     range_ns_ = nh_.resolveName("range");
-
-    image_sub_left_.subscribe(it_, left_ns_  + "/image_raw", 8);
-    info_sub_left_ .subscribe(nh_, left_ns_  + "/camera_info", 8);
-
-    image_sub_right_.subscribe(it_, right_ns_ + "/image_raw", 8);
-    info_sub_right_ .subscribe(nh_, right_ns_ + "/camera_info", 8);
-
-    image_sub_depth_.subscribe(it_, range_ns_ + "/distance/image_raw16", 8);
-    image_sub_intent_.subscribe(it_, range_ns_ + "/intensity/image_raw", 8);
-    image_sub_confi_.subscribe(it_, range_ns_ + "/confidence/image_raw", 8);
-    info_sub_range_ .subscribe(nh_, range_ns_ + "/camera_info", 8);
-
-    ros::NodeHandle cam_left_nh = left_ns_ + "/synchronized";
-    ros::NodeHandle cam_right_nh = right_ns_ + "/synchronized";
-    ros::NodeHandle cam_range_nh = range_ns_ + "/synchronized";
+    ros::NodeHandle cam_left_nh(left_ns_);
+    ros::NodeHandle cam_right_nh(right_ns_);
+    ros::NodeHandle cam_range_nh(range_ns_);
 
     it_left_ = new image_transport::ImageTransport(cam_left_nh);
     it_right_ = new image_transport::ImageTransport(cam_right_nh);

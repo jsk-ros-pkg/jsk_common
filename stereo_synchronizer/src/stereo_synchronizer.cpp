@@ -36,8 +36,8 @@ public:
 
     left_ns_ = nh_.resolveName("left");
     right_ns_ = nh_.resolveName("right");
-    ros::NodeHandle cam_l_nh = left_ns_;
-    ros::NodeHandle cam_r_nh = right_ns_;
+    ros::NodeHandle cam_l_nh(left_ns_);
+    ros::NodeHandle cam_r_nh(right_ns_);
     it_l_ = new image_transport::ImageTransport(cam_l_nh);
     it_r_ = new image_transport::ImageTransport(cam_r_nh);
     pub_left_ = it_l_->advertiseCamera("image_raw", 1);
