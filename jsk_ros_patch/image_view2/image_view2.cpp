@@ -57,7 +57,7 @@ typedef std::vector<image_view2::ImageMarker2::ConstPtr> V_ImageMarkerMessage;
 class ImageView2
 {
 private:
-  image_transport::Subscriber image_sub_;
+  image_transport::CameraSubscriber camera_sub_;
   ros::Subscriber info_sub_;
   ros::Subscriber marker_sub_;
   std::string marker_topic_;
@@ -98,10 +98,9 @@ public:
     rectangle_pub_ = nh.advertise<geometry_msgs::PolygonStamped>("/screenrectangle",100);
     reset_pub_ = nh.advertise<std_msgs::Empty>("/reset_time",100); 
 
-    std::string camera = nh.resolveName("image");
-    std::string camera_info = nh.resolveName("camera_info");
+    std::string image = nh.resolveName("image");
     ros::NodeHandle local_nh("~");
-    local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
+    local_nh.param("window_name", window_name_, std::string("image_view2 [")+image+std::string("]"));
 
     bool autosize;
     local_nh.param("autosize", autosize, false);
@@ -118,8 +117,7 @@ public:
     cvStartWindowThread();
 
     image_transport::ImageTransport it(nh);
-    image_sub_ = it.subscribe(camera, 1, &ImageView2::image_cb, this, transport);
-    info_sub_ = nh.subscribe(camera_info, 1, &ImageView2::info_cb, this);
+    camera_sub_ = it.subscribeCamera(image, 3, &ImageView2::image_cb, this);
 
     marker_sub_ = nh.subscribe(marker_topic_, 1, &ImageView2::markerCallback, this);
 
@@ -138,12 +136,8 @@ public:
     marker_queue_.push_back(marker);
   }
 
-  void info_cb(const sensor_msgs::CameraInfoConstPtr& msg) {
-    boost::mutex::scoped_lock lock(info_mutex_);
-    info_msg_ = msg;
-  }
 #define COUNT_MAX 10
-  void image_cb(const sensor_msgs::ImageConstPtr& msg)
+  void image_cb(const sensor_msgs::ImageConstPtr& image_ptr, const sensor_msgs::CameraInfoConstPtr& cam_info)
   {
     static ros::Time old_time;
     if(old_time.toSec() - ros::Time::now().toSec() > 0) {
@@ -154,21 +148,22 @@ public:
     }
     static int count = COUNT_MAX;
     IplImage* image;
-    if (img_bridge_.fromImage(*msg, "bgr8")) {
+    if (img_bridge_.fromImage(*image_ptr, "bgr8")) {
       image = img_bridge_.toIpl();
     } else {
-      ROS_ERROR("Unable to convert %s image to bgr8", msg->encoding.c_str());
+      ROS_ERROR("Unable to convert %s image to bgr8", image_ptr->encoding.c_str());
       return;
     }
     boost::lock_guard<boost::mutex> guard(image_mutex_);
 
     // Hang on to message pointer for sake of mouse_cb
-    last_msg_ = msg;
+    last_msg_ = image_ptr;
+    info_msg_ = cam_info;
 
     // May want to view raw bayer data
     // NB: This is hacky, but should be OK since we have only one image CB.
-    if (msg->encoding.find("bayer") != std::string::npos)
-      boost::const_pointer_cast<sensor_msgs::Image>(msg)->encoding = "mono8";
+    if (image_ptr->encoding.find("bayer") != std::string::npos)
+      boost::const_pointer_cast<sensor_msgs::Image>(image_ptr)->encoding = "mono8";
 
     static V_ImageMarkerMessage local_queue;
     {
@@ -263,7 +258,7 @@ public:
               }
               BOOST_FOREACH(std::string frame_id, marker->frames)  {
                 tf::StampedTransform transform;
-                ros::Time acquisition_time = msg->header.stamp;
+                ros::Time acquisition_time = image_ptr->header.stamp;
                 ros::Duration timeout(1.0 / 2); // wait 0.5 sec
                 try {
                   tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
