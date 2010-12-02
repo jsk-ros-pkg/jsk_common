@@ -1,0 +1,113 @@
+/**
+\mainpage
+\htmlinclude manifest.html
+
+\b opt_cam is camera_driver code for NM30/33 from OPT Coorp
+
+\section Comapile Driver (once par computer)
+We need OPT-JSK original kernel uvcvideo driver for NM30/33 camera.
+Compile them under jvl directory.
+\verbatim
+$ cd $CVSDIR/jvl/extlib
+$ make uvcvideo
+$ make install-uvcvideo
+\endverbatim
+
+\section Setup Driver (every time after reboot)
+\verbatim
+$ sudo rmmod uvcvideo
+\endverbatim
+Unplug and plug USB cable.
+\verbatim
+$ sudo modprobe uvcvideo-nm30
+$ roscd opt_cam
+$ sudo -E ./bin/init_xu_register
+\endverbatim
+Check device file(/dev/videoXXX) that NM33 connected to
+
+\section Start NM30 camera driver
+
+\verbatim
+$ roscd opt_cam
+$ vi launch/opt_nm33camera.launch 
+\endverbatim
+edit following line in launch file to indecate which /dev/videoXXX file is
+connected to NM30/33 cmaera.
+\verbatim
+      <param name="camera_index" value="1" />
+\endverbatim
+Usually, value=1 for a note pc with front camera, value=0 for a desktop machine.
+
+Then, start camera driver and camera viewer
+\verbatim
+$ roslaunch opt_cam opt_nm33camera.launch 
+$ roslaunch opt_cam opt_imageview.launch 
+\endverbatim
+
+\section Start Image View2 for Saliency Trakcer
+This is update version of image_view to accpet :draw-on like message
+\verbatim
+$ rosrun image_view2 image_view2 image:=/camera/image_wide
+\endverbatim
+
+\section Start Saliency Tracker
+Saliency tracker node from The University of Arizona,
+Saliency tracking is based on the Nick's Machine Perception Toolkit (NMPT).
+
+\verbatim
+$ rosrun saliency_tracking  saliency_track  image:=/camera/image_wide
+\endverbatim
+
+\section Sample EusLisp code
+\verbatim
+(pushnew (format nil "~A/euslisp/"
+                 (read-line (piped-fork "rospack find roseus")))
+         *load-path* :test #'equal)
+(load "roseus.l")
+
+(roseus-add-msgs "roslib")
+(roseus-add-msgs "roseus")
+(roseus-add-msgs "geometry_msgs")
+(roseus-add-msgs "image_view2")
+
+;;;
+
+;;;
+
+(roseus "sliency-client")
+
+(defun saliency-cb (poi)
+  (setq mrk (instance image_view2::ImageMarker2 :init))
+  (print (list (send poi :x) (send poi :y)))
+  (send mrk :type image_view2::POINTS)
+  (send mrk :points (list poi))
+  (ros::ros-info "~A" poi)
+  (ros::publish "image_marker" mrk)
+  )
+
+(ros::advertise "image_marker" image_view2::ImageMarker2 1)
+(ros::subscribe "saliency_poi" geometry_msgs::Point #'saliency-cb)
+
+(ros::rate 10)
+(while (ros::ok)
+  (ros::spin-once)
+  (ros::sleep)
+  )
+
+\endverbatim
+
+\section codeapi Code API
+
+<!--
+Provide links to specific auto-generated API documentation within your
+package that is of particular interest to a reader. Doxygen will
+document pretty much every part of your code, so do your best here to
+point the reader to the actual API.
+
+If your codebase is fairly large or has different sets of APIs, you
+should use the doxygen 'group' tag to keep these APIs together. For
+example, the roscpp documentation has 'libros' group.
+-->
+
+
+*/

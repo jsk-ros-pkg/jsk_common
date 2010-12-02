@@ -1,0 +1,7 @@
+{actualfps: 150, autoexposure: true, autowhitebalance: true, brightness: 220, camera1_pan: 0,
+  camera1_roll: 0, camera1_tilt: 0, camera1_zoom: 0, camera2_pan: 0, camera2_roll: 0,
+  camera2_tilt: 0, camera2_zoom: 60, camera3_pan: 0, camera3_roll: 0, camera3_tilt: 0,
+  camera3_zoom: 120, capturefps: 150, exposure: 500, firmwareversion: '', flipscreen: 0,
+  infodisplay: false, iris: 500, jpegquality: 75, lenstype: 2, medianfilter: false,
+  mode: 4, pan: 0.0, roll: 0.0, sharpness: 4, smallhemisphere: 1, tilt: 0.0, whitebalance: 6500,
+  zoom: 100.0}
