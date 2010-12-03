@@ -6,9 +6,6 @@
 ;;;
 (ros::roseus "imageview2-client")
 
-(defun cmvision-cb (blobs)
-    ))
-
 (ros::advertise "image_marker" image_view2::ImageMarker2 1)
 
 (setq i 0)
