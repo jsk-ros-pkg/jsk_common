@@ -94,19 +94,21 @@ public:
   ImageView2(ros::NodeHandle& nh, const std::string& transport)
     : marker_topic_("image_marker"), filename_format_(""), count_(0)
   {
-    point_pub_ = nh.advertise<geometry_msgs::PointStamped>("/screenpoint",100);
-    rectangle_pub_ = nh.advertise<geometry_msgs::PolygonStamped>("/screenrectangle",100);
-    reset_pub_ = nh.advertise<std_msgs::Empty>("/reset_time",100); 
-
     std::string camera = nh.resolveName("image");
     std::string camera_info = nh.resolveName("camera_info");
     ros::NodeHandle local_nh("~");
+    bool autosize;
+    std::string format_string;
+    image_transport::ImageTransport it(nh);
+
+    point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/screenpoint",100);
+    rectangle_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/screenrectangle",100);
+    reset_pub_ = nh.advertise<std_msgs::Empty>("/reset_time",100);
+
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
 
-    bool autosize;
     local_nh.param("autosize", autosize, false);
 
-    std::string format_string;
     local_nh.param("filename_format", format_string, std::string("frame%04i.jpg"));
     filename_format_.parse(format_string);
 
@@ -117,7 +119,6 @@ public:
       window_selection_.height = window_selection_.width = 0;
     cvStartWindowThread();
 
-    image_transport::ImageTransport it(nh);
     image_sub_ = it.subscribe(camera, 1, &ImageView2::image_cb, this, transport);
     info_sub_ = nh.subscribe(camera_info, 1, &ImageView2::info_cb, this);
     marker_sub_ = nh.subscribe(marker_topic_, 1, &ImageView2::marker_cb, this);
