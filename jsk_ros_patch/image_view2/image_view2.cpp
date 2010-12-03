@@ -85,7 +85,6 @@ private:
 
   ros::Publisher point_pub_;
   ros::Publisher rectangle_pub_;
-  ros::Publisher reset_pub_;
 
 public:
   ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0)
@@ -103,7 +102,6 @@ public:
 
     point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/screenpoint",100);
     rectangle_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/screenrectangle",100);
-    reset_pub_ = nh.advertise<std_msgs::Empty>("/reset_time",100);
 
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
 
@@ -152,9 +150,6 @@ public:
     ROS_DEBUG("image_cb");
     if(old_time.toSec() - ros::Time::now().toSec() > 0) {
       ROS_WARN("TF Cleared for old time");
-      // tf_listener_.clear();
-      std_msgs::Empty empty;
-      reset_pub_.publish(empty);
     }
     static int count = COUNT_MAX;
     IplImage* image;
