@@ -27,6 +27,8 @@ OptNM3xCamera::OptNM3xCamera(int camera_index)
     fprintf(stderr, "ERROR : try sudo -E ./bin/init_xu_register\n");
     exit(1);
   }
+  fprintf(stderr, "firmwareVersion -> %s\n", getFirmwareVersion().c_str());
+  fprintf(stderr, "serialId -> %s\n", getSerialID().c_str());
 }
 
 OptNM3xCamera::~OptNM3xCamera()
