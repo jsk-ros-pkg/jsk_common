@@ -119,7 +119,7 @@ public:
 
     image_sub_ = it.subscribe(camera, 1, &ImageView2::image_cb, this, transport);
     info_sub_ = nh.subscribe(camera_info, 1, &ImageView2::info_cb, this);
-    marker_sub_ = nh.subscribe(marker_topic_, 1, &ImageView2::marker_cb, this);
+    marker_sub_ = nh.subscribe(marker_topic_, 10, &ImageView2::marker_cb, this);
 
     image_pub_ = it.advertise("image_marked", 1);
   }
