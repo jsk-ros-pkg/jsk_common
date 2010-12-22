@@ -1,5 +1,5 @@
 <launch>
-  <group ns="opt_cam">
+  <group ns="camera">
     <node pkg="image_view" name="nm30_omni_view"  type="image_view">
       <remap from="image" to="omni/image_raw" />
       <param name="autosize" value="true" />
