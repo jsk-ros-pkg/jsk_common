@@ -12,6 +12,7 @@ class OptNM3xCamera
 {
 private:
   CvCapture *capture;
+  IplImage *frame, *frame_omni, *frame_wide, *frame_middle, *frame_narrow;
   int fd;
 
   bool v4l2_set_ioctl(int selector, int value);
@@ -30,6 +31,11 @@ public:
 
   // obtaining images
   IplImage *queryFrame ();
+  IplImage *queryOmniFrame ();
+  IplImage *queryWideFrame ();
+  IplImage *queryMiddleFrame ();
+  IplImage *queryNarrowFrame ();
+
   void getOmniImage (IplImage *frame, CvMat &subframe);
   void getWideImage (IplImage *frame, CvMat &subframe);
   void getMiddleImage (IplImage *frame, CvMat &subframe);

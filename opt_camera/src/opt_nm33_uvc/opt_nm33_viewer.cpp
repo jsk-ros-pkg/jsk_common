@@ -26,17 +26,13 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "get frame: channels=%d, depth=%d, width=%d, height=%d\n",
             frame->nChannels, frame->depth, frame->width, frame->height);
 
-    camera->getOmniImage(frame, subframe);
-    cvShowImage ("Opt NM33 Camera 0", &subframe);
+    cvShowImage ("Opt NM33 Camera 0", camera->queryOmniFrame());
 
-    camera->getWideImage(frame, subframe);
-    cvShowImage ("Opt NM33 Camera 1", &subframe);
+    cvShowImage ("Opt NM33 Camera 1", camera->queryWideFrame());
 
-    camera->getMiddleImage(frame, subframe);
-    cvShowImage ("Opt NM33 Camera 2", &subframe);
+    cvShowImage ("Opt NM33 Camera 2", camera->queryMiddleFrame());
 
-    camera->getNarrowImage(frame, subframe);
-    cvShowImage ("Opt NM33 Camera 3", &subframe);
+    cvShowImage ("Opt NM33 Camera 3", camera->queryNarrowFrame());
 
     float f = (float)count/20.0;
     camera->setLocationAbsolute(2, 180*sin(f), 45*sin(f+M_PI/3)+45, 180*sin(f+M_PI/2), 50*sin(f*2)+100);

@@ -29,6 +29,8 @@ OptNM3xCamera::OptNM3xCamera(int camera_index)
   }
   fprintf(stderr, "firmwareVersion -> %s\n", getFirmwareVersion().c_str());
   fprintf(stderr, "serialId -> %s\n", getSerialID().c_str());
+
+  frame = frame_omni = frame_wide = frame_middle = frame_narrow = NULL;
 }
 
 OptNM3xCamera::~OptNM3xCamera()
@@ -39,7 +41,25 @@ OptNM3xCamera::~OptNM3xCamera()
 // obtaining images
 IplImage *OptNM3xCamera::queryFrame ()
 {
-  return cvQueryFrame(capture);
+  frame = cvQueryFrame(capture);
+  if (frame==NULL) {
+    fprintf(stderr, "ERROR : cvQueryFrame returns NULL\n");
+    return NULL;
+  }
+  int height = frame->height, width = frame->width;
+  if ( ! ( frame_omni && (frame_omni->width  == height/2 &&
+                          frame_omni->height == height/2 ) ) )
+    frame_omni = cvCreateImage(cvSize(height/2, height/2), frame->depth, frame->nChannels);
+  if ( ! ( frame_wide && (frame_wide->width  == (width-height/2) &&
+                          frame_wide->height == height/2 ) ) )
+    frame_wide = cvCreateImage(cvSize(width-height/2, height/2), frame->depth, frame->nChannels);
+  if ( ! ( frame_middle && (frame_middle->width  == width/2 &&
+                            frame_middle->height == height/2 ) ) )
+    frame_middle = cvCreateImage(cvSize(width/2, height/2), frame->depth, frame->nChannels);
+  if ( ! ( frame_narrow && (frame_narrow->width  == width/2 &&
+                            frame_narrow->height == height/2 ) ) )
+    frame_narrow = cvCreateImage(cvSize(width/2, height/2), frame->depth, frame->nChannels);
+  return frame;
 }
 
 void OptNM3xCamera::getOmniImage (IplImage *frame, CvMat &subframe) {
@@ -60,6 +80,39 @@ void OptNM3xCamera::getMiddleImage (IplImage *frame, CvMat &subframe) {
 void OptNM3xCamera::getNarrowImage (IplImage *frame, CvMat &subframe) {
   int width = frame->width, height = frame->height;
   cvGetSubRect(frame, &subframe, cvRect(width/2, height/2, width/2, height/2));
+}
+
+
+IplImage *OptNM3xCamera::queryOmniFrame () {
+  int height = frame->height;
+  cvSetImageROI(frame, cvRect(0, 0, height/2, height/2));
+  cvCopy(frame, frame_omni);
+  cvResetImageROI(frame);
+  return frame_omni;
+}
+
+IplImage *OptNM3xCamera::queryWideFrame () {
+  int width = frame->width, height = frame->height;
+  cvSetImageROI(frame, cvRect(height/2, 0, width-height/2, height/2));
+  cvCopy(frame, frame_wide);
+  cvResetImageROI(frame);
+  return frame_wide;
+}
+
+IplImage *OptNM3xCamera::queryMiddleFrame () {
+  int width = frame->width, height = frame->height;
+  cvSetImageROI(frame, cvRect(0, height/2, width/2, height/2));
+  cvCopy(frame, frame_middle);
+  cvResetImageROI(frame);
+  return frame_middle;
+}
+
+IplImage *OptNM3xCamera::queryNarrowFrame () {
+  int width = frame->width, height = frame->height;
+  cvSetImageROI(frame, cvRect(width/2, height/2, width/2, height/2));
+  cvCopy(frame, frame_narrow);
+  cvResetImageROI(frame);
+  return frame_narrow;
 }
 
 // set commands
