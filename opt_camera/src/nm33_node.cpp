@@ -135,25 +135,24 @@ public:
     try {
       fillImage(img_, "bgr8", frame->height, frame->width, frame->width * frame->nChannels, frame->imageData);
       img_pub_.publish(img_, info_);
-      CvMat subframe;
       {
-        camera_->getOmniImage(frame, subframe);
-        fillImage(img_omni_, "bgr8", subframe.height, subframe.width, subframe.step, subframe.data.ptr);
+        IplImage *tmp_img_ = camera_->queryOmniFrame();
+        fillImage(img_omni_, "bgr8", tmp_img_->height, tmp_img_->width, tmp_img_->width * tmp_img_->nChannels, tmp_img_->imageData);
         img_omni_pub_.publish(img_omni_, info_omni_);
       }
       {
-        camera_->getWideImage(frame, subframe);
-        fillImage(img_wide_, "bgr8", subframe.height, subframe.width, subframe.step, subframe.data.ptr);
+        IplImage *tmp_img_ = camera_->queryWideFrame();
+        fillImage(img_wide_, "bgr8", tmp_img_->height, tmp_img_->width, tmp_img_->width * tmp_img_->nChannels, tmp_img_->imageData);
         img_wide_pub_.publish(img_wide_, info_wide_);
       }
       {
-        camera_->getMiddleImage(frame, subframe);
-        fillImage(img_middle_, "bgr8", subframe.height, subframe.width, subframe.step, subframe.data.ptr);
+        IplImage *tmp_img_ = camera_->queryMiddleFrame();
+        fillImage(img_middle_, "bgr8", tmp_img_->height, tmp_img_->width, tmp_img_->width * tmp_img_->nChannels, tmp_img_->imageData);
         img_middle_pub_.publish(img_middle_, info_middle_);
       }
       {
-        camera_->getNarrowImage(frame, subframe);
-        fillImage(img_narrow_, "bgr8", subframe.height, subframe.width, subframe.step, subframe.data.ptr);
+        IplImage *tmp_img_ = camera_->queryNarrowFrame();
+        fillImage(img_narrow_, "bgr8", tmp_img_->height, tmp_img_->width, tmp_img_->width * tmp_img_->nChannels, tmp_img_->imageData);
         img_narrow_pub_.publish(img_narrow_, info_narrow_);
       }
       if(config_.mode == 2) { // mode = panorama(2)
