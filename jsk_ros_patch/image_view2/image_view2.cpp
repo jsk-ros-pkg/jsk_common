@@ -54,6 +54,19 @@
 
 typedef std::vector<image_view2::ImageMarker2::ConstPtr> V_ImageMarkerMessage;
 
+#define DEFAULT_COLOR  CV_RGB(255,0,0)
+#define USER_ROI_COLOR CV_RGB(255,0,0)
+#define DEFAULT_CIRCLE_SCALE  20
+#define LINE_WIDTH             3
+
+inline CvScalar MsgToRGB(const std_msgs::ColorRGBA &color){
+  if(color.a == 0.0 && color.r == 0.0 && color.g == 0.0 && color.b == 0.0)
+    return DEFAULT_COLOR;
+  else
+    return CV_RGB(color.r*255, color.g*255, color.b*255);
+}
+
+
 class ImageView2
 {
 private:
@@ -132,9 +145,13 @@ public:
   void marker_cb(const image_view2::ImageMarker2ConstPtr& marker)
   {
     ROS_DEBUG("marker_cb");
+    // convert lifetime to duration from Time(0)
+    if(marker->lifetime != ros::Duration(0))
+      boost::const_pointer_cast<image_view2::ImageMarker2>(marker)->lifetime = (ros::Time::now() - ros::Time(0)) + marker->lifetime;
     boost::mutex::scoped_lock lock(queue_mutex_);
-    marker_queue_.clear();
+
     marker_queue_.push_back(marker);
+
   }
 
   void info_cb(const sensor_msgs::CameraInfoConstPtr& msg) {
@@ -143,7 +160,6 @@ public:
     info_msg_ = msg;
   }
 
-#define COUNT_MAX 10
   void image_cb(const sensor_msgs::ImageConstPtr& msg)
   {
     static ros::Time old_time;
@@ -151,7 +167,7 @@ public:
     if(old_time.toSec() - ros::Time::now().toSec() > 0) {
       ROS_WARN("TF Cleared for old time");
     }
-    static int count = COUNT_MAX;
+
     IplImage* image;
     if (img_bridge_.fromImage(*msg, "bgr8")) {
       image = img_bridge_.toIpl();
@@ -173,36 +189,52 @@ public:
     {
       boost::mutex::scoped_lock lock(queue_mutex_);
 
-      if ( ! marker_queue_.empty() ) {
-        local_queue.clear();
-        local_queue.swap( marker_queue_ );
-        count = COUNT_MAX;
-      } else if ( !local_queue.empty() ) { // marker_queue_.empty()
-        if ( count > 0) {
-          count--;
-        } else if ( count == 0) {
-          local_queue.clear();
-          local_queue.swap( marker_queue_ );
-        }
+      while ( ! marker_queue_.empty() ) {
+	// remove marker by namespace and id
+	V_ImageMarkerMessage::iterator new_msg = marker_queue_.begin();
+	V_ImageMarkerMessage::iterator message_it = local_queue.begin();
+	for ( ; message_it < local_queue.end(); ++message_it ) {
+	  if((*new_msg)->ns == (*message_it)->ns && (*new_msg)->id == (*message_it)->id)
+	    message_it = local_queue.erase(message_it);
+	}
+	local_queue.push_back(*new_msg);
+	marker_queue_.erase(new_msg);
       }
     }
 
+    // check lifetime and remove REMOVE-type marker msg
+    for(V_ImageMarkerMessage::iterator it = local_queue.begin(); it < local_queue.end(); it++) {
+      if((*it)->action == image_view2::ImageMarker2::REMOVE ||
+	 ((*it)->lifetime.toSec() != 0.0 && (*it)->lifetime.toSec() < ros::Time::now().toSec())) {
+	it = local_queue.erase(it);
+      }
+    }
+
+    // Draw Section
     if ( !local_queue.empty() )
       {
         V_ImageMarkerMessage::iterator message_it = local_queue.begin();
         V_ImageMarkerMessage::iterator message_end = local_queue.end();
-
+	ROS_INFO("markers = %d", local_queue.size());
         //processMessage;
         for ( ; message_it != message_end; ++message_it )
           {
             image_view2::ImageMarker2::ConstPtr& marker = *message_it;
 
+	    // outline colors
+	    std::vector<CvScalar> colors;
+	    BOOST_FOREACH(std_msgs::ColorRGBA color, marker->outline_colors) {
+	      colors.push_back(MsgToRGB(color));
+	    }
+	    if(colors.size() == 0) colors.push_back(DEFAULT_COLOR);
+	    std::vector<CvScalar>::iterator col_it = colors.begin();
+
             // CIRCLE, LINE_STRIP, LINE_LIST, POLYGON, POINTS
             switch ( marker->type ) {
             case image_view2::ImageMarker2::CIRCLE: {
-
               cv::Point2d uv = cv::Point2d(marker->position.x, marker->position.y);
-              cvCircle(image, uv, marker->scale, CV_RGB(255,0,0), 3);
+              cvCircle(image, uv, (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale),
+		       MsgToRGB(marker->outline_color), LINE_WIDTH);
               break;
             }
             case image_view2::ImageMarker2::LINE_STRIP: {
@@ -212,8 +244,9 @@ public:
               p0 = cv::Point2d(it->x, it->y); it++;
               for ( ; it!= end; it++ ) {
                 p1 = cv::Point2d(it->x, it->y);
-                cvLine(image, p0, p1, CV_RGB(255,0,0), 3);
+                cvLine(image, p0, p1, *col_it, LINE_WIDTH);
                 p0 = p1;
+		if(++col_it == colors.end()) col_it = colors.begin();
               }
               break;
             }
@@ -224,8 +257,9 @@ public:
               for ( ; it!= end; ) {
                 p0 = cv::Point2d(it->x, it->y); it++;
                 if ( it != end ) p1 = cv::Point2d(it->x, it->y);
-                cvLine(image, p0, p1, CV_RGB(255,0,0), 3);
+                cvLine(image, p0, p1, *col_it, LINE_WIDTH);
                 it++;
+		if(++col_it == colors.end()) col_it = colors.begin();
               }
               break;
             }
@@ -236,18 +270,20 @@ public:
               p0 = cv::Point2d(it->x, it->y); it++;
               for ( ; it!= end; it++ ) {
                 p1 = cv::Point2d(it->x, it->y);
-                cvLine(image, p0, p1, CV_RGB(255,0,0), 3);
+                cvLine(image, p0, p1, *col_it, LINE_WIDTH);
                 p0 = p1;
+		if(++col_it == colors.end()) col_it = colors.begin();
               }
               it = marker->points.begin();
               p1 = cv::Point2d(it->x, it->y);
-              cvLine(image, p0, p1, CV_RGB(255,0,0), 3);
+              cvLine(image, p0, p1, *col_it, LINE_WIDTH);
               break;
             }
             case image_view2::ImageMarker2::POINTS: {
               BOOST_FOREACH(geometry_msgs::Point p, marker->points)  {
                 cv::Point2d uv = cv::Point2d(p.x, p.y);
-                cvCircle(image, uv, 3, CV_RGB(255,0,0), -1);
+                cvCircle(image, uv, 3, *col_it, -1);
+		if(++col_it == colors.end()) col_it = colors.begin();
               }
               break;
             }
@@ -281,7 +317,7 @@ public:
                 cam_model_.project3dToPixel(pt_cv, uv);
 
                 static const int RADIUS = 3;
-                cvCircle(image, uv, RADIUS, CV_RGB(255,0,0), -1);
+                cvCircle(image, uv, RADIUS, DEFAULT_COLOR, -1);
 
                 // x, y, z
                 cv::Point2d uv0, uv1, uv2;
@@ -312,7 +348,7 @@ public:
                 cvGetTextSize(frame_id.c_str(), &font_, &text_size, &baseline);
                 CvPoint origin = cvPoint(uv.x - text_size.width / 2,
                                          uv.y - RADIUS - baseline - 3);
-                cvPutText(image, frame_id.c_str(), origin, &font_, CV_RGB(255,0,0));
+                cvPutText(image, frame_id.c_str(), origin, &font_, DEFAULT_COLOR);
               }
               break;
             }
@@ -324,7 +360,7 @@ public:
       cvRectangle(image, cvPoint(window_selection_.x, window_selection_.y),
                   cvPoint(window_selection_.x + window_selection_.width,
                           window_selection_.y + window_selection_.height),
-                  CV_RGB(255,0,0), 3, 8, 0);
+                  USER_ROI_COLOR, 3, 8, 0);
     }
     cvShowImage(window_name_.c_str(), image);
     image_pub_.publish(img_bridge_.cvToImgMsg(image, "bgr8"));

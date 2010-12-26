@@ -15,7 +15,10 @@
     (case (mod (/ i 10) 6)
           (0
            (send mrk :type image_view2::CIRCLE)
+           (send mrk :id 5)
            (send mrk :position (instance geometry_msgs::Point :init :x 320 :y 240))
+           (send mrk :outline_color (instance std_msgs::ColorRGBA :init :r 0.0 :g 1.0 :b 0.0 :a 1.0))
+	   (send mrk :lifetime (ros::Time 2))
            (send mrk :scale 100.0)
            )
           (1
@@ -24,6 +27,8 @@
                                    (instance geometry_msgs::Point :init :x 440 :y 150)
                                    (instance geometry_msgs::Point :init :x 440 :y 330)
                                    (instance geometry_msgs::Point :init :x 200 :y 330)))
+           (send mrk :outline_colors (list (instance std_msgs::ColorRGBA :init :r 0.0 :g 1.0 :b 0.0 :a 1.0)
+					   (instance std_msgs::ColorRGBA :init :r 0.0 :g 0.0 :b 1.0 :a 1.0)))
            )
           (2
            (send mrk :type image_view2::LINE_LIST)
