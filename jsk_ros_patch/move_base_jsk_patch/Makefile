@@ -1,5 +1,5 @@
 #
-# add service 'clear_local_costmap'
+# https://code.ros.org/trac/ros-pkg/ticket/4684
 #
 all: installed
 
