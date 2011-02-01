@@ -6,7 +6,7 @@ Index: src/collada_writer.cpp
          if (j == geometry_ids_.end())
              continue;
  
-+        if ( urdf_link->visual->material_name.empty() ||
++        if ( (urdf_link->visual ==NULL) || urdf_link->visual->material_name.empty() ||
 +             (urdf_link->visual->material == NULL) ) {
 +          ambient.r = ambient.g = ambient.b = 1; ambient.a = 0;
 +          diffuse.r = diffuse.g = diffuse.b = 1; diffuse.a = 0;
