@@ -5,7 +5,7 @@ all: installed
 
 SVN_DIR = collada_urdf_svn
 SVN_URL = https://code.ros.org/svn/ros-pkg/stacks/robot_model/tags/cturtle/collada_urdf
-SVN_PATCH = color.patch cyliner_box_sphere.patch radlimit.patch rosdep.patch
+SVN_PATCH = color.patch cyliner_box_sphere.patch rosdep.patch
 include $(shell rospack find mk)/svn_checkout.mk
 
 patched2: $(SVN_PATCH) Makefile
