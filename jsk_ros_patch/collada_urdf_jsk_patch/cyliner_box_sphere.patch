@@ -267,7 +267,7 @@ Index: src/collada_writer.cpp
              }
              case urdf::Geometry::SPHERE: {
                  std::cerr << "Warning: geometry type SPHERE of link " << urdf_link->name << " not exported" << std::endl;
-+                urdf::Sphere* urdf_sphere = (urdf::Sphere*) urdf_link->visual->geometry.get();
++                urdf::Sphere* urdf_sphere = (urdf::Sphere*) geometry.get();
 +                // <geometry id="g1.link0.geom0">
 +                domGeometryRef geometry = daeSafeCast<domGeometry>(geometriesLib_->add(COLLADA_ELEMENT_GEOMETRY));
 +                string geometry_id = string("g1.link") + boost::lexical_cast<string>(link_num) + string(".geom0");
@@ -304,7 +304,7 @@ Index: src/collada_writer.cpp
              }
              case urdf::Geometry::BOX: {
 -                std::cerr << "Warning: geometry type BOX of link " << urdf_link->name << " not exported" << std::endl;
-+                urdf::Box* urdf_box = (urdf::Box*) urdf_link->visual->geometry.get();
++                urdf::Box* urdf_box = (urdf::Box*) geometry.get();
 +                // <geometry id="g1.link0.geom0">
 +                domGeometryRef geometry = daeSafeCast<domGeometry>(geometriesLib_->add(COLLADA_ELEMENT_GEOMETRY));
 +                string geometry_id = string("g1.link") + boost::lexical_cast<string>(link_num) + string(".geom0");
@@ -377,7 +377,7 @@ Index: src/collada_writer.cpp
              }
              case urdf::Geometry::CYLINDER: {
 -                std::cerr << "Warning: geometry type CYLINDER of link " << urdf_link->name << " not exported" << std::endl;
-+                urdf::Cylinder* urdf_cylinder = (urdf::Cylinder*) urdf_link->visual->geometry.get();
++                urdf::Cylinder* urdf_cylinder = (urdf::Cylinder*) geometry.get();
 +                // <geometry id="g1.link0.geom0">
 +                domGeometryRef geometry = daeSafeCast<domGeometry>(geometriesLib_->add(COLLADA_ELEMENT_GEOMETRY));
 +                string geometry_id = string("g1.link") + boost::lexical_cast<string>(link_num) + string(".geom0");
