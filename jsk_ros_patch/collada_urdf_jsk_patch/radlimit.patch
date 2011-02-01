@@ -1,0 +1,15 @@
+Index: src/collada_writer.cpp
+===================================================================
+--- src/collada_writer.cpp	(revision 35652)
++++ src/collada_writer.cpp	(working copy)
+@@ -424,8 +786,8 @@
+                     // <limits>
+                     domJoint_limitsRef limits = daeSafeCast<domJoint_limits>(revolute->add(COLLADA_ELEMENT_LIMITS));
+                     {
+-                        daeSafeCast<domMinmax>(limits->add(COLLADA_ELEMENT_MIN))->getValue() = angles::to_degrees(urdf_joint->limits->lower);
+-                        daeSafeCast<domMinmax>(limits->add(COLLADA_ELEMENT_MAX))->getValue() = angles::to_degrees(urdf_joint->limits->upper);
++                        daeSafeCast<domMinmax>(limits->add(COLLADA_ELEMENT_MIN))->getValue() = (urdf_joint->limits->lower);
++                        daeSafeCast<domMinmax>(limits->add(COLLADA_ELEMENT_MAX))->getValue() = (urdf_joint->limits->upper);
+                     }
+                     // </limits>
+                 }
