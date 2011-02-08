@@ -4,6 +4,7 @@ byte LINE_LIST=2
 byte POLYGON=3
 byte POINTS=4
 byte FRAMES=5
+byte TEXT=6
 
 byte ADD=0
 byte REMOVE=1
@@ -25,3 +26,4 @@ geometry_msgs/Point[] points # used for LINE_STRIP/LINE_LIST/POLYGON/POINTS., 2D
 std_msgs/ColorRGBA[] outline_colors # a color for each line, point, etc.
 
 string[] frames # used for FRAMES, tf names
+string text             # used for TEXT, draw size of text is scale.z

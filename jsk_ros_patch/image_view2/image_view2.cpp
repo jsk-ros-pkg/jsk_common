@@ -352,6 +352,21 @@ public:
               }
               break;
             }
+            case image_view2::ImageMarker2::TEXT: {
+	      // index
+	      CvSize text_size;
+	      int baseline;
+	      cvGetTextSize(marker->text.c_str(), &font_,
+			    &text_size, &baseline);
+	      CvPoint origin = cvPoint(marker->position.x - text_size.width/2,
+				       marker->position.y - baseline-3);
+	      cvPutText(image, marker->text.c_str(), origin, &font_, DEFAULT_COLOR);
+              break;
+            }
+	    default: {
+	      ROS_WARN("Undefined Marker type(%d)", marker->type);
+	      break;
+	    }
           }
         }
       }
