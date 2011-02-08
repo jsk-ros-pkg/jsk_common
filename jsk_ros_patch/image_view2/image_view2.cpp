@@ -353,7 +353,7 @@ public:
               break;
             }
             case image_view2::ImageMarker2::TEXT: {
-	      // index
+	      // draw text simply
 	      CvSize text_size;
 	      int baseline;
 	      cvGetTextSize(marker->text.c_str(), &font_,
@@ -371,12 +371,10 @@ public:
         }
       }
 
-    if ( window_selection_.width > 0 && window_selection_.height > 0 ) {
-      cvRectangle(image, cvPoint(window_selection_.x, window_selection_.y),
-                  cvPoint(window_selection_.x + window_selection_.width,
-                          window_selection_.y + window_selection_.height),
-                  USER_ROI_COLOR, 3, 8, 0);
-    }
+    cvRectangle(image, cvPoint(window_selection_.x, window_selection_.y),
+		cvPoint(window_selection_.x + window_selection_.width,
+			window_selection_.y + window_selection_.height),
+		USER_ROI_COLOR, 3, 8, 0);
     cvShowImage(window_name_.c_str(), image);
     image_pub_.publish(img_bridge_.cvToImgMsg(image, "bgr8"));
     old_time = ros::Time::now();
