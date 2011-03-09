@@ -22,9 +22,8 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_gensrv()
 
 # Generate the file foo
-add_custom_command(OUTPUT include/AquesTalk2.h COMMAND make -C${PROJECT_SOURCE_DIR} -f Makefile.AquesTalk2)
 # Create a target that depends on the generation of foo
-add_custom_target(AquesTalk_download DEPENDS include/AquesTalk2.h)
+add_custom_target(AquesTalk_download COMMAND make -C${PROJECT_SOURCE_DIR} -f Makefile.AquesTalk2)
 # Make compilation depend on our target:
 add_dependencies(rosbuild_precompile AquesTalk_download)
 

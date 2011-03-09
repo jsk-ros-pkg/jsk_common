@@ -25,7 +25,7 @@ void * file_load(const char * file, int * psize);
 int main(int ac, char **av)
 {
   char speak_str[65536];
-  char phont_fname[1024]={"phont/aq_m3.phont"},
+  char phont_fname[1024]={"phont/aq_f3a.phont"},
     input_fname[1024]={""}, output_fname[1024]={"output.wav"};
   int opt;
 

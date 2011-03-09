@@ -1,43 +1,33 @@
 all: installed
 
-ifeq ($(shell uname -m),i686)
-FILENAME = aqtk2_lnx32_100125.tgz
-else ### ($(shell uname -m),x86_64)
-FILENAME = aqtk2_lnx64_100125.tgz
-endif
+FILENAME = aqtk2-lnx-eva_210.zip
 TARBALL = build/$(FILENAME)
 TARBALL_URL = http://www.a-quest.com/download/package/$(FILENAME)
-SOURCE_DIR = build/aquestalk2
-UNPACK_CMD = tar xzf
+SOURCE_DIR = build/aqtk2-lnx-eva
+UNPACK_CMD = unzip
 MD5SUM_FILE = $(FILENAME).md5sum
 include $(shell rospack find mk)/download_unpack_build.mk
 
 
-PHONT_FILES = aq_yukkuri.phont aq_teto1.phont aq_momo1.phont aq_defo1.phont aq_m4.phont aq_huskey.phont aq_rb2.phont aq_robo.phont
-ZIP_FILES = $(patsubst %.phont,%.zip,$(PHONT_FILES))
-
-.SUFFIXES: .phont .zip
-
-%.zip:
-	cd $(SOURCE_DIR)/phont ; wget http://www.a-quest.com/download/package/$@
-.zip.phont:
-	cd $(SOURCE_DIR)/phont ; unzip -o $< ; rm $<
-
-installed: wiped $(SOURCE_DIR)/unpacked $(PHONT_FILES)
-	cd $(SOURCE_DIR) && ln -sf libAquesTalk2.so.1.0 libAquesTalk2.so.1
-	cd $(SOURCE_DIR) && ln -sf libAquesTalk2.so.1 libAquesTalk2.so
+installed: wiped $(SOURCE_DIR)/unpacked
 	-mkdir include
-	cp $(SOURCE_DIR)/*.h include
 	-mkdir lib
-	cp $(SOURCE_DIR)/libAquesTalk2.so* lib
-	cp -r $(SOURCE_DIR)/phont ./
+ifeq ($(shell uname -m),x86_64)
+	cp $(SOURCE_DIR)/lib64/libAquesTalk2Eva.so.2.1 lib/libAquesTalk2.so.2
+	cp $(SOURCE_DIR)/lib64/*.h include
+else
+	cd $(SOURCE_DIR)/lib/libAquesTalk2Eva.so.2.1 lib/libAquesTalk2.so.2
+	cp $(SOURCE_DIR)/lib/*.h include
+endif
+	cd lib && ln -sf libAquesTalk2.so.2 libAquesTalk2.so
+	cp -r $(SOURCE_DIR)/phont phont
 	touch installed
 
 clean:
 	rm -fr $(SOURCE_DIR)
 
 wipe: clean
-	rm -rf build include lib phont
+	rm -rf build include lib bin installed wiped
 
 wiped: Makefile.AquesTalk2
 	make -f Makefile.AquesTalk2 wipe
