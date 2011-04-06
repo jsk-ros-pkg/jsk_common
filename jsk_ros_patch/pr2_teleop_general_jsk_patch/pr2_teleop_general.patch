@@ -1,7 +1,7 @@
 Index: include/pr2_teleop_general/pr2_teleop_general_commander.h
 ===================================================================
---- include/pr2_teleop_general/pr2_teleop_general_commander.h	(リビジョン 50668)
-+++ include/pr2_teleop_general/pr2_teleop_general_commander.h	(作業コピー)
+--- include/pr2_teleop_general/pr2_teleop_general_commander.h	(revision 50697)
++++ include/pr2_teleop_general/pr2_teleop_general_commander.h	(working copy)
 @@ -130,8 +130,8 @@
  
    void updateCurrentWristPositions();
@@ -15,8 +15,8 @@ Index: include/pr2_teleop_general/pr2_teleop_general_commander.h
    bool moveToWalkAlongArmPose();
 Index: manifest.xml
 ===================================================================
---- manifest.xml	(リビジョン 50668)
-+++ manifest.xml	(作業コピー)
+--- manifest.xml	(revision 50697)
++++ manifest.xml	(working copy)
 @@ -19,6 +19,7 @@
    <depend package="pr2_controller_manager" />
    <depend package="pr2_mechanism_msgs" />
@@ -27,13 +27,13 @@ Index: manifest.xml
    <depend package="pr2_common_action_msgs" />
 Index: src/pr2_teleop_general_joystick.cpp
 ===================================================================
---- src/pr2_teleop_general_joystick.cpp	(リビジョン 50668)
-+++ src/pr2_teleop_general_joystick.cpp	(作業コピー)
+--- src/pr2_teleop_general_joystick.cpp	(revision 50697)
++++ src/pr2_teleop_general_joystick.cpp	(working copy)
 @@ -63,6 +63,7 @@
  static const unsigned int OPEN_GRIPPER_BUTTON = 15;
  static const unsigned int CLOSE_GRIPPER_BUTTON = 13;
  static const unsigned int ARM_MODE_TOGGLE_BUTTON = 4;
-+static const unsigned int ARM_POSE_BUTTON = 2;
++static const unsigned int ARM_POSE_BUTTON = 6;
  
  static const unsigned int LEFT_AXIS_NUMBER = 1;
  static const unsigned int RIGHT_AXIS_NUMBER = 1;
@@ -66,41 +66,51 @@ Index: src/pr2_teleop_general_joystick.cpp
          if(rotClock && !rotCounter) {
            des_right_wrist_vel_ = wrist_velocity_;
          } else if(!rotClock && rotCounter) {
-@@ -476,14 +485,22 @@
+@@ -472,29 +481,31 @@
+           des_right_wrist_vel_ = 0.0;
+           lookAnalog = true;
+         }
++
++	right_arm_vx_ = 0.0;
++	right_arm_vy_ = 0.0;
++	right_arm_vz_ = 0.0;
++	right_arm_vel_roll_ = 0.0;
++	right_arm_vel_pitch_ = 0.0;
+         
          if(lookAnalog) {
            //look at analog sticks if we aren't supposed to wrist rotate
            if(axisOk(ARM_X_AXIS, joy_msg)) {
 -            right_arm_vx_ = joy_msg->axes[ARM_X_AXIS]*arm_x_scale_;
-+	    if(rotateArm)
+-          } else {
+-            right_arm_vx_ = 0.0;
++	    if(!rotateArm)
 +	      right_arm_vx_ = joy_msg->axes[ARM_X_AXIS]*arm_x_scale_;
 +	    else
-+	      right_arm_vel_roll_ = joy_msg->axes[ARM_X_AXIS]*arm_roll_scale_;
-           } else {
-             right_arm_vx_ = 0.0;
-+            right_arm_vel_roll_ = 0.0;
++	      right_arm_vel_pitch_ = joy_msg->axes[ARM_X_AXIS]*arm_pitch_scale_;
            }
            if(axisOk(ARM_Y_AXIS, joy_msg)) {
 -            right_arm_vy_ = joy_msg->axes[ARM_Y_AXIS]*arm_y_scale_;
-+	    if(rotateArm)
+-          } else {
+-            right_arm_vy_ = 0.0;
++	    if(!rotateArm)
 +	      right_arm_vy_ = joy_msg->axes[ARM_Y_AXIS]*arm_y_scale_;
 +	    else
-+	      right_arm_vel_pitch_ = joy_msg->axes[ARM_Y_AXIS]*arm_pitch_scale_;
-           } else {
-             right_arm_vy_ = 0.0;
-+            right_arm_vel_pitch_ = 0.0;
++	      right_arm_vel_roll_ = joy_msg->axes[ARM_Y_AXIS]*arm_roll_scale_;
            }
            if(axisOk(ARM_Z_AXIS, joy_msg)) {
              right_arm_vz_ = joy_msg->axes[ARM_Z_AXIS]*arm_z_scale_;
-@@ -495,6 +512,8 @@
-           right_arm_vx_ = 0.0;
-           right_arm_vy_ = 0.0;
-           right_arm_vz_ = 0.0;
-+	  right_arm_vel_roll_ = 0.0;
-+	  right_arm_vel_pitch_ = 0.0;
+-          } else {
+-            right_arm_vz_ = 0.0;
+           }
+           //ROS_INFO_STREAM("Setting vx " << right_arm_vx_ << " " << right_arm_vy_ << " " << right_arm_vz_);
+-        } else {
+-          right_arm_vx_ = 0.0;
+-          right_arm_vy_ = 0.0;
+-          right_arm_vz_ = 0.0;
          }
        }
      } else if (layout != LAYOUT_BOTH_ARMS) {
-@@ -502,6 +521,8 @@
+@@ -502,6 +513,8 @@
        right_arm_vx_ = 0.0;
        right_arm_vy_ = 0.0;
        right_arm_vz_ = 0.0;
@@ -109,7 +119,7 @@ Index: src/pr2_teleop_general_joystick.cpp
      }
      if(layout == LAYOUT_LEFT_ARM) {
        if(buttonOkAndOn(ARM_MODE_TOGGLE_BUTTON, joy_msg) && !sameValueAsLast(ARM_MODE_TOGGLE_BUTTON, joy_msg, last_joy_)) {
-@@ -536,6 +557,7 @@
+@@ -536,6 +549,7 @@
          bool lookAnalog = false;
          bool rotClock = buttonOkAndOn(WRIST_CLOCKWISE_BUTTON, joy_msg);
          bool rotCounter = buttonOkAndOn(WRIST_COUNTER_BUTTON, joy_msg);
@@ -117,41 +127,51 @@ Index: src/pr2_teleop_general_joystick.cpp
          if(rotClock && !rotCounter) {
            des_left_wrist_vel_ = wrist_velocity_;
          } else if(!rotClock && rotCounter) {
-@@ -548,14 +570,22 @@
+@@ -544,29 +558,31 @@
+           des_left_wrist_vel_ = 0.0;
+           lookAnalog = true;
+         }
++
++	left_arm_vx_ = 0.0;
++	left_arm_vy_ = 0.0;
++	left_arm_vz_ = 0.0;
++	left_arm_vel_roll_ = 0.0;
++	left_arm_vel_pitch_ = 0.0;
+         
          if(lookAnalog) {
            //look at analog sticks if we aren't supposed to wrist rotate
            if(axisOk(ARM_X_AXIS, joy_msg)) {
 -            left_arm_vx_ = joy_msg->axes[ARM_X_AXIS]*arm_x_scale_;
-+	    if(rotateArm)
+-          } else {
+-            left_arm_vx_ = 0.0;
++	    if(!rotateArm)
 +	      left_arm_vx_ = joy_msg->axes[ARM_X_AXIS]*arm_x_scale_;
 +	    else
-+	      left_arm_vel_roll_ = joy_msg->axes[ARM_Y_AXIS]*arm_roll_scale_;
-           } else {
-             left_arm_vx_ = 0.0;
-+            left_arm_vel_roll_ = 0.0;
++	      left_arm_vel_pitch_ = joy_msg->axes[ARM_Y_AXIS]*arm_pitch_scale_;
            }
            if(axisOk(ARM_Y_AXIS, joy_msg)) {
 -            left_arm_vy_ = joy_msg->axes[ARM_Y_AXIS]*arm_y_scale_;
-+	    if(rotateArm)
+-          } else {
+-            left_arm_vy_ = 0.0;
++	    if(!rotateArm)
 +	      left_arm_vy_ = joy_msg->axes[ARM_Y_AXIS]*arm_y_scale_;
 +	    else
-+	      left_arm_vel_pitch_ = joy_msg->axes[ARM_Y_AXIS]*arm_pitch_scale_;
-           } else {
-             left_arm_vy_ = 0.0;
-+            left_arm_vel_pitch_ = 0.0;
++	      left_arm_vel_roll_ = joy_msg->axes[ARM_Y_AXIS]*arm_roll_scale_;
            }
            if(axisOk(ARM_Z_AXIS, joy_msg)) {
              left_arm_vz_ = joy_msg->axes[ARM_Z_AXIS]*arm_z_scale_;
-@@ -567,6 +597,8 @@
-           left_arm_vx_ = 0.0;
-           left_arm_vy_ = 0.0;
-           left_arm_vz_ = 0.0;
-+	  left_arm_vel_roll_ = 0.0;
-+	  left_arm_vel_pitch_ = 0.0;
+-          } else {
+-            left_arm_vz_ = 0.0;
+           }
+           //ROS_INFO_STREAM("Setting vx " << left_arm_vx_ << " " << left_arm_vy_ << " " << left_arm_vz_);
+-        } else {
+-          left_arm_vx_ = 0.0;
+-          left_arm_vy_ = 0.0;
+-          left_arm_vz_ = 0.0;
          }
        }
      } else if (layout != LAYOUT_BOTH_ARMS) {
-@@ -574,6 +606,8 @@
+@@ -574,6 +590,8 @@
        left_arm_vx_ = 0.0;
        left_arm_vy_ = 0.0;
        left_arm_vz_ = 0.0;
@@ -160,7 +180,7 @@ Index: src/pr2_teleop_general_joystick.cpp
      }
      if(layout == LAYOUT_BOTH_ARMS) {
        if(buttonOkAndOn(ARM_MODE_TOGGLE_BUTTON, joy_msg) && !sameValueAsLast(ARM_MODE_TOGGLE_BUTTON, joy_msg, last_joy_)) {
-@@ -612,6 +646,7 @@
+@@ -612,6 +630,7 @@
          bool lookAnalog = false;
          bool rotClock = buttonOkAndOn(WRIST_CLOCKWISE_BUTTON, joy_msg);
          bool rotCounter = buttonOkAndOn(WRIST_COUNTER_BUTTON, joy_msg);
@@ -168,48 +188,71 @@ Index: src/pr2_teleop_general_joystick.cpp
          if(rotClock && !rotCounter) {
            des_left_wrist_vel_ = wrist_velocity_;
            des_right_wrist_vel_ = wrist_velocity_;
-@@ -627,15 +662,25 @@
+@@ -623,38 +642,43 @@
+           des_right_wrist_vel_ = 0.0;
+           lookAnalog = true;
+         }
++
++	left_arm_vx_ = 0.0;
++	left_arm_vy_ = 0.0;
++	left_arm_vz_ = 0.0;
++	right_arm_vx_ = 0.0;
++	right_arm_vy_ = 0.0;
++	right_arm_vz_ = 0.0;
++	left_arm_vel_roll_ = 0.0;
++	left_arm_vel_pitch_ = 0.0;
++	right_arm_vel_roll_ = 0.0;
++	right_arm_vel_pitch_ = 0.0;
+         
          if(lookAnalog) {
            //look at analog sticks if we aren't supposed to wrist rotate
            if(axisOk(ARM_X_AXIS, joy_msg)) {
 -            left_arm_vx_ = joy_msg->axes[ARM_X_AXIS]*arm_x_scale_;
 -            right_arm_vx_ = joy_msg->axes[ARM_X_AXIS]*arm_x_scale_;
-+	    if(rotateArm) {
+-          } else {
+-            left_arm_vx_ = 0.0;
+-            right_arm_vz_ = 0.0;
++	    if(!rotateArm) {
 +	      left_arm_vx_ = joy_msg->axes[ARM_X_AXIS]*arm_x_scale_;
 +	      right_arm_vx_ = joy_msg->axes[ARM_X_AXIS]*arm_x_scale_;
 +	    } else {
-+	      left_arm_vel_roll_ = joy_msg->axes[ARM_X_AXIS]*arm_roll_scale_;
-+	      right_arm_vel_roll_ = joy_msg->axes[ARM_X_AXIS]*arm_roll_scale_;
++	      left_arm_vel_pitch_ = joy_msg->axes[ARM_X_AXIS]*arm_pitch_scale_;
++	      right_arm_vel_pitch_ = joy_msg->axes[ARM_X_AXIS]*arm_pitch_scale_;
 +	    }
-           } else {
-             left_arm_vx_ = 0.0;
-             right_arm_vz_ = 0.0;
            }
            if(axisOk(ARM_Y_AXIS, joy_msg)) {
 -            left_arm_vy_ = joy_msg->axes[ARM_Y_AXIS]*arm_y_scale_;
 -            right_arm_vy_ = joy_msg->axes[ARM_Y_AXIS]*arm_y_scale_;
-+	    if(rotateArm) {
+-          } else {
+-            left_arm_vy_ = 0.0;
+-            right_arm_vz_ = 0.0;
++	    if(!rotateArm) {
 +	      left_arm_vy_ = joy_msg->axes[ARM_Y_AXIS]*arm_y_scale_;
 +	      right_arm_vy_ = joy_msg->axes[ARM_Y_AXIS]*arm_y_scale_;
 +	    } else {
-+	      left_arm_vel_pitch_ = joy_msg->axes[ARM_Y_AXIS]*arm_pitch_scale_;
-+	      right_arm_vel_pitch_ = joy_msg->axes[ARM_Y_AXIS]*arm_pitch_scale_;
++	      left_arm_vel_roll_ = joy_msg->axes[ARM_Y_AXIS]*arm_roll_scale_;
++	      right_arm_vel_roll_ = joy_msg->axes[ARM_Y_AXIS]*arm_roll_scale_;
 +	    }
-           } else {
-             left_arm_vy_ = 0.0;
-             right_arm_vz_ = 0.0;
-@@ -655,6 +700,10 @@
-           right_arm_vx_ = 0.0;
-           right_arm_vy_ = 0.0;
-           right_arm_vz_ = 0.0;
-+	  left_arm_vel_roll_ = 0.0;
-+	  left_arm_vel_pitch_ = 0.0;
-+	  right_arm_vel_roll_ = 0.0;
-+	  right_arm_vel_pitch_ = 0.0;
+           }
+           if(axisOk(ARM_Z_AXIS, joy_msg)) {
+             left_arm_vz_ = joy_msg->axes[ARM_Z_AXIS]*arm_z_scale_;
+             right_arm_vz_ = joy_msg->axes[ARM_Z_AXIS]*arm_z_scale_;
+-          } else {
+-            left_arm_vz_ = 0.0;
+-            right_arm_vz_ = 0.0;
+           }
+         //ROS_INFO_STREAM("Setting vx " << left_arm_vx_ << " " << left_arm_vy_ << " " << left_arm_vz_);
+-        } else {
+-          left_arm_vx_ = 0.0;
+-          left_arm_vy_ = 0.0;
+-          left_arm_vz_ = 0.0;
+-          right_arm_vx_ = 0.0;
+-          right_arm_vy_ = 0.0;
+-          right_arm_vz_ = 0.0;
          }
        }
      } else if (layout != LAYOUT_RIGHT_ARM && layout != LAYOUT_LEFT_ARM) {
-@@ -666,6 +715,10 @@
+@@ -666,6 +690,10 @@
        right_arm_vx_ = 0.0;
        right_arm_vy_ = 0.0;
        right_arm_vz_ = 0.0;
@@ -220,7 +263,7 @@ Index: src/pr2_teleop_general_joystick.cpp
      }
  
      joy_deadman_ = ros::Time::now();
-@@ -739,6 +792,8 @@
+@@ -739,6 +767,8 @@
    double arm_x_scale_;
    double arm_y_scale_;
    double arm_z_scale_;
@@ -229,7 +272,7 @@ Index: src/pr2_teleop_general_joystick.cpp
  
    double right_arm_vx_;
    double right_arm_vy_;
-@@ -748,6 +803,12 @@
+@@ -748,6 +778,12 @@
    double left_arm_vy_;
    double left_arm_vz_;
  
@@ -242,7 +285,7 @@ Index: src/pr2_teleop_general_joystick.cpp
    bool head_init_;
    bool torso_init_;
  
-@@ -877,8 +938,8 @@
+@@ -877,8 +913,8 @@
          //generaljoy.gc->updateCurrentWristPositions();
          generaljoy.gc->sendWristVelCommands(generaljoy.des_right_wrist_vel_, generaljoy.des_left_wrist_vel_, SlowHz);
          
@@ -255,8 +298,8 @@ Index: src/pr2_teleop_general_joystick.cpp
      }
 Index: src/pr2_teleop_general_keyboard.cpp
 ===================================================================
---- src/pr2_teleop_general_keyboard.cpp	(リビジョン 50668)
-+++ src/pr2_teleop_general_keyboard.cpp	(作業コピー)
+--- src/pr2_teleop_general_keyboard.cpp	(revision 50697)
++++ src/pr2_teleop_general_keyboard.cpp	(working copy)
 @@ -460,91 +460,91 @@
              break;
            case 'i':
@@ -387,13 +430,13 @@ Index: src/pr2_teleop_general_keyboard.cpp
              break;
 Index: src/pr2_teleop_general_commander.cpp
 ===================================================================
---- src/pr2_teleop_general_commander.cpp	(リビジョン 50668)
-+++ src/pr2_teleop_general_commander.cpp	(作業コピー)
+--- src/pr2_teleop_general_commander.cpp	(revision 50697)
++++ src/pr2_teleop_general_commander.cpp	(working copy)
 @@ -32,6 +32,7 @@
  
  #include <string>
  #include <boost/bind.hpp>
-+#include <LinearMath/btQuaternion.h>
++#include <LinearMath/btMatrix3x3.h>
  
  #include <pr2_mechanism_msgs/SwitchController.h>
  #include <geometry_msgs/Twist.h>
@@ -418,42 +461,113 @@ Index: src/pr2_teleop_general_commander.cpp
        
        geometry_msgs::Pose right_trajectory_endpoint = des_r_wrist_roll_pose_;
        
-@@ -907,16 +909,38 @@
+@@ -907,16 +909,43 @@
        double pos_diff_x = r_x_vel*(1.0/hz);//*look_ahead;
        double pos_diff_y = r_y_vel*(1.0/hz);//*look_ahead;
        double pos_diff_z = r_z_vel*(1.0/hz);//*look_ahead;
 +      double pos_diff_roll = r_roll_vel*(1.0/hz);//*look_ahead;
 +      double pos_diff_pitch = r_pitch_vel*(1.0/hz);//*look_ahead;
        //double pos_diff_yaw = r_yaw_vel;//*(1.0/hz);//*look_ahead;
-       
+-      
++
++      btQuaternion::btQuaternion endpoint_quat, des_quat;
++      btMatrix3x3::btMatrix3x3 end_rot, des_rot, diff_rot, duration_rot;
++      end_rot.setRotation(btQuaternion::btQuaternion(
++			      right_trajectory_endpoint.orientation.x,
++			      right_trajectory_endpoint.orientation.y,
++			      right_trajectory_endpoint.orientation.z,
++			      right_trajectory_endpoint.orientation.w));
++      des_rot = end_rot;
++      duration_rot.setEulerYPR(r_roll_vel*trajectory_duration,
++			       r_pitch_vel*trajectory_duration, 0);
++      diff_rot.setEulerYPR(pos_diff_roll, pos_diff_pitch, 0);
++
++      (end_rot *= duration_rot).getRotation(endpoint_quat);
++      (des_rot *= diff_rot).getRotation(des_quat);
++
        right_trajectory_endpoint.position.x += r_x_vel*trajectory_duration;
        right_trajectory_endpoint.position.y += r_y_vel*trajectory_duration;
        right_trajectory_endpoint.position.z += r_z_vel*trajectory_duration;
-       
-+      btQuaternion::btQuaternion base_quat(right_trajectory_endpoint.orientation.x,
-+					   right_trajectory_endpoint.orientation.y,
-+					   right_trajectory_endpoint.orientation.z,
-+					   right_trajectory_endpoint.orientation.w);
-+      btQuaternion ::btQuaternion endpoint_quat =
-+	base_quat * btQuaternion::btQuaternion(0, r_roll_vel*trajectory_duration,
-+				 r_roll_vel*trajectory_duration);
++
 +      right_trajectory_endpoint.orientation.x = endpoint_quat.getAxis().getX();
 +      right_trajectory_endpoint.orientation.y = endpoint_quat.getAxis().getY();
 +      right_trajectory_endpoint.orientation.z = endpoint_quat.getAxis().getZ();
 +      right_trajectory_endpoint.orientation.w = endpoint_quat.getW();
-+      
+       
        des_r_wrist_roll_pose_.position.x += pos_diff_x;
        des_r_wrist_roll_pose_.position.y += pos_diff_y;
        des_r_wrist_roll_pose_.position.z += pos_diff_z;
        
-+      btQuaternion ::btQuaternion des_quat =
-+	base_quat * btQuaternion::btQuaternion(0, pos_diff_roll, pos_diff_pitch);
 +      des_r_wrist_roll_pose_.orientation.x = des_quat.getAxis().getX();
 +      des_r_wrist_roll_pose_.orientation.y = des_quat.getAxis().getY();
 +      des_r_wrist_roll_pose_.orientation.z = des_quat.getAxis().getZ();
 +      des_r_wrist_roll_pose_.orientation.w = des_quat.getW();
 +
-+      
        //ROS_INFO_STREAM("Desired " << des_r_wrist_roll_pose_.position.x << " " << des_r_wrist_roll_pose_.position.y << " " << des_r_wrist_roll_pose_.position.z);
        
        //todo - figure out yaw
+@@ -997,15 +1026,43 @@
+       double pos_diff_x = l_x_vel*(1.0/hz);
+       double pos_diff_y = l_y_vel*(1.0/hz);
+       double pos_diff_z = l_z_vel*(1.0/hz);
++      double pos_diff_roll = l_roll_vel*(1.0/hz);//*look_ahead;
++      double pos_diff_pitch = l_pitch_vel*(1.0/hz);//*look_ahead;
+       //double pos_diff_yaw = l_yaw_vel*(1.0/hz);
++
++      btQuaternion::btQuaternion endpoint_quat, des_quat;
++      btMatrix3x3::btMatrix3x3 end_rot, des_rot, diff_rot, duration_rot;
++      end_rot.setRotation(btQuaternion::btQuaternion(
++			      left_trajectory_endpoint.orientation.x,
++			      left_trajectory_endpoint.orientation.y,
++			      left_trajectory_endpoint.orientation.z,
++			      left_trajectory_endpoint.orientation.w));
++      des_rot = end_rot;
++      duration_rot.setEulerYPR(l_roll_vel*trajectory_duration,
++			       l_pitch_vel*trajectory_duration, 0);
++      diff_rot.setEulerYPR(pos_diff_roll, pos_diff_pitch, 0);
++
++      (end_rot *= duration_rot).getRotation(endpoint_quat);
++      (des_rot *= diff_rot).getRotation(des_quat);
+     
+       left_trajectory_endpoint.position.x += l_x_vel*trajectory_duration;
+       left_trajectory_endpoint.position.y += l_y_vel*trajectory_duration;
+       left_trajectory_endpoint.position.z += l_z_vel*trajectory_duration;
+ 
++      left_trajectory_endpoint.orientation.x = endpoint_quat.getAxis().getX();
++      left_trajectory_endpoint.orientation.y = endpoint_quat.getAxis().getY();
++      left_trajectory_endpoint.orientation.z = endpoint_quat.getAxis().getZ();
++      left_trajectory_endpoint.orientation.w = endpoint_quat.getW();
++
+       des_l_wrist_roll_pose_.position.x += pos_diff_x;
+       des_l_wrist_roll_pose_.position.y += pos_diff_y;
+       des_l_wrist_roll_pose_.position.z += pos_diff_z;
++
++      des_l_wrist_roll_pose_.orientation.x = des_quat.getAxis().getX();
++      des_l_wrist_roll_pose_.orientation.y = des_quat.getAxis().getY();
++      des_l_wrist_roll_pose_.orientation.z = des_quat.getAxis().getZ();
++      des_l_wrist_roll_pose_.orientation.w = des_quat.getW();
++
+       //todo - figure out yaw
+ 
+       //now call ik
+@@ -1032,7 +1089,6 @@
+         }
+       }
+     
+-    
+       //otherwise not a lot to be done
+       if(left_arm_kinematics_inverse_client_.call(ik_req, ik_res) && ik_res.error_code.val == ik_res.error_code.SUCCESS) {
+         //ROS_INFO("Ik succeeded");
+Index: launch/pr2_teleop_general_joystick.launch
+===================================================================
+--- launch/pr2_teleop_general_joystick.launch	(revision 50697)
++++ launch/pr2_teleop_general_joystick.launch	(working copy)
+@@ -27,7 +27,7 @@
+   	<param name="controller_name" type="string" value="arm_controller"/>
+   </node>
+ 
+-  <node pkg="pr2_teleop_general" type="pr2_teleop_general_joystick" name="pr2_teleop_general_joystick" output="screen">
++  <node pkg="pr2_teleop_general_jsk_patch" type="pr2_teleop_general_joystick" name="pr2_teleop_general_joystick" output="screen">
+   	<param name="control_body" type="bool" value="true"/>
+         <param name="control_head" type="bool" value="true"/>
+         <param name="control_larm" type="bool" value="true"/>
