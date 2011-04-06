@@ -5,7 +5,7 @@ all: installed
 
 SVN_DIR = pr2_teleop_general
 SVN_URL = https://code.ros.org/svn/wg-ros-pkg/stacks/pr2_apps/trunk/pr2_teleop_general
-SVN_PATCH = 
+SVN_PATCH = pr2_teleop_general.patch
 include $(shell rospack find mk)/svn_checkout.mk
 
 installed: $(SVN_DIR) patched
