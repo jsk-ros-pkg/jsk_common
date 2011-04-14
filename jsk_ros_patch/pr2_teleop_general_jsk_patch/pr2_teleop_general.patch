@@ -481,7 +481,21 @@ Index: src/pr2_teleop_general_commander.cpp
      
      //ROS_INFO_STREAM("Cur " << right_wrist_roll_pose_.position.x << " " << right_wrist_roll_pose_.position.y << " " << right_wrist_roll_pose_.position.z
      //                << " des " << des_r_wrist_roll_pose_.position.x << " " << des_r_wrist_roll_pose_.position.y << " " << des_r_wrist_roll_pose_.position.z);
-@@ -880,8 +885,8 @@
+@@ -801,7 +806,12 @@
+   if(control_larm_) {
+     tot_distance = sqrt(pow(des_l_wrist_roll_pose_.position.x-left_wrist_roll_pose_.position.x,2.0)+
+                         pow(des_l_wrist_roll_pose_.position.y-left_wrist_roll_pose_.position.y,2.0)+
+-                        pow(des_l_wrist_roll_pose_.position.z-left_wrist_roll_pose_.position.z,2.0));
++                        pow(des_l_wrist_roll_pose_.position.z-left_wrist_roll_pose_.position.z,2.0)+
++			pow(des_l_wrist_roll_pose_.orientation.x-left_wrist_roll_pose_.orientation.x,2.0)+
++			pow(des_l_wrist_roll_pose_.orientation.y-left_wrist_roll_pose_.orientation.y,2.0)+
++			pow(des_l_wrist_roll_pose_.orientation.z-left_wrist_roll_pose_.orientation.z,2.0)+
++			pow(des_l_wrist_roll_pose_.orientation.w-left_wrist_roll_pose_.orientation.w,2.0));
++
+     
+     if(tot_distance > max_dist) {
+       des_l_wrist_roll_pose_ = left_wrist_roll_pose_;
+@@ -880,8 +890,8 @@
    traj = unnormalized_trajectory; 
  }
  
@@ -492,7 +506,7 @@ Index: src/pr2_teleop_general_commander.cpp
                                          double hz) {
  
  
-@@ -890,12 +895,12 @@
+@@ -890,12 +900,12 @@
    double trajectory_duration = .2;
  
    //ROS_INFO_STREAM("Got vels " << r_x_vel << " " << r_y_vel << " " << r_z_vel);
@@ -507,7 +521,7 @@ Index: src/pr2_teleop_general_commander.cpp
        
        geometry_msgs::Pose right_trajectory_endpoint = des_r_wrist_roll_pose_;
        
-@@ -907,16 +912,44 @@
+@@ -907,16 +917,44 @@
        double pos_diff_x = r_x_vel*(1.0/hz);//*look_ahead;
        double pos_diff_y = r_y_vel*(1.0/hz);//*look_ahead;
        double pos_diff_z = r_z_vel*(1.0/hz);//*look_ahead;
@@ -554,7 +568,7 @@ Index: src/pr2_teleop_general_commander.cpp
        //ROS_INFO_STREAM("Desired " << des_r_wrist_roll_pose_.position.x << " " << des_r_wrist_roll_pose_.position.y << " " << des_r_wrist_roll_pose_.position.z);
        
        //todo - figure out yaw
-@@ -985,7 +1018,8 @@
+@@ -985,7 +1023,8 @@
      ros::Time afterCall = ros::Time::now();
    }
    if(control_larm_) {
@@ -564,7 +578,7 @@ Index: src/pr2_teleop_general_commander.cpp
  
        geometry_msgs::Pose left_trajectory_endpoint = des_l_wrist_roll_pose_;
  
-@@ -997,15 +1031,44 @@
+@@ -997,15 +1036,44 @@
        double pos_diff_x = l_x_vel*(1.0/hz);
        double pos_diff_y = l_y_vel*(1.0/hz);
        double pos_diff_z = l_z_vel*(1.0/hz);
@@ -610,7 +624,7 @@ Index: src/pr2_teleop_general_commander.cpp
        //todo - figure out yaw
  
        //now call ik
-@@ -1032,7 +1095,6 @@
+@@ -1032,7 +1100,6 @@
          }
        }
      
