@@ -8,6 +8,11 @@ int main(int argc, char *argv[]) {
   CvMat subframe;
   int count = 0;
 
+  if ( argc > 1 ) {
+    camera_index = atoi(argv[1]);
+    fprintf(stderr, "set camera_index to %d\n", camera_index);
+  }
+
   camera = new OptNM3xCamera(camera_index);
   camera->setSmallHemisphere(1);
   camera->setLocationAbsolute(0, 0, 0, 0,   0);
