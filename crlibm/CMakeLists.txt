@@ -125,6 +125,5 @@ endif()
 add_library(crlibm_s STATIC ${crlibm_SOURCES})
 add_library(crlibm SHARED ${crlibm_SOURCES})
 
-file(GLOB dll_files ${CMAKE_SOURCE_DIR}/bin/*.dll)
 install(FILES ${source_dir}/crlibm.h DESTINATION include)
 install(TARGETS crlibm crlibm_s DESTINATION lib)
