@@ -2,7 +2,7 @@ TARGET=init_xu_register libopt_nm33_camera.so opt_nm33_viewer
 all: $(TARGET)
 
 .cpp.o:
-	gcc -o $@ -c $< `pkg-config opencv --cflags`
+	gcc -o $@ -c $< -fPIC `pkg-config opencv --cflags`
 
 init_xu_register: init_xu_register.o opt_nm33_uvc.o
 	g++ -o $@ $^
