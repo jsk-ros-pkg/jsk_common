@@ -11,7 +11,7 @@
   <depend package="sensor_msgs"/>
   <depend package="driver_base"/>
   <depend package="image_proc"/>
-  <depend package="jsk_stereo_proc"/>
+  <depend package="stereo_synchronizer"/>
   <depend package="dynamic_reconfigure"/>
   <depend package="camera_calibration_parsers" />
   <depend package="compressed_image_transport"/>

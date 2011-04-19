@@ -27,7 +27,7 @@
 	      /nm33_cam_middle/right/camera_info" />
 
   <group ns="nm33_cam_middle">
-    <node pkg="jsk_stereo_proc" name="stereo_image_proc"
+    <node pkg="stereo_synchronizer" name="stereo_image_proc"
 	  type="stereo_image_proc">
     </node>
     <node pkg="image_view" name="stereo_view" type="stereo_view" >
