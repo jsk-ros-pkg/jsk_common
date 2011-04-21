@@ -16,7 +16,7 @@ ifeq ($(shell uname -m),x86_64)
 	cp $(SOURCE_DIR)/lib64/libAquesTalk2Eva.so.2.1 lib/libAquesTalk2.so.2
 	cp $(SOURCE_DIR)/lib64/*.h include
 else
-	cd $(SOURCE_DIR)/lib/libAquesTalk2Eva.so.2.1 lib/libAquesTalk2.so.2
+	cp $(SOURCE_DIR)/lib/libAquesTalk2Eva.so.2.1 lib/libAquesTalk2.so.2
 	cp $(SOURCE_DIR)/lib/*.h include
 endif
 	cd lib && ln -sf libAquesTalk2.so.2 libAquesTalk2.so
