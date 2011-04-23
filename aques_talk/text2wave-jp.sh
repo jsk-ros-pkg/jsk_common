@@ -3,7 +3,7 @@
 INPUT_FILE=$1;shift;
 OUTPUT_FILE=/tmp/_aques_talk_sound_$$.wav
 JPTEXT_FILE=/tmp/_aques_talk_text_$$.txt
-PHONT_FILE=aq_f1b.phont
+PHONT_FILE=aq_f1c.phont
 while getopts p:o: OPT
 do
     case ${OPT} in
