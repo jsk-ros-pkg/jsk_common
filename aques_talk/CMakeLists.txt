@@ -49,9 +49,9 @@ endif ()
 rosbuild_download_data(http://www.a-quest.com/download/package/aqtk2-lnx-eva_210.zip build/aqtk2-lnx-eva_210.zip 68029448ecf4d36337e754c6eb3bb5d8)
 # Generate the file foo
 add_custom_command(
-  OUTPUT include/AquesTalk2.h
-  COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} &&
-      unzip build/aqtk2-lnx-eva_210.zip -d build &&
+  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/include/AquesTalk2.h
+  COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && 
+      unzip -u build/aqtk2-lnx-eva_210.zip -d build &&
       mkdir -p include lib phont &&
       cp build/aqtk2-lnx-eva/${AQTK2_LNX_LIB_DIR}/*.h include &&
       cp build/aqtk2-lnx-eva/${AQTK2_LNX_LIB_DIR}/libAquesTalk2Eva.so.2.1 lib/libAquesTalk2.so.2 &&
@@ -60,11 +60,12 @@ add_custom_command(
   DEPENDS build/aqtk2-lnx-eva_210.zip
   )
 # Create a target that depends on the generation of foo
-add_custom_target(include_target DEPENDS include/AquesTalk2.h)
+add_custom_target(include_target DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/include/AquesTalk2.h)
 # Make compilation depend on our target:
 add_dependencies(SampleTalk include_target)
 
 
-set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_SOURCE_DIR}/include;${PROJECT_SOURCE_DIR}/lib;${PROJECT_SOURCE_DIR}/phont")
+set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_SOURCE_DIR}/bin;${PROJECT_SOURCE_DIR}/include;${PROJECT_SOURCE_DIR}/lib;${PROJECT_SOURCE_DIR}/phont;${PROJECT_SOURCE_DIR}/wiped;${PROJECT_SOURCE_DIR}/installed")
+
 
 
