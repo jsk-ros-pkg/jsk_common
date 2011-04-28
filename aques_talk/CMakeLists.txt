@@ -56,7 +56,7 @@ add_custom_command(
       cp build/aqtk2-lnx-eva/${AQTK2_LNX_LIB_DIR}/*.h include &&
       cp build/aqtk2-lnx-eva/${AQTK2_LNX_LIB_DIR}/libAquesTalk2Eva.so.2.1 lib/libAquesTalk2.so.2 &&
       (cd lib && ln -sf libAquesTalk2.so.2 libAquesTalk2.so ) &&
-      cp -r build/aqtk2-lnx-eva/phont phont
+      cp -r build/aqtk2-lnx-eva/phont ./
   DEPENDS build/aqtk2-lnx-eva_210.zip
   )
 # Create a target that depends on the generation of foo
