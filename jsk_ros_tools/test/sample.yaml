@@ -1,0 +1,41 @@
+- machine:
+   name: hrp2007v
+   port: 10007
+   robot: HRP2JSK
+   env:
+     HRP2NO: 7
+- machine:
+   name: hrp2008v
+   port: 10008
+   robot: HRP2W
+   env:
+     HRP2NO: 8
+- machine:
+   name: hrp2016v
+   port: 10016
+   robot: HRP2JSKNT
+   env:
+     HRP2NO: 16
+- machine:
+   name: hrp2017v
+   port: 10017
+   robot: HRP2JSKNT
+   env:
+     HRP2NO: 17
+- machine:
+   name: hrp2018v
+   port: 10018
+   robot: HRP2W
+   env:
+     HRP2NO: 18
+- machine:
+   name: hrp2016v
+   port: 10016
+   robot: HRP2JSKNT
+   env:
+     HRP2NO: 16
+- machine:
+   name: pr1012
+   port: 11311
+   robot: pr2
+  
