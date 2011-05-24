@@ -27,7 +27,7 @@ sphinx_conf = """
 # -*- coding: utf-8 -*-
 import sys, os
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.ifconfig', 'sphinx.ext.viewcode']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.ifconfig']
 templates_path = ['.templates']
 source_suffix = '.rst'
 #source_encoding = 'utf-8'
@@ -107,6 +107,7 @@ if __name__ == '__main__':
             continue
 
         sphinxdoc += '%s\n%s\n\n'%(filename,'-'*len(filename))
+        sphinxdoc += '.. code-block::\n\n  roslaunch %s %s\n\n'%(args[0],filename)
         tag = parser.find(options.tag)
         if tag is not None:
             sphinxdoc += tag.text+'\n\n'
