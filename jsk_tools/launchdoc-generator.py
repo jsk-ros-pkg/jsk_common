@@ -107,7 +107,7 @@ if __name__ == '__main__':
             continue
 
         sphinxdoc += '%s\n%s\n\n'%(filename,'-'*len(filename))
-        sphinxdoc += '.. code-block::\n\n  roslaunch %s %s\n\n'%(args[0],filename)
+        sphinxdoc += '.. code-block:: xml\n\n  roslaunch %s %s\n\n'%(args[0],filename)
         tag = parser.find(options.tag)
         if tag is not None:
             sphinxdoc += tag.text+'\n\n'
