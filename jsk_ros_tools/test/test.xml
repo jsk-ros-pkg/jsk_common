@@ -1,0 +1,9 @@
+<launch>
+  <machine address="localhost" name="wam" />
+  <node args="--robotfile robots/barrettsegway.robot.xml --manipname arm --maxvelmult 1.0" machine="wam" name="wam" output="screen" pkg="openrave_robot_control" respawn="false" type="simulationserver">
+  </node>
+  <node machine="wam" name="openrave" pkg="openrave_robot_control" respawn="false" type="testopenravecontrol.py">
+    <env name="PYTHONPATH" value="$(optenv PYTHONPATH):$(find openrave)/share/openrave" />
+    <env name="OPENRAVE_PLUGINS" value="$(optenv OPENRAVE_PLUGINS):$(find openrave)/share/openrave/plugins:$(find openrave_robot_control)/lib" />
+  </node>
+  </launch>

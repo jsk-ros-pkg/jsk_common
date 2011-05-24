@@ -1,0 +1,14 @@
+<package>
+  <description brief="A collection of utlities/scripts for working with jsk packages">
+
+   Includes emacs scripts, ros tool alias generator, and launch doc generator.
+
+  </description>
+  <author>Ryohei Ueda (ueda@jsk.t.u-tokyo.ac.jp), Rosen Diankov (rosen.diankov@gmail.com)</author>
+  <license>Apache License 2.0</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/jsk_ros_tools</url>
+
+</package>
+
+
