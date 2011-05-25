@@ -12,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# author: Rosen Diankov
 from __future__ import with_statement # for python 2.5
 import roslib
 import os
@@ -87,6 +89,10 @@ if __name__ == '__main__':
                       help="the extension of the files to look for (default=%default)")
     parser.add_option('--tag', action='store', type='string', dest='tag', default='sphinxdoc',
                       help="the tag in the xml file to look for (default=%default)")
+    parser.add_option('--output_dir', action='store', type='string', dest='output_dir', default='launchdoc',
+                      help="the output directory (default=%default)")
+    parser.add_option('--nomakefile', action='store_true', dest='nomakefile', default=False,
+                      help="if set will not output a makefile (default=%default)")
     (options, args) = parser.parse_args()
     pkgdir = roslib.packages.get_pkg_dir(args[0])
     manifest = roslib.manifest.parse_file(os.path.join(pkgdir,'manifest.xml'))
@@ -126,17 +132,14 @@ if __name__ == '__main__':
 """%re.sub('\\n','\n  ',sxml)
 
     try:
-        os.mkdir(os.path.join(pkgdir,'launch'))
-    except OSError:
-        pass
-    try:
-        os.mkdir(os.path.join(pkgdir,'launch','doc'))
+        os.mkdir(os.path.join(pkgdir,options.output_dir))
     except OSError:
         pass
     Makefile = """
 all:
-\tsphinx-build -b html . ../../doc/launch
-"""
-    open(os.path.join(pkgdir,'launch','doc','index.rst'),'w').write(sphinxdoc)
-    open(os.path.join(pkgdir,'launch','doc','conf.py'),'w').write(sphinx_conf%atts)
-    open(os.path.join(pkgdir,'launch','doc','Makefile'),'w').write(Makefile)
+\tsphinx-build -b html . %s
+"""%os.path.relpath(os.path.join(pkgdir,'doc/launch'),os.path.join(pkgdir,options.output_dir))
+    open(os.path.join(pkgdir,options.output_dir,'index.rst'),'w').write(sphinxdoc)
+    open(os.path.join(pkgdir,options.output_dir,'conf.py'),'w').write(sphinx_conf%atts)
+    if not options.nomakefile:
+        open(os.path.join(pkgdir,options.output_dir,'Makefile'),'w').write(Makefile)
