@@ -9,7 +9,6 @@ In order to enable the launch doc generator, have to add the following to each R
 
   - builder: rosmake
   - builder: sphinx
-    output_dir: launch
     name: roslaunch scripts
 
 2. in **manifest.xml**:
