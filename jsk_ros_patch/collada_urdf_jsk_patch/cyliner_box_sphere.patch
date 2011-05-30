@@ -1,7 +1,7 @@
-Index: manifest.xml
+Index: collada_urdf_hg/manifest.xml
 ===================================================================
---- manifest.xml	(revision 31156)
-+++ manifest.xml	(working copy)
+--- collada_urdf_hg/manifest.xml	(revision 31156)
++++ collada_urdf_hg/manifest.xml	(working copy)
 @@ -13,6 +13,9 @@
    <depend package="colladadom" />
    <depend package="resource_retriever" />
@@ -12,10 +12,10 @@ Index: manifest.xml
    <platform os="ubuntu" version="9.04"/>
    <platform os="ubuntu" version="9.10"/>
    <platform os="ubuntu" version="10.04"/>
-Index: src/collada_writer.cpp
+Index: collada_urdf_hg/src/collada_writer.cpp
 ===================================================================
---- src/collada_writer.cpp	(revision 31156)
-+++ src/collada_writer.cpp	(working copy)
+--- collada_urdf_hg/src/collada_writer.cpp	(revision 31156)
++++ collada_urdf_hg/src/collada_writer.cpp	(working copy)
 @@ -42,6 +42,11 @@
  #include <boost/date_time/posix_time/posix_time_io.hpp>
  #include <boost/foreach.hpp>
@@ -409,10 +409,10 @@ Index: src/collada_writer.cpp
                  break;
              }
              default: {
-Index: CMakeLists.txt
+Index: collada_urdf_hg/CMakeLists.txt
 ===================================================================
---- CMakeLists.txt	(revision 31156)
-+++ CMakeLists.txt	(working copy)
+--- collada_urdf_hg/CMakeLists.txt	(revision 31156)
++++ collada_urdf_hg/CMakeLists.txt	(working copy)
 @@ -1,14 +1,23 @@
  cmake_minimum_required(VERSION 2.4.6)
  include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)

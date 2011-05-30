@@ -3,29 +3,21 @@
 #
 all: installed
 
-SVN_DIR = collada_urdf_svn
-SVN_URL = https://code.ros.org/svn/ros-pkg/stacks/robot_model/tags/robot_model-1.4.0/collada_urdf
-#SVN_PATCH = color.patch cyliner_box_sphere.patch rosdep.patch
-SVN_PATCH = cyliner_box_sphere.patch rosdep.patch
-include $(shell rospack find mk)/svn_checkout.mk
+HG_DIR = collada_urdf_hg
+HG_URL = https://kforge.ros.org/robotmodel/robot_model
+HG_BRANCH = robot_model-1.5.1
+#HG_PATCH = color.patch
+#HG_PATCH = cyliner_box_sphere.patch rosdep.patch
+HG_PATCH = rosdep.patch
+include $(shell rospack find mk)/hg_checkout.mk
 
-patched2: $(SVN_PATCH) Makefile
-ifneq ($(strip $(SVN_PATCH)),)
-	-rm -f $(SVN_DIR)/rosdep.yaml
-	svn revert -R $(SVN_DIR)
-endif
-	-cd $(SVN_DIR) && $(SVN_CMDLINE) up $(SVN_REVISION)
-	$(foreach PATCH, $(SVN_PATCH), patch -d $(SVN_DIR) -p0 < $(PATCH) && ) echo patched
-	touch rospack_nosubdirs
-	touch patched
-
-installed: $(SVN_DIR) patched2
-	cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make
+installed: $(HG_DIR) patched
+	cd $(HG_DIR)/collada_urdf && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make
 	touch installed
 
 clean:
-	-cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make clean
+	-cd $(HG_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make clean
 	rm -rf installed patched
 
 wipe: clean
-	rm -rf $(SVN_DIR)
+	rm -rf $(HG_DIR)
