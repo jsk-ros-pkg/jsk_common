@@ -1,6 +1,6 @@
 Index: include/pr2_teleop_general/pr2_teleop_general_commander.h
 ===================================================================
---- include/pr2_teleop_general/pr2_teleop_general_commander.h	(revision 51007)
+--- include/pr2_teleop_general/pr2_teleop_general_commander.h	(revision 51817)
 +++ include/pr2_teleop_general/pr2_teleop_general_commander.h	(working copy)
 @@ -130,8 +130,8 @@
  
@@ -15,7 +15,7 @@ Index: include/pr2_teleop_general/pr2_teleop_general_commander.h
    bool moveToWalkAlongArmPose();
 Index: manifest.xml
 ===================================================================
---- manifest.xml	(revision 51007)
+--- manifest.xml	(revision 51817)
 +++ manifest.xml	(working copy)
 @@ -19,6 +19,7 @@
    <depend package="pr2_controller_manager" />
@@ -27,7 +27,7 @@ Index: manifest.xml
    <depend package="pr2_common_action_msgs" />
 Index: src/pr2_teleop_general_joystick.cpp
 ===================================================================
---- src/pr2_teleop_general_joystick.cpp	(revision 51007)
+--- src/pr2_teleop_general_joystick.cpp	(revision 51817)
 +++ src/pr2_teleop_general_joystick.cpp	(working copy)
 @@ -63,12 +63,14 @@
  static const unsigned int OPEN_GRIPPER_BUTTON = 15;
@@ -68,36 +68,37 @@ Index: src/pr2_teleop_general_joystick.cpp
  	in_walk_along = true;
        }
      }
-@@ -396,6 +408,7 @@
+@@ -396,6 +408,8 @@
      if(!in_walk_along && layout == LAYOUT_BODY) {
        bool down = buttonOkAndOn(TORSO_DOWN_BUTTON, joy_msg);
        bool up = buttonOkAndOn(TORSO_UP_BUTTON, joy_msg);
 +      bool speedup = buttonOkAndOn(SPEED_UP_BUTTON, joy_msg);
++      bool unsafe = buttonOkAndOn(RIGHT_ARM_LAYOUT_BUTTON, joy_msg); // for jsk_pr2_startup
        
        //ROS_INFO_STREAM("Down is " << down);
        //ROS_INFO_STREAM("Up is " << up);
-@@ -409,17 +422,17 @@
+@@ -409,17 +423,17 @@
          des_torso_vel_ = 0.0;
        }
        if(axisOk(VX_AXIS, joy_msg)) {
 -        des_vx_ = joy_msg->axes[VX_AXIS]*vx_scale_;
-+        des_vx_ = joy_msg->axes[VX_AXIS]*vx_scale_*(speedup?2.0:1.0);
++        des_vx_ = joy_msg->axes[VX_AXIS]*vx_scale_*(unsafe?0.5:(speedup?2.0:1.0));
        } else {
          des_vx_ = 0.0;
        }
        if(axisOk(VY_AXIS, joy_msg)) {
 -        des_vy_ = joy_msg->axes[VY_AXIS]*vy_scale_;
-+        des_vy_ = joy_msg->axes[VY_AXIS]*vy_scale_*(speedup?2.0:1.0);
++        des_vy_ = joy_msg->axes[VY_AXIS]*vy_scale_*(unsafe?0.5:(speedup?2.0:1.0));
        } else {
          des_vy_ = 0.0;
        }
        if(axisOk(VW_AXIS, joy_msg)) {
 -        des_vw_ = joy_msg->axes[VW_AXIS]*vw_scale_;
-+        des_vw_ = joy_msg->axes[VW_AXIS]*vw_scale_*(speedup?2.0:1.0);
++        des_vw_ = joy_msg->axes[VW_AXIS]*vw_scale_*(unsafe?0.5:(speedup?2.0:1.0));
        } else {
          des_vw_ = 0.0;
        }
-@@ -464,6 +477,7 @@
+@@ -464,6 +478,7 @@
          bool lookAnalog = false;
          bool rotClock = buttonOkAndOn(WRIST_CLOCKWISE_BUTTON, joy_msg);
          bool rotCounter = buttonOkAndOn(WRIST_COUNTER_BUTTON, joy_msg);
@@ -105,7 +106,7 @@ Index: src/pr2_teleop_general_joystick.cpp
          if(rotClock && !rotCounter) {
            des_right_wrist_vel_ = wrist_velocity_;
          } else if(!rotClock && rotCounter) {
-@@ -472,29 +486,35 @@
+@@ -472,29 +487,35 @@
            des_right_wrist_vel_ = 0.0;
            lookAnalog = true;
          }
@@ -155,7 +156,7 @@ Index: src/pr2_teleop_general_joystick.cpp
          }
        }
      } else if (layout != LAYOUT_BOTH_ARMS) {
-@@ -502,6 +522,9 @@
+@@ -502,6 +523,9 @@
        right_arm_vx_ = 0.0;
        right_arm_vy_ = 0.0;
        right_arm_vz_ = 0.0;
@@ -165,7 +166,7 @@ Index: src/pr2_teleop_general_joystick.cpp
      }
      if(layout == LAYOUT_LEFT_ARM) {
        if(buttonOkAndOn(ARM_MODE_TOGGLE_BUTTON, joy_msg) && !sameValueAsLast(ARM_MODE_TOGGLE_BUTTON, joy_msg, last_joy_)) {
-@@ -536,6 +559,7 @@
+@@ -536,6 +560,7 @@
          bool lookAnalog = false;
          bool rotClock = buttonOkAndOn(WRIST_CLOCKWISE_BUTTON, joy_msg);
          bool rotCounter = buttonOkAndOn(WRIST_COUNTER_BUTTON, joy_msg);
@@ -173,7 +174,7 @@ Index: src/pr2_teleop_general_joystick.cpp
          if(rotClock && !rotCounter) {
            des_left_wrist_vel_ = wrist_velocity_;
          } else if(!rotClock && rotCounter) {
-@@ -544,29 +568,35 @@
+@@ -544,29 +569,35 @@
            des_left_wrist_vel_ = 0.0;
            lookAnalog = true;
          }
@@ -222,7 +223,7 @@ Index: src/pr2_teleop_general_joystick.cpp
          }
        }
      } else if (layout != LAYOUT_BOTH_ARMS) {
-@@ -574,6 +604,9 @@
+@@ -574,6 +605,9 @@
        left_arm_vx_ = 0.0;
        left_arm_vy_ = 0.0;
        left_arm_vz_ = 0.0;
@@ -232,7 +233,7 @@ Index: src/pr2_teleop_general_joystick.cpp
      }
      if(layout == LAYOUT_BOTH_ARMS) {
        if(buttonOkAndOn(ARM_MODE_TOGGLE_BUTTON, joy_msg) && !sameValueAsLast(ARM_MODE_TOGGLE_BUTTON, joy_msg, last_joy_)) {
-@@ -612,6 +645,7 @@
+@@ -612,6 +646,7 @@
          bool lookAnalog = false;
          bool rotClock = buttonOkAndOn(WRIST_CLOCKWISE_BUTTON, joy_msg);
          bool rotCounter = buttonOkAndOn(WRIST_COUNTER_BUTTON, joy_msg);
@@ -240,7 +241,7 @@ Index: src/pr2_teleop_general_joystick.cpp
          if(rotClock && !rotCounter) {
            des_left_wrist_vel_ = wrist_velocity_;
            des_right_wrist_vel_ = wrist_velocity_;
-@@ -623,38 +657,49 @@
+@@ -623,38 +658,49 @@
            des_right_wrist_vel_ = 0.0;
            lookAnalog = true;
          }
@@ -311,7 +312,7 @@ Index: src/pr2_teleop_general_joystick.cpp
          }
        }
      } else if (layout != LAYOUT_RIGHT_ARM && layout != LAYOUT_LEFT_ARM) {
-@@ -666,6 +711,12 @@
+@@ -666,6 +712,12 @@
        right_arm_vx_ = 0.0;
        right_arm_vy_ = 0.0;
        right_arm_vz_ = 0.0;
@@ -324,7 +325,7 @@ Index: src/pr2_teleop_general_joystick.cpp
      }
  
      joy_deadman_ = ros::Time::now();
-@@ -739,6 +790,9 @@
+@@ -739,6 +791,9 @@
    double arm_x_scale_;
    double arm_y_scale_;
    double arm_z_scale_;
@@ -334,7 +335,7 @@ Index: src/pr2_teleop_general_joystick.cpp
  
    double right_arm_vx_;
    double right_arm_vy_;
-@@ -748,6 +802,14 @@
+@@ -748,6 +803,14 @@
    double left_arm_vy_;
    double left_arm_vz_;
  
@@ -349,7 +350,7 @@ Index: src/pr2_teleop_general_joystick.cpp
    bool head_init_;
    bool torso_init_;
  
-@@ -877,8 +939,8 @@
+@@ -877,8 +940,8 @@
          //generaljoy.gc->updateCurrentWristPositions();
          generaljoy.gc->sendWristVelCommands(generaljoy.des_right_wrist_vel_, generaljoy.des_left_wrist_vel_, SlowHz);
          
@@ -362,7 +363,7 @@ Index: src/pr2_teleop_general_joystick.cpp
      }
 Index: src/pr2_teleop_general_keyboard.cpp
 ===================================================================
---- src/pr2_teleop_general_keyboard.cpp	(revision 51007)
+--- src/pr2_teleop_general_keyboard.cpp	(revision 51817)
 +++ src/pr2_teleop_general_keyboard.cpp	(working copy)
 @@ -460,91 +460,91 @@
              break;
@@ -494,7 +495,7 @@ Index: src/pr2_teleop_general_keyboard.cpp
              break;
 Index: src/pr2_teleop_general_commander.cpp
 ===================================================================
---- src/pr2_teleop_general_commander.cpp	(revision 51007)
+--- src/pr2_teleop_general_commander.cpp	(revision 51817)
 +++ src/pr2_teleop_general_commander.cpp	(working copy)
 @@ -32,6 +32,7 @@
  
@@ -670,7 +671,7 @@ Index: src/pr2_teleop_general_commander.cpp
          //ROS_INFO("Ik succeeded");
 Index: launch/pr2_teleop_general_joystick.launch
 ===================================================================
---- launch/pr2_teleop_general_joystick.launch	(revision 51007)
+--- launch/pr2_teleop_general_joystick.launch	(revision 51817)
 +++ launch/pr2_teleop_general_joystick.launch	(working copy)
 @@ -27,7 +27,7 @@
    	<param name="controller_name" type="string" value="arm_controller"/>
