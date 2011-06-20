@@ -292,7 +292,7 @@ public:
               {
                 boost::mutex::scoped_lock lock(info_mutex_);
                 if (!info_msg_) {
-                  ROS_WARN("[image_view2] Camera_info could not found");
+                  ROS_WARN("[image_view2] camera_info could not found");
                   break;
                 }
                 cam_model_.fromCameraInfo(info_msg_);
