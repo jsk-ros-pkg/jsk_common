@@ -38,6 +38,8 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/CvBridge.h>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
 #include <image_transport/image_transport.h>
 #include <image_geometry/pinhole_camera_model.h>
 #include <tf/transform_listener.h>
@@ -84,6 +86,7 @@ private:
   sensor_msgs::CameraInfoConstPtr info_msg_;
   sensor_msgs::CvBridge img_bridge_;
   boost::mutex image_mutex_;
+  cv::Mat image_;
 
   tf::TransformListener tf_listener_;
   image_geometry::PinholeCameraModel cam_model_;
@@ -92,7 +95,7 @@ private:
 
   std::string window_name_;
   boost::format filename_format_;
-  CvFont font_;
+  int font_;
   static CvRect window_selection_;
   int count_;
 
@@ -125,7 +128,7 @@ public:
 
     cvNamedWindow(window_name_.c_str(), autosize ? CV_WINDOW_AUTOSIZE : 0);
     cvSetMouseCallback(window_name_.c_str(), &ImageView2::mouse_cb, this);
-    cvInitFont(&font_, CV_FONT_HERSHEY_SIMPLEX, 1.0, 1.0, 0.0, 2);
+    font_ = cv::FONT_HERSHEY_SIMPLEX;
     window_selection_.x = window_selection_.y =
       window_selection_.height = window_selection_.width = 0;
     cvStartWindowThread();
@@ -168,22 +171,20 @@ public:
       ROS_WARN("TF Cleared for old time");
     }
 
-    IplImage* image;
-    if (img_bridge_.fromImage(*msg, "bgr8")) {
-      image = img_bridge_.toIpl();
+    if (msg->encoding.find("bayer") != std::string::npos) {
+      image_ = cv::Mat(msg->height, msg->width, CV_8UC1,
+		       const_cast<uint8_t*>(&msg->data[0]), msg->step);
     } else {
-      ROS_ERROR("Unable to convert %s image to bgr8", msg->encoding.c_str());
-      return;
+      try {
+	image_ = img_bridge_.imgMsgToCv(msg, "bgr8");
+      } catch (sensor_msgs::CvBridgeException& e) {
+	ROS_ERROR("Unable to convert %s image to bgr8", msg->encoding.c_str());
+	return;
+      }
     }
     boost::lock_guard<boost::mutex> guard(image_mutex_);
-
     // Hang on to message pointer for sake of mouse_cb
     last_msg_ = msg;
-
-    // May want to view raw bayer data
-    // NB: This is hacky, but should be OK since we have only one image CB.
-    if (msg->encoding.find("bayer") != std::string::npos)
-      boost::const_pointer_cast<sensor_msgs::Image>(msg)->encoding = "mono8";
 
     static V_ImageMarkerMessage local_queue;
     {
@@ -233,7 +234,7 @@ public:
             switch ( marker->type ) {
             case image_view2::ImageMarker2::CIRCLE: {
               cv::Point2d uv = cv::Point2d(marker->position.x, marker->position.y);
-              cvCircle(image, uv, (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale),
+              cv::circle(image_, uv, (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale),
 		       MsgToRGB(marker->outline_color), LINE_WIDTH);
               break;
             }
@@ -244,7 +245,7 @@ public:
               p0 = cv::Point2d(it->x, it->y); it++;
               for ( ; it!= end; it++ ) {
                 p1 = cv::Point2d(it->x, it->y);
-                cvLine(image, p0, p1, *col_it, LINE_WIDTH);
+                cv::line(image_, p0, p1, *col_it, LINE_WIDTH);
                 p0 = p1;
 		if(++col_it == colors.end()) col_it = colors.begin();
               }
@@ -257,7 +258,7 @@ public:
               for ( ; it!= end; ) {
                 p0 = cv::Point2d(it->x, it->y); it++;
                 if ( it != end ) p1 = cv::Point2d(it->x, it->y);
-                cvLine(image, p0, p1, *col_it, LINE_WIDTH);
+                cv::line(image_, p0, p1, *col_it, LINE_WIDTH);
                 it++;
 		if(++col_it == colors.end()) col_it = colors.begin();
               }
@@ -270,19 +271,19 @@ public:
               p0 = cv::Point2d(it->x, it->y); it++;
               for ( ; it!= end; it++ ) {
                 p1 = cv::Point2d(it->x, it->y);
-                cvLine(image, p0, p1, *col_it, LINE_WIDTH);
+                cv::line(image_, p0, p1, *col_it, LINE_WIDTH);
                 p0 = p1;
 		if(++col_it == colors.end()) col_it = colors.begin();
               }
               it = marker->points.begin();
               p1 = cv::Point2d(it->x, it->y);
-              cvLine(image, p0, p1, *col_it, LINE_WIDTH);
+              cv::line(image_, p0, p1, *col_it, LINE_WIDTH);
               break;
             }
             case image_view2::ImageMarker2::POINTS: {
               BOOST_FOREACH(geometry_msgs::Point p, marker->points)  {
                 cv::Point2d uv = cv::Point2d(p.x, p.y);
-                cvCircle(image, uv, 3, *col_it, -1);
+		cv::circle(image_, uv, 3, *col_it, -1);
 		if(++col_it == colors.end()) col_it = colors.begin();
               }
               break;
@@ -317,7 +318,7 @@ public:
                 cam_model_.project3dToPixel(pt_cv, uv);
 
                 static const int RADIUS = 3;
-                cvCircle(image, uv, RADIUS, DEFAULT_COLOR, -1);
+		cv::circle(image_, uv, RADIUS, DEFAULT_COLOR, -1);
 
                 // x, y, z
                 cv::Point2d uv0, uv1, uv2;
@@ -338,29 +339,29 @@ public:
                 cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()), uv2);
 
                 // draw
-                cvLine(image, uv, uv0, CV_RGB(255,0,0), 2);
-                cvLine(image, uv, uv1, CV_RGB(0,255,0), 2);
-                cvLine(image, uv, uv2, CV_RGB(0,0,255), 2);
+                cv::line(image_, uv, uv0, CV_RGB(255,0,0), 2);
+                cv::line(image_, uv, uv1, CV_RGB(0,255,0), 2);
+                cv::line(image_, uv, uv2, CV_RGB(0,0,255), 2);
 
                 // index
-                CvSize text_size;
+		cv::Size text_size;
                 int baseline;
-                cvGetTextSize(frame_id.c_str(), &font_, &text_size, &baseline);
-                CvPoint origin = cvPoint(uv.x - text_size.width / 2,
-                                         uv.y - RADIUS - baseline - 3);
-                cvPutText(image, frame_id.c_str(), origin, &font_, DEFAULT_COLOR);
+                text_size = cv::getTextSize(frame_id.c_str(), font_, 1.0, 1.0, &baseline);
+		cv::Point origin = cv::Point(uv.x - text_size.width / 2,
+					     uv.y - RADIUS - baseline - 3);
+                cv::putText(image_, frame_id.c_str(), origin, font_, 1.0, DEFAULT_COLOR);
               }
               break;
             }
             case image_view2::ImageMarker2::TEXT: {
 	      // draw text simply
-	      CvSize text_size;
+	      cv::Size text_size;
 	      int baseline;
-	      cvGetTextSize(marker->text.c_str(), &font_,
-			    &text_size, &baseline);
-	      CvPoint origin = cvPoint(marker->position.x - text_size.width/2,
-				       marker->position.y - baseline-3);
-	      cvPutText(image, marker->text.c_str(), origin, &font_, DEFAULT_COLOR);
+	      text_size = cv::getTextSize(marker->text.c_str(), font_,
+					  1.0, 1.0, &baseline);
+	      cv::Point origin = cv::Point(marker->position.x - text_size.width/2,
+					   marker->position.y - baseline-3);
+	      cv::putText(image_, marker->text.c_str(), origin, font_, 10, DEFAULT_COLOR);
               break;
             }
 	    default: {
@@ -371,12 +372,16 @@ public:
         }
       }
 
-    cvRectangle(image, cvPoint(window_selection_.x, window_selection_.y),
-		cvPoint(window_selection_.x + window_selection_.width,
-			window_selection_.y + window_selection_.height),
+    cv::rectangle(image_, cv::Point(window_selection_.x, window_selection_.y),
+		  cv::Point(window_selection_.x + window_selection_.width,
+			    window_selection_.y + window_selection_.height),
 		USER_ROI_COLOR, 3, 8, 0);
-    cvShowImage(window_name_.c_str(), image);
-    image_pub_.publish(img_bridge_.cvToImgMsg(image, "bgr8"));
+    cv::imshow(window_name_.c_str(), image_);
+    cv_bridge::CvImage out_msg;
+    out_msg.header   = msg->header;
+    out_msg.encoding = sensor_msgs::image_encodings::TYPE_32FC1;
+    out_msg.image    = image_;
+    image_pub_.publish(out_msg.toImageMsg());
     old_time = ros::Time::now();
   }
 
@@ -423,10 +428,9 @@ public:
       break;
     case CV_EVENT_RBUTTONDOWN:
       boost::lock_guard<boost::mutex> guard(iv->image_mutex_);
-      IplImage *image = iv->img_bridge_.toIpl();
-      if (image) {
+      if (!iv->image_.empty()) {
         std::string filename = (iv->filename_format_ % iv->count_).str();
-        cvSaveImage(filename.c_str(), image);
+	cv::imwrite(filename.c_str(), iv->image_);
         ROS_INFO("Saved image %s", filename.c_str());
         iv->count_++;
       } else {
