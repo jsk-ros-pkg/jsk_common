@@ -216,7 +216,7 @@ public:
       {
         V_ImageMarkerMessage::iterator message_it = local_queue.begin();
         V_ImageMarkerMessage::iterator message_end = local_queue.end();
-	ROS_INFO("markers = %d", local_queue.size());
+	ROS_INFO("markers = %ld", local_queue.size());
         //processMessage;
         for ( ; message_it != message_end; ++message_it )
           {
@@ -315,7 +315,7 @@ public:
                 tf::Point pt = transform.getOrigin();
                 cv::Point3d pt_cv(pt.x(), pt.y(), pt.z());
                 cv::Point2d uv;
-                cam_model_.project3dToPixel(pt_cv, uv);
+                uv = cam_model_.project3dToPixel(pt_cv);
 
                 static const int RADIUS = 3;
 		cv::circle(image_, uv, RADIUS, DEFAULT_COLOR, -1);
@@ -327,16 +327,16 @@ public:
                 // x
                 pin = tf::Stamped<tf::Point>(tf::Point(0.05, 0, 0), acquisition_time, frame_id);
                 tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-                cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()), uv0);
+                uv0 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
                 // y
                 pin = tf::Stamped<tf::Point>(tf::Point(0, 0.05, 0), acquisition_time, frame_id);
                 tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-                cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()), uv1);
+                uv1 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
 
                 // z
                 pin = tf::Stamped<tf::Point>(tf::Point(0, 0, 0.05), acquisition_time, frame_id);
                 tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-                cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()), uv2);
+                uv2 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
 
                 // draw
                 cv::line(image_, uv, uv0, CV_RGB(255,0,0), 2);
