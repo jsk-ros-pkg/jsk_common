@@ -216,7 +216,7 @@ public:
       {
         V_ImageMarkerMessage::iterator message_it = local_queue.begin();
         V_ImageMarkerMessage::iterator message_end = local_queue.end();
-	ROS_INFO("markers = %ld", local_queue.size());
+	ROS_DEBUG("markers = %ld", local_queue.size());
         //processMessage;
         for ( ; message_it != message_end; ++message_it )
           {
