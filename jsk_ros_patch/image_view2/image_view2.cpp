@@ -297,6 +297,7 @@ public:
                 }
                 cam_model_.fromCameraInfo(info_msg_);
               }
+	      static map<std::string, int> tf_fail;
               BOOST_FOREACH(std::string frame_id, marker->frames)  {
                 tf::StampedTransform transform;
                 ros::Time acquisition_time = msg->header.stamp;
@@ -306,9 +307,15 @@ public:
                                                 acquisition_time, timeout);
                   tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
                                                acquisition_time, transform);
+		  tf_fail[frame_id]=0;
                 }
                 catch (tf::TransformException& ex) {
-                  ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+		  tf_fail[frame_id]++;
+		  if ( tf_fail[frame_id] < 5 ) {
+		    ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+		  } else {
+		    ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+		  }
                   break;
                 }
                 // center point
