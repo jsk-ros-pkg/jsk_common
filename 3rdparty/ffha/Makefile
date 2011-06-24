@@ -15,6 +15,7 @@ MAKE = make
 
 installed:$(SOURCE_DIR)/unpacked
 	rm -f $(SOURCE_DIR)/ffha
+	patch -p0 $(SOURCE_DIR)/inst_pre.c < inst_pre.c.patch
 	(cd $(SOURCE_DIR) && $(MAKE) clean && $(MAKE) $(MAKE_ARGS))
 	mkdir -p bin
 	cp $(SOURCE_DIR)/ffha bin/
@@ -25,8 +26,7 @@ clean:
 	rm -rf bin
 	rm -rf installed
 
-wiped: Makefile
-	make wipe
+wiped: Makefile	make wipe
 	touch wiped
 
 wipe: 	clean
