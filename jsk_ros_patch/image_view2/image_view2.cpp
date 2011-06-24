@@ -128,7 +128,7 @@ public:
 
     cvNamedWindow(window_name_.c_str(), autosize ? CV_WINDOW_AUTOSIZE : 0);
     cvSetMouseCallback(window_name_.c_str(), &ImageView2::mouse_cb, this);
-    font_ = cv::FONT_HERSHEY_SIMPLEX;
+    font_ = cv::FONT_HERSHEY_DUPLEX;
     window_selection_.x = window_selection_.y =
       window_selection_.height = window_selection_.width = 0;
     cvStartWindowThread();
@@ -314,7 +314,7 @@ public:
 		  if ( tf_fail[frame_id] < 5 ) {
 		    ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
 		  } else {
-		    ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+		    ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
 		  }
                   break;
                 }
@@ -356,7 +356,7 @@ public:
                 text_size = cv::getTextSize(frame_id.c_str(), font_, 1.0, 1.0, &baseline);
 		cv::Point origin = cv::Point(uv.x - text_size.width / 2,
 					     uv.y - RADIUS - baseline - 3);
-                cv::putText(image_, frame_id.c_str(), origin, font_, 1.0, DEFAULT_COLOR);
+                cv::putText(image_, frame_id.c_str(), origin, font_, 1.0, DEFAULT_COLOR, 1.5);
               }
               break;
             }
