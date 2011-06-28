@@ -1,0 +1,16 @@
+<package>
+  <description brief="parallel_util">
+
+     parallel_util is a collection of the utility scripts for 
+     parallel processing. this package includes the scripts to parallelize
+     OpenRAVE.
+  </description>
+  <author>ryohei ueda</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rosparallel_util</url>
+  <depend package="rospy" />
+  <rosdep name="python-meminfo-total" />
+</package>
+
+
