@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+
+import roslib; roslib.load_manifest("parallel_util")
+import rospy
+import parallel_util.msg
+import multiprocessing
+import meminfo_total
+import socket
+def main():
+    pub = rospy.Publisher("/cpuinfo", parallel_util.msg.CPUInfo)
+    while not rospy.is_shutdown():
+        cpuinfo = parallel_util.msg.CPUInfo()
+        cpuinfo.hostname = socket.gethostname()
+        cpuinfo.cpu_num = multiprocessing.cpu_count()
+        cpuinfo.mem_num = meminfo_total.meminfo_total()
+        pub.publish(cpuinfo)
+        rospy.sleep(1)
+
+if __name__ == "__main__":
+    rospy.init_node("cpuinfo")
+    main()
+
