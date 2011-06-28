@@ -51,7 +51,6 @@ def collect_cpuinfo(host, verbose, timeout):
             mem_num = False
         return (host, cpu_num, mem_num)
     except Exception, e:
-        print e
         if verbose:
             sys.stderr.write("[%s] connection missed\n" % (host))
         return (host, False)
