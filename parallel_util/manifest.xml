@@ -8,7 +8,11 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/rosparallel_util</url>
+  <export>
+    <python path="${prefix}/src" />
+  </export>
   <depend package="rospy" />
   <rosdep name="python-meminfo-total" />
   <rosdep name="python-paramiko" />
+
 </package>
