@@ -4,6 +4,7 @@ import os
 from optparse import OptionParser
 
 CPU_COUNT_COMMAND = 'python -c "import multiprocessing; print multiprocessing.cpu_count()"'
+MEM_COUNT_COMMAND = 'python -c "import meminfo_total; print meminfo_total.meminfo_total()"'
 
 def cpuinfos(hosts=[], from_cssh_file = None,
              cssh_group = None,
@@ -15,7 +16,7 @@ def cpuinfos(hosts=[], from_cssh_file = None,
     # convert valid_cpuinfos to dict
     return_d = {}
     for info in valid_cpuinfos:
-        return_d[info[0]] = [info[1]]
+        return_d[info[0]] = [info[1], info[2]]
     return return_d
 
 def parse_cssh_config(config_file, group):
@@ -40,9 +41,17 @@ def collect_cpuinfo(host, verbose, timeout):
         if verbose:
             sys.stderr.write("[%s] connection established\n" % (host))
         (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(CPU_COUNT_COMMAND)
-        cpu_num = int(ssh_stdout.readline())
-        return (host, cpu_num)
-    except Exception:
+        cpu_num_in = ssh_stdout.readline()
+        cpu_num = int(cpu_num_in)
+        try:                    # meminfo might be failed
+            (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(MEM_COUNT_COMMAND)
+            mem_num_in = ssh_stdout.readline()
+            mem_num = int(mem_num_in)
+        except Exception:
+            mem_num = False
+        return (host, cpu_num, mem_num)
+    except Exception, e:
+        print e
         if verbose:
             sys.stderr.write("[%s] connection missed\n" % (host))
         return (host, False)
