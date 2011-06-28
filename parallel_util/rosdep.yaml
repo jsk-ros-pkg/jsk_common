@@ -1,2 +1,4 @@
 python-meminfo-total:
   ubuntu: python-meminfo-total
+python-paramiko:
+  ubuntu: python-paramiko
