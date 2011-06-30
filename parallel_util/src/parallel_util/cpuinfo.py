@@ -75,7 +75,7 @@ def collect_cpuinfo(host, ros_port, verbose, timeout):
         ros_p = ssh_stdout.readline().strip()
         if ros_p == "True":
             (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ROSPORT_COMMAND % (ros_port))
-            port_available = ssh_stdout.readline().strip() == "True"
+            port_available_p = ssh_stdout.readline().strip() == "True"
             return (host, cpu_num, mem_num, arch, port_available_p)
         else:
             raise "ros is not installed"
