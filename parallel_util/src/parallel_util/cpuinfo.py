@@ -19,6 +19,7 @@ from optparse import OptionParser
 
 CPU_COUNT_COMMAND = 'python -c "import multiprocessing; print multiprocessing.cpu_count()"'
 MEM_COUNT_COMMAND = 'python -c "import meminfo_total; print meminfo_total.meminfo_total()"'
+ARCH_CHECK_COMMAND = 'python -c "import platform; print platform.machine()"'
 
 def cpuinfos(hosts=[], from_cssh_file = None,
              cssh_group = None,
@@ -30,7 +31,7 @@ def cpuinfos(hosts=[], from_cssh_file = None,
     # convert valid_cpuinfos to dict
     return_d = {}
     for info in valid_cpuinfos:
-        return_d[info[0]] = [info[1], info[2]]
+        return_d[info[0]] = [info[1], info[2], info[3]]
     return return_d
 
 def parse_cssh_config(config_file, group):
@@ -63,7 +64,12 @@ def collect_cpuinfo(host, verbose, timeout):
             mem_num = int(mem_num_in)
         except Exception:
             mem_num = False
-        return (host, cpu_num, mem_num)
+        try:                    # meminfo might be failed
+            (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ARCH_CHECK_COMMAND)
+            arch = ssh_stdout.readline().strip()
+        except Exception:
+            arch = False
+        return (host, cpu_num, mem_num, arch)
     except Exception, e:
         if verbose:
             sys.stderr.write("[%s] connection missed\n" % (host))
