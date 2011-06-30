@@ -10,6 +10,7 @@
     <python path="${prefix}/src" />
   </export>
   <depend package="rospy" />
+  <depend package="roslaunch"/>
   <rosdep name="python-meminfo-total" />
   <rosdep name="python-paramiko" />
 </package>
