@@ -124,7 +124,8 @@ class EvaluationServer(object):
             request = self.module.server_requestwork()
             if request is None:
                 break
-            rospy.loginfo('job %d'%num)
+            rospy.logdebug('job %d'%num)
+            num += 1
             service = None
             while service == None:
                 for t in busythreads:
@@ -185,5 +186,5 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
 def StartService(module,args):
     module.service_start(args.split())
     rospy.init_node('servicenode',anonymous=True)
-    s = rospy.Service('openraveservice', PickledService, lambda req: module.service_processrequest(pickle.loads(req.input)))
+    s = rospy.Service('openraveservice', PickledService, lambda req: PickledServiceResponse(output=pickle.dumps(module.service_processrequest(pickle.loads(req.input)))))
     return s
