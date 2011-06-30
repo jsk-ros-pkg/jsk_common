@@ -11,6 +11,7 @@
   </export>
   <depend package="rospy" />
   <depend package="roslaunch"/>
+  <depend package="rosgraph"/>
   <rosdep name="python-meminfo-total" />
   <rosdep name="python-paramiko" />
 </package>
