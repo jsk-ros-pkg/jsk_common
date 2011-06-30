@@ -17,11 +17,11 @@ import paramiko
 import os
 from optparse import OptionParser
 
-CPU_COUNT_COMMAND = 'python -c "import multiprocessing; print multiprocessing.cpu_count()"'
-MEM_COUNT_COMMAND = 'python -c "import meminfo_total; print meminfo_total.meminfo_total()"'
-ARCH_CHECK_COMMAND = 'python -c "import platform; print platform.machine()"'
-ROS_CHECK_COMMAND = """rospack list >/dev/null 2>&1 && python -c "import roslib" """
-ROSPORT_COMMAND = """python -c "import roslib, sys; roslib.load_manifest('rosgraph'); import rosgraph.masterapi; sys.exit(rosgraph.masterapi.is_online('http://localhost:%s'))" """
+CPU_COUNT_COMMAND = """%s -c 'python -c "import multiprocessing; print multiprocessing.cpu_count()"' """
+MEM_COUNT_COMMAND = """%s -c 'python -c "import meminfo_total; print meminfo_total.meminfo_total()"' """
+ARCH_CHECK_COMMAND = """%s -c 'python -c "import platform; print platform.machine()"' """
+ROS_CHECK_COMMAND = """%s -c 'rospack list >/dev/null 2>&1 && python -c "import roslib"' """
+ROSPORT_COMMAND = """%s -c 'python -c "import roslib, sys; roslib.load_manifest(\'rosgraph\'); import rosgraph.masterapi; sys.exit(rosgraph.masterapi.is_online(\'http://localhost:%s\'))"' """
 
 class ROSNotInstalled(Exception):
     pass
@@ -64,28 +64,28 @@ def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout):
         client.connect(host, timeout=timeout)
         if verbose:
             sys.stderr.write("[%s] connection established\n" % (host))
-        (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(CPU_COUNT_COMMAND)
+        (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(CPU_COUNT_COMMAND % (os.environ["SHELL"]))
         cpu_num_in = ssh_stdout.readline()
         cpu_num = int(cpu_num_in)
         try:                    # meminfo might be failed
-            (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(MEM_COUNT_COMMAND)
+            (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(MEM_COUNT_COMMAND % (os.environ["SHELL"]))
             mem_num_in = ssh_stdout.readline()
             mem_num = int(mem_num_in)
         except Exception:
             mem_num = False
         try:                    # meminfo might be failed
-            (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ARCH_CHECK_COMMAND)
+            (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ARCH_CHECK_COMMAND % (os.environ["SHELL"]))
             arch = ssh_stdout.readline().strip()
         except Exception:
             arch = False
         chan = client.get_transport().open_session()
-        chan.exec_command(ROS_CHECK_COMMAND)
+        chan.exec_command(ROS_CHECK_COMMAND % (os.environ["SHELL"]))
         #(ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ROS_CHECK_COMMAND)
         #print ssh_stderr.readlines()
         ros_p = chan.recv_exit_status() == 0
         if ros_p:
             chan = client.get_transport().open_session()
-            chan.exec_command(ROSPORT_COMMAND % (ros_port))
+            chan.exec_command(ROSPORT_COMMAND % (os.environ["SHELL"], ros_port))
             port_available_p = chan.recv_exit_status() == 0
             return (host, cpu_num, mem_num, arch, port_available_p)
         else:
