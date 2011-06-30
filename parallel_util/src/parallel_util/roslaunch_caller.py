@@ -34,8 +34,8 @@
 
 ##\brief Kevin Watts and Ken Conley
 
-import roslib
-roslib.load_manifest('openrave_database')
+#import roslib
+#roslib.load_manifest('parallel_util')
 
 import roslaunch
 import roslaunch.core

@@ -15,6 +15,8 @@
 PKG='parallel_util'
 import roslib; roslib.load_manifest(PKG)
 from parallel_util import workmanager
+import sys
+import rospy
 from optparse import OptionParser
 if __name__=='__main__':
     parser = OptionParser(description='There are 3 modes when launching the worker: initial launch setup, server manager, service runner',
@@ -34,7 +36,7 @@ if __name__=='__main__':
     (options, args) = parser.parse_args()
     module=__import__(options.modulename)
     if options.startservice:
-        s=workmanager.startservice(module,options.args)
+        s=workmanager.StartService(module,options.args)
         rospy.spin()
     elif len(options.servicenames) > 0:
         module.server_start(options.args.split())

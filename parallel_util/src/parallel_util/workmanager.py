@@ -111,7 +111,7 @@ class EvaluationServer(object):
             with self.evallock:
                 self.module.server_processresponse(res)
             
-    def run():
+    def run(self):
         starttime = time.time()
         busythreads = self.allthreads[:]
         # reset the evaluated threads
@@ -150,19 +150,23 @@ class EvaluationServer(object):
 
 
 def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''):
-    nodes = """<machine name="localhost" address="localhost" default="true"/>\n"""
     servicenames = ''
+    programname = os.path.split(sys.argv[0])[1]
+    modulepath=os.path.split(os.path.abspath(inspect.getfile(module)))[0]
+    envtag = '<env name="PYTHONPATH" value="$(optenv PYTHONPATH):%s"/>\n'%modulepath
+    nodes = """<machine name="localhost" address="localhost" default="true">\n%s</machine>\n"""%envtag
     for i,serviceaddr in enumerate(serviceaddrs):
-        nodes += """<machine name="m%d" address="%s" default="false" %s/>\n"""%(i,serviceaddr[0],serviceaddr[1])
-        nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,sys.argv[0],module.__name__,args,i)
+        nodes += """<machine name="m%d" address="%s" default="false" %s>\n%s</machine>\n"""%(i,serviceaddr[0],serviceaddr[1],envtag)
+        nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,programname,module.__name__,args,i)
         servicenames += ' --service=openraveservice%d '%i
-    nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,sys.argv[0],module.__name__,servicenames,args)
+    nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,programname,module.__name__,servicenames,args)
     xml_text = """<launch>\n"""
     if rosnamespace is not None and len(rosnamespace) > 0:
         xml_text += """<group ns="%s">\n%s</group>"""%(rosnamespace,nodes)
     else:
         xml_text += nodes
     xml_text += "\n</launch>\n"
+    print xml_text
     roslaunch.pmon._shutting_down = False # roslaunch registers its own signal handlers and shuts down automatically on sigints
     launchscript = roslaunch_caller.ScriptRoslaunch(xml_text)
     launchscript.start()
@@ -179,7 +183,7 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
         launchscript.shutdown()
 
 def StartService(module,args):
-    module.service_start(options.args.split())
+    module.service_start(args.split())
     rospy.init_node('servicenode',anonymous=True)
     s = rospy.Service('openraveservice', PickledService, lambda req: module.service_processrequest(pickle.loads(req.input)))
     return s
