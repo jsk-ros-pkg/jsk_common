@@ -21,7 +21,7 @@ CPU_COUNT_COMMAND = 'python -c "import multiprocessing; print multiprocessing.cp
 MEM_COUNT_COMMAND = 'python -c "import meminfo_total; print meminfo_total.meminfo_total()"'
 ARCH_CHECK_COMMAND = 'python -c "import platform; print platform.machine()"'
 ROS_CHECK_COMMAND = """rospack list >/dev/null 2>&1 && python -c "import roslib" """
-ROSPORT_COMMAND = """python -c "import roslib, sys; roslib.load_manifest('rosgraph'); import rosgraph.masterapi; sys.exit(not(rosgraph.masterapi.is_online('http://localhost:%s')))" """
+ROSPORT_COMMAND = """python -c "import roslib, sys; roslib.load_manifest('rosgraph'); import rosgraph.masterapi; sys.exit(rosgraph.masterapi.is_online('http://localhost:%s'))" """
 
 class ROSNotInstalled(Exception):
     pass
