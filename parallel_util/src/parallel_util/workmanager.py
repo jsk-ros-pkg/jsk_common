@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (C) 2011 Rosen Diankov <rosen.diankov@gmail.com>
 #
@@ -92,9 +91,10 @@ class EvaluationServer(object):
             rospy.loginfo('shutting down services')
             for t in self.allthreads:
                 t.ok = False
-#                 with t.starteval:
-#                     t.starteval.notifyAll()
+                with t.starteval:
+                    t.starteval.notifyAll()
             rospy.loginfo('services have shutdown')
+            self.allthreads = []
 
     def setservices(self,servicenames):
         self.shutdownservices()
@@ -139,7 +139,7 @@ class EvaluationServer(object):
                 service.starteval.notifyAll()
 
         # wait for all threads to finish
-        print 'waiting for all threads to finish'
+        rospy.loginfo('waiting for all threads to finish')
         for t in busythreads:
             repeat = True
             while(repeat):
@@ -147,7 +147,7 @@ class EvaluationServer(object):
                     if t.req is None:
                         repeat = False
 
-        print 'finished, total time: %f'%(time.time()-starttime)
+        rospy.loginfo('finished, total time: %f'%(time.time()-starttime))
 
 
 def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''):
@@ -167,24 +167,23 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     else:
         xml_text += nodes
     xml_text += "\n</launch>\n"
-    print xml_text
     roslaunch.pmon._shutting_down = False # roslaunch registers its own signal handlers and shuts down automatically on sigints
     launchscript = roslaunch_caller.ScriptRoslaunch(xml_text)
     launchscript.start()
     try:
         starttime = time.time()
-        controlname = [name for name in launchscript.pm.get_active_names() if name.startswith('openraveserver')]
+        controlname = [name for name in launchscript.pm.get_active_names() if name.find('openraveserver')>=0]
         while True:
             controlproc = launchscript.pm.get_process(controlname[0])
             if controlproc is None or not controlproc.is_alive():
                 break
             time.sleep(1)
-        print '%s finished in %ss'%(module.__name__,time.time()-starttime)
+        rospy.loginfo('%s finished in %ss'%(module.__name__,time.time()-starttime))
     finally:
+        rospy.loginfo('shutting down')
         launchscript.shutdown()
 
 def StartService(module,args):
     module.service_start(args.split())
-    rospy.init_node('servicenode',anonymous=True)
     s = rospy.Service('openraveservice', PickledService, lambda req: PickledServiceResponse(output=pickle.dumps(module.service_processrequest(pickle.loads(req.input)))))
     return s

@@ -17,7 +17,9 @@ import roslib; roslib.load_manifest(PKG)
 from parallel_util import workmanager
 import sys
 import rospy
+from rosgraph import masterapi
 from optparse import OptionParser
+
 if __name__=='__main__':
     parser = OptionParser(description='There are 3 modes when launching the worker: initial launch setup, server manager, service runner',
                           usage='%prog [options]')
@@ -36,13 +38,18 @@ if __name__=='__main__':
     (options, args) = parser.parse_args()
     module=__import__(options.modulename)
     if options.startservice:
+        rospy.init_node('servicenode',anonymous=True)
         s=workmanager.StartService(module,options.args)
         rospy.spin()
     elif len(options.servicenames) > 0:
         module.server_start(options.args.split())
+        rospy.init_node('servicenode',anonymous=True)
         self = workmanager.EvaluationServer(module,options.servicenames)
         self.run()
+        self.shutdownservices()
+        module.server_end()
     else:
+        assert(masterapi.is_online())
         module.launcher_start(options.args.split())
         serviceaddrs = []
         if options.csshgroup is not None:
