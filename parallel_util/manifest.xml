@@ -2,7 +2,7 @@
   <description brief="parallel_util">
     parallel_util is a collection of the utility scripts for parallel processing.
   </description>
-  <author>Ryohei Ueda and Rosen Diankov (rosen.diankov@gmail.com)</author>
+  <author>Ryohei Ueda (ueda@jsk.t.u-tokyo.ac.jp) and Rosen Diankov (rosen.diankov@gmail.com)</author>
   <license>Apache License, Version 2.0</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/rosparallel_util</url>
