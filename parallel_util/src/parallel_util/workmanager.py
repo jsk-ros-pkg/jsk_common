@@ -154,19 +154,18 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     servicenames = ''
     programname = os.path.split(sys.argv[0])[1]
     modulepath=os.path.split(os.path.abspath(inspect.getfile(module)))[0]
-    envtag = '<env name="PYTHONPATH" value="$(optenv PYTHONPATH):%s"/>\n'%modulepath
-    nodes = """<machine name="localhost" address="localhost" default="true">\n%s</machine>\n"""%envtag
+    nodes = """<machine name="localhost" address="localhost" default="true"/>\n"""
     for i,serviceaddr in enumerate(serviceaddrs):
-        nodes += """<machine name="m%d" address="%s" default="false" %s>\n%s</machine>\n"""%(i,serviceaddr[0],serviceaddr[1],envtag)
+        nodes += """<machine name="m%d" address="%s" default="false" %s/>\n"""%(i,serviceaddr[0],serviceaddr[1])
         nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,programname,module.__name__,args,i)
         servicenames += ' --service=openraveservice%d '%i
     nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,programname,module.__name__,servicenames,args)
-    xml_text = """<launch>\n"""
+    xml_text = '<launch>\n<env name="PYTHONPATH" value="$(optenv PYTHONPATH):%s"/>\n'%modulepath
     if rosnamespace is not None and len(rosnamespace) > 0:
         xml_text += """<group ns="%s">\n%s</group>"""%(rosnamespace,nodes)
     else:
         xml_text += nodes
-    xml_text += "\n</launch>\n"
+    xml_text += '\n</launch>\n'
     roslaunch.pmon._shutting_down = False # roslaunch registers its own signal handlers and shuts down automatically on sigints
     launchscript = roslaunch_caller.ScriptRoslaunch(xml_text)
     launchscript.start()
