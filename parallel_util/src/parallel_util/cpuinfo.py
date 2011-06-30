@@ -20,8 +20,8 @@ from optparse import OptionParser
 CPU_COUNT_COMMAND = 'python -c "import multiprocessing; print multiprocessing.cpu_count()"'
 MEM_COUNT_COMMAND = 'python -c "import meminfo_total; print meminfo_total.meminfo_total()"'
 ARCH_CHECK_COMMAND = 'python -c "import platform; print platform.machine()"'
-ROS_CHECK_COMMAND = """sh -c 'rospack list >/dev/null 2>&1 && python -c "import roslib" && echo True || echo False'"""
-ROSPORT_COMMAND = """python -c "import roslib; roslib.load_manifest('rosgraph'); import rosgraph.masterapi; print not(rosgraph.masterapi.is_online('http://localhost:%s'))" """
+ROS_CHECK_COMMAND = """rospack list >/dev/null 2>&1 && python -c "import roslib" """
+ROSPORT_COMMAND = """python -c "import roslib, sys; roslib.load_manifest('rosgraph'); import rosgraph.masterapi; sys.exit(not(rosgraph.masterapi.is_online('http://localhost:%s')))" """
 
 class ROSNotInstalled(Exception):
     pass
@@ -78,11 +78,15 @@ def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout):
             arch = ssh_stdout.readline().strip()
         except Exception:
             arch = False
-        (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ROS_CHECK_COMMAND)
-        ros_p = ssh_stdout.readline().strip()
-        if ros_p == "True":
-            (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ROSPORT_COMMAND % (ros_port))
-            port_available_p = ssh_stdout.readline().strip() == "True"
+        chan = client.get_transport().open_session()
+        chan.exec_command(ROS_CHECK_COMMAND)
+        #(ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ROS_CHECK_COMMAND)
+        #print ssh_stderr.readlines()
+        ros_p = chan.recv_exit_status() == 0
+        if ros_p:
+            chan = client.get_transport().open_session()
+            chan.exec_command(ROSPORT_COMMAND % (ros_port))
+            port_available_p = chan.recv_exit_status() == 0
             return (host, cpu_num, mem_num, arch, port_available_p)
         else:
             raise ROSNotInstalled("ros is not installed")
@@ -91,6 +95,7 @@ def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout):
             sys.stderr.write("[%s] ROS is not installed\n" % (host))
         return (host, False)
     except Exception, e:
+        print e
         if verbose:
             sys.stderr.write("[%s] connection missed\n" % (host))
         return (host, False)
