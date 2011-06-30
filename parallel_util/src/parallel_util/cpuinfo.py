@@ -15,7 +15,6 @@
 import sys
 import paramiko
 import os
-from optparse import OptionParser
 import threading
 
 CPU_COUNT_COMMAND = """%s  -c 'python -c "import multiprocessing; print multiprocessing.cpu_count()"' """
@@ -45,6 +44,20 @@ def cpuinfos(hosts=[], from_cssh_file = None,
              ros_port = 11311,
              verbose = False,
              user_test_commands = []):
+    """
+    cpuinfos returns the hosts and the information of cpu and memory.
+    it also check if a port is available for roscore or not.
+
+    cpuinfos returns the tuple of (dict, boolean).
+    
+    boolean indicates if the port specified by ros_port is available for roscore
+    or not.
+    
+    the keys of dict is hostname and the values of it is the list of the number
+    of cpu, the total size of memory and the string of architecture.
+
+    TODO: user_test_commands is not supported yet.
+    """
     if from_cssh_file and cssh_group:
         hosts = parse_cssh_config(from_cssh_file, cssh_group)
     # run collect_cpuinfo in multithreads
