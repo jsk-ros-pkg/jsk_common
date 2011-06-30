@@ -16,6 +16,7 @@ import sys
 import paramiko
 import os
 from optparse import OptionParser
+import threading
 
 CPU_COUNT_COMMAND = """%s  -c 'python -c "import multiprocessing; print multiprocessing.cpu_count()"' """
 MEM_COUNT_COMMAND = """%s -c 'python -c "import meminfo_total; print meminfo_total.meminfo_total()"' """
@@ -26,6 +27,15 @@ ROSPORT_COMMAND = """%s -c -i 'python -c "import roslib, sys; roslib.load_manife
 class ROSNotInstalled(Exception):
     pass
 
+class CPUInfoClient():
+    "wrapper class of collect_cpuinfo for threading.Thread"
+    def __call__(self, host, ros_port, user_test_commands, verbose, timeout):
+        self._result = collect_cpuinfo(host, ros_port, user_test_commands,
+                                       verbose, timeout)
+    def get_result(self):
+        return self._result
+    
+
 def cpuinfos(hosts=[], from_cssh_file = None,
              cssh_group = None,
              timeout = None,
@@ -34,7 +44,20 @@ def cpuinfos(hosts=[], from_cssh_file = None,
              user_test_commands = []):
     if from_cssh_file and cssh_group:
         hosts = parse_cssh_config(from_cssh_file, cssh_group)
-    cpuinfos = [collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout) for host in hosts]
+    # run collect_cpuinfo in multithreads
+    cpuinfo_clients = [CPUInfoClient() for host in hosts]
+    cpuinfo_threads = [threading.Thread(target=client,
+                                        args = (host, ros_port,
+                                                user_test_commands, verbose,
+                                                timeout))
+                       for client, host in zip(cpuinfo_clients, hosts)]
+    # run clients
+    for thread in cpuinfo_threads:
+        thread.start()
+    # wait clients
+    for thread in cpuinfo_threads:
+        thread.join()
+    cpuinfos = [client.get_result() for client in cpuinfo_clients]
     valid_cpuinfos = [info for info in cpuinfos if info[1] != False]
     # convert valid_cpuinfos to dict
     return_d = {}
