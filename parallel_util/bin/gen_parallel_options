@@ -52,7 +52,10 @@ def main():
                      verbose = not options.quiet,
                      timeout = options.timeout,
                      ros_port = options.port)
-    print "port %s is available" % (infos[1])
+    if infos[1]:
+        print "port %s is available" % (options.port)
+    else:
+        print "port %s is NOT available" % (options.port)
     launchservices = ["--launchservice='%s*%s'" % (cpuinfo[0], host)
                       for host, cpuinfo in infos[0].items()]
     print " ".join(launchservices)
