@@ -27,6 +27,10 @@ def parse_options():
 it defaults to ~/.cssh-clusters""")
     parser.add_option("-g", "--group", dest = "group",
                       help = "specify the group of the cssh cluster")
+    parser.add_option("-p", "--port", dest = "port",
+                      default = 11311,
+                      type = int,
+                      help = "specify the port of roscore. (defaults to 11311)")
     parser.add_option("--timeout", dest = "timeout",
                       type = int,
                       default = None,
@@ -46,7 +50,9 @@ def main():
     infos = cpuinfos(from_cssh_file = options.input,
                      cssh_group = options.group,
                      verbose = not options.quiet,
-                     timeout = options.timeout)
+                     timeout = options.timeout,
+                     ros_port = options.port)
+    print "port %s is available" % (infos[1])
     launchservices = ["--launchservice='%s*%s'" % (cpuinfo[0], host)
                       for host, cpuinfo in infos[0].items()]
     print " ".join(launchservices)
