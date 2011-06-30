@@ -99,7 +99,7 @@ def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout):
             mem_num = int(mem_num_in)
         except Exception:
             mem_num = False
-        try:                    # meminfo might be failed
+        try:                    # arch might be failed
             (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ARCH_CHECK_COMMAND % (os.environ["SHELL"]))
             arch = ssh_stdout.readline().strip()
         except Exception:
