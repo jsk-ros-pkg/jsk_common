@@ -48,7 +48,7 @@ def main():
                      verbose = not options.quiet,
                      timeout = options.timeout)
     launchservices = ["--launchservice='%s*%s'" % (cpuinfo[0], host)
-                      for host, cpuinfo in infos.items()]
+                      for host, cpuinfo in infos[0].items()]
     print " ".join(launchservices)
     sys.exit(0)
     
