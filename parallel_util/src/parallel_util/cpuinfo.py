@@ -22,12 +22,19 @@ MEM_COUNT_COMMAND = 'python -c "import meminfo_total; print meminfo_total.meminf
 ARCH_CHECK_COMMAND = 'python -c "import platform; print platform.machine()"'
 ROS_CHECK_COMMAND = """sh -c 'rospack list >/dev/null 2>&1 && python -c "import roslib" && echo True || echo False'"""
 ROSPORT_COMMAND = """python -c "import roslib; roslib.load_manifest('rosgraph'); import rosgraph.masterapi; print not(rosgraph.masterapi.is_online('http://localhost:%s'))" """
+
+class ROSNotInstalled(Exception):
+    pass
+
 def cpuinfos(hosts=[], from_cssh_file = None,
              cssh_group = None,
-             timeout = None, ros_port = 11311, verbose = False):
+             timeout = None,
+             ros_port = 11311,
+             verbose = False,
+             user_test_commands = []):
     if from_cssh_file and cssh_group:
         hosts = parse_cssh_config(from_cssh_file, cssh_group)
-    cpuinfos = [collect_cpuinfo(host, ros_port, verbose, timeout) for host in hosts]
+    cpuinfos = [collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout) for host in hosts]
     valid_cpuinfos = [info for info in cpuinfos if info[1] != False]
     # convert valid_cpuinfos to dict
     return_d = {}
@@ -48,7 +55,7 @@ def parse_cssh_config(config_file, group):
             # matched!
             return line.split()[1:]
 
-def collect_cpuinfo(host, ros_port, verbose, timeout):
+def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout):
     try:
         client = paramiko.SSHClient()
         client.load_system_host_keys()
@@ -78,8 +85,12 @@ def collect_cpuinfo(host, ros_port, verbose, timeout):
             port_available_p = ssh_stdout.readline().strip() == "True"
             return (host, cpu_num, mem_num, arch, port_available_p)
         else:
-            raise "ros is not installed"
+            raise ROSNotInstalled("ros is not installed")
+    except ROSNotInstalled, e:
+        if verbose:
+            sys.stderr.write("[%s] ROS is not installed\n" % (host))
+        return (host, False)
     except Exception, e:
         if verbose:
-            sys.stderr.write("[%s] connection missed or ROS is not installed\n" % (host))
+            sys.stderr.write("[%s] connection missed\n" % (host))
         return (host, False)
