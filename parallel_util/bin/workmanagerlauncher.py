@@ -15,7 +15,7 @@
 PKG='parallel_util'
 import roslib; roslib.load_manifest(PKG)
 from parallel_util import workmanager
-import sys
+import sys,os
 import rospy
 from rosgraph import masterapi
 from optparse import OptionParser
@@ -36,6 +36,7 @@ if __name__=='__main__':
     parser.add_option('--csshgroup', action='store', type='string', dest='csshgroup',default=None,
                       help='The group of computers to specify when launching')
     (options, args) = parser.parse_args()
+    print 'python path: ',os.environ['PYTHONPATH']
     module=__import__(options.modulename)
     if options.startservice:
         rospy.init_node('servicenode',anonymous=True)
@@ -50,7 +51,7 @@ if __name__=='__main__':
         module.server_end()
     else:
         assert(masterapi.is_online())
-        module.launcher_start(options.args.split())
+        options.args += ' ' + module.launcher_start(options.args.split())
         serviceaddrs = []
         if options.csshgroup is not None:
             infos = cpuinfos(from_cssh_file = os.path.join(os.environ["HOME"], ".cssh-clusters"), cssh_group = options.csshgroup, verbose = False, timeout = None)
