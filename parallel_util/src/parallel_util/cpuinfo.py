@@ -17,11 +17,11 @@ import paramiko
 import os
 from optparse import OptionParser
 
-CPU_COUNT_COMMAND = """%s -c 'python -c "import multiprocessing; print multiprocessing.cpu_count()"' """
+CPU_COUNT_COMMAND = """%s  -c 'python -c "import multiprocessing; print multiprocessing.cpu_count()"' """
 MEM_COUNT_COMMAND = """%s -c 'python -c "import meminfo_total; print meminfo_total.meminfo_total()"' """
 ARCH_CHECK_COMMAND = """%s -c 'python -c "import platform; print platform.machine()"' """
-ROS_CHECK_COMMAND = """%s -c 'rospack list >/dev/null 2>&1 && python -c "import roslib"' """
-ROSPORT_COMMAND = """%s -c 'python -c "import roslib, sys; roslib.load_manifest(\'rosgraph\'); import rosgraph.masterapi; sys.exit(rosgraph.masterapi.is_online(\'http://localhost:%s\'))"' """
+ROS_CHECK_COMMAND = """%s -c -i 'rospack list >/dev/null 2>&1 && python -c "import roslib"' """
+ROSPORT_COMMAND = """%s -c -i 'python -c "import roslib, sys; roslib.load_manifest(\'rosgraph\'); import rosgraph.masterapi; sys.exit(not(rosgraph.masterapi.is_online(\'http://localhost:%s\')))"' """
 
 class ROSNotInstalled(Exception):
     pass
@@ -95,7 +95,6 @@ def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout):
             sys.stderr.write("[%s] ROS is not installed\n" % (host))
         return (host, False)
     except Exception, e:
-        print e
         if verbose:
             sys.stderr.write("[%s] connection missed\n" % (host))
         return (host, False)
