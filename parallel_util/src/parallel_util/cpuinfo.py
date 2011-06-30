@@ -22,7 +22,10 @@ CPU_COUNT_COMMAND = """%s  -c 'python -c "import multiprocessing; print multipro
 MEM_COUNT_COMMAND = """%s -c 'python -c "import meminfo_total; print meminfo_total.meminfo_total()"' """
 ARCH_CHECK_COMMAND = """%s -c 'python -c "import platform; print platform.machine()"' """
 ROS_CHECK_COMMAND = """%s -c -i 'rospack list >/dev/null 2>&1 && python -c "import roslib"' """
-ROSPORT_COMMAND = """%s -c -i 'python -c "import roslib, sys; roslib.load_manifest(\'rosgraph\'); import rosgraph.masterapi; sys.exit(not(rosgraph.masterapi.is_online(\'http://localhost:%s\')))"' """
+ROSPORT_COMMAND = """%s -c -i 'python -c "import roslib, sys
+roslib.load_manifest(\\\"rosgraph\\\")
+import rosgraph.masterapi
+sys.exit(rosgraph.masterapi.is_online(\\\"http://localhost:%s\\\"))"' """
 
 class ROSNotInstalled(Exception):
     pass
@@ -34,7 +37,7 @@ class CPUInfoClient():
                                        verbose, timeout)
     def get_result(self):
         return self._result
-    
+
 
 def cpuinfos(hosts=[], from_cssh_file = None,
              cssh_group = None,
@@ -103,12 +106,15 @@ def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout):
             arch = False
         chan = client.get_transport().open_session()
         chan.exec_command(ROS_CHECK_COMMAND % (os.environ["SHELL"]))
-        #(ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ROS_CHECK_COMMAND)
-        #print ssh_stderr.readlines()
+        # (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ROS_CHECK_COMMAND)
+        # print ssh_stderr.readlines()
         ros_p = chan.recv_exit_status() == 0
         if ros_p:
             chan = client.get_transport().open_session()
             chan.exec_command(ROSPORT_COMMAND % (os.environ["SHELL"], ros_port))
+            # (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ROSPORT_COMMAND % (os.environ["SHELL"], ros_port))
+            # print ssh_stderr.readlines()
+            # if online, it returns True=1
             port_available_p = chan.recv_exit_status() == 0
             return (host, cpu_num, mem_num, arch, port_available_p)
         else:
