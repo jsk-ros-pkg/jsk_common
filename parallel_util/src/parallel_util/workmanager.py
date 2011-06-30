@@ -42,11 +42,14 @@ The manager takes in a module that provides and processes the work items, it is 
 There are 3 modes when launching the worker: initial launch setup, server manager, service runner.
 
 """
+PKG='parallel_util'
 import time
 import inspect
 import os, sys
 import threading
-from optparse import OptionParser
+import rospy, roslaunch
+import roslaunch_caller
+import cPickle as pickle
 
 from srv import PickledService, PickledServiceRequest, PickledServiceResponse
 from cpuinfo import cpuinfos
@@ -151,9 +154,9 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     servicenames = ''
     for i,serviceaddr in enumerate(serviceaddrs):
         nodes += """<machine name="m%d" address="%s" default="false" %s/>\n"""%(i,serviceaddr[0],serviceaddr[1])
-        nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,sys.args[0],module.__name__,args,i)
+        nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,sys.argv[0],module.__name__,args,i)
         servicenames += ' --service=openraveservice%d '%i
-    nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,sys.args[0],module.__name__,servicenames,args)
+    nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,sys.argv[0],module.__name__,servicenames,args)
     xml_text = """<launch>\n"""
     if rosnamespace is not None and len(rosnamespace) > 0:
         xml_text += """<group ns="%s">\n%s</group>"""%(rosnamespace,nodes)
@@ -175,56 +178,8 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     finally:
         launchscript.shutdown()
 
-if __name__=='__main__':
-    parser = OptionParser(description='There are 3 modes when launching the worker: initial launch setup, server manager, service runner',
-                          usage='%prog [options]')
-    parser.add_option('--module', action='store', type='string', dest='modulename',default=None,
-                      help='module to use to execute the client/server')
-    parser.add_option('--args', action='store', type='string', dest='args',default='',
-                      help='arguments to pass in to each function')
-    parser.add_option('--startservice', action='store_true', dest='startservice',default=False,
-                      help='If set, will start a service on the ROS network offering to evaluate kinematics equations')
-    parser.add_option('--service', action='append', type='string', dest='servicenames',default=[],
-                      help='The services used to evaluate kinematics')
-    parser.add_option('--launchservice', action='append', dest='launchservices',default=[],
-                      help="""If specified, will roslaunch the services and setup the correct bindings for parallel processing (recommended). Usage: "python prog.py --launchservice='4*localhost' ...""")
-    parser.add_option('--csshgroup', action='store', type='string', dest='csshgroup',default=None,
-                      help='The group of computers to specify when launching')
-    (options, args) = parser.parse_args()
-    module=__import__(options.modulename)
-    if options.startservice:
-        module.service_start(options.args.split())
-        rospy.init_node('servicenode',anonymous=True)
-        s = rospy.Service('openraveservice', PickledService, lambda req: module.service_processrequest(pickle.loads(req.input)))
-        rospy.spin()
-    elif len(options.servicenames) > 0:
-        module.server_start(options.args.split())
-        self = EvaluationServer(module,options.servicenames)
-        self.run()
-    else:
-        module.launcher_start(options.args.split())
-        serviceaddrs = []
-        if options.csshgroup is not None:
-            infos = cpuinfos(from_cssh_file = os.path.join(os.environ["HOME"], ".cssh-clusters"), cssh_group = options.csshgroup, verbose = False, timeout = None)
-            for addr, cpuinfo in infos.items():
-                for i in range(cpuinfo[0]):
-                    serviceaddrs.append([addr,''])
-        for launchservice in options.launchservices:
-            launchservice = launchservice.strip()
-            pos = launchservice.find(' ')
-            if pos >= 0:
-                addr = launchservice[0:pos]
-                args = launchservice[pos+1:]
-            else:
-                addr = launchservice
-                args = ''
-            posnum = addr.find('*')
-            if posnum >= 0:
-                numprocesses=int(addr[0:posnum])
-                addr = addr[posnum+1:].strip()
-                for i in range(numprocesses):
-                    serviceaddrs.append([addr,args])
-            else:
-                serviceaddrs.append([addr,args])
-        LaunchNodes(module,serviceaddrs=serviceaddrs,rosnamespace=options.modulename,args=options.args)
-    sys.exit(0)
+def StartService(module,args):
+    module.service_start(options.args.split())
+    rospy.init_node('servicenode',anonymous=True)
+    s = rospy.Service('openraveservice', PickledService, lambda req: module.service_processrequest(pickle.loads(req.input)))
+    return s
