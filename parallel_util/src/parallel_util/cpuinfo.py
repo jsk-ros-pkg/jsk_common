@@ -16,6 +16,7 @@ import sys
 import paramiko
 import os
 import threading
+import platform 
 
 CPU_COUNT_COMMAND = """%s  -c 'python -c "import multiprocessing; print multiprocessing.cpu_count()"' """
 MEM_COUNT_COMMAND = """%s -c 'python -c "import meminfo_total; print meminfo_total.meminfo_total()"' """
@@ -43,6 +44,7 @@ def cpuinfos(hosts=[], from_cssh_file = None,
              timeout = None,
              ros_port = 11311,
              verbose = False,
+             arch_filter = True,
              user_test_commands = []):
     """
     cpuinfos returns the hosts and the information of cpu and memory.
@@ -60,6 +62,7 @@ def cpuinfos(hosts=[], from_cssh_file = None,
     """
     if from_cssh_file and cssh_group:
         hosts = parse_cssh_config(from_cssh_file, cssh_group)
+    local_architecture = platform.machine()
     # run collect_cpuinfo in multithreads
     cpuinfo_clients = [CPUInfoClient() for host in hosts]
     cpuinfo_threads = [threading.Thread(target=client,
@@ -75,6 +78,9 @@ def cpuinfos(hosts=[], from_cssh_file = None,
         thread.join()
     cpuinfos = [client.get_result() for client in cpuinfo_clients]
     valid_cpuinfos = [info for info in cpuinfos if info[1] != False]
+    if arch_filter:
+        valid_cpuinfos = [info for info in valid_cpuinfos 
+                          if info[3] == local_architecture]
     # convert valid_cpuinfos to dict
     return_d = {}
     for info in valid_cpuinfos:
