@@ -91,6 +91,14 @@ prefix of dhcpd.conf""")
     parser.add_option("--list", dest = "list",
                       action = "store_true",
                       help = "print the list of the machines registered")
+    parser.add_option("--wol", dest = "wol",
+                      metavar = "HOSTNAME",
+                      action = "append",
+                      help = "send magick packet of WakeOnLan to the specified host")
+    parser.add_option("--wol-port", dest="wol_port",
+                      type = int,
+                      default = 9,
+                      help = "port of WakeOnLan")
     parser.add_option("--root", dest = "root",
                       nargs = 1,
                       default = "/data/tf/root",
@@ -98,6 +106,21 @@ prefix of dhcpd.conf""")
     
     (options, args) = parser.parse_args()
     return options
+
+def send_wol_magick_packet(macs, ipaddr, port):
+    "http://www.emptypage.jp/gadgets/wol.html"
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    for mac in macs:
+        for sep in ':-':
+            if sep in mac:
+                mac = ''.join([x.rjust(2, '0') for x in mac.split(sep)])
+                break
+        mac = mac.rjust(12, '0')
+        p = '\xff' * 6 + binascii.unhexlify(mac) * 16
+        s.sendto(p, (ipaddr, port))
+    s.close()
+                                                                        
 
 def open_xml(xml):
     if os.path.exists(xml):
@@ -124,7 +147,8 @@ def find_machine_tag_by_hostname(dom, hostname):
 def get_root_pxe(dom):
     return dom.childNodes[0]
 
-def add_machine(hostname, mac, ip, xml):    # <machine name="hostname">
+def add_machine(hostname, mac, ip, xml):
+    # <machine name="hostname">
     #   <ip> 0.0.0.0 </ip>
     #   <mac> 00:00:00:00 </mac>
     # </machine>
@@ -149,6 +173,7 @@ def generate_dhcp(options, xml):
     root = get_root_pxe(dom)
     generated_string = []
     machine_tags = root.getElementsByTagName("machine")
+    # generate host section
     for m in machine_tags:
         hostname = m.getAttribute("name")
         ip_tag = m.getElementsByTagName("ip")[0]
@@ -194,6 +219,15 @@ def print_machine_list(xml):
   ip: %s
   mac: %s
 """ % (hostname, ip, mac)
+
+def wake_on_lan(hostname, port, broadcast, xml):
+    dom = open_xml(xml)
+    root = get_root_pxe(dom)
+    machine_tag = find_machine_tag_by_hostname(root, hostname)
+    mac_tag = m.getElementsByTagName("mac")[0]
+    mac = mac_tag.childNodes[0].data.strip()
+    send_wol_magick_packet(mac, broadcast, port)
+
     
 def main():
     options = parse_options()
@@ -206,6 +240,9 @@ def main():
                       options.xml)
     if options.list:
         print_machine_list(options.xml)
+    if options.wol:
+        for m in [options.wol]:
+            wake_on_lan([m], options.wol_port, options.broadcast, options.xml)
         
 if __name__ == "__main__":
     main()
