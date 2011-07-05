@@ -10,14 +10,3 @@ max-lease-time 64800;
 log-facility local7;
 
 allow unknown-clients;
-subnet 192.168.101.0 netmask 255.255.255.0 {
-       #use-host-decl-names on;
-       range dynamic-bootp 192.168.101.1 192.168.101.127;
-       option broadcast-address 192.168.101.255;
-       option domain-name-servers 192.168.96.209;
-       #get-lease-hostnames true; # cannot be true...
-       option domain-name "jsk.t.u-tokyo.ac.jp";		# Domain name
-       option routers 192.168.101.254;
-       filename "pxelinux.0";
-       next-server 192.168.101.153;
-}

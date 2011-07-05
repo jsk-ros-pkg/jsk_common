@@ -19,13 +19,25 @@ from xml.dom import minidom, Node
 import xml
 from string import Template
 
-DHCP_HOST_TMPL = """
-host ${hostname}{
- hardware ethernet ${mac};
- fixed-address ${ip};
- next-server ${pxe_server};
- filename ${pxe_filename};
+DHCP_SUBNET_TMPL = """
+subnet ${subnet} netmask ${netmask} {
+range dynamic-bootp ${dhcp_range_start} ${dhcp_range_stop};
+option broadcast-address ${broadcast};
+option domain-name-servers ${dns_ip};
+option domain-name "${domain_name}";
+option routers ${gateway};
+filename "${pxe_filename}";
+next-server ${pxe_server};
+${hosts}
 }
+"""
+
+DHCP_HOST_TMPL = """
+  host ${hostname}{
+   hardware ethernet ${mac};
+   fixed-address ${ip};
+   option host-name "${hostname}";
+  }
 """
 
 def parse_options():
@@ -52,6 +64,30 @@ prefix of dhcpd.conf""")
     parser.add_option("--pxe-server", dest = "pxe_server",
                       default = "192.168.101.153",
                       help = "the ip address of pxe server.")
+    parser.add_option("--subnet", dest = "subnet",
+                      default = "192.168.101.0",
+                      help = "subnet of dhcp")
+    parser.add_option("--netmask", dest = "netmask",
+                      default = "255.255.255.0",
+                      help = "netmask of dhcp")
+    parser.add_option("--dhcp-range-start", dest = "dhcp_range_start",
+                      default = "192.168.101.1",
+                      help = "the starting ip address of dhcp")
+    parser.add_option("--dhcp-range-stop", dest = "dhcp_range_stop",
+                      default = "192.168.101.127",
+                      help = "the ending ip address of dhcp")
+    parser.add_option("--broadcast", dest = "broadcast",
+                      default = "192.168.101.255",
+                      help = "broadcast of the network")
+    parser.add_option("--dns-ip", dest = "dns_ip",
+                      default = "192.168.96.209",
+                      help = "DNS of the network")
+    parser.add_option("--domain-name", dest = "domain_name",
+                      default = "jsk.t.u-tokyo.ac.jp",
+                      help = "domain name of the network")
+    parser.add_option("--gateway", dest = "gateway",
+                      default = "192.168.101.254",
+                      help = "gateway of the network")
     parser.add_option("--list", dest = "list",
                       action = "store_true",
                       help = "print the list of the machines registered")
@@ -108,7 +144,7 @@ def add_machine(hostname, mac, ip, xml):    # <machine name="hostname">
     machine_tag.appendChild(mac_tag)
     write_xml(dom, xml)
 
-def generate_dhcp(pxe_filename, pxe_server, prefix_dhcp_file, xml):
+def generate_dhcp(options, xml):
     dom = open_xml(xml)
     root = get_root_pxe(dom)
     generated_string = []
@@ -122,16 +158,27 @@ def generate_dhcp(pxe_filename, pxe_server, prefix_dhcp_file, xml):
         template = Template(DHCP_HOST_TMPL)
         host_str = template.substitute({"hostname": hostname,
                                         "ip": ip,
-                                        "mac": mac,
-                                        "pxe_server": pxe_server,
-                                        "pxe_filename": pxe_filename})
+                                        "mac": mac})
         generated_string.append(host_str)
-    if prefix_dhcp_file:
-        f = open(prefix_dhcp_file)
+    if options.prefix_dhcp_file:
+        f = open(options.prefix_dhcp_file)
         prefix_str = "".join(f.readlines())
     else:
         prefix_str = ""
-    print prefix_str + "\n".join(generated_string)
+    # generate dhcp subnet section
+    dhcp_subnet_tmpl = Template(DHCP_SUBNET_TMPL)
+    dhcp_subnet_str = dhcp_subnet_tmpl.substitute({"subnet": options.subnet,
+                                                   "netmask": options.netmask,
+                                                   "dhcp_range_start": options.dhcp_range_start,
+                                                   "dhcp_range_stop": options.dhcp_range_stop,
+                                                   "broadcast": options.broadcast,
+                                                   "dns_ip": options.dns_ip,
+                                                   "domain_name": options.domain_name,
+                                                   "gateway": options.gateway,
+                                                   "pxe_server": options.pxe_server,
+                                                   "pxe_filename": options.pxe_filename,
+                                                   "hosts": "\n".join(generated_string)})
+    print prefix_str + dhcp_subnet_str
 
 def print_machine_list(xml):
     dom = open_xml(xml)
@@ -155,9 +202,7 @@ def main():
         add_machine(options.add[0], options.add[1], options.add[2],
                     options.xml)
     if options.generate_dhcp:
-        generate_dhcp(options.pxe_filename,
-                      options.pxe_server,
-                      options.prefix_dhcp_file,
+        generate_dhcp(options,
                       options.xml)
     if options.list:
         print_machine_list(options.xml)
