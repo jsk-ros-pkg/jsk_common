@@ -8,6 +8,7 @@
   <url>http://ros.org/wiki/rosparallel_util</url>
   <export>
     <python path="${prefix}/src" />
+    <rosdoc config="rosdoc.yaml" />
   </export>
   <depend package="rospy" />
   <depend package="roslaunch"/>
