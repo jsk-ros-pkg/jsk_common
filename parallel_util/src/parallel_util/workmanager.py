@@ -166,6 +166,7 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     else:
         xml_text += nodes
     xml_text += '\n</launch>\n'
+    print xml_text
     roslaunch.pmon._shutting_down = False # roslaunch registers its own signal handlers and shuts down automatically on sigints
     launchscript = roslaunch_caller.ScriptRoslaunch(xml_text)
     launchscript.start()
