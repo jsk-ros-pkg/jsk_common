@@ -15,7 +15,8 @@
 
 The manager takes in a module that provides and processes the work items, it is oblivious of the ROS network. The module needs to provide the following functions:
 
-.. code-block:: 
+.. code-block:: python
+
   # service side
   def service_start(args):
 

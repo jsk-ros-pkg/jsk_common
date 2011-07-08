@@ -2,12 +2,15 @@
 # -*- coding: utf-8 -*-
 import sys, os
 
+import roslib; roslib.load_manifest('parallel_util')
+#sys.path.append(os.path.abspath('src'))
+
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.ifconfig']
 templates_path = ['.templates']
 source_suffix = '.rst'
 #source_encoding = 'utf-8'
 master_doc = 'index'
-project = u'jsk_tools'
+project = u'parallel_util'
 copyright = u'2011, Ryohei Ueda (ueda@jsk.t.u-tokyo.ac.jp), Rosen Diankov (rosen.diankov@gmail.com)'
 
 version = '1.0'
@@ -43,6 +46,6 @@ html_static_path = ['.static']
 #html_show_copyright = True
 #html_use_opensearch = ''
 #html_file_suffix = None
-htmlhelp_basename = 'jsk_toolsdoc'
+htmlhelp_basename = 'parallel_utildoc'
 
 intersphinx_mapping = {'http://docs.python.org/': None}
