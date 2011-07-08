@@ -12,12 +12,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import socket
+import binascii
 import os
+from subprocess import check_call
 from optparse import OptionParser
 from xml.dom import minidom, Node
 import xml
 from string import Template
+
+APT_PACKAGES = """
+ssh zsh bash-completion
+emacs vim wget
+build-essential subversion git-core cvs
+cmake ethtool python python-paramiko python-meminfo-total
+ubuntu-desktop
+"""
 
 DHCP_SUBNET_TMPL = """
 subnet ${subnet} netmask ${netmask} {
@@ -99,11 +109,31 @@ prefix of dhcpd.conf""")
                       type = int,
                       default = 9,
                       help = "port of WakeOnLan")
+    parser.add_option("--generate-pxe-filesystem",
+                      dest = "generate_pxe_filesystem",
+                      nargs = 1)
+    parser.add_option("--pxe-filesystem-template",
+                      dest = "pxe_filesystem_template",
+                      default = "/data/tftpboot/root_template",
+                      nargs = 1)
+    parser.add_option("--pxe-filesystem-enable-japanese",
+                      action = "store_false",
+                      dest = "pxe_filesystem_enable_japanese")
+    parser.add_option("--pxe-filesystem-apt-sources",
+                      dest = "pxe_filesystem_apt_sources",
+                      default = os.path.join(os.path.dirname(__file__),
+                                             "sources.list"))
+    parser.add_option("--pxe-user",
+                      dest = "pxe_user",
+                      default = "pxe")
+    parser.add_option("--pxe-passwd",
+                      dest = "pxe_passwd",
+                      default = "pxe")
+    
     parser.add_option("--root", dest = "root",
                       nargs = 1,
                       default = "/data/tf/root",
                       help = "NFS root directory")
-    
     (options, args) = parser.parse_args()
     return options
 
@@ -224,10 +254,98 @@ def wake_on_lan(hostname, port, broadcast, xml):
     dom = open_xml(xml)
     root = get_root_pxe(dom)
     machine_tag = find_machine_tag_by_hostname(root, hostname)
-    mac_tag = m.getElementsByTagName("mac")[0]
+    mac_tag = machine_tag.getElementsByTagName("mac")[0]
     mac = mac_tag.childNodes[0].data.strip()
-    send_wol_magick_packet(mac, broadcast, port)
+    send_wol_magick_packet([mac], broadcast, port)
 
+def chroot_command(chroot_dir, *args):
+    command = ["chroot", chroot_dir]
+    command.extend(*args)
+    print command
+    return check_call(command)
+    
+def generate_pxe_template_filesystem(template_dir):
+    print ">>> generating template filesystem"
+    try:
+        check_call(["debootstrap", "lucid", template_dir])
+    except:
+        # remove template_dir
+        print ">>> removing template dir"
+        check_call(["rm", "-rf", template_dir])
+        raise
+
+
+def copy_template_filesystem(template_dir, target_dir, apt_sources):
+    print ">>> copying filesystem"
+    check_call(["cp", "-ax", template_dir, target_dir])
+    print ">>> copying etc/apt/sources.list"
+    check_call(["cp", apt_sources,
+                os.path.join(target_dir, "etc", "apt", "sources.list")])
+    return
+
+def install_apt_packages(target_dir):
+    # first of all mount
+    try:
+        print ">>> installing apt packages"
+        check_call(["mount", "-o", "bind", "/dev/",
+                    os.path.join(target_dir, "dev")])
+        chroot_command(target_dir,
+                       "mount -t proc none /proc".split())
+        chroot_command(target_dir,
+                       "mount -t sysfs none /sys".split())
+        chroot_command(target_dir,
+                       "mount -t devpts none /dev/pts".split())
+        
+        chroot_command(target_dir, ["apt-get", "update"])
+        chroot_command(target_dir,
+                       ["apt-get", "install", "--force-yes", "-y"] + APT_PACKAGES.split())
+        print "  >>> installing ros apt sources"
+        chroot_command(target_dir, ["sh", "-c",
+                                    "echo deb http://packages.ros.org/ros/ubuntu lucid main > /etc/apt/sources.list.d/ros-latest.list"])
+        chroot_command(target_dir, ["sh", "-c",
+                                    "wget http://packages.ros.org/ros.key -O - | apt-key add -"])
+        chroot_command(target_dir, ["apt-get", "update"])
+        chroot_command(target_dir, ["apt-get", "install", "--force-yes", "-y", "ros-diamondback-ros-base"])
+    finally:
+        chroot_command(target_dir,
+                       "umount -lf /proc".split())
+        chroot_command(target_dir,
+                       "umount -lf /sys".split())
+        chroot_command(target_dir,
+                       "umount -lf /dev/pts".split())
+        check_call(["umount", "-lf", os.path.join(target_dir, "dev")])
+
+def setup_user(target_dir, user, passwd):
+    try:
+        check_call(["mount", "-o", "bind", "/dev/",
+                    os.path.join(target_dir, "dev")])
+        chroot_command(target_dir,
+                       "mount -t proc none /proc".split())
+        chroot_command(target_dir,
+                       "mount -t sysfs none /sys".split())
+        chroot_command(target_dir,
+                       "mount -t devpts none /dev/pts".split())
+        chroot_command(target_dir, ["sh", "-c",
+                                    "id %s || useradd %s" % (user, user)])
+        chroot_command(target_dir, ["sh", "-c",
+                                    "echo %s:%s | chpasswd" % (user, passwd)])
+    finally:
+        chroot_command(target_dir,
+                       "umount -lf /proc".split())
+        chroot_command(target_dir,
+                       "umount -lf /sys".split())
+        chroot_command(target_dir,
+                       "umount -lf /dev/pts".split())
+        check_call(["umount", "-lf", os.path.join(target_dir, "dev")])
+
+def generate_pxe_filesystem(template_dir, target_dir, apt_sources,
+                            user, passwd):
+    if not os.path.exists(template_dir):
+        generate_pxe_template_filesystem(template_dir)
+    if not os.path.exists(target_dir):
+        copy_template_filesystem(template_dir, target_dir, apt_sources)
+    install_apt_packages(target_dir)
+    setup_user(target_dir, user, passwd)
     
 def main():
     options = parse_options()
@@ -242,7 +360,12 @@ def main():
         print_machine_list(options.xml)
     if options.wol:
         for m in [options.wol]:
-            wake_on_lan([m], options.wol_port, options.broadcast, options.xml)
+            wake_on_lan(m[0], options.wol_port, options.broadcast, options.xml)
+    if options.generate_pxe_filesystem:
+        generate_pxe_filesystem(options.pxe_filesystem_template,
+                                options.generate_pxe_filesystem,
+                                options.pxe_filesystem_apt_sources,
+                                options.pxe_user, options.pxe_passwd)
         
 if __name__ == "__main__":
     main()
