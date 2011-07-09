@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import BaseHTTPServer
+import cgi
 import sqlite3
 import socket
 import binascii
@@ -74,6 +76,85 @@ DHCP_HOST_TMPL = """
   }
 """
 
+HTML_TMPL = """
+<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <title>PXE Manager</title>
+    <style type="text/css">
+dl.host_list {
+ border:1px solid #999;
+ width:490px;
+}
+
+dt.hostname {
+ float:left;
+ width:100px;
+ padding:5px 0 5px 10px;
+ clear:both;
+ font-weight:bold;
+}
+
+dd.ip_mac {
+ width:260px;
+ margin-left:100px;
+ padding:5px 5px 5px 10px;
+ border-left:1px solid #999;
+}
+
+dl.ip_mac {
+    width:260px;
+    margin-left:0px;
+    padding:5px 5px 5px 10px;
+}
+    </style>
+  </head>
+  <body>
+    <div id="main">
+      <div id="title">
+        <h1>
+          PXE Boot manager @ MBA
+        </h1>
+      </div> <!-- #title -->
+      <div id="add">
+       <form method="get" action="add">
+         hostname
+         <input type="text" name="hostname"/>
+         IP
+         <input type="text" name="ip"/>
+         MACAddress
+         <input type="text" name="macaddress"/>
+         <input type="submit" />
+       </form>
+      </div>
+      <div id="host_list">
+        <dl class="host_list">
+          ${hosts}
+        </dl>
+      </div>
+    </div>
+  </body>
+</html>
+"""
+
+HTML_HOST_TMPL = """
+          <dt class="hostname">${hostname}</dt>
+          <dd class="ip_mac">
+            <div>
+              ${ip}/${macaddress}
+            </div>
+            <div class="delete_host">
+              <form method="get" action="delete">
+                <input type="submit" value="delete" name="${hostname}"/>
+              </form>
+            </div>
+          </dd>
+"""
+
 def parse_options():
     parser = OptionParser()
     parser.add_option("--db", dest = "db",
@@ -83,11 +164,21 @@ def parse_options():
     parser.add_option("--add", dest = "add", nargs = 3,
                       help = """add new machine to db.
 (hostname, macaddress, ip)""")
+    parser.add_option("--web", dest = "web",
+                      action = "store_true",
+                      help = """run webserver""")
+    parser.add_option("--web-port", dest = "web_port",
+                      type = int,
+                      default = 4040,
+                      help = """port of webserver (defaults to 4040)""")
     parser.add_option("--delete", dest = "delete", nargs = 1,
                       help = """delete a host from db.""")
     parser.add_option("--generate-dhcp", dest = "generate_dhcp",
                       action = "store_true",
                       help = "generate dhcp file")
+    parser.add_option("--overwrite-dhcp", dest = "overwrite_dhcp",
+                      default = "/etc/dhcp3/dhcp.conf",
+                      help = "overwrite dhcp configuration file. (defaults to dhcp.conf)")
     parser.add_option("--prefix-dhcp-file", dest = "prefix_dhcp_file",
                       default = os.path.join(os.path.dirname(__file__),
                                              "dhcpd.conf.pre"),
@@ -370,27 +461,69 @@ def generate_pxe_filesystem(template_dir, target_dir, apt_sources,
         copy_template_filesystem(template_dir, target_dir, apt_sources)
     install_apt_packages(target_dir)
     setup_user(target_dir, user, passwd)
+
+def generate_top_html(db):
+    con = open_db(db)
+    machines = all_hosts(con)
+    host_strs = []
+    for (hostname, ip_mac) in machines.items():
+        ip = ip_mac["ip"]
+        mac = ip_mac["macaddress"]
+        template = Template(HTML_HOST_TMPL)
+        host_strs.append(template.substitute({"hostname": hostname,
+                                              "ip": ip,
+                                              "macaddress": mac}))
+    con.close()
+    html_template = Template(HTML_TMPL)
+    return html_template.substitute({"hosts": "\n".join(host_strs)})
+    
+class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+    def do_GET(s):
+        s.send_response(200)
+        s.send_header("Content-type", "text/html")
+        s.end_headers()
+        if s.path.startswith("/delete"): # delete
+            delete_host = cgi.parse_qs(s.path.split("?")[1]).keys()[0]
+            delete_machine(delete_host, db_name)
+        elif s.path.startswith("/add"): # add
+            add_host_desc = cgi.parse_qs(s.path.split("?")[1])
+            print add_host_desc
+            add_machine(add_host_desc["hostname"][0],
+                        add_host_desc["ip"][0],
+                        add_host_desc["macaddress"][0],
+                        db_name)
+        html = generate_top_html(db_name)
+        s.wfile.write(html)
+    
+def run_web(port, db):
+    global db_name              # dirty hack!
+    db_name = db
+    BaseHTTPServer.HTTPServer(('localhost', port), WebHandler).serve_forever()
     
 def main():
     options = parse_options()
-    
-    if options.add:
-        add_machine(options.add[0], options.add[1], options.add[2], options.db)
-    if options.delete:
-        delete_machine(options.delete, options.db)
-    if options.generate_dhcp:
-        generate_dhcp(options,
-                      options.db)
-    if options.list:
-        print_machine_list(options.db)
-    if options.wol:
-        for m in [options.wol]:
-            wake_on_lan(m[0], options.wol_port, options.broadcast, options.db)
-    if options.generate_pxe_filesystem:
-        generate_pxe_filesystem(options.pxe_filesystem_template,
-                                options.generate_pxe_filesystem,
-                                options.pxe_filesystem_apt_sources,
-                                options.pxe_user, options.pxe_passwd)
+    if options.web:
+        run_web(options.web_port, options.db)
+    else:
+        if options.add:
+            add_machine(options.add[0], options.add[1],
+                        options.add[2], options.db)
+        if options.delete:
+            delete_machine(options.delete, options.db)
+        if options.generate_dhcp:
+            generate_dhcp(options,
+                          options.db)
+        if options.list:
+            print_machine_list(options.db)
+        if options.wol:
+            for m in [options.wol]:
+                wake_on_lan(m[0], options.wol_port,
+                            options.broadcast, options.db)
+        if options.generate_pxe_filesystem:
+            generate_pxe_filesystem(options.pxe_filesystem_template,
+                                    options.generate_pxe_filesystem,
+                                    options.pxe_filesystem_apt_sources,
+                                    options.pxe_user, options.pxe_passwd)
         
 if __name__ == "__main__":
     main()
