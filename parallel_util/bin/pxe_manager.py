@@ -12,14 +12,38 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import sqlite3
 import socket
 import binascii
 import os
 from subprocess import check_call
 from optparse import OptionParser
-from xml.dom import minidom, Node
-import xml
 from string import Template
+
+FIND_HOST_SQL = """
+select * from hosts where hostname = '${hostname}';
+"""
+
+DB_CREATE_TABLE_SQL = """
+create table hosts (
+hostname text,
+ip text,
+macaddress text UNIQUE
+);
+"""
+
+ADD_HOST_SQL = """
+insert into hosts values ('${hostname}', '${ip}', '${macaddress}');
+"""
+
+DEL_HOST_SQL = """
+delete from hosts where hostname = '${hostname}';
+"""
+
+ALL_HOSTS_SQL = """
+select * from hosts;
+"""
 
 APT_PACKAGES = """
 ssh zsh bash-completion
@@ -52,13 +76,15 @@ DHCP_HOST_TMPL = """
 
 def parse_options():
     parser = OptionParser()
-    parser.add_option("--xml", dest = "xml",
+    parser.add_option("--db", dest = "db",
                       default = os.path.join(os.path.dirname(__file__),
-                                             "pxe.xml"),
-                      help = "xml file to configure pxe boot environment")
+                                             "pxe.db"),
+                      help = "db file to configure pxe boot environment.")
     parser.add_option("--add", dest = "add", nargs = 3,
-                      help = """add new machine to xml file.
+                      help = """add new machine to db.
 (hostname, macaddress, ip)""")
+    parser.add_option("--delete", dest = "delete", nargs = 1,
+                      help = """delete a host from db.""")
     parser.add_option("--generate-dhcp", dest = "generate_dhcp",
                       action = "store_true",
                       help = "generate dhcp file")
@@ -129,7 +155,6 @@ prefix of dhcpd.conf""")
     parser.add_option("--pxe-passwd",
                       dest = "pxe_passwd",
                       default = "pxe")
-    
     parser.add_option("--root", dest = "root",
                       nargs = 1,
                       default = "/data/tf/root",
@@ -150,22 +175,43 @@ def send_wol_magick_packet(macs, ipaddr, port):
         p = '\xff' * 6 + binascii.unhexlify(mac) * 16
         s.sendto(p, (ipaddr, port))
     s.close()
-                                                                        
-
-def open_xml(xml):
-    if os.path.exists(xml):
-        dom = minidom.parse(xml)
+    
+def open_db(db):
+    if os.path.exists(db):
+        con = sqlite3.connect(db)
     else:
-        dom = minidom.Document()
-        root = dom.createElement("pxe")
-        dom.appendChild(root)
-    return dom
+        con = sqlite3.connect(db)
+        con.execute(DB_CREATE_TABLE_SQL)
+    return con
 
-def write_xml(dom, xml):
-    # write it to xml
-    f = open(xml, "w")
-    f.write(dom.toxml())
-    f.close()
+def delete_host(con, host):
+    template = Template(DEL_HOST_SQL)
+    sql = template.substitute({"hostname": host})
+    con.execute(sql)
+    con.commit()
+
+def add_host(con, host, ip, mac):
+    template = Template(ADD_HOST_SQL)
+    sql = template.substitute({"hostname": host,
+                               "ip": ip,
+                               "macaddress": mac})
+    con.execute(sql)
+    con.commit()
+
+def all_hosts(con):
+    sql_result = con.execute(ALL_HOSTS_SQL)
+    result = {}
+    for row in sql_result:
+        result[row[0]] = {"ip": row[1], "macaddress": row[2]}
+    return result
+
+def find_by_hostname(con, hostname):
+    template = Template(FIND_HOST_SQL)
+    sql_str = template.substitute({"hostname": hostname})
+    sql_result = con.execute(sql_str)
+    for row in sql_result:
+        return {"ip": row[1], "macaddress": row[2]}
+    raise "cannot find %s" % (hostname)
 
 def find_machine_tag_by_hostname(dom, hostname):
     machines = dom.getElementsByTagName("machine")
@@ -177,39 +223,24 @@ def find_machine_tag_by_hostname(dom, hostname):
 def get_root_pxe(dom):
     return dom.childNodes[0]
 
-def add_machine(hostname, mac, ip, xml):
-    # <machine name="hostname">
-    #   <ip> 0.0.0.0 </ip>
-    #   <mac> 00:00:00:00 </mac>
-    # </machine>
-    dom = open_xml(xml)
-    root = get_root_pxe(dom)
-    machine_tag = find_machine_tag_by_hostname(root, hostname)
-    if machine_tag:
-        root.removeChild(machine_tag)
-    machine_tag = dom.createElement("machine")
-    machine_tag.setAttribute("name", hostname)
-    root.appendChild(machine_tag)
-    ip_tag = dom.createElement("ip")
-    mac_tag = dom.createElement("mac")
-    ip_tag.appendChild(dom.createTextNode(ip))
-    mac_tag.appendChild(dom.createTextNode(mac))
-    machine_tag.appendChild(ip_tag)
-    machine_tag.appendChild(mac_tag)
-    write_xml(dom, xml)
-
-def generate_dhcp(options, xml):
-    dom = open_xml(xml)
-    root = get_root_pxe(dom)
+def delete_machine(hostname, db):
+    con = open_db(db)
+    delete_host(con, hostname)
+    con.close()
+    
+def add_machine(hostname, mac, ip, db):
+    con = open_db(db)
+    add_host(con, hostname, ip, mac)
+    con.close()
+    
+def generate_dhcp(options, db):
+    con = open_db(db)
+    machines = all_hosts(con)
     generated_string = []
-    machine_tags = root.getElementsByTagName("machine")
     # generate host section
-    for m in machine_tags:
-        hostname = m.getAttribute("name")
-        ip_tag = m.getElementsByTagName("ip")[0]
-        mac_tag = m.getElementsByTagName("mac")[0]
-        ip = ip_tag.childNodes[0].data.strip()
-        mac = mac_tag.childNodes[0].data.strip()
+    for (hostname, ip_mac) in machines.items():
+        ip = ip_mac["ip"]
+        mac = ip_mac["macaddress"]
         template = Template(DHCP_HOST_TMPL)
         host_str = template.substitute({"hostname": hostname,
                                         "ip": ip,
@@ -235,27 +266,20 @@ def generate_dhcp(options, xml):
                                                    "hosts": "\n".join(generated_string)})
     print prefix_str + dhcp_subnet_str
 
-def print_machine_list(xml):
-    dom = open_xml(xml)
-    root = get_root_pxe(dom)
-    machine_tags = root.getElementsByTagName("machine")
-    for m in machine_tags:
-        hostname = m.getAttribute("name")
-        ip_tag = m.getElementsByTagName("ip")[0]
-        mac_tag = m.getElementsByTagName("mac")[0]
-        ip = ip_tag.childNodes[0].data.strip()
-        mac = mac_tag.childNodes[0].data.strip()
+def print_machine_list(db):
+    con = open_db(db)
+    machines = all_hosts(con)
+    for hostname, ip_mac in machines.items():
+        ip = ip_mac["ip"]
+        mac = ip_mac["macaddress"]
         print """%s:
   ip: %s
   mac: %s
 """ % (hostname, ip, mac)
 
-def wake_on_lan(hostname, port, broadcast, xml):
-    dom = open_xml(xml)
-    root = get_root_pxe(dom)
-    machine_tag = find_machine_tag_by_hostname(root, hostname)
-    mac_tag = machine_tag.getElementsByTagName("mac")[0]
-    mac = mac_tag.childNodes[0].data.strip()
+def wake_on_lan(hostname, port, broadcast, db):
+    con = open_db(db)
+    mac = find_by_hostname(db, hostname)["macaddress"]
     send_wol_magick_packet([mac], broadcast, port)
 
 def chroot_command(chroot_dir, *args):
@@ -351,16 +375,17 @@ def main():
     options = parse_options()
     
     if options.add:
-        add_machine(options.add[0], options.add[1], options.add[2],
-                    options.xml)
+        add_machine(options.add[0], options.add[1], options.add[2], options.db)
+    if options.delete:
+        delete_machine(options.delete, options.db)
     if options.generate_dhcp:
         generate_dhcp(options,
-                      options.xml)
+                      options.db)
     if options.list:
-        print_machine_list(options.xml)
+        print_machine_list(options.db)
     if options.wol:
         for m in [options.wol]:
-            wake_on_lan(m[0], options.wol_port, options.broadcast, options.xml)
+            wake_on_lan(m[0], options.wol_port, options.broadcast, options.db)
     if options.generate_pxe_filesystem:
         generate_pxe_filesystem(options.pxe_filesystem_template,
                                 options.generate_pxe_filesystem,
