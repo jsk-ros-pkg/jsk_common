@@ -31,12 +31,13 @@ DB_CREATE_TABLE_SQL = """
 create table hosts (
 hostname text,
 ip text,
-macaddress text UNIQUE
+macaddress text UNIQUE,
+root text
 );
 """
 
 ADD_HOST_SQL = """
-insert into hosts values ('${hostname}', '${ip}', '${macaddress}');
+insert into hosts values ('${hostname}', '${ip}', '${macaddress}', '${root}');
 """
 
 DEL_HOST_SQL = """
@@ -128,6 +129,8 @@ dl.ip_mac {
          <input type="text" name="ip"/>
          MACAddress
          <input type="text" name="macaddress"/>
+         root directory
+         <input type="text" name="root"/>
          <input type="submit" />
        </form>
       </div>
@@ -145,7 +148,7 @@ HTML_HOST_TMPL = """
           <dt class="hostname">${hostname}</dt>
           <dd class="ip_mac">
             <div>
-              ${ip}/${macaddress}
+              ${ip}/${macaddress}@${root}
             </div>
             <div class="delete_host">
               <form method="get" action="delete">
@@ -160,10 +163,17 @@ def parse_options():
     parser.add_option("--db", dest = "db",
                       default = os.path.join(os.path.dirname(__file__),
                                              "pxe.db"),
-                      help = "db file to configure pxe boot environment.")
+                      help = """db file to configure pxe boot environment.
+(defaults to pxe.db)""")
     parser.add_option("--add", dest = "add", nargs = 3,
+                      metavar = "HOSTNAME MACADDRESS IP ROOT_DIR",
                       help = """add new machine to db.
-(hostname, macaddress, ip)""")
+ROOT_DIR is a relative path from the directory specified by
+--tftp-dir option.""")
+    parser.add_option("--tftp-dir", dest = "tftp_dir",
+                      default = "/data/tftpboot",
+                      help = """root directory of tftpboot. defaults
+to /data/tftpboot""")
     parser.add_option("--web", dest = "web",
                       action = "store_true",
                       help = """run webserver""")
@@ -176,9 +186,13 @@ def parse_options():
     parser.add_option("--generate-dhcp", dest = "generate_dhcp",
                       action = "store_true",
                       help = "generate dhcp file")
-    parser.add_option("--overwrite-dhcp", dest = "overwrite_dhcp",
+    parser.add_option("--dhcp-conf-file", dest = "dhcp_conf_file",
                       default = "/etc/dhcp3/dhcp.conf",
-                      help = "overwrite dhcp configuration file. (defaults to dhcp.conf)")
+                      help = "dhcp configuration file to be overwritten")
+    parser.add_option("--overwrite-dhcp", dest = "overwrite_dhcp",
+                      action = "store_true",
+                      help = """overwrite dhcp configuration file or not.
+(defaults to false)""")
     parser.add_option("--prefix-dhcp-file", dest = "prefix_dhcp_file",
                       default = os.path.join(os.path.dirname(__file__),
                                              "dhcpd.conf.pre"),
@@ -281,11 +295,12 @@ def delete_host(con, host):
     con.execute(sql)
     con.commit()
 
-def add_host(con, host, ip, mac):
+def add_host(con, host, ip, mac, root):
     template = Template(ADD_HOST_SQL)
     sql = template.substitute({"hostname": host,
                                "ip": ip,
-                               "macaddress": mac})
+                               "macaddress": mac,
+                               "root": root})
     con.execute(sql)
     con.commit()
 
@@ -293,7 +308,7 @@ def all_hosts(con):
     sql_result = con.execute(ALL_HOSTS_SQL)
     result = {}
     for row in sql_result:
-        result[row[0]] = {"ip": row[1], "macaddress": row[2]}
+        result[row[0]] = {"ip": row[1], "macaddress": row[2], "root": row[3]}
     return result
 
 def find_by_hostname(con, hostname):
@@ -301,7 +316,7 @@ def find_by_hostname(con, hostname):
     sql_str = template.substitute({"hostname": hostname})
     sql_result = con.execute(sql_str)
     for row in sql_result:
-        return {"ip": row[1], "macaddress": row[2]}
+        return {"ip": row[1], "macaddress": row[2], "root": row[3]}
     raise "cannot find %s" % (hostname)
 
 def find_machine_tag_by_hostname(dom, hostname):
@@ -319,9 +334,9 @@ def delete_machine(hostname, db):
     delete_host(con, hostname)
     con.close()
     
-def add_machine(hostname, mac, ip, db):
+def add_machine(hostname, mac, ip, root, db):
     con = open_db(db)
-    add_host(con, hostname, ip, mac)
+    add_host(con, hostname, ip, mac, root)
     con.close()
     
 def generate_dhcp(options, db):
@@ -355,7 +370,13 @@ def generate_dhcp(options, db):
                                                    "pxe_server": options.pxe_server,
                                                    "pxe_filename": options.pxe_filename,
                                                    "hosts": "\n".join(generated_string)})
-    print prefix_str + dhcp_subnet_str
+    if options.overwrite_dhcp:
+        path = options.overwrite_dhcp
+        f = open(path, "w")
+        f.write(prefix_str + dhcp_subnet_str)
+        f.close()
+    else:
+        print prefix_str + dhcp_subnet_str
 
 def print_machine_list(db):
     con = open_db(db)
@@ -363,10 +384,12 @@ def print_machine_list(db):
     for hostname, ip_mac in machines.items():
         ip = ip_mac["ip"]
         mac = ip_mac["macaddress"]
+        root = ip_mac["root"]
         print """%s:
   ip: %s
   mac: %s
-""" % (hostname, ip, mac)
+  root: %s
+""" % (hostname, ip, mac, root)
 
 def wake_on_lan(hostname, port, broadcast, db):
     con = open_db(db)
@@ -469,14 +492,20 @@ def generate_top_html(db):
     for (hostname, ip_mac) in machines.items():
         ip = ip_mac["ip"]
         mac = ip_mac["macaddress"]
+        root = ip_mac["root"]
         template = Template(HTML_HOST_TMPL)
         host_strs.append(template.substitute({"hostname": hostname,
                                               "ip": ip,
-                                              "macaddress": mac}))
+                                              "macaddress": mac,
+                                              "root": root}))
     con.close()
     html_template = Template(HTML_TMPL)
     return html_template.substitute({"hosts": "\n".join(host_strs)})
-    
+
+def update_dhcp_from_web():
+    if global_options.overwrite_dhcp:
+        generate_dhcp(global_options, global_options.db)
+
 class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(s):
         s.send_response(200)
@@ -485,25 +514,34 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         if s.path.startswith("/delete"): # delete
             delete_host = cgi.parse_qs(s.path.split("?")[1]).keys()[0]
             delete_machine(delete_host, db_name)
+            update_dhcp_from_web()
         elif s.path.startswith("/add"): # add
             add_host_desc = cgi.parse_qs(s.path.split("?")[1])
             print add_host_desc
             add_machine(add_host_desc["hostname"][0],
                         add_host_desc["ip"][0],
                         add_host_desc["macaddress"][0],
+                        add_host_desc["root"][0],
                         db_name)
+            update_dhcp_from_web()
         html = generate_top_html(db_name)
         s.wfile.write(html)
     
-def run_web(port, db):
+def run_web(options):
+    db = options.db
+    port = options.web_port
+    overwritep = options.overwrite_dhcp
+    # setup global variables
     global db_name              # dirty hack!
+    global global_options
     db_name = db
+    global_options = options
     BaseHTTPServer.HTTPServer(('localhost', port), WebHandler).serve_forever()
     
 def main():
     options = parse_options()
     if options.web:
-        run_web(options.web_port, options.db)
+        run_web(options)
     else:
         if options.add:
             add_machine(options.add[0], options.add[1],
