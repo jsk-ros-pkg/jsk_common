@@ -53,6 +53,7 @@ ssh zsh bash-completion
 emacs vim wget
 build-essential subversion git-core cvs
 cmake ethtool python python-paramiko python-meminfo-total
+initramfs-tools linux-image
 ubuntu-desktop
 """
 
@@ -567,7 +568,9 @@ def generate_pxe_config_files(options):
         machines = all_hosts(con)
         for hostname in machines.keys():
             template = Template(PXE_CONFIG_TMPL)
-            file_name = os.path.join(options.tftp_dir, "01-" + machines[hostname]["macaddress"])
+            mac = machines[hostname]["macaddress"]
+            file_name = os.path.join(options.tftp_dir, "pxelinux.cfg",
+                                     "01-" + mac.replace(":", "-"))
             file_str = template.substitute({"hostname": hostname,
                                             "root": machines[hostname]["root"],
                                             "tftp_dir": options.tftp_dir})
