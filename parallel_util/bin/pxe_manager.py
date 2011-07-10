@@ -158,6 +158,19 @@ HTML_HOST_TMPL = """
           </dd>
 """
 
+PXE_CONFIG_TMPL = """
+menu INCLUDE pxelinux.cfg/graphics.cfg
+DEFAULT vesamenu.c32
+NOESCAPE 1
+ALLOWOPTIONS 0
+boot label in ${tftp_dir}
+LABEL Lucid
+      MENU LABEL Lucid-${hostname}
+      MENU DEFAULT
+      KERNEL ${root}/vmlinuz
+      APPEND quiet splash initrd=${root}/initrd.img netboot=nfs raid=noautodetect root=/dev/nfs nfsroot=192.168.101.182:${tftp_dir}/${root} ip=dhcp rw --
+"""
+
 def parse_options():
     parser = OptionParser()
     parser.add_option("--db", dest = "db",
@@ -174,6 +187,11 @@ ROOT_DIR is a relative path from the directory specified by
                       default = "/data/tftpboot",
                       help = """root directory of tftpboot. defaults
 to /data/tftpboot""")
+    parser.add_option("--generate-pxe-config-files",
+                      dest = "generate_pxe_config_files",
+                      action = "store_true",
+                      help = """ automatically generate the configuration files
+under pxelinux.cfg/""")
     parser.add_option("--web", dest = "web",
                       action = "store_true",
                       help = """run webserver""")
@@ -537,6 +555,24 @@ def run_web(options):
     db_name = db
     global_options = options
     BaseHTTPServer.HTTPServer(('localhost', port), WebHandler).serve_forever()
+
+def generate_pxe_config_files(options):
+    if options.generate_pxe_config_files:
+        print ">>> generate the pxe configuration files"
+        db = options.db
+        con = open_db(db)
+        machines = all_hosts(con)
+        for hostname in machines.keys():
+            template = Template(PXE_CONFIG_TMPL)
+            file_name = os.path.join(options.tftp_dir, "01-" + machines[hostname]["macaddress"])
+            file_str = template.substitute({"hostname": hostname,
+                                            "root": machines[hostname]["root"],
+                                            "tftp_dir": options.tftp_dir})
+
+            f = open(file_name, "w")
+            f.write(file_str)
+            f.close()
+    
     
 def main():
     options = parse_options()
@@ -562,6 +598,9 @@ def main():
                                     options.generate_pxe_filesystem,
                                     options.pxe_filesystem_apt_sources,
                                     options.pxe_user, options.pxe_passwd)
+        if options.generate_pxe_config_files:
+            generate_pxe_config_files(options)
+            
         
 if __name__ == "__main__":
     main()
