@@ -253,7 +253,8 @@ prefix of dhcpd.conf""")
     parser.add_option("--wol", dest = "wol",
                       metavar = "HOSTNAME",
                       action = "append",
-                      help = "send magick packet of WakeOnLan to the specified host")
+                      help = """send magick packet of WakeOnLan to the
+specified host""")
     parser.add_option("--wol-port", dest="wol_port",
                       type = int,
                       default = 9,
@@ -377,17 +378,18 @@ def generate_dhcp(options, db):
         prefix_str = ""
     # generate dhcp subnet section
     dhcp_subnet_tmpl = Template(DHCP_SUBNET_TMPL)
-    dhcp_subnet_str = dhcp_subnet_tmpl.substitute({"subnet": options.subnet,
-                                                   "netmask": options.netmask,
-                                                   "dhcp_range_start": options.dhcp_range_start,
-                                                   "dhcp_range_stop": options.dhcp_range_stop,
-                                                   "broadcast": options.broadcast,
-                                                   "dns_ip": options.dns_ip,
-                                                   "domain_name": options.domain_name,
-                                                   "gateway": options.gateway,
-                                                   "pxe_server": options.pxe_server,
-                                                   "pxe_filename": options.pxe_filename,
-                                                   "hosts": "\n".join(generated_string)})
+    replace_dict = {"subnet": options.subnet,
+                    "netmask": options.netmask,
+                    "dhcp_range_start": options.dhcp_range_start,
+                    "dhcp_range_stop": options.dhcp_range_stop,
+                    "broadcast": options.broadcast,
+                    "dns_ip": options.dns_ip,
+                    "domain_name": options.domain_name,
+                    "gateway": options.gateway,
+                    "pxe_server": options.pxe_server,
+                    "pxe_filename": options.pxe_filename,
+                    "hosts": "\n".join(generated_string)}
+    dhcp_subnet_str = dhcp_subnet_tmpl.substitute(replace_dict)
     if options.overwrite_dhcp:
         path = options.dhcp_conf_file
         f = open(path, "w")
@@ -451,7 +453,6 @@ def install_apt_packages(target_dir):
                        "mount -t sysfs none /sys".split())
         chroot_command(target_dir,
                        "mount -t devpts none /dev/pts".split())
-        
         chroot_command(target_dir, ["apt-get", "update"])
         chroot_command(target_dir,
                        ["apt-get", "install", "--force-yes", "-y"] + APT_PACKAGES.split())
@@ -523,6 +524,8 @@ def generate_top_html(db):
 def update_dhcp_from_web():
     if global_options.overwrite_dhcp:
         generate_dhcp(global_options, global_options.db)
+    if global_options.generate_pxe_config_files:
+        generate_pxe_config_files(global_options)
 
 class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(s):
@@ -537,8 +540,8 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             add_host_desc = cgi.parse_qs(s.path.split("?")[1])
             print add_host_desc
             add_machine(add_host_desc["hostname"][0],
-                        add_host_desc["ip"][0],
                         add_host_desc["macaddress"][0],
+                        add_host_desc["ip"][0],
                         add_host_desc["root"][0],
                         db_name)
             update_dhcp_from_web()
