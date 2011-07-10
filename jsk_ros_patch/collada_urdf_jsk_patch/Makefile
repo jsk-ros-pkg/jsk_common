@@ -5,7 +5,7 @@ all: installed
 
 HG_DIR = collada_urdf_hg
 HG_URL = https://kforge.ros.org/robotmodel/robot_model
-HG_BRANCH = robot_model-1.5.1
+HG_REVISION = robot_model-1.5.1
 #HG_PATCH = color.patch
 #HG_PATCH = cyliner_box_sphere.patch rosdep.patch
 HG_PATCH = rosdep.patch
