@@ -371,7 +371,7 @@ def generate_dhcp(options, db):
                                                    "pxe_filename": options.pxe_filename,
                                                    "hosts": "\n".join(generated_string)})
     if options.overwrite_dhcp:
-        path = options.overwrite_dhcp
+        path = options.dhcp_conf_file
         f = open(path, "w")
         f.write(prefix_str + dhcp_subnet_str)
         f.close()
