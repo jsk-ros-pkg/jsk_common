@@ -10,6 +10,8 @@ master_doc = 'index'
 project = u'jsk_tools'
 copyright = u'2011, Ryohei Ueda (ueda@jsk.t.u-tokyo.ac.jp), Rosen Diankov (rosen.diankov@gmail.com)'
 
+import roslib; roslib.load_manifest('jsk_tools')
+
 version = '1.0'
 release = '1.0'
 #language = None
