@@ -28,4 +28,8 @@ In order to enable the launch doc generator, have to add the following to each R
   rosbuild_find_ros_package("jsk_tools")
   execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR} ./${jsk_tools_PACKAGE_PATH}/launchdoc-generator.py ${PROJECT_NAME} --output_dir=. --nomakefile RESULT_VARIABLE _make_failed)
 
-4. Because of current ROS limitations, make sure to add the generated launchdoc folder inside your local repository! It seems that the ros.org servers cannot run the **-builder: rosmake** command to generate this file.
+4. Because of current ROS limitations, make sure to add the generated files inside your local repository! It seems that the ros.org servers cannot run the **-builder: rosmake** command to generate this file:
+
+.. code-block:: bash
+
+  svn add index.rst conf.py
