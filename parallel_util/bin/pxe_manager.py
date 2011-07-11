@@ -513,38 +513,16 @@ def install_apt_packages(target_dir):
         chroot_command(target_dir, ["apt-get", "install", "--force-yes", "-y", "ros-diamondback-ros-base"])
 
 def setup_user(target_dir, user, passwd):
-    try:
-        check_call(["mount", "-o", "bind", "/dev/",
-                    os.path.join(target_dir, "dev")])
-        chroot_command(target_dir,
-                       "mount -t proc none /proc".split())
-        chroot_command(target_dir,
-                       "mount -t sysfs none /sys".split())
-        chroot_command(target_dir,
-                       "mount -t devpts none /dev/pts".split())
+    env = ChrootEnvironment(target_dir)
+    with env:
         chroot_command(target_dir, ["sh", "-c",
                                     "id %s || useradd %s" % (user, user)])
         chroot_command(target_dir, ["sh", "-c",
                                     "echo %s:%s | chpasswd" % (user, passwd)])
-    finally:
-        chroot_command(target_dir,
-                       "umount -lf /proc".split())
-        chroot_command(target_dir,
-                       "umount -lf /sys".split())
-        chroot_command(target_dir,
-                       "umount -lf /dev/pts".split())
-        check_call(["umount", "-lf", os.path.join(target_dir, "dev")])
 
 def update_initram(target_dir):
-    try:
-        check_call(["mount", "-o", "bind", "/dev/",
-                    os.path.join(target_dir, "dev")])
-        chroot_command(target_dir,
-                       "mount -t proc none /proc".split())
-        chroot_command(target_dir,
-                       "mount -t sysfs none /sys".split())
-        chroot_command(target_dir,
-                       "mount -t devpts none /dev/pts".split())
+    env = ChrootEnvironment(target_dir)
+    with env:
         chroot_command(target_dir, ["sh", "-c",
                                     "echo '%s' > /etc/initramfs-tools/initramfs.conf" % (INITRAMFS_CONF)])
         chroot_command(target_dir, ["sh", "-c",
@@ -553,14 +531,6 @@ def update_initram(target_dir):
                                     "echo '%s' > /etc/initramfs-tools/modules" % (INITRAM_MODULES)])
         chroot_command(target_dir, ["sh", "-c",
                                     "mkinitramfs -o /boot/initrd.img-`uname -r` `ls /lib/modules`"])
-    finally:
-        chroot_command(target_dir,
-                       "umount -lf /proc".split())
-        chroot_command(target_dir,
-                       "umount -lf /sys".split())
-        chroot_command(target_dir,
-                       "umount -lf /dev/pts".split())
-        check_call(["umount", "-lf", os.path.join(target_dir, "dev")])
         
 def generate_pxe_filesystem(template_dir, target_dir, apt_sources,
                             user, passwd):
