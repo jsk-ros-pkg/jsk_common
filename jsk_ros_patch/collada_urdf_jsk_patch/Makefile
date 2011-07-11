@@ -18,6 +18,7 @@ installed: $(HG_DIR) patched
 clean:
 	-cd $(HG_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make clean
 	rm -rf installed patched
+	if [ -e collada_urdf_hg/collada_urdf_hg/rosdep.yaml ]; then patch -R -d collada_urdf_hg -p0 < rosdep.patch; fi
 
 wipe: clean
 	rm -rf $(HG_DIR)
