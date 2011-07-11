@@ -54,8 +54,8 @@ emacs vim wget
 build-essential subversion git-core cvs
 cmake ethtool python python-paramiko python-meminfo-total
 initramfs-tools linux-image nfs-kernel-server
-ubuntu-desktop-ja gdm
 """
+#ubuntu-desktop-ja gdm
 
 DHCP_SUBNET_TMPL = """
 subnet ${subnet} netmask ${netmask} {
@@ -186,6 +186,7 @@ sky2
 e1000
 tg3
 bnx2
+pcnet32
 """
 
 FSTAB = """
@@ -224,6 +225,9 @@ under pxelinux.cfg/""")
                       type = int,
                       default = 4040,
                       help = """port of webserver (defaults to 4040)""")
+    parser.add_option("--web-hostname", dest = "web_hostname",
+                      default = "localhost",
+                      help = """hostname of webserver (defaults to localhost)""")
     parser.add_option("--delete", dest = "delete", nargs = 1,
                       help = """delete a host from db.""")
     parser.add_option("--generate-dhcp", dest = "generate_dhcp",
@@ -479,7 +483,7 @@ class ChrootEnvironment():
                        "mount -t sysfs none /sys".split())
         chroot_command(target_dir,
                        "mount -t devpts none /dev/pts".split())
-    def __exit__(self):
+    def __exit__(self, type, value, traceback):
         target_dir = self.target_dir
         chroot_command(target_dir,
                        "umount -lf /proc".split())
@@ -495,6 +499,8 @@ def install_apt_packages(target_dir):
     env = ChrootEnvironment(target_dir)
     with env:
         print ">>> installing apt packages"
+        chroot_command(target_dir, ["apt-get", "update"])
+        chroot_command(target_dir, ["apt-get", "install", "wget"])
         chroot_command(target_dir, ["sh", "-c",
                                     "wget -q https://www.ubuntulinux.jp/ubuntu-ja-archive-keyring.gpg -O- | sudo apt-key add -"])
         chroot_command(target_dir, ["sh", "-c",
@@ -513,16 +519,39 @@ def install_apt_packages(target_dir):
         chroot_command(target_dir, ["apt-get", "install", "--force-yes", "-y", "ros-diamondback-ros-base"])
 
 def setup_user(target_dir, user, passwd):
-    env = ChrootEnvironment(target_dir)
-    with env:
+    try:
+        check_call(["mount", "-o", "bind", "/dev/",
+                    os.path.join(target_dir, "dev")])
+        chroot_command(target_dir,
+                       "mount -t proc none /proc".split())
+        chroot_command(target_dir,
+                       "mount -t sysfs none /sys".split())
+        chroot_command(target_dir,
+                       "mount -t devpts none /dev/pts".split())
         chroot_command(target_dir, ["sh", "-c",
-                                    "id %s || useradd %s" % (user, user)])
+                                    "id %s || useradd %s -g sudo" % (user, user)])
         chroot_command(target_dir, ["sh", "-c",
                                     "echo %s:%s | chpasswd" % (user, passwd)])
+        chroot_command(target_dir, ["rm", "-f", "/etc/hostname"])
+    finally:
+        chroot_command(target_dir,
+                       "umount -lf /proc".split())
+        chroot_command(target_dir,
+                       "umount -lf /sys".split())
+        chroot_command(target_dir,
+                       "umount -lf /dev/pts".split())
+        check_call(["umount", "-lf", os.path.join(target_dir, "dev")])
 
 def update_initram(target_dir):
-    env = ChrootEnvironment(target_dir)
-    with env:
+    try:
+        check_call(["mount", "-o", "bind", "/dev/",
+                    os.path.join(target_dir, "dev")])
+        chroot_command(target_dir,
+                       "mount -t proc none /proc".split())
+        chroot_command(target_dir,
+                       "mount -t sysfs none /sys".split())
+        chroot_command(target_dir,
+                       "mount -t devpts none /dev/pts".split())
         chroot_command(target_dir, ["sh", "-c",
                                     "echo '%s' > /etc/initramfs-tools/initramfs.conf" % (INITRAMFS_CONF)])
         chroot_command(target_dir, ["sh", "-c",
@@ -531,6 +560,14 @@ def update_initram(target_dir):
                                     "echo '%s' > /etc/initramfs-tools/modules" % (INITRAM_MODULES)])
         chroot_command(target_dir, ["sh", "-c",
                                     "mkinitramfs -o /boot/initrd.img-`uname -r` `ls /lib/modules`"])
+    finally:
+        chroot_command(target_dir,
+                       "umount -lf /proc".split())
+        chroot_command(target_dir,
+                       "umount -lf /sys".split())
+        chroot_command(target_dir,
+                       "umount -lf /dev/pts".split())
+        check_call(["umount", "-lf", os.path.join(target_dir, "dev")])
         
 def generate_pxe_filesystem(template_dir, target_dir, apt_sources,
                             user, passwd):
@@ -595,7 +632,8 @@ def run_web(options):
     global global_options
     db_name = db
     global_options = options
-    BaseHTTPServer.HTTPServer(('localhost', port), WebHandler).serve_forever()
+    BaseHTTPServer.HTTPServer((options.web_hostname, port),
+                              WebHandler).serve_forever()
 
 def generate_pxe_config_files(options):
     if options.generate_pxe_config_files:
