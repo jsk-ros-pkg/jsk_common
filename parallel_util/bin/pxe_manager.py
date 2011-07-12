@@ -520,7 +520,7 @@ under pxelinux.cfg/""")
                       action = "store_true",
                       help = "generate dhcp file")
     parser.add_option("--dhcp-conf-file", dest = "dhcp_conf_file",
-                      default = "/etc/dhcp3/dhcp.conf",
+                      default = "/etc/dhcp3/dhcpd.conf",
                       help = "dhcp configuration file to be overwritten")
     parser.add_option("--overwrite-dhcp", dest = "overwrite_dhcp",
                       action = "store_true",
