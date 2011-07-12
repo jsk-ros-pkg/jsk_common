@@ -30,13 +30,13 @@ The manager takes in a module that provides and processes the work items, it is 
   def server_requestwork():
 
   # server side
-  def server_start(argv):
+  def server_start(args):
 
   # server side
-  def server_end(argv):
+  def server_end():
 
   # launcher initialization
-  def launcher_start(argv):
+  def launcher_start(args):
 
 
 There are 3 modes when launching the worker: initial launch setup, server manager, service runner.
@@ -110,7 +110,7 @@ class EvaluationServer(object):
     def processResult(self,res):
         if res is not None:
             with self.evallock:
-                self.module.server_processresponse(res)
+                self.module.server_processresponse(*res)
             
     def run(self):
         starttime = time.time()
@@ -186,5 +186,5 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
 
 def StartService(module,args):
     module.service_start(args.split())
-    s = rospy.Service('openraveservice', PickledService, lambda req: PickledServiceResponse(output=pickle.dumps(module.service_processrequest(pickle.loads(req.input)))))
+    s = rospy.Service('openraveservice', PickledService, lambda req: PickledServiceResponse(output=pickle.dumps(module.service_processrequest(*pickle.loads(req.input)))))
     return s
