@@ -23,6 +23,291 @@ from subprocess import check_call
 from optparse import OptionParser
 from string import Template
 
+PXE_DPHYS_CONFIG = """
+CONF_SWAPSIZE=20480
+CONF_SWAPFILE=/var/swap-`ifconfig eth0 | grep HWaddr | sed 's/.*HWaddr //g' | sed 's/ //g'`
+"""
+
+PXE_DPHYS_SWAPFILE_INIT_D = """
+#!/bin/sh
+# /etc/init.d/pxe-dphys-swapfile - automatically set up an swapfile
+# author Neil Franklin, last modification 2006.09.15
+# author Ryohei Ueda, modified for pxe booting
+# This script is copyright ETH Zuerich Physics Departement,
+#   use under either modified/non-advertising BSD or GPL license
+
+# this init.d script is intended to be run from rcS.d
+#   must run after  mount  of  /var  which may only happen in  S35mountall.sh
+#     for this reason we can not build swapfile until after  S35mountall.sh
+#       so we also need to use  init.d start|stop  to swapon|off our file
+#   and sensibly before the lots of stuff which may happen in  S40networking
+#   so we run it as rcS.d/S37dphys-config
+
+### BEGIN INIT INFO
+# Provides:          dphys-swapfile
+# Required-Start:    $syslog
+# Required-Stop:     $syslog
+# Should-Start:      $local_fs
+# Should-Stop:       $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: Autogenerate and use a swap file
+# Description:       This init.d script exists so one does not need to have a fixed size
+#                    swap partition. Instead install without swap partition and then run
+#                    this, with file size (re-)computed automatically to fit the current
+#                    RAM size.
+### END INIT INFO
+
+# get ready to work
+PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin
+export PATH
+
+# what we are
+NAME=dphys-swapfile
+
+case "$1" in
+
+  start)
+    /bin/echo "Starting ${NAME} swapfile setup ..."
+
+    # (re-)size/-generate (and also first time install)
+    # this will produce output, so no -n in above echo
+    /usr/local/sbin/pxe-dphys-swapfile setup
+
+    # as S35mountall.sh has already run, do this from here
+    #   as there can be no swapon in /etc/fstab
+    /usr/local/sbin/pxe-dphys-swapfile swapon
+
+    /bin/echo "done."
+    ;;
+
+
+  stop|default-stop)
+    /bin/echo -n "Stopping ${NAME} swapfile setup ..."
+
+    # as no swapon or swapoff in /etc/fstab, do this from here
+    /usr/local/sbin/pxe-dphys-swapfile swapoff
+
+    /bin/echo ", done."
+    ;;
+
+
+  restart|reload|force-reload)
+    /bin/echo "No daemon to (force-)re[start|load] in ${NAME}"
+    ;;
+
+
+ *)
+    /bin/echo "Usage: $0 {start|stop}"
+
+    exit 1
+    ;;
+
+esac
+
+exit 0
+"""
+
+PXE_DPHYS_SWAPFILE ="""
+#! /bin/sh
+# /usr/local/sbin/pxe-dphys-swapfile - automatically set up an swapfile
+# author Neil Franklin, last modification 2006.10.20
+# author Ryohei Ueda, modified for pxe booting
+# This script is copyright ETH Zuerich Physics Departement,
+#   use under either BSD or GPL license
+
+### ------ configuration for this site
+
+# where we want the swapfile to be, this is the default
+CONF_SWAPFILE=/var/swap
+
+# size we want to force it to be, default (empty) gives 2*RAM
+CONF_SWAPSIZE=
+
+
+### ------ actual implementation from here on
+# no user settings any more below this point
+
+set -e
+
+# get ready to work
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export PATH
+
+
+# this is what we want, 2 times RAM size
+SWAPFACTOR=2
+
+
+# what we are
+NAME=dphys-swapfile
+PNAME=dphys-swapfile
+
+# check user config file, let user overwride settings
+#   swap file place/filename and size
+if [ -f /etc/"${PNAME}" ] ; then
+  . /etc/"${PNAME}"
+fi
+
+
+case "$1" in
+
+  setup)
+    # (re-)size/-generate, fast if no memory size change
+
+    if [ "${CONF_SWAPSIZE}" = "" ] ; then
+      # compute automatic optimal size
+      echo -n "computing size, "
+      # this seems to be the nearest to physical RAM size, lacks about 60k
+      KCORESIZE="`ls -l /proc/kcore | awk '{ print $5 }'`"
+      # make MBytes which rounded down will be exactly 1 too few, so add 1
+      MEMSIZE="`expr "${KCORESIZE}" / 1048576 + 1`"
+      # default, without config file overwriding, swap=2*RAM
+      CONF_SWAPSIZE="`expr "${MEMSIZE}" '*' "${SWAPFACTOR}"`"
+    fi
+
+    # announce end resulting config
+    echo -n "want ${CONF_SWAPFILE}=${CONF_SWAPSIZE}MByte"
+
+
+    # we will be later starting, and in between possible deleting/rebuilding
+    #   so deactivate any allready running swapfile, to avoid errors
+    "$0" swapoff
+
+
+
+    # compare existing swapfile (if one exists) to see if it needs replacing
+    if [ -f "${CONF_SWAPFILE}" ] ; then
+
+      echo -n ", checking existing"
+
+      # we need bytes for comparing with existing swap file
+      SWAPBYTES="`expr "${CONF_SWAPSIZE}" '*' 1048576`"
+
+      FILEBYTES="`ls -l "${CONF_SWAPFILE}" | awk '{ print $5 }'`"
+
+      # wrong size, get rid of existing swapfile, after remake
+      if [ "${FILEBYTES}" != "${SWAPBYTES}" ] ; then
+
+        # updates to this section need duplicating in postrm script
+        #   can not simply make subroutine here and call that from postrm
+        #     as this script is deleted before  postrm purge  is called
+
+        echo -n ": deleting wrong size file (${FILEBYTES})"
+
+        # deactivate and delete existing file, before remaking for new size
+        "$0" uninstall
+
+      else
+
+        echo -n ": keeping it"
+
+      fi
+    fi
+
+    # if no swapfile (or possibly old one got deleted) make one
+    if [ ! -f "${CONF_SWAPFILE}" ] ; then
+
+      echo -n ", generating swapfile ..."
+
+      # first deleting existing mount lines, if any there (same code as above)
+      grep -v "^${CONF_SWAPFILE}" /etc/fstab > /etc/.fstab
+      mv /etc/.fstab /etc/fstab
+
+      dd if=/dev/zero of="${CONF_SWAPFILE}" bs=1048576 \
+        count="${CONF_SWAPSIZE}" 2> /dev/null
+      mkswap "${CONF_SWAPFILE}" > /dev/null
+
+      # ensure that only root can read possibly critical stuff going in here
+      chmod 600 "${CONF_SWAPFILE}"
+
+      # do not mount swapfile via fstab, because S35mountall.sh is already done
+      #   so just add warning comment line that swapfile is not in fstab
+      #     and so gets mounted by this script
+      # get rid of possibly already existing comment about
+      #   swapfile mounted by this script
+      grep -v "^# a swapfile" /etc/fstab > /etc/.fstab
+      grep -v "${NAME}" /etc/.fstab > /etc/fstab
+      # add new comment about this
+      echo "# a swapfile is not a swap partition, so no using swapon|off" \
+        "from here on, use  ${NAME} swap[on|off]  for that" >> /etc/fstab
+
+      # and inform the user what we did
+      echo -n " of ${CONF_SWAPSIZE}MBytes"
+
+    fi
+
+    echo
+
+    ;;
+
+
+  install)
+    # synonym for setup, in case someone types this
+    "$0" setup
+
+    ;;
+
+
+  swapon)
+    # as there can be no swapon in /etc/fstab, do it from here
+    #   this is due to no possible insertion of code (at least in Debian)
+    #     between mounting of /var (where swap file most likely resides)
+    #     and executing swapon, where the file already needs to be existing
+
+    if [ -f "${CONF_SWAPFILE}" ] ; then
+      losetup /dev/loop0 ${CONF_SWAPFILE}
+      swapon /dev/loop0 2>&1 > /dev/null
+    else
+      echo "$0: ERROR: swap file ${CONF_SWAPFILE} missing!" \
+          "you need to first run  $0 setup  to generate one"
+    fi
+
+    ;;
+
+
+  swapoff)
+    # as there can also be no swapoff in /etc/fstab, do it from here
+
+    # first test if swap is even active, else error from swapoff
+    if [ "`swapon -s | grep /dev/loop0 | \
+        cut -f1 -d\  `" != "" ] ; then
+      swapoff /dev/loop0 2>&1 > /dev/null
+    fi
+
+    ;;
+
+
+  uninstall)
+    # note: there is no install), as setup) can run from any blank system
+    #   it auto-installs as side effect of recomputing and checking size
+
+    # deactivate before deleting
+    "$0" swapoff
+
+    if [ -f "${CONF_SWAPFILE}" ] ; then
+      # reclaim the file space
+      rm "${CONF_SWAPFILE}"
+    fi
+
+    # and get rid of comment about swapfile mounting
+    grep -v "^# a swapfile" /etc/fstab > /etc/.fstab
+    grep -v "${NAME}" /etc/.fstab > /etc/fstab
+
+    ;;
+
+
+ *)
+    echo "Usage: $0 {setup|swapon|swapoff|uninstall}"
+
+    exit 1
+    ;;
+
+esac
+
+exit 0
+"""
+
 FIND_HOST_SQL = """
 select * from hosts where hostname = '${hostname}';
 """
@@ -227,7 +512,8 @@ under pxelinux.cfg/""")
                       help = """port of webserver (defaults to 4040)""")
     parser.add_option("--web-hostname", dest = "web_hostname",
                       default = "localhost",
-                      help = """hostname of webserver (defaults to localhost)""")
+                      help = """hostname of webserver
+(defaults to localhost)""")
     parser.add_option("--delete", dest = "delete", nargs = 1,
                       help = """delete a host from db.""")
     parser.add_option("--generate-dhcp", dest = "generate_dhcp",
@@ -529,7 +815,8 @@ def setup_user(target_dir, user, passwd):
         chroot_command(target_dir,
                        "mount -t devpts none /dev/pts".split())
         chroot_command(target_dir, ["sh", "-c",
-                                    "id %s || useradd %s -g sudo" % (user, user)])
+                                    "id %s || useradd %s -g sudo" % (user,
+                                                                     user)])
         chroot_command(target_dir, ["sh", "-c",
                                     "echo %s:%s | chpasswd" % (user, passwd)])
         chroot_command(target_dir, ["rm", "-f", "/etc/hostname"])
@@ -543,15 +830,8 @@ def setup_user(target_dir, user, passwd):
         check_call(["umount", "-lf", os.path.join(target_dir, "dev")])
 
 def update_initram(target_dir):
-    try:
-        check_call(["mount", "-o", "bind", "/dev/",
-                    os.path.join(target_dir, "dev")])
-        chroot_command(target_dir,
-                       "mount -t proc none /proc".split())
-        chroot_command(target_dir,
-                       "mount -t sysfs none /sys".split())
-        chroot_command(target_dir,
-                       "mount -t devpts none /dev/pts".split())
+    env = ChrootEnvironment(target_dir)
+    with env:
         chroot_command(target_dir, ["sh", "-c",
                                     "echo '%s' > /etc/initramfs-tools/initramfs.conf" % (INITRAMFS_CONF)])
         chroot_command(target_dir, ["sh", "-c",
@@ -560,14 +840,26 @@ def update_initram(target_dir):
                                     "echo '%s' > /etc/initramfs-tools/modules" % (INITRAM_MODULES)])
         chroot_command(target_dir, ["sh", "-c",
                                     "mkinitramfs -o /boot/initrd.img-`uname -r` `ls /lib/modules`"])
-    finally:
+
+def setup_pxe_dphys(target_dir):
+    env = ChrootEnvironment(target_dir)
+    f = open(os.path.join(target_dir, "usr/local/sbin/pxe-dphys-swapfile"), "w")
+    f.write(PXE_DPHYS_SWAPFILE)
+    f.close()
+    f = open(os.path.join(target_dir, "etc/init.d/pxe-dphys-swapfile"), "w")
+    f.write(PXE_DPHYS_SWAPFILE_INIT_D)
+    f.close()
+    f = open(os.path.join(target_dir, "etc/dphys-swapfile"), "w")
+    f.write(PXE_DPHYS_CONFIG)
+    f.close()
+    with env:
         chroot_command(target_dir,
-                       "umount -lf /proc".split())
+                       ["chmod", "+x", "/usr/local/sbin/pxe-dphys-swapfile"])
         chroot_command(target_dir,
-                       "umount -lf /sys".split())
+                       ["chmod", "+x", "/etc/init.d/pxe-dphys-swapfile"])
         chroot_command(target_dir,
-                       "umount -lf /dev/pts".split())
-        check_call(["umount", "-lf", os.path.join(target_dir, "dev")])
+                       ["update-rc.d", "pxe-dphys-swapfile", "defaults"])
+        
         
 def generate_pxe_filesystem(template_dir, target_dir, apt_sources,
                             user, passwd):
@@ -577,6 +869,7 @@ def generate_pxe_filesystem(template_dir, target_dir, apt_sources,
         copy_template_filesystem(template_dir, target_dir, apt_sources)
     install_apt_packages(target_dir)
     setup_user(target_dir, user, passwd)
+    setup_pxe_dphys(target_dir)
     update_initram(target_dir)
 
 def generate_top_html(db):
