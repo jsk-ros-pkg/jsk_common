@@ -536,7 +536,7 @@ prefix of dhcpd.conf""")
                       default = "pxelinux.0",
                       help = "file name of pxelinux.")
     parser.add_option("--pxe-server", dest = "pxe_server",
-                      default = "192.168.101.153",
+                      default = "192.168.101.182",
                       help = "the ip address of pxe server.")
     parser.add_option("--subnet", dest = "subnet",
                       default = "192.168.101.0",
