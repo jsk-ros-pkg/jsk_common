@@ -23,6 +23,102 @@ from subprocess import check_call
 from optparse import OptionParser
 from string import Template
 
+VIRTUALBOX_XML_TEMPLATE = """<?xml version="1.0"?>
+<VirtualBox xmlns="http://www.innotek.de/VirtualBox-settings" version="1.11-linux">
+  <Machine uuid="{${machine_uuid}}" name="${hostname}" OSType="Ubuntu_64" snapshotFolder="Snapshots" lastStateChange="2011-07-13T01:36:29Z">
+    <MediaRegistry>
+      <HardDisks/>
+      <DVDImages>
+        <Image uuid="{${cd_uuid}}" location="/usr/share/virtualbox/VBoxGuestAdditions.iso"/>
+      </DVDImages>
+      <FloppyImages/>
+    </MediaRegistry>
+    <ExtraData>
+      <ExtraDataItem name="GUI/InfoDlgState" value="400,450,normal"/>
+      <ExtraDataItem name="GUI/LastCloseAction" value="powerOff"/>
+      <ExtraDataItem name="GUI/LastGuestSizeHint" value="2560,1600"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="1,33,2558,1538"/>
+      <ExtraDataItem name="GUI/LastScaleWindowPosition" value="960,551,640,480"/>
+      <ExtraDataItem name="GUI/MiniToolBarAlignment" value="top"/>
+      <ExtraDataItem name="GUI/SaveMountedAtRuntime" value="yes"/>
+      <ExtraDataItem name="GUI/ShowMiniToolBar" value="yes"/>
+    </ExtraData>
+    <Hardware version="2">
+      <CPU count="${cpunum}" hotplug="false">
+        <HardwareVirtEx enabled="true" exclusive="true"/>
+        <HardwareVirtExNestedPaging enabled="true"/>
+        <HardwareVirtExVPID enabled="true"/>
+        <PAE enabled="false"/>
+        <HardwareVirtExLargePages enabled="false"/>
+        <HardwareVirtForce enabled="false"/>
+      </CPU>
+      <Memory RAMSize="${memsize}" PageFusion="false"/>
+      <HID Pointing="USBTablet" Keyboard="PS2Keyboard"/>
+      <HPET enabled="false"/>
+      <Chipset type="PIIX3"/>
+      <Boot>
+        <Order position="1" device="Floppy"/>
+        <Order position="2" device="DVD"/>
+        <Order position="3" device="Network"/>
+        <Order position="4" device="None"/>
+      </Boot>
+      <Display VRAMSize="${vramsize}" monitorCount="1" accelerate3D="true" accelerate2DVideo="false"/>
+      <RemoteDisplay enabled="false" authType="Null" authTimeout="5000" allowMultiConnection="true">
+        <VRDEProperties>
+          <Property name="TCP/Ports" value="8888"/>
+        </VRDEProperties>
+      </RemoteDisplay>
+      <BIOS>
+        <ACPI enabled="true"/>
+        <IOAPIC enabled="true"/>
+        <Logo fadeIn="true" fadeOut="true" displayTime="0"/>
+        <BootMenu mode="MessageAndMenu"/>
+        <TimeOffset value="0"/>
+        <PXEDebug enabled="false"/>
+      </BIOS>
+      <USBController enabled="true" enabledEhci="false"/>
+      <Network>
+        <Adapter slot="0" enabled="true" MACAddress="${macaddress}" cable="true" speed="0" type="Am79C973">
+          <DisabledModes>
+            <NAT>
+              <DNS pass-domain="true" use-proxy="false" use-host-resolver="false"/>
+              <Alias logging="false" proxy-only="false" use-same-ports="false"/>
+            </NAT>
+          </DisabledModes>
+          <BridgedInterface name="eth0"/>
+        </Adapter>
+      </Network>
+      <UART>
+        <Port slot="0" enabled="false" IOBase="0x3f8" IRQ="4" hostMode="Disconnected"/>
+        <Port slot="1" enabled="false" IOBase="0x2f8" IRQ="3" hostMode="Disconnected"/>
+      </UART>
+      <LPT>
+        <Port slot="0" enabled="false" IOBase="0x378" IRQ="4"/>
+        <Port slot="1" enabled="false" IOBase="0x378" IRQ="4"/>
+      </LPT>
+      <AudioAdapter controller="AC97" driver="Pulse" enabled="true"/>
+      <RTC localOrUTC="UTC"/>
+      <SharedFolders/>
+      <Clipboard mode="Bidirectional"/>
+      <IO>
+        <IoCache enabled="true" size="5"/>
+        <BandwidthGroups/>
+      </IO>
+      <Guest memoryBalloonSize="0"/>
+      <GuestProperties/>
+    </Hardware>
+    <StorageControllers>
+      <StorageController name="IDE Controller" type="PIIX4" PortCount="2" useHostIOCache="true" Bootable="true">
+        <AttachedDevice passthrough="false" type="DVD" port="1" device="0">
+          <Image uuid="{${cd_uuid}}"/>
+        </AttachedDevice>
+      </StorageController>
+      <StorageController name="SATA Controller" type="AHCI" PortCount="1" useHostIOCache="false" Bootable="true" IDE0MasterEmulationPort="0" IDE0SlaveEmulationPort="1" IDE1MasterEmulationPort="2" IDE1SlaveEmulationPort="3"/>
+    </StorageControllers>
+  </Machine>
+</VirtualBox>
+"""
+
 PXE_DPHYS_CONFIG = """
 CONF_SWAPSIZE=20480
 CONF_SWAPFILE=/var/swap-`ifconfig eth0 | grep HWaddr | sed 's/.*HWaddr //g' | sed 's/ //g'`
@@ -514,6 +610,30 @@ under pxelinux.cfg/""")
                       default = "localhost",
                       help = """hostname of webserver
 (defaults to localhost)""")
+    parser.add_option("--generate-virtualbox-image",
+                      metavar = "vmname",
+                      help = """generate an empty virtualbox image for
+pxe booting""")
+    parser.add_option("--virtualbox-cpunum",
+                      default = 8,
+                      type = int,
+                      help = """the number of CPUs of vm. (defaults to 8)""")
+    parser.add_option("--virtualbox-memsize",
+                      default = 1684,
+                      type = int,
+                      help = """the size of Memory of vm (in MB).
+defaults to 1684""")
+    parser.add_option("--virtualbox-vramsize",
+                      default = 64,
+                      type = int,
+                      help = """the size of Video Memory of vm (in MB).
+defaults to 64""")
+    parser.add_option("--virtualbox-macaddress",
+                      help = """the macaddress of vm.""")
+    parser.add_option("--virtualbox-path",
+                      default = os.path.join(os.environ["HOME"],
+                                             "VirtualBox VMs"),
+                      help = """path where vm configuration file be saved""")
     parser.add_option("--delete", dest = "delete", nargs = 1,
                       help = """delete a host from db.""")
     parser.add_option("--generate-dhcp", dest = "generate_dhcp",
@@ -940,8 +1060,41 @@ def generate_pxe_config_files(options):
             f = open(file_name, "w")
             f.write(file_str)
             f.close()
-    
-    
+            
+def generate_uuid():
+    pipe = os.popen("uuidgen")
+    uuid = pipe.read().strip()
+    pipe.close()
+    return uuid
+
+def generate_virtualbox_image(options):
+    vmname = options.generate_virtualbox_image
+    if not os.path.exists(options.virtualbox_path):
+        os.makedirs(options.virtualbox_path)
+    if not os.path.exists(os.path.join(options.virtualbox_path,
+                                       vmname)):
+        os.makedirs(os.path.join(options.virtualbox_path,
+                                 vmname))
+    cpunum = options.virtualbox_cpunum
+    memsize = options.virtualbox_memsize
+    vramsize = options.virtualbox_vramsize
+    macaddress = options.virtualbox_macaddress
+    cd_uuid = "9f6f1044-98a6-406c-be64-eec39baef4cb"
+    machine_uuid = generate_uuid()
+    f = open(os.path.join(options.virtualbox_path,
+                          vmname, vmname + ".vbox"),
+             "w")
+    template = Template(VIRTUALBOX_XML_TEMPLATE)
+    content = template.substitute({"machine_uuid": machine_uuid,
+                                   "cd_uuid": cd_uuid,
+                                   "hostname": vmname,
+                                   "cpunum": cpunum,
+                                   "memsize": memsize,
+                                   "vramsize": vramsize,
+                                   "macaddress": macaddress})
+    f.write(content)
+    f.close()
+            
 def main():
     options = parse_options()
     if options.web:
@@ -968,7 +1121,8 @@ def main():
                                     options.pxe_user, options.pxe_passwd)
         if options.generate_pxe_config_files:
             generate_pxe_config_files(options)
-            
+        if options.generate_virtualbox_image:
+            generate_virtualbox_image(options)
         
 if __name__ == "__main__":
     main()
