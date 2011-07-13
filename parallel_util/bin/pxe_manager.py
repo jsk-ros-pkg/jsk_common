@@ -534,34 +534,40 @@ if you want to create a full dhcpd.conf, you can specify a file to be a
 prefix of dhcpd.conf""")
     parser.add_option("--pxe-filename", dest = "pxe_filename",
                       default = "pxelinux.0",
-                      help = "file name of pxelinux.")
+                      help = "file name of pxelinux. (defaults to pxelinux.0)")
     parser.add_option("--pxe-server", dest = "pxe_server",
                       default = "192.168.101.182",
-                      help = "the ip address of pxe server.")
+                      help = """the ip address of pxe server.
+(defaults to 192.168.101.182)""")
     parser.add_option("--subnet", dest = "subnet",
                       default = "192.168.101.0",
-                      help = "subnet of dhcp")
+                      help = "subnet of dhcp. (defaults to 192.168.101.0)")
     parser.add_option("--netmask", dest = "netmask",
                       default = "255.255.255.0",
-                      help = "netmask of dhcp")
+                      help = "netmask of dhcp. (defaults to 255.255.255.0)")
     parser.add_option("--dhcp-range-start", dest = "dhcp_range_start",
                       default = "192.168.101.1",
-                      help = "the starting ip address of dhcp")
+                      help = """the starting ip address of dhcp
+(defaults to 192.168.101.1) .""")
     parser.add_option("--dhcp-range-stop", dest = "dhcp_range_stop",
                       default = "192.168.101.127",
-                      help = "the ending ip address of dhcp")
+                      help = """the ending ip address of dhcp
+(defaults to 192.168.101.127). """)
     parser.add_option("--broadcast", dest = "broadcast",
                       default = "192.168.101.255",
-                      help = "broadcast of the network")
+                      help = """broadcast of the network.
+(defaults to 192.168.101.255) """)
     parser.add_option("--dns-ip", dest = "dns_ip",
                       default = "192.168.96.209",
-                      help = "DNS of the network")
+                      help = "DNS of the network. (defaults to 192.168.96.209)")
     parser.add_option("--domain-name", dest = "domain_name",
                       default = "jsk.t.u-tokyo.ac.jp",
-                      help = "domain name of the network")
+                      help = """domain name of the network.
+(defaults to jsk.t.u-tokyo.ac.jp)""")
     parser.add_option("--gateway", dest = "gateway",
                       default = "192.168.101.254",
-                      help = "gateway of the network")
+                      help = """gateway of the network.
+(defaults to 192.168.101.254)""")
     parser.add_option("--list", dest = "list",
                       action = "store_true",
                       help = "print the list of the machines registered")
@@ -576,28 +582,31 @@ specified host""")
                       help = "port of WakeOnLan")
     parser.add_option("--generate-pxe-filesystem",
                       dest = "generate_pxe_filesystem",
-                      nargs = 1)
+                      nargs = 1,
+                      help = "generate a filesystem for pxe boot environment.")
     parser.add_option("--pxe-filesystem-template",
                       dest = "pxe_filesystem_template",
                       default = "/data/tftpboot/root_template",
-                      nargs = 1)
-    parser.add_option("--pxe-filesystem-enable-japanese",
-                      action = "store_false",
-                      dest = "pxe_filesystem_enable_japanese")
+                      nargs = 1,
+                      help = """specify the directory where template of pxe
+filesystem (will)  locate(s) (defaults to /data/tftpboot/root_template)""")
     parser.add_option("--pxe-filesystem-apt-sources",
                       dest = "pxe_filesystem_apt_sources",
                       default = os.path.join(os.path.dirname(__file__),
-                                             "sources.list"))
+                                             "sources.list"),
+                      help = """the path of apt source file of pxe filesystem
+(defaults to %s)""" % (os.path.join(os.path.dirname(__file__),
+                                    "sources.list")))
     parser.add_option("--pxe-user",
                       dest = "pxe_user",
-                      default = "pxe")
+                      default = "pxe",
+                      help = """default user in the pxe filesystem
+(defaults to pxe)""")
     parser.add_option("--pxe-passwd",
                       dest = "pxe_passwd",
-                      default = "pxe")
-    parser.add_option("--root", dest = "root",
-                      nargs = 1,
-                      default = "/data/tf/root",
-                      help = "NFS root directory")
+                      default = "pxe",
+                      help = """default password in the pxe filesystem
+(defaults to pxe)""")
     (options, args) = parser.parse_args()
     return options
 
@@ -784,7 +793,7 @@ def install_apt_packages(target_dir):
     # first of all mount
     env = ChrootEnvironment(target_dir)
     with env:
-        print ">>> installing apt packages"
+        print ">>> installing base apt packages"
         chroot_command(target_dir, ["apt-get", "update"])
         chroot_command(target_dir, ["apt-get", "install", "wget"])
         chroot_command(target_dir, ["sh", "-c",
@@ -796,13 +805,14 @@ def install_apt_packages(target_dir):
         chroot_command(target_dir, ["apt-get", "update"])
         chroot_command(target_dir,
                        ["apt-get", "install", "--force-yes", "-y"] + APT_PACKAGES.split())
-        print "  >>> installing ros apt sources"
+        print "  >>> installing ros and openrave apt packages"
         chroot_command(target_dir, ["sh", "-c",
                                     "echo deb http://packages.ros.org/ros/ubuntu lucid main > /etc/apt/sources.list.d/ros-latest.list"])
         chroot_command(target_dir, ["sh", "-c",
                                     "wget http://packages.ros.org/ros.key -O - | apt-key add -"])
+        chroot_command(target_dir, ["add-apt-repository", "ppa:openrave/release"])
         chroot_command(target_dir, ["apt-get", "update"])
-        chroot_command(target_dir, ["apt-get", "install", "--force-yes", "-y", "ros-diamondback-ros-base"])
+        chroot_command(target_dir, ["apt-get", "install", "--force-yes", "-y", "ros-diamondback-ros-base", "openrave"])
 
 def setup_user(target_dir, user, passwd):
     try:
@@ -859,7 +869,7 @@ def setup_pxe_dphys(target_dir):
                        ["chmod", "+x", "/etc/init.d/pxe-dphys-swapfile"])
         chroot_command(target_dir,
                        ["update-rc.d", "pxe-dphys-swapfile", "defaults"])
-        
+
         
 def generate_pxe_filesystem(template_dir, target_dir, apt_sources,
                             user, passwd):
