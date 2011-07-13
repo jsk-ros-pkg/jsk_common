@@ -790,7 +790,6 @@ class ChrootEnvironment():
     
 
 def install_apt_packages(target_dir):
-    # first of all mount
     env = ChrootEnvironment(target_dir)
     with env:
         print ">>> installing base apt packages"
@@ -815,29 +814,14 @@ def install_apt_packages(target_dir):
         chroot_command(target_dir, ["apt-get", "install", "--force-yes", "-y", "ros-diamondback-ros-base", "openrave"])
 
 def setup_user(target_dir, user, passwd):
-    try:
-        check_call(["mount", "-o", "bind", "/dev/",
-                    os.path.join(target_dir, "dev")])
-        chroot_command(target_dir,
-                       "mount -t proc none /proc".split())
-        chroot_command(target_dir,
-                       "mount -t sysfs none /sys".split())
-        chroot_command(target_dir,
-                       "mount -t devpts none /dev/pts".split())
+    env = ChrootEnvironment(target_dir)
+    with env:
         chroot_command(target_dir, ["sh", "-c",
                                     "id %s || useradd %s -g sudo" % (user,
                                                                      user)])
         chroot_command(target_dir, ["sh", "-c",
                                     "echo %s:%s | chpasswd" % (user, passwd)])
         chroot_command(target_dir, ["rm", "-f", "/etc/hostname"])
-    finally:
-        chroot_command(target_dir,
-                       "umount -lf /proc".split())
-        chroot_command(target_dir,
-                       "umount -lf /sys".split())
-        chroot_command(target_dir,
-                       "umount -lf /dev/pts".split())
-        check_call(["umount", "-lf", os.path.join(target_dir, "dev")])
 
 def update_initram(target_dir):
     env = ChrootEnvironment(target_dir)
