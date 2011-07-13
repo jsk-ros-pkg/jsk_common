@@ -1091,7 +1091,7 @@ def generate_virtualbox_image(options):
                                    "cpunum": cpunum,
                                    "memsize": memsize,
                                    "vramsize": vramsize,
-                                   "macaddress": macaddress})
+                                   "macaddress": macaddress.replace(":", "")})
     f.write(content)
     f.close()
             
