@@ -92,3 +92,32 @@ Make sure to enable 3D acceleration and allocate the right amount of cpu and mem
 
 NOTE: It would be great to have a script that configures the new VM.
 
+Commandline Interface to VirtualBox
+-----------------------------------
+
+1. listing the registered vms
+
+.. code-block:: bash
+
+  $ VBoxManage list vms
+  "pxetest" {341ef969-487a-4827-a59e-905bb3fb8f7a}
+  "pxetest2" {904d947a-8723-433b-b27e-5cf9241c523b}
+
+2. start vm with GUI
+
+.. code-block:: bash
+
+  $ virtualbox --startvm VMNAME
+
+3. start vm without GUI (headless)
+
+.. code-block:: bash
+
+  $ VBoxHeadless -s VMNAME
+
+4. register a new vm (.vms file) to your virtualbox
+
+.. code-block:: bash
+
+  $ VBoxManage registervm foo.vms
+  
