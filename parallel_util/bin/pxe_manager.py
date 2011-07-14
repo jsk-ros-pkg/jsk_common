@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import random
+from socket import gethostbyaddr
 import BaseHTTPServer
 import cgi
 import sqlite3
@@ -408,6 +409,10 @@ FIND_HOST_SQL = """
 select * from hosts where hostname = '${hostname}';
 """
 
+FIND_IP_SQL = """
+select * from hosts where ip = '${ip}';
+"""
+
 DB_CREATE_TABLE_SQL = """
 create table hosts (
 hostname text,
@@ -596,6 +601,10 @@ ROOT_DIR is a relative path from the directory specified by
                       default = "/data/tftpboot",
                       help = """root directory of tftpboot. defaults
 to /data/tftpboot""")
+    parser.add_option("--lookup-free-host",
+                      action = "store_true",
+                      help = """lookup a hostname which is able to be used
+for vm""")
     parser.add_option("--generate-pxe-config-files",
                       dest = "generate_pxe_config_files",
                       action = "store_true",
@@ -775,6 +784,14 @@ def all_hosts(con):
     for row in sql_result:
         result[row[0]] = {"ip": row[1], "macaddress": row[2], "root": row[3]}
     return result
+
+def find_by_ip(con, ip):
+    template = Template(FIND_IP_SQL)
+    sql_str = template.substitute({"ip": ip})
+    sql_result = con.execute(sql_str)
+    for row in sql_result:
+        return {"ip": row[1], "macaddress": row[2], "root": row[3]}
+    return False
 
 def find_by_hostname(con, hostname):
     template = Template(FIND_HOST_SQL)
@@ -1101,6 +1118,30 @@ def generate_virtualbox_image(options):
 
 def generate_virtualbox_macaddress():
     print "08:00:27:%02x:%02x:%02x" % (int(random.random()*0xff), int(random.random()*0xff), int(random.random()*0xff))
+
+def nslookup(ip):
+    output = gethostbyaddr(ip)
+    return output[0]
+    
+def lookup_free_host(options):
+    db = options.db
+    con = open_db(db)
+    start = options.dhcp_range_start
+    stop = options.dhcp_range_stop
+    # it might be a bug
+    ip_1 = start.split(".")[0]
+    ip_2 = start.split(".")[1]
+    ip_3 = start.split(".")[2]
+    start_ip_suffix = int(start.split(".")[3])
+    stop_ip_suffix = int(stop.split(".")[3])
+    for ip in range(start_ip_suffix, stop_ip_suffix):
+        full_ip = ".".join([ip_1, ip_2, ip_3, str(ip)])
+        not_available = find_by_ip(con, full_ip)
+        if not_available:
+            print "%s in use" % (full_ip)           # for debug
+        else:
+            print "%s %s" % (nslookup(full_ip), full_ip)
+            return
     
 def main():
     options = parse_options()
@@ -1132,6 +1173,8 @@ def main():
             generate_virtualbox_image(options)
         if options.generate_virtualbox_macaddress:
             generate_virtualbox_macaddress()
+        if options.lookup_free_host:
+            lookup_free_host(options)
 
 if __name__ == "__main__":
     main()
