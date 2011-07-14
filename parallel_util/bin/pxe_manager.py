@@ -712,8 +712,7 @@ specified host""")
 filesystem (will)  locate(s) (defaults to /data/tftpboot/root_template)""")
     parser.add_option("--pxe-filesystem-apt-sources",
                       dest = "pxe_filesystem_apt_sources",
-                      default = os.path.join(os.path.dirname(__file__),
-                                             "sources.list"),
+                      default = "/etc/apt/sources.list",
                       help = """the path of apt source file of pxe filesystem
 (defaults to %s)""" % (os.path.join(os.path.dirname(__file__),
                                     "sources.list")))
