@@ -1108,12 +1108,18 @@ def generate_virtualbox_image(options):
     cpunum = options.virtualbox_cpunum
     memsize = options.virtualbox_memsize
     vramsize = options.virtualbox_vramsize
-    macaddress = options.virtualbox_macaddress
+    if options.virtualbox_macaddress:
+        macaddress = options.virtualbox_macaddress
+    else:
+        # lookup macaddress from db
+        con = open_db(options.db)
+        hostname = find_by_hostname(con, vmname)
+        macaddress = hostname["macaddress"]
+        con.close()
     cd_uuid = "9f6f1044-98a6-406c-be64-eec39baef4cb"
     machine_uuid = generate_uuid()
-    f = open(os.path.join(options.virtualbox_path,
-                          vmname, vmname + ".vbox"),
-             "w")
+    vm_path = os.path.join(options.virtualbox_path, vmname, vmname + ".vbox")
+    f = open(vm_path, "w")
     template = Template(VIRTUALBOX_XML_TEMPLATE)
     content = template.substitute({"machine_uuid": machine_uuid,
                                    "cd_uuid": cd_uuid,
@@ -1124,7 +1130,7 @@ def generate_virtualbox_image(options):
                                    "macaddress": macaddress.replace(":", "")})
     f.write(content)
     f.close()
-
+    print "please register %s on your virtualbox" % (vm_path)
 def print_virtualbox_macaddress():
     print generate_virtualbox_macaddress()
     
