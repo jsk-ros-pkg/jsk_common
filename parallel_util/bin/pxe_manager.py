@@ -430,6 +430,7 @@ select * from hosts;
 """
 
 APT_PACKAGES = """
+python-software-properties
 ssh zsh bash-completion
 emacs vim wget
 build-essential subversion git-core cvs
