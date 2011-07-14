@@ -31,7 +31,7 @@ How to use pxe_manager.py
   $ sudo ./pxe_manager.py --auto-add root_you --db=/data/tftpboot/pxe.db
   602dhcp7.jsk.t.u-tokyo.ac.jp
   
-5. generate a virtualbox image
+3. generate a virtualbox image
 
 .. code-block:: bash
 
