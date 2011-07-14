@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import random
 import BaseHTTPServer
 import cgi
 import sqlite3
@@ -647,6 +647,9 @@ defaults to 64""")
                       action = "store_true",
                       help = """overwrite dhcp configuration file or not.
 (defaults to false)""")
+    parser.add_option("--generate-virtualbox-macaddress",
+                      action = "store_true",
+                      help = """generate a random macaddress for virtualbox""")
     parser.add_option("--prefix-dhcp-file", dest = "prefix_dhcp_file",
                       default = os.path.join(os.path.dirname(__file__),
                                              "dhcpd.conf.pre"),
@@ -1095,7 +1098,10 @@ def generate_virtualbox_image(options):
                                    "macaddress": macaddress.replace(":", "")})
     f.write(content)
     f.close()
-            
+
+def generate_virtualbox_macaddress():
+    print "08:00:27:%02x:%02x:%02x" % (int(random.random()*0xff), int(random.random()*0xff), int(random.random()*0xff))
+    
 def main():
     options = parse_options()
     if options.web:
@@ -1124,6 +1130,8 @@ def main():
             generate_pxe_config_files(options)
         if options.generate_virtualbox_image:
             generate_virtualbox_image(options)
-        
+        if options.generate_virtualbox_macaddress:
+            generate_virtualbox_macaddress()
+
 if __name__ == "__main__":
     main()
