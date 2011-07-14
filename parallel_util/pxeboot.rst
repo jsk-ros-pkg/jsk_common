@@ -1,6 +1,54 @@
 PXE Booting
 ===========
 
+How to use pxe_manager.py
+-------------------------
+
+0. setup configuration file for tftp server
+
+.. code-block:: bash
+
+  $ cat /etc/default/tftpd-hpa 
+  # /etc/default/tftpd-hpa
+  TFTP_USERNAME="tftp"
+  TFTP_DIRECTORY="/data/tftpboot"
+  TFTP_ADDRESS="0.0.0.0:69"
+  TFTP_OPTIONS="-v --secure"
+  RUN_DAEMON="yes"
+  #OPTIONS="-l -s /data/tftpboot"
+
+
+1. generate a filesystem for pxe boot
+
+.. code-block:: bash
+
+  $ sudo ./pxe_manager.py --generate-pxe-filesystem /data/tftpboot/root_you
+
+2. add a host to DB
+
+.. code-block:: bash
+
+  $ sudo ./pxe_manager.py --add HOSTNAME MAC IP ROOT_DIR --db /data/tftpboot/pxe.db
+
+3. update dhcpd.conf
+
+.. code-block:: bash
+
+  $ sudo ./pxe_manager.py --generate-dhcp --overwrite-dhcp --db /data/tftpboot/pxe.db
+
+4. generate a random macaddress for virtualbox
+
+.. code-block:: bash
+
+  $ ./pxe_manager.py --generate-virutalbox-macaddress
+  
+5. generate a virtualbox image
+
+.. code-block:: bash
+
+  $ sudo ./pxe_manager.py --generate-virtualbox-image VMNAME --virtualbox-macaddress MAC
+  
+
 Setting up VirtualBox with PXE Boot
 -----------------------------------
 
@@ -8,16 +56,16 @@ Setting up VirtualBox with PXE Boot
 
 .. code-block:: bash
 
-  wget -q  http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | sudo apt-key add -
-  echo "deb http://download.virtualbox.org/virtualbox/debian `lsb_release -cs` contrib non-free" | sudo tee /etc/apt/sources.list.d/virtualbox.list
-  sudo apt-get update
-  sudo apt-get install virtualbox-4.0
+  $ wget -q  http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | sudo apt-key add -
+  $ echo "deb http://download.virtualbox.org/virtualbox/debian `lsb_release -cs` contrib non-free" | sudo tee /etc/apt/sources.list.d/virtualbox.list
+  $ sudo apt-get update
+  $ sudo apt-get install virtualbox-4.0
 
 2. Configure your OS:
 
 .. code-block:: bash
 
-  sudo /etc/init.d/vboxdrv setup
+  $ sudo /etc/init.d/vboxdrv setup
 
 3. Add your user to the vboxusers group in /etc/group
 
@@ -25,25 +73,18 @@ Setting up VirtualBox with PXE Boot
 
 .. code-block:: bash
 
-  sudo apt-get install bridge-utils
+  $ sudo apt-get install bridge-utils
 
-5. Add this to /etc/network/interfaces::
-
-  auto br0
-  iface br0 inet dhcp
-  bridge_ports eth0
-
-6. Restart networking:
+5. Restart networking:
 
 .. code-block:: bash
 
-  sudo /etc/init.d/networking restart
+  $ sudo /etc/init.d/networking restart
 
-
-7. Start virtualbox, create a new OS with no local hard drive. Set the Network Adapter to::
+6. Start virtualbox, create a new OS with no local hard drive. Set the Network Adapter to::
 
   Attached to: Bridged Adapter
-  Name: br0
+  Name: eth0
   Adapter Type: PCnet-PCI II
   Click on Cable connected 
 
