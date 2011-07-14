@@ -979,6 +979,8 @@ def generate_pxe_filesystem(template_dir, target_dir, apt_sources,
         generate_pxe_template_filesystem(template_dir)
     if not os.path.exists(target_dir):
         copy_template_filesystem(template_dir, target_dir, apt_sources)
+    check_call(["cp", apt_sources,
+                os.path.join(target_dir, "etc", "apt", "sources.list")])
     install_apt_packages(target_dir)
     setup_user(target_dir, user, passwd)
     setup_pxe_dphys(target_dir)
