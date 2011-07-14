@@ -1140,8 +1140,10 @@ def lookup_free_host(options):
         if not_available:
             print "%s in use" % (full_ip)           # for debug
         else:
+            # check ping!
             print "%s %s" % (nslookup(full_ip), full_ip)
             return
+    print "none"
     
 def main():
     options = parse_options()
@@ -1150,7 +1152,7 @@ def main():
     else:
         if options.add:
             add_machine(options.add[0], options.add[1],
-                        options.add[2], options.db)
+                        options.add[2], options.add[3], options.db)
         if options.delete:
             delete_machine(options.delete, options.db)
         if options.generate_dhcp:
