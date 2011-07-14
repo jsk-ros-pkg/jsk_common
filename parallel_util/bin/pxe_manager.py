@@ -592,7 +592,7 @@ def parse_options():
                                              "pxe.db"),
                       help = """db file to configure pxe boot environment.
 (defaults to pxe.db)""")
-    parser.add_option("--add", dest = "add", nargs = 3,
+    parser.add_option("--add", dest = "add", nargs = 4,
                       metavar = "HOSTNAME MACADDRESS IP ROOT_DIR",
                       help = """add new machine to db.
 ROOT_DIR is a relative path from the directory specified by
