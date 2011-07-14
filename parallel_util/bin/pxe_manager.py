@@ -587,13 +587,22 @@ none /var/tmp tmpfs defaults 0 0
 
 def parse_options():
     parser = OptionParser()
+    parser.add_option("-v", "--verbose", dest = "verbose",
+                      action = "store_true",
+                      help = "run pxe_manager.py in verbose mode")
     parser.add_option("--db", dest = "db",
                       default = os.path.join(os.path.dirname(__file__),
                                              "pxe.db"),
                       help = """db file to configure pxe boot environment.
 (defaults to pxe.db)""")
+    parser.add_option("--auto-add", dest = "auto_add", nargs = 1,
+                      metavar = "ROOT_DIR",
+                      help = """automatically generate dhcp.conf,
+pxelinux config files, filesystem and add IP and hostname into DB.
+MAC address will be also generated automatically.
+this option is usefull to generate a new vm.""")
     parser.add_option("--add", dest = "add", nargs = 4,
-                      metavar = "HOSTNAME MACADDRESS IP ROOT_DIR",
+                      metavar = "HOSTNAME IP MACADDRESS ROOT_DIR",
                       help = """add new machine to db.
 ROOT_DIR is a relative path from the directory specified by
 --tftp-dir option.""")
@@ -629,10 +638,10 @@ pxe booting""")
                       type = int,
                       help = """the number of CPUs of vm. (defaults to 8)""")
     parser.add_option("--virtualbox-memsize",
-                      default = 1684,
+                      default = 4096,
                       type = int,
                       help = """the size of Memory of vm (in MB).
-defaults to 1684""")
+defaults to 4096""")
     parser.add_option("--virtualbox-vramsize",
                       default = 64,
                       type = int,
@@ -956,8 +965,8 @@ def setup_user(target_dir, user, passwd):
     env = ChrootEnvironment(target_dir)
     with env:
         chroot_command(target_dir, ["sh", "-c",
-                                    "id %s || useradd %s -g sudo" % (user,
-                                                                     user)])
+                                    "id %s || useradd %s -g sudo -s /bin/bash" % (user,
+                                                                                  user)])
         chroot_command(target_dir, ["sh", "-c",
                                     "echo %s:%s | chpasswd" % (user, passwd)])
         chroot_command(target_dir, ["rm", "-f", "/etc/hostname"])
@@ -1116,13 +1125,21 @@ def generate_virtualbox_image(options):
     f.write(content)
     f.close()
 
+def print_virtualbox_macaddress():
+    print generate_virtualbox_macaddress()
+    
 def generate_virtualbox_macaddress():
-    print "08:00:27:%02x:%02x:%02x" % (int(random.random()*0xff), int(random.random()*0xff), int(random.random()*0xff))
+    # TODO: check duplication of macaddress
+    return "08:00:27:%02x:%02x:%02x" % (int(random.random()*0xff), int(random.random()*0xff), int(random.random()*0xff))
 
 def nslookup(ip):
     output = gethostbyaddr(ip)
     return output[0]
-    
+
+def print_lookup_free_host(options):
+    string = lookup_free_host(options)
+    print string
+
 def lookup_free_host(options):
     db = options.db
     con = open_db(db)
@@ -1137,13 +1154,32 @@ def lookup_free_host(options):
     for ip in range(start_ip_suffix, stop_ip_suffix):
         full_ip = ".".join([ip_1, ip_2, ip_3, str(ip)])
         not_available = find_by_ip(con, full_ip)
-        if not_available:
-            print "%s in use" % (full_ip)           # for debug
-        else:
-            # check ping!
-            print "%s %s" % (nslookup(full_ip), full_ip)
-            return
+        if not not_available:
+            # TODO: check ping!
+            return "%s %s" % (nslookup(full_ip), full_ip)
     print "none"
+
+def auto_add_vm(options):
+    root = options.auto_add
+    free_host_ip = lookup_free_host(options)
+    free_host = free_host_ip.split()[0]
+    free_ip = free_host_ip.split()[1]
+    mac_address = generate_virtualbox_macaddress()
+    if options.verbose:
+        print ">>> add host: %s/%s/%s/%s" % (free_host,
+                                            free_ip,
+                                            mac_address,
+                                            root)
+    add_machine(free_host, mac_address, free_ip, root, options.db)
+    if options.verbose:
+        print ">>> update dhcp.conf"
+    options.overwrite_dhcp = True # force to be True
+    generate_dhcp(options, options.db)
+    if options.verbose:
+        print ">>> update pxelinux.cfg/"
+    options.generate_pxe_config_files = True # force to be True
+    generate_pxe_config_files(options)
+    
     
 def main():
     options = parse_options()
@@ -1151,32 +1187,34 @@ def main():
         run_web(options)
     else:
         if options.add:
-            add_machine(options.add[0], options.add[1],
-                        options.add[2], options.add[3], options.db)
-        if options.delete:
+            add_machine(options.add[0], options.add[2],
+                        options.add[1], options.add[3], options.db)
+        elif options.delete:
             delete_machine(options.delete, options.db)
-        if options.generate_dhcp:
+        elif options.generate_dhcp:
             generate_dhcp(options,
                           options.db)
-        if options.list:
+        elif options.list:
             print_machine_list(options.db)
-        if options.wol:
+        elif options.wol:
             for m in [options.wol]:
                 wake_on_lan(m[0], options.wol_port,
                             options.broadcast, options.db)
-        if options.generate_pxe_filesystem:
+        elif options.generate_pxe_filesystem:
             generate_pxe_filesystem(options.pxe_filesystem_template,
                                     options.generate_pxe_filesystem,
                                     options.pxe_filesystem_apt_sources,
                                     options.pxe_user, options.pxe_passwd)
-        if options.generate_pxe_config_files:
+        elif options.generate_pxe_config_files:
             generate_pxe_config_files(options)
-        if options.generate_virtualbox_image:
+        elif options.generate_virtualbox_image:
             generate_virtualbox_image(options)
-        if options.generate_virtualbox_macaddress:
-            generate_virtualbox_macaddress()
-        if options.lookup_free_host:
-            lookup_free_host(options)
-
+        elif options.generate_virtualbox_macaddress:
+            print_virtualbox_macaddress()
+        elif options.lookup_free_host:
+            print_lookup_free_host(options)
+        elif options.auto_add:
+            auto_add_vm(options)
+            
 if __name__ == "__main__":
     main()
