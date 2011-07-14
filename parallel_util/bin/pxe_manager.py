@@ -1179,7 +1179,7 @@ def auto_add_vm(options):
         print ">>> update pxelinux.cfg/"
     options.generate_pxe_config_files = True # force to be True
     generate_pxe_config_files(options)
-    
+    print free_host
     
 def main():
     options = parse_options()
