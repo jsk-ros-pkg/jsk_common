@@ -24,6 +24,10 @@ from subprocess import check_call
 from optparse import OptionParser
 from string import Template
 
+# TODO: remove dependency to ros
+import roslib; roslib.load_manifest("parallel_util")
+import parallel_util
+
 VIRTUALBOX_XML_TEMPLATE = """<?xml version="1.0"?>
 <VirtualBox xmlns="http://www.innotek.de/VirtualBox-settings" version="1.11-linux">
   <Machine uuid="{${machine_uuid}}" name="${hostname}" OSType="Ubuntu_64" snapshotFolder="Snapshots" lastStateChange="2011-07-13T01:36:29Z">
@@ -633,6 +637,10 @@ under pxelinux.cfg/""")
                       metavar = "vmname",
                       help = """generate an empty virtualbox image for
 pxe booting""")
+    parser.add_option("--refer-physical-machine",
+                      metavar = "hostname",
+                      help = """decide the parameters of virtualbox image from
+a physical machine""")
     parser.add_option("--virtualbox-cpunum",
                       default = 8,
                       type = int,
@@ -1105,8 +1113,17 @@ def generate_virtualbox_image(options):
                                        vmname)):
         os.makedirs(os.path.join(options.virtualbox_path,
                                  vmname))
-    cpunum = options.virtualbox_cpunum
-    memsize = options.virtualbox_memsize
+    if options.refer_physical_machine:
+        host = options.refer_physical_machine
+        infos = parallel_util.cpuinfos([host],
+                                       arch_filter = False,
+                                       verbose = True)
+        print infos
+        cpunum = infos[0][host][0]
+        memsize = int(infos[0][host][1] * 0.8)
+    else:
+        cpunum = options.virtualbox_cpunum
+        memsize = options.virtualbox_memsize
     vramsize = options.virtualbox_vramsize
     if options.virtualbox_macaddress:
         macaddress = options.virtualbox_macaddress
