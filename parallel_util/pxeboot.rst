@@ -44,6 +44,11 @@ You can use --virtualbox-macaddress option to specify the MAC address directly.
 
   $ sudo ./pxe_manager.py --generate-virtualbox-image VMNAME --virtualbox-macaddress=00:11:22:33:44:55
 
+If you specify a hostname of a physical machine, pxe_manager.py will decide the parameters of vm according to
+the spec of the machine. The parameters are the number of cpu and the size of memory (80% of the physical machine).
+
+  $ sudo ./pxe_manager.py --generate-virtualbox-image VMNAME --refer-physical-machine PHYS_MACHINE
+  
 Setting up VirtualBox with PXE Boot
 -----------------------------------
 
