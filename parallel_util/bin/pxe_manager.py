@@ -1244,7 +1244,9 @@ def generate_virtualbox_image(options):
                                    "macaddress": macaddress.replace(":", "")})
     f.write(content)
     f.close()
-    print "please register %s on your virtualbox" % (vm_path)
+    #print "please register %s on your virtualbox" % (vm_path)
+    check_call(["VBoxManage", "registervm", vm_path])
+    
 def print_virtualbox_macaddress():
     print generate_virtualbox_macaddress()
     
