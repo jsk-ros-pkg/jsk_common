@@ -897,7 +897,7 @@ def wake_on_lan(hostname, port, broadcast, db):
     send_wol_magick_packet([mac], broadcast, port)
 
 def chroot_command(chroot_dir, *args):
-    command = ["chroot", chroot_dir]
+    command = ["sudo", "chroot", chroot_dir]
     command.extend(*args)
     print command
     return check_call(command)
@@ -917,7 +917,7 @@ def copy_template_filesystem(template_dir, target_dir, apt_sources):
     print ">>> copying filesystem"
     check_call(["cp", "-ax", template_dir, target_dir])
     print ">>> copying etc/apt/sources.list"
-    check_call(["cp", apt_sources,
+    check_call(["sudo", "cp", apt_sources,
                 os.path.join(target_dir, "etc", "apt", "sources.list")])
     return
 
@@ -926,7 +926,7 @@ class ChrootEnvironment():
         self.target_dir = target_dir
     def __enter__(self):
         target_dir = self.target_dir
-        check_call(["mount", "-o", "bind", "/dev/",
+        check_call(["sudo", "mount", "-o", "bind", "/dev/",
                     os.path.join(target_dir, "dev")])
         chroot_command(target_dir,
                        "mount -t proc none /proc".split())
@@ -942,7 +942,7 @@ class ChrootEnvironment():
                        "umount -lf /sys".split())
         chroot_command(target_dir,
                        "umount -lf /dev/pts".split())
-        check_call(["umount", "-lf", os.path.join(target_dir, "dev")])
+        check_call(["sudo", "umount", "-lf", os.path.join(target_dir, "dev")])
     
 
 def install_apt_packages(target_dir):
@@ -952,11 +952,11 @@ def install_apt_packages(target_dir):
         chroot_command(target_dir, ["apt-get", "update"])
         chroot_command(target_dir, ["apt-get", "install", "wget"])
         chroot_command(target_dir, ["sh", "-c",
-                                    "wget -q https://www.ubuntulinux.jp/ubuntu-ja-archive-keyring.gpg -O- | sudo apt-key add -"])
+                                    "wget -q https://www.ubuntulinux.jp/ubuntu-ja-archive-keyring.gpg -O- | apt-key add -"])
         chroot_command(target_dir, ["sh", "-c",
-                                    "wget -q https://www.ubuntulinux.jp/ubuntu-jp-ppa-keyring.gpg -O- | sudo apt-key add -"])
+                                    "wget -q https://www.ubuntulinux.jp/ubuntu-jp-ppa-keyring.gpg -O- | apt-key add -"])
         chroot_command(target_dir, ["sh", "-c",
-                                    "sudo wget https://www.ubuntulinux.jp/sources.list.d/lucid.list -O /etc/apt/sources.list.d/ubuntu-ja.list"])
+                                    "wget https://www.ubuntulinux.jp/sources.list.d/lucid.list -O /etc/apt/sources.list.d/ubuntu-ja.list"])
         chroot_command(target_dir, ["apt-get", "update"])
         chroot_command(target_dir,
                        ["apt-get", "install", "--force-yes", "-y"] + APT_PACKAGES.split())
@@ -1017,7 +1017,7 @@ def generate_pxe_filesystem(template_dir, target_dir, apt_sources,
         generate_pxe_template_filesystem(template_dir)
     if not os.path.exists(target_dir):
         copy_template_filesystem(template_dir, target_dir, apt_sources)
-    check_call(["cp", apt_sources,
+    check_call(["sudo", "cp", apt_sources,
                 os.path.join(target_dir, "etc", "apt", "sources.list")])
     install_apt_packages(target_dir)
     setup_user(target_dir, user, passwd)
