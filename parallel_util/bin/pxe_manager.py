@@ -23,6 +23,7 @@ import os
 from subprocess import check_call
 from optparse import OptionParser
 from string import Template
+from daemon import DaemonContext
 
 # TODO: remove dependency to ros
 import roslib; roslib.load_manifest("parallel_util")
@@ -469,6 +470,23 @@ DHCP_HOST_TMPL = """
   }
 """
 
+ERROR_HTML_TMPL = """
+<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <title>PXE Manager</title>
+    <style type="text/css">
+  </head>
+<body>
+<h1> ERROR! </h1>
+%s
+</body>
+"""
+
 HTML_TMPL = """
 <html>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -625,6 +643,9 @@ for vm""")
 under pxelinux.cfg/""")
     parser.add_option("--web", dest = "web",
                       action = "store_true", help = """run webserver""")
+    parser.add_option("--daemon", dest = "daemon",
+                      action = "store_true", help = """run webserver
+in daemon mode""")
     parser.add_option("--web-port", dest = "web_port",
                       type = int,
                       default = 4040,
@@ -915,7 +936,7 @@ def generate_pxe_template_filesystem(template_dir):
 
 def copy_template_filesystem(template_dir, target_dir, apt_sources):
     print ">>> copying filesystem"
-    check_call(["cp", "-ax", template_dir, target_dir])
+    check_call(["sudo", "cp", "-ax", template_dir, target_dir])
     print ">>> copying etc/apt/sources.list"
     check_call(["sudo", "cp", apt_sources,
                 os.path.join(target_dir, "etc", "apt", "sources.list")])
@@ -1047,26 +1068,33 @@ def update_dhcp_from_web():
     if global_options.generate_pxe_config_files:
         generate_pxe_config_files(global_options)
 
+def generate_error_html(e):
+    return ERROR_HTML_TMPL % (e)
+        
 class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(s):
         s.send_response(200)
         s.send_header("Content-type", "text/html")
         s.end_headers()
-        if s.path.startswith("/delete"): # delete
-            delete_host = cgi.parse_qs(s.path.split("?")[1]).keys()[0]
-            delete_machine(delete_host, db_name)
-            update_dhcp_from_web()
-        elif s.path.startswith("/add"): # add
-            add_host_desc = cgi.parse_qs(s.path.split("?")[1])
-            print add_host_desc
-            add_machine(add_host_desc["hostname"][0],
-                        add_host_desc["macaddress"][0],
-                        add_host_desc["ip"][0],
-                        add_host_desc["root"][0],
-                        db_name)
-            update_dhcp_from_web()
-        html = generate_top_html(db_name)
-        s.wfile.write(html)
+        try:
+            if s.path.startswith("/delete"): # delete
+                delete_host = cgi.parse_qs(s.path.split("?")[1]).keys()[0]
+                delete_machine(delete_host, db_name)
+                update_dhcp_from_web()
+            elif s.path.startswith("/add"): # add
+                add_host_desc = cgi.parse_qs(s.path.split("?")[1])
+                print add_host_desc
+                add_machine(add_host_desc["hostname"][0],
+                            add_host_desc["macaddress"][0],
+                            add_host_desc["ip"][0],
+                            add_host_desc["root"][0],
+                            db_name)
+                update_dhcp_from_web()
+            html = generate_top_html(db_name)
+            s.wfile.write(html)
+        except e, Exception:
+            html = generate_error_html(e)
+            s.wfile.write(html)
     
 def run_web(options):
     db = options.db
@@ -1077,8 +1105,14 @@ def run_web(options):
     global global_options
     db_name = db
     global_options = options
-    BaseHTTPServer.HTTPServer((options.web_hostname, port),
-                              WebHandler).serve_forever()
+    if options.daemon:
+        dc = DaemonContext()
+        with dc:
+            BaseHTTPServer.HTTPServer((options.web_hostname, port),
+                                      WebHandler).serve_forever()
+    else:
+        BaseHTTPServer.HTTPServer((options.web_hostname, port),
+                                  WebHandler).serve_forever()
 
 def generate_pxe_config_files(options):
     if options.generate_pxe_config_files:
