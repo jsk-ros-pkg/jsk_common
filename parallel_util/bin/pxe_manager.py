@@ -23,7 +23,6 @@ import os
 from subprocess import check_call
 from optparse import OptionParser
 from string import Template
-from daemon import DaemonContext
 
 # TODO: remove dependency to ros
 import roslib; roslib.load_manifest("parallel_util")
@@ -643,9 +642,6 @@ for vm""")
 under pxelinux.cfg/""")
     parser.add_option("--web", dest = "web",
                       action = "store_true", help = """run webserver""")
-    parser.add_option("--daemon", dest = "daemon",
-                      action = "store_true", help = """run webserver
-in daemon mode""")
     parser.add_option("--web-port", dest = "web_port",
                       type = int,
                       default = 4040,
@@ -1120,14 +1116,8 @@ def run_web(options):
     global global_options
     db_name = db
     global_options = options
-    if options.daemon:
-        dc = DaemonContext()
-        with dc:
-            BaseHTTPServer.HTTPServer((options.web_hostname, port),
-                                      WebHandler).serve_forever()
-    else:
-        BaseHTTPServer.HTTPServer((options.web_hostname, port),
-                                  WebHandler).serve_forever()
+    BaseHTTPServer.HTTPServer((options.web_hostname, port),
+                              WebHandler).serve_forever()
 
 def generate_pxe_config_files(options):
     if options.generate_pxe_config_files:
