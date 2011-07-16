@@ -1142,7 +1142,16 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                                             + ":" +
                                             str(global_options.web_port))
                 params = cgi.parse_qs(s.path.split("?")[1])
-                boot_vm(params["vmname"][0], params["physical"][0])
+                vmname = params["vmname"][0]
+                physc = params["physical"][0]
+                try:
+                    global_options.generate_virtualbox_image = vmname
+                    global_options.refer_physical_machine = physc
+                    generate_virtualbox_image(global_options)
+                finally:
+                    global_options.generate_virtualbox_image = None
+                    global_options.refer_physical_machine = None
+                boot_vm(vmname, physc)
                 html = SUCCESS_HTML_TMPL % ("http://" +
                                             global_options.web_hostname
                                             + ":" +
