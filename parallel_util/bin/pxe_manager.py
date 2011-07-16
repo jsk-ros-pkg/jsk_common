@@ -24,8 +24,8 @@ from subprocess import check_call
 from optparse import OptionParser
 from string import Template
 
-# TODO: remove dependency to ros
-import roslib; roslib.load_manifest("parallel_util")
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 import parallel_util
 
 VIRTUALBOX_XML_TEMPLATE = """<?xml version="1.0"?>
