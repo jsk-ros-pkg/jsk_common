@@ -475,15 +475,33 @@ ERROR_HTML_TMPL = """
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
   <head>
+    <META HTTP-EQUIV="Refresh" CONTENT="5; URL=%s" />
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
     <meta http-equiv="Content-Script-Type" content="text/javascript" />
     <title>PXE Manager</title>
-    <style type="text/css">
   </head>
 <body>
 <h1> ERROR! </h1>
-%s
+<p> %s </p>
 </body>
+</html>
+"""
+
+SUCCESS_HTML_TMPL = """
+<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+  <head>
+    <META HTTP-EQUIV="Refresh" CONTENT="5; URL=%s" />
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <title>PXE Manager</title>
+  </head>
+<body>
+<h1> SUCCESS SUBMIT! </h1>
+</body>
+</html>
 """
 
 HTML_TMPL = """
@@ -527,7 +545,7 @@ dl.ip_mac {
     <div id="main">
       <div id="title">
         <h1>
-          PXE Boot manager @ MBA
+          PXE Boot manager
         </h1>
       </div> <!-- #title -->
       <div id="add">
@@ -1079,8 +1097,8 @@ def update_dhcp_from_web():
     if global_options.generate_pxe_config_files:
         generate_pxe_config_files(global_options)
 
-def generate_error_html(e):
-    return ERROR_HTML_TMPL % (e)
+def generate_error_html(e, host, port):
+    return ERROR_HTML_TMPL % ("http://" + host + ":" + str(port), e)
         
 class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(s):
@@ -1092,6 +1110,10 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 delete_host = cgi.parse_qs(s.path.split("?")[1]).keys()[0]
                 delete_machine(delete_host, db_name)
                 update_dhcp_from_web()
+                html = SUCCESS_HTML_TMPL % ("http://" +
+                                            global_options.web_hostname
+                                            + ":" +
+                                            str(global_options.web_port))
             elif s.path.startswith("/add"): # add
                 add_host_desc = cgi.parse_qs(s.path.split("?")[1])
                 print add_host_desc
@@ -1101,10 +1123,17 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                             add_host_desc["root"][0],
                             db_name)
                 update_dhcp_from_web()
-            html = generate_top_html(db_name)
+                html = SUCCESS_HTML_TMPL % ("http://" +
+                                            global_options.web_hostname
+                                            + ":" +
+                                            str(global_options.web_port))
+            else:
+                html = generate_top_html(db_name)
             s.wfile.write(html)
-        except e, Exception:
-            html = generate_error_html(e)
+        except Exception, e:
+            html = generate_error_html(e,
+                                       global_options.web_hostname,
+                                       global_options.web_port)
             s.wfile.write(html)
     
 def run_web(options):
