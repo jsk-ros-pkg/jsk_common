@@ -4,7 +4,7 @@ PXE Booting
 How to use pxe_manager.py
 -------------------------
 
-0. setup configuration file for tftp server
+0. setup configuration file for tftp server and permissions
 
 .. code-block:: bash
 
@@ -18,17 +18,29 @@ How to use pxe_manager.py
   #OPTIONS="-l -s /data/tftpboot"
 
 
+in order to run without superuser permission, we need change the permissions.
+
+.. code-block:: bash
+
+  $ sudo usermod -G tftp YOURNAME        # add your account to tftp group
+  $ sudo chgrp tftp /data/tftpboot
+  $ sudo chmod g+rw /data/tftpboot
+  $ sudo chgrp -R tftp /data/tftpboot/pxelinux.cfg
+  $ sudo chmod -R g+rw /data/tftpboot/pxelinux.cfg
+  $ sudo chgrp tftp /etc/dhcp3/dhcpd.conf
+  $ sudo chmod g+rw /etc/dhcp3/dhcpd.conf
+
 1. generate a filesystem for pxe boot
 
 .. code-block:: bash
 
-  $ sudo ./pxe_manager.py --generate-pxe-filesystem /data/tftpboot/root_you
+  $ ./pxe_manager.py --generate-pxe-filesystem /data/tftpboot/root_you
 
 2. add a host to DB
 
 .. code-block:: bash
 
-  $ sudo ./pxe_manager.py --auto-add root_you --db=/data/tftpboot/pxe.db
+  $ ./pxe_manager.py --auto-add root_you --db=/data/tftpboot/pxe.db
   602dhcp7.jsk.t.u-tokyo.ac.jp
   
 3. generate a virtualbox image
