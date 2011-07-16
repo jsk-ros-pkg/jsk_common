@@ -513,33 +513,6 @@ HTML_TMPL = """
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
     <meta http-equiv="Content-Script-Type" content="text/javascript" />
     <title>PXE Manager</title>
-    <style type="text/css">
-dl.host_list {
- border:1px solid #999;
- width:490px;
-}
-
-dt.hostname {
- float:left;
- width:100px;
- padding:5px 0 5px 10px;
- clear:both;
- font-weight:bold;
-}
-
-dd.ip_mac {
- width:260px;
- margin-left:100px;
- padding:5px 5px 5px 10px;
- border-left:1px solid #999;
-}
-
-dl.ip_mac {
-    width:260px;
-    margin-left:0px;
-    padding:5px 5px 5px 10px;
-}
-    </style>
   </head>
   <body>
     <div id="main">
@@ -549,6 +522,7 @@ dl.ip_mac {
         </h1>
       </div> <!-- #title -->
       <div id="add">
+       <p>
        <form method="get" action="add">
          hostname
          <input type="text" name="hostname"/>
@@ -558,13 +532,32 @@ dl.ip_mac {
          <input type="text" name="macaddress"/>
          root directory
          <input type="text" name="root"/>
-         <input type="submit" />
+         <input type="submit" value="add host"/>
        </form>
+       </p>
       </div>
-      <div id="host_list">
-        <dl class="host_list">
+<div id="auto_add">
+<p>
+<form method="get" action="add">
+root directory
+<input type="text" name="root"/>
+<input type="submit" value="add auto host"/>
+</form>
+</p>
+</div>
+      <div id="host_table">
+        <table border="1">
+          <caption> hosts </caption>
+            <tr>
+              <th>hostname</th>
+              <th>IP</th>
+              <th>MAC</th>
+              <th>ROOT directory</th>
+              <th>delete</th>
+              <th>boot</th>
+            </tr>
           ${hosts}
-        </dl>
+        </table>
       </div>
     </div>
   </body>
@@ -572,17 +565,25 @@ dl.ip_mac {
 """
 
 HTML_HOST_TMPL = """
-          <dt class="hostname">${hostname}</dt>
-          <dd class="ip_mac">
-            <div>
-              ${ip}/${macaddress}@${root}
-            </div>
-            <div class="delete_host">
-              <form method="get" action="delete">
-                <input type="submit" value="delete" name="${hostname}"/>
-              </form>
-            </div>
-          </dd>
+<tr>
+<td> ${hostname} </td>
+<td> ${ip} </td>
+<td> ${macaddress} </td>
+<td> ${root} </td>
+<td>
+  <form method="get" action="delete">
+   <input type="submit" value="delete" name="${hostname}"/>
+  </form>
+</td>
+<td>
+  <form method="get" action="boot">
+physical machine
+<input type="text" name="physical"/>
+<input type="hidden" value="${hostname}" name="vmname"/>
+<input type="submit" value="boot"/>
+  </form>
+</td>
+</tr>
 """
 
 PXE_CONFIG_TMPL = """
@@ -629,6 +630,10 @@ def parse_options():
     parser.add_option("-v", "--verbose", dest = "verbose",
                       action = "store_true",
                       help = "run pxe_manager.py in verbose mode")
+    parser.add_option("--boot-vm", dest = "boot_vm",
+                      nargs = 2,
+                      metavar = "VMNAME PHYSICAL_MACHINE",
+                      help = "boot VMNAME at PHYSICAL_MACHINE.")
     parser.add_option("--db", dest = "db",
                       default = os.path.join(os.path.dirname(__file__),
                                              "pxe.db"),
@@ -852,16 +857,6 @@ def find_by_hostname(con, hostname):
     for row in sql_result:
         return {"ip": row[1], "macaddress": row[2], "root": row[3]}
     raise "cannot find %s" % (hostname)
-
-def find_machine_tag_by_hostname(dom, hostname):
-    machines = dom.getElementsByTagName("machine")
-    for m in machines:
-        if m.getAttribute("name") == hostname:
-            return m
-    return False
-
-def get_root_pxe(dom):
-    return dom.childNodes[0]
 
 def delete_machine(hostname, db):
     con = open_db(db)
@@ -1096,6 +1091,8 @@ def update_dhcp_from_web():
         generate_dhcp(global_options, global_options.db)
     if global_options.generate_pxe_config_files:
         generate_pxe_config_files(global_options)
+    # restart dhcp server
+    check_call(["sudo", "/etc/init.d/dhcp3-server", "restart"])
 
 def generate_error_html(e, host, port):
     return ERROR_HTML_TMPL % ("http://" + host + ":" + str(port), e)
@@ -1106,7 +1103,7 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         s.send_header("Content-type", "text/html")
         s.end_headers()
         try:
-            if s.path.startswith("/delete"): # delete
+            if s.path.startswith("/delete"): # --delete
                 delete_host = cgi.parse_qs(s.path.split("?")[1]).keys()[0]
                 delete_machine(delete_host, db_name)
                 update_dhcp_from_web()
@@ -1114,15 +1111,38 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                                             global_options.web_hostname
                                             + ":" +
                                             str(global_options.web_port))
-            elif s.path.startswith("/add"): # add
+            elif s.path.startswith("/add"): # --add
                 add_host_desc = cgi.parse_qs(s.path.split("?")[1])
-                print add_host_desc
                 add_machine(add_host_desc["hostname"][0],
                             add_host_desc["macaddress"][0],
                             add_host_desc["ip"][0],
                             add_host_desc["root"][0],
                             db_name)
                 update_dhcp_from_web()
+                html = SUCCESS_HTML_TMPL % ("http://" +
+                                            global_options.web_hostname
+                                            + ":" +
+                                            str(global_options.web_port))
+            elif s.path.startswith("/auto_add"): # --auto-add
+                add_host_desc = cgi.parse_qs(s.path.split("?")[1])
+                root_dir = add_host_desc["root"][0]
+                try:
+                    global_options.auto_add = root_dir
+                    auto_add_vm(global_options)
+                finally:
+                    global_options.auto_add = None
+                update_dhcp_from_web()
+                html = SUCCESS_HTML_TMPL % ("http://" +
+                                            global_options.web_hostname
+                                            + ":" +
+                                            str(global_options.web_port))
+            elif s.path.startswith("/boot"):
+                html = SUCCESS_HTML_TMPL % ("http://" +
+                                            global_options.web_hostname
+                                            + ":" +
+                                            str(global_options.web_port))
+                params = cgi.parse_qs(s.path.split("?")[1])
+                boot_vm(params["vmname"][0], params["physical"][0])
                 html = SUCCESS_HTML_TMPL % ("http://" +
                                             global_options.web_hostname
                                             + ":" +
@@ -1271,6 +1291,12 @@ def auto_add_vm(options):
     options.generate_pxe_config_files = True # force to be True
     generate_pxe_config_files(options)
     print free_host
+
+def boot_vm(vmname, physical_machine):
+    cmd = "ssh %s screen -U VBoxHeadless -s %s" % (physical_machine,
+                                                   vmname)
+    print cmd
+    check_call(cmd.split())
     
 def main():
     options = parse_options()
@@ -1306,6 +1332,8 @@ def main():
             print_lookup_free_host(options)
         elif options.auto_add:
             auto_add_vm(options)
+        elif options.boot_vm:
+            boot_vm(options.boot_vm[0], options.boot_vm[1])
             
 if __name__ == "__main__":
     main()
