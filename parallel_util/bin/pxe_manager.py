@@ -905,11 +905,11 @@ def chroot_command(chroot_dir, *args):
 def generate_pxe_template_filesystem(template_dir):
     print ">>> generating template filesystem"
     try:
-        check_call(["debootstrap", "lucid", template_dir])
+        check_call(["sudo", "debootstrap", "lucid", template_dir])
     except:
         # remove template_dir
         print ">>> removing template dir"
-        check_call(["rm", "-rf", template_dir])
+        check_call(["sudo", "rm", "-rf", template_dir])
         raise
 
 
