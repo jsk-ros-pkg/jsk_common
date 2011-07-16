@@ -127,7 +127,7 @@ VIRTUALBOX_XML_TEMPLATE = """<?xml version="1.0"?>
 
 PXE_DPHYS_CONFIG = """
 CONF_SWAPSIZE=20480
-CONF_SWAPFILE=/var/swap-`ifconfig eth0 | grep HWaddr | sed 's/.*HWaddr //g' | sed 's/ //g'`
+CONF_SWAPFILE=/var/swap-\`ifconfig eth0 | grep HWaddr | sed 's/.*HWaddr //g' | sed 's/ //g'\`
 """
 
 PXE_DPHYS_SWAPFILE_INIT_D = """
@@ -167,10 +167,10 @@ export PATH
 # what we are
 NAME=dphys-swapfile
 
-case "$1" in
+case "\$1" in
 
   start)
-    /bin/echo "Starting ${NAME} swapfile setup ..."
+    /bin/echo "Starting \${NAME} swapfile setup ..."
 
     # (re-)size/-generate (and also first time install)
     # this will produce output, so no -n in above echo
@@ -185,7 +185,7 @@ case "$1" in
 
 
   stop|default-stop)
-    /bin/echo -n "Stopping ${NAME} swapfile setup ..."
+    /bin/echo -n "Stopping \${NAME} swapfile setup ..."
 
     # as no swapon or swapoff in /etc/fstab, do this from here
     /usr/local/sbin/pxe-dphys-swapfile swapoff
@@ -195,12 +195,12 @@ case "$1" in
 
 
   restart|reload|force-reload)
-    /bin/echo "No daemon to (force-)re[start|load] in ${NAME}"
+    /bin/echo "No daemon to (force-)re[start|load] in \${NAME}"
     ;;
 
 
  *)
-    /bin/echo "Usage: $0 {start|stop}"
+    /bin/echo "Usage: \$0 {start|stop}"
 
     exit 1
     ;;
@@ -247,58 +247,58 @@ PNAME=dphys-swapfile
 
 # check user config file, let user overwride settings
 #   swap file place/filename and size
-if [ -f /etc/"${PNAME}" ] ; then
-  . /etc/"${PNAME}"
+if [ -f /etc/"\${PNAME}" ] ; then
+  . /etc/"\${PNAME}"
 fi
 
 
-case "$1" in
+case "\$1" in
 
   setup)
     # (re-)size/-generate, fast if no memory size change
 
-    if [ "${CONF_SWAPSIZE}" = "" ] ; then
+    if [ "\${CONF_SWAPSIZE}" = "" ] ; then
       # compute automatic optimal size
       echo -n "computing size, "
       # this seems to be the nearest to physical RAM size, lacks about 60k
-      KCORESIZE="`ls -l /proc/kcore | awk '{ print $5 }'`"
+      KCORESIZE="\`ls -l /proc/kcore | awk '{ print \$5 }'\`"
       # make MBytes which rounded down will be exactly 1 too few, so add 1
-      MEMSIZE="`expr "${KCORESIZE}" / 1048576 + 1`"
+      MEMSIZE="\`expr "\${KCORESIZE}" / 1048576 + 1\`"
       # default, without config file overwriding, swap=2*RAM
-      CONF_SWAPSIZE="`expr "${MEMSIZE}" '*' "${SWAPFACTOR}"`"
+      CONF_SWAPSIZE="\`expr "\${MEMSIZE}" '*' "\${SWAPFACTOR}"\`"
     fi
 
     # announce end resulting config
-    echo -n "want ${CONF_SWAPFILE}=${CONF_SWAPSIZE}MByte"
+    echo -n "want \${CONF_SWAPFILE}=\${CONF_SWAPSIZE}MByte"
 
 
     # we will be later starting, and in between possible deleting/rebuilding
     #   so deactivate any allready running swapfile, to avoid errors
-    "$0" swapoff
+    "\$0" swapoff
 
 
 
     # compare existing swapfile (if one exists) to see if it needs replacing
-    if [ -f "${CONF_SWAPFILE}" ] ; then
+    if [ -f "\${CONF_SWAPFILE}" ] ; then
 
       echo -n ", checking existing"
 
       # we need bytes for comparing with existing swap file
-      SWAPBYTES="`expr "${CONF_SWAPSIZE}" '*' 1048576`"
+      SWAPBYTES="\`expr "\${CONF_SWAPSIZE}" '*' 1048576\`"
 
-      FILEBYTES="`ls -l "${CONF_SWAPFILE}" | awk '{ print $5 }'`"
+      FILEBYTES="\`ls -l "\${CONF_SWAPFILE}" | awk '{ print \$5 }'\`"
 
       # wrong size, get rid of existing swapfile, after remake
-      if [ "${FILEBYTES}" != "${SWAPBYTES}" ] ; then
+      if [ "\${FILEBYTES}" != "\${SWAPBYTES}" ] ; then
 
         # updates to this section need duplicating in postrm script
         #   can not simply make subroutine here and call that from postrm
         #     as this script is deleted before  postrm purge  is called
 
-        echo -n ": deleting wrong size file (${FILEBYTES})"
+        echo -n ": deleting wrong size file (\${FILEBYTES})"
 
         # deactivate and delete existing file, before remaking for new size
-        "$0" uninstall
+        "\$0" uninstall
 
       else
 
@@ -308,20 +308,20 @@ case "$1" in
     fi
 
     # if no swapfile (or possibly old one got deleted) make one
-    if [ ! -f "${CONF_SWAPFILE}" ] ; then
+    if [ ! -f "\${CONF_SWAPFILE}" ] ; then
 
       echo -n ", generating swapfile ..."
 
       # first deleting existing mount lines, if any there (same code as above)
-      grep -v "^${CONF_SWAPFILE}" /etc/fstab > /etc/.fstab
+      grep -v "^\${CONF_SWAPFILE}" /etc/fstab > /etc/.fstab
       mv /etc/.fstab /etc/fstab
 
-      dd if=/dev/zero of="${CONF_SWAPFILE}" bs=1048576 \
-        count="${CONF_SWAPSIZE}" 2> /dev/null
-      mkswap "${CONF_SWAPFILE}" > /dev/null
+      dd if=/dev/zero of="\${CONF_SWAPFILE}" bs=1048576 \
+        count="\${CONF_SWAPSIZE}" 2> /dev/null
+      mkswap "\${CONF_SWAPFILE}" > /dev/null
 
       # ensure that only root can read possibly critical stuff going in here
-      chmod 600 "${CONF_SWAPFILE}"
+      chmod 600 "\${CONF_SWAPFILE}"
 
       # do not mount swapfile via fstab, because S35mountall.sh is already done
       #   so just add warning comment line that swapfile is not in fstab
@@ -329,13 +329,13 @@ case "$1" in
       # get rid of possibly already existing comment about
       #   swapfile mounted by this script
       grep -v "^# a swapfile" /etc/fstab > /etc/.fstab
-      grep -v "${NAME}" /etc/.fstab > /etc/fstab
+      grep -v "\${NAME}" /etc/.fstab > /etc/fstab
       # add new comment about this
       echo "# a swapfile is not a swap partition, so no using swapon|off" \
-        "from here on, use  ${NAME} swap[on|off]  for that" >> /etc/fstab
+        "from here on, use  \${NAME} swap[on|off]  for that" >> /etc/fstab
 
       # and inform the user what we did
-      echo -n " of ${CONF_SWAPSIZE}MBytes"
+      echo -n " of \${CONF_SWAPSIZE}MBytes"
 
     fi
 
@@ -346,7 +346,7 @@ case "$1" in
 
   install)
     # synonym for setup, in case someone types this
-    "$0" setup
+    "\$0" setup
 
     ;;
 
@@ -357,12 +357,12 @@ case "$1" in
     #     between mounting of /var (where swap file most likely resides)
     #     and executing swapon, where the file already needs to be existing
 
-    if [ -f "${CONF_SWAPFILE}" ] ; then
-      losetup /dev/loop0 ${CONF_SWAPFILE}
+    if [ -f "\${CONF_SWAPFILE}" ] ; then
+      losetup /dev/loop0 \${CONF_SWAPFILE}
       swapon /dev/loop0 2>&1 > /dev/null
     else
-      echo "$0: ERROR: swap file ${CONF_SWAPFILE} missing!" \
-          "you need to first run  $0 setup  to generate one"
+      echo "\$0: ERROR: swap file \${CONF_SWAPFILE} missing!" \
+          "you need to first run  \$0 setup  to generate one"
     fi
 
     ;;
@@ -372,8 +372,8 @@ case "$1" in
     # as there can also be no swapoff in /etc/fstab, do it from here
 
     # first test if swap is even active, else error from swapoff
-    if [ "`swapon -s | grep /dev/loop0 | \
-        cut -f1 -d\  `" != "" ] ; then
+    if [ "\`swapon -s | grep /dev/loop0 | \
+        cut -f1 -d\  \`" != "" ] ; then
       swapoff /dev/loop0 2>&1 > /dev/null
     fi
 
@@ -385,22 +385,22 @@ case "$1" in
     #   it auto-installs as side effect of recomputing and checking size
 
     # deactivate before deleting
-    "$0" swapoff
+    "\$0" swapoff
 
-    if [ -f "${CONF_SWAPFILE}" ] ; then
+    if [ -f "\${CONF_SWAPFILE}" ] ; then
       # reclaim the file space
-      rm "${CONF_SWAPFILE}"
+      rm "\${CONF_SWAPFILE}"
     fi
 
     # and get rid of comment about swapfile mounting
     grep -v "^# a swapfile" /etc/fstab > /etc/.fstab
-    grep -v "${NAME}" /etc/.fstab > /etc/fstab
+    grep -v "\${NAME}" /etc/.fstab > /etc/fstab
 
     ;;
 
 
  *)
-    echo "Usage: $0 {setup|swapon|swapoff|uninstall}"
+    echo "Usage: \$0 {setup|swapon|swapoff|uninstall}"
 
     exit 1
     ;;
@@ -1014,16 +1014,31 @@ def update_initram(target_dir):
 
 def setup_pxe_dphys(target_dir):
     env = ChrootEnvironment(target_dir)
-    f = open(os.path.join(target_dir, "usr/local/sbin/pxe-dphys-swapfile"), "w")
-    f.write(PXE_DPHYS_SWAPFILE)
-    f.close()
-    f = open(os.path.join(target_dir, "etc/init.d/pxe-dphys-swapfile"), "w")
-    f.write(PXE_DPHYS_SWAPFILE_INIT_D)
-    f.close()
-    f = open(os.path.join(target_dir, "etc/dphys-swapfile"), "w")
-    f.write(PXE_DPHYS_CONFIG)
-    f.close()
+    # f = open(os.path.join(target_dir, "usr/local/sbin/pxe-dphys-swapfile"), "w")
+    # f.write(PXE_DPHYS_SWAPFILE)
+    # f.close()
+    # f = open(os.path.join(target_dir, "etc/init.d/pxe-dphys-swapfile"), "w")
+    # f.write(PXE_DPHYS_SWAPFILE_INIT_D)
+    # f.close()
+    # f = open(os.path.join(target_dir, "etc/dphys-swapfile"), "w")
+    # f.write(PXE_DPHYS_CONFIG)
+    # f.close()
     with env:
+        chroot_command(target_dir,
+                       ["sh", "-c",
+                        """cat > /usr/local/sbin/pxe-dphys-swapfile <<EOF
+%s
+EOF""" % (PXE_DPHYS_SWAPFILE)])
+        chroot_command(target_dir,
+                       ["sh", "-c",
+                        """cat > /etc/init.d/pxe-dphys-swapfile <<EOF
+%s
+EOF""" % (PXE_DPHYS_SWAPFILE_INIT_D)])
+        chroot_command(target_dir,
+                       ["sh", "-c",
+                        """cat > /etc/dphys-swapfile <<EOF
+%s
+EOF""" % (PXE_DPHYS_CONFIG)])
         chroot_command(target_dir,
                        ["chmod", "+x", "/usr/local/sbin/pxe-dphys-swapfile"])
         chroot_command(target_dir,
