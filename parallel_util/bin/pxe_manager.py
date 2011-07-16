@@ -1304,8 +1304,8 @@ def auto_add_vm(options):
     print free_host
 
 def boot_vm(vmname, physical_machine):
-    cmd = "ssh %s screen -U VBoxHeadless -s %s" % (physical_machine,
-                                                   vmname)
+    cmd = "ssh pxe@%s screen -U VBoxHeadless -s %s" % (physical_machine,
+                                                       vmname)
     print cmd
     check_call(cmd.split())
     
