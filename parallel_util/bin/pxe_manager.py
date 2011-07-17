@@ -699,7 +699,7 @@ defaults to 64""")
                       help = """the macaddress of vm.""")
     parser.add_option("--virtualbox-path",
                       default = os.path.join(os.environ["HOME"],
-                                             "VirtualBox VMs"),
+                                             ".VirtualBox"),
                       help = """path where vm configuration file be saved""")
     parser.add_option("--delete", dest = "delete", nargs = 1,
                       help = """delete a host from db.""")
@@ -1151,7 +1151,7 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 finally:
                     global_options.generate_virtualbox_image = None
                     global_options.refer_physical_machine = None
-                boot_vm(vmname, physc)
+                boot_vm(global_options.virtualbox_path, vmname, physc)
                 html = SUCCESS_HTML_TMPL % ("http://" +
                                             global_options.web_hostname
                                             + ":" +
@@ -1232,7 +1232,7 @@ def generate_virtualbox_image(options):
         con.close()
     cd_uuid = "9f6f1044-98a6-406c-be64-eec39baef4cb"
     machine_uuid = generate_uuid()
-    vm_path = os.path.join(options.virtualbox_path, vmname, vmname + ".vbox")
+    vm_path = os.path.join(options.virtualbox_path, vmname + ".vbox")
     f = open(vm_path, "w")
     template = Template(VIRTUALBOX_XML_TEMPLATE)
     content = template.substitute({"machine_uuid": machine_uuid,
@@ -1245,7 +1245,7 @@ def generate_virtualbox_image(options):
     f.write(content)
     f.close()
     #print "please register %s on your virtualbox" % (vm_path)
-    check_call(["VBoxManage", "registervm", vm_path])
+    check_call(["VBoxManage", "registervm", vmname + ".vbox"])
     
 def print_virtualbox_macaddress():
     print generate_virtualbox_macaddress()
@@ -1303,11 +1303,26 @@ def auto_add_vm(options):
     generate_pxe_config_files(options)
     print free_host
 
-def boot_vm(vmname, physical_machine):
-    cmd = "ssh pxe@%s screen -U VBoxHeadless -s %s" % (physical_machine,
-                                                       vmname)
-    print cmd
-    check_call(cmd.split())
+def boot_vm(vmdir, vmname, physical_machine):
+    cmd0 = "ssh pxe@%s mkdir -p %s" % (physical_machine, vmdir)
+    cmd1 = "scp %s pxe@%s:.VirtualBox" % (os.path.join(vmdir, vmname + ".vbox"),
+                                          physical_machine)
+    cmd2 = 'ssh -t pxe@%s VBoxManage unregistervm %s' % (physical_machine,
+                                                         vmname)
+    cmd3 = 'ssh -t pxe@%s VBoxManage registervm %s' % (physical_machine,
+                                                              vmname + ".vbox")
+    cmd4 = 'ssh -t pxe@%s screen -m VBoxHeadless -s %s' % (physical_machine,
+                                                              vmname)
+    print cmd0
+    check_call(cmd0.split())
+    print cmd1
+    check_call(cmd1.split())
+    print cmd2
+    check_call(cmd2.split())
+    print cmd3
+    check_call(cmd3.split())
+    print cmd4
+    check_call(cmd4.split())
     
 def main():
     options = parse_options()
@@ -1344,7 +1359,8 @@ def main():
         elif options.auto_add:
             auto_add_vm(options)
         elif options.boot_vm:
-            boot_vm(options.boot_vm[0], options.boot_vm[1])
+            boot_vm(options.virtualbox_path,
+                    options.boot_vm[0], options.boot_vm[1])
             
 if __name__ == "__main__":
     main()
