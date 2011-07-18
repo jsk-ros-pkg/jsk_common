@@ -538,7 +538,7 @@ HTML_TMPL = """
       </div>
 <div id="auto_add">
 <p>
-<form method="get" action="add">
+<form method="get" action="auto_add">
 root directory
 <input type="text" name="root"/>
 <input type="submit" value="add auto host"/>
@@ -973,7 +973,7 @@ class ChrootEnvironment():
         chroot_command(target_dir,
                        "umount -lf /dev/pts".split())
         check_call(["sudo", "umount", "-lf", os.path.join(target_dir, "dev")])
-    
+ 
 
 def install_apt_packages(target_dir):
     env = ChrootEnvironment(target_dir)
