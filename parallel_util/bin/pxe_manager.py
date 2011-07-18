@@ -832,7 +832,7 @@ def add_host(con, host, ip, mac, root):
                                "ip": ip,
                                "macaddress": mac,
                                "root": root})
-    con.execute(sql)
+    con.execute(sql) 
     con.commit()
 
 def all_hosts(con):
@@ -1147,7 +1147,7 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 try:
                     global_options.generate_virtualbox_image = vmname
                     global_options.refer_physical_machine = physc
-                    generate_virtualbox_image(global_options)
+                    generate_virtualbox_image(global_options, False)
                 finally:
                     global_options.generate_virtualbox_image = None
                     global_options.refer_physical_machine = None
@@ -1202,7 +1202,7 @@ def generate_uuid():
     pipe.close()
     return uuid
 
-def generate_virtualbox_image(options):
+def generate_virtualbox_image(options, register_vm = True):
     vmname = options.generate_virtualbox_image
     if not os.path.exists(options.virtualbox_path):
         os.makedirs(options.virtualbox_path)
@@ -1214,10 +1214,11 @@ def generate_virtualbox_image(options):
         host = options.refer_physical_machine
         infos = parallel_util.cpuinfos([host],
                                        arch_filter = False,
-                                       verbose = True)
+                                       verbose = True,
+                                       ros_filter = False)
         print infos
         cpunum = infos[0][host][0]
-        memsize = int(infos[0][host][1] * 0.8)
+        memsize = int(infos[0][host][1] * 0.8 / 1000)
     else:
         cpunum = options.virtualbox_cpunum
         memsize = options.virtualbox_memsize
@@ -1245,7 +1246,8 @@ def generate_virtualbox_image(options):
     f.write(content)
     f.close()
     #print "please register %s on your virtualbox" % (vm_path)
-    check_call(["VBoxManage", "registervm", vmname + ".vbox"])
+    if register_vm:
+        check_call(["VBoxManage", "registervm", vmname + ".vbox"])
     
 def print_virtualbox_macaddress():
     print generate_virtualbox_macaddress()
@@ -1304,23 +1306,21 @@ def auto_add_vm(options):
     print free_host
 
 def boot_vm(vmdir, vmname, physical_machine):
-    cmd0 = "ssh pxe@%s mkdir -p %s" % (physical_machine, vmdir)
-    cmd1 = "scp %s pxe@%s:.VirtualBox" % (os.path.join(vmdir, vmname + ".vbox"),
-                                          physical_machine)
-    cmd2 = 'ssh -t pxe@%s VBoxManage unregistervm %s' % (physical_machine,
-                                                         vmname)
-    cmd3 = 'ssh -t pxe@%s VBoxManage registervm %s' % (physical_machine,
-                                                              vmname + ".vbox")
+    cmd0 = ["ssh", "-t", "pxe@%s" % (physical_machine), "sh -c 'VBoxManage unregistervm %s --delete || exit 0'" % (vmname)]
+    cmd1 = ["ssh", "pxe@%s" % physical_machine, "mkdir -p %s" % vmdir]
+    cmd2 = ["scp", os.path.join(vmdir, vmname + ".vbox"), 
+            "pxe@%s:.VirtualBox" % (physical_machine)]
+    cmd3 = ["ssh", "-t", "pxe@%s" % (physical_machine), "VBoxManage registervm %s" % (vmname + ".vbox")]
     cmd4 = ["ssh", "pxe@%s" % physical_machine,
             "screen -d -m VBoxHeadless -s %s" % vmname]
     print cmd0
-    check_call(cmd0.split())
+    check_call(cmd0)
     print cmd1
-    check_call(cmd1.split())
+    check_call(cmd1)
     print cmd2
-    check_call(cmd2.split())
+    check_call(cmd2)
     print cmd3
-    check_call(cmd3.split())
+    check_call(cmd3)
     print cmd4
     check_call(cmd4)
     
