@@ -1311,8 +1311,8 @@ def boot_vm(vmdir, vmname, physical_machine):
                                                          vmname)
     cmd3 = 'ssh -t pxe@%s VBoxManage registervm %s' % (physical_machine,
                                                               vmname + ".vbox")
-    cmd4 = 'ssh -t pxe@%s screen -m VBoxHeadless -s %s' % (physical_machine,
-                                                              vmname)
+    cmd4 = ["ssh", "pxe@%s" % physical_machine,
+            "screen -d -m VBoxHeadless -s %s" % vmname]
     print cmd0
     check_call(cmd0.split())
     print cmd1
@@ -1322,7 +1322,7 @@ def boot_vm(vmdir, vmname, physical_machine):
     print cmd3
     check_call(cmd3.split())
     print cmd4
-    check_call(cmd4.split())
+    check_call(cmd4)
     
 def main():
     options = parse_options()
