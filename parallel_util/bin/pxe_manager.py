@@ -923,7 +923,7 @@ def print_machine_list(db):
 
 def wake_on_lan(hostname, port, broadcast, db):
     con = open_db(db)
-    mac = find_by_hostname(db, hostname)["macaddress"]
+    mac = find_by_hostname(con, hostname)["macaddress"]
     send_wol_magick_packet([mac], broadcast, port)
 
 def chroot_command(chroot_dir, *args):
