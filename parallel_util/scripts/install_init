@@ -1,0 +1,6 @@
+#!/bin/sh
+
+sudo cp pxe_manager /etc/init.d
+sudo chmod +x /etc/init.d/pxe_manager
+
+sudo update-rc.d pxe_manager defaults
