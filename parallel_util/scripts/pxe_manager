@@ -6,15 +6,15 @@ progname=pxe_manager.py
 pidfile=/var/run/pxe_manager.pid
 #prog=/home/leus/ros/diamondback/jsk-ros-pkg/jsk_common/parallel_util/bin/pxe_manager.py
 
-options="--web --db=/data/tftpboot/pxe.db --tftp-dir=/data/tftpboot --overwrite-dhcp --generate-pxe-config-files"
-R_ROOT=/home/jsk/ueda/ros/diamondback
-source $R_ROOT/setup.sh
+options="--web --db=/data/tftpboot/pxe.db --tftp-dir=/data/tftpboot --overwrite-dhcp --generate-pxe-config-files --web-hostname=`hostname`"
+R_ROOT=/home/pxe/ros/diamondback
 prog=$R_ROOT/jsk-ros-pkg/jsk_common/parallel_util/bin/pxe_manager.py
+user=pxe
 
 case "$1" in
   start)
 	log_daemon_msg "Starting pxe_manager web server" "pxe_manager.py"
-	if start-stop-daemon --start --background --quiet --oknodo --pidfile $pidfile --make-pidfile --exec $prog -- $options; then
+	if start-stop-daemon --start --background --quiet --oknodo --pidfile $pidfile --make-pidfile --chuid $user --exec $prog -- $options; then
 	    log_end_msg 0
 	else
 	    log_end_msg 1
@@ -32,7 +32,7 @@ case "$1" in
   restart)
 	log_daemon_msg "Restarting pxe_manager web server" "pxe_manager.py"
 	start-stop-daemon --stop --quiet --oknodo --retry 30 --pidfile $pidfile
-	if start-stop-daemon --make-pidfile --background --start --quiet --oknodo --pidfile $pidfile --exec $prog -- $options; then
+	if start-stop-daemon --make-pidfile --background --start --quiet --oknodo --chuid $user --pidfile $pidfile --exec $prog -- $options; then
 	    log_end_msg 0
 	else
 	    log_end_msg 1
@@ -42,10 +42,14 @@ case "$1" in
   status)
 	status_of_proc -p $pidfile $prog pxe_manager && exit 0 || exit $?
 	;;
+    test)
+        $prog $options
+        ;;
 
   *)
 	log_action_msg "Usage: /etc/init.d/pxe_manager {start|stop|restart|status}"
 	exit 1
+        
 esac
 
 exit 0
