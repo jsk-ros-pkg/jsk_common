@@ -1195,6 +1195,9 @@ def generate_pxe_config_files(options):
             f = open(file_name, "w")
             f.write(file_str)
             f.close()
+            check_call(["sudo", "chown", "pxe.tftp", file_name])
+            check_call(["sudo", "chmod", "g+rw", file_name])
+            check_call(["sudo", "chmod", "u+rw", file_name])
             
 def generate_uuid():
     pipe = os.popen("uuidgen")
@@ -1206,10 +1209,6 @@ def generate_virtualbox_image(options, register_vm = True):
     vmname = options.generate_virtualbox_image
     if not os.path.exists(options.virtualbox_path):
         os.makedirs(options.virtualbox_path)
-    if not os.path.exists(os.path.join(options.virtualbox_path,
-                                       vmname)):
-        os.makedirs(os.path.join(options.virtualbox_path,
-                                 vmname))
     if options.refer_physical_machine:
         host = options.refer_physical_machine
         infos = parallel_util.cpuinfos([host],
@@ -1306,7 +1305,7 @@ def auto_add_vm(options):
     print free_host
 
 def boot_vm(vmdir, vmname, physical_machine):
-    cmd0 = ["ssh", "-t", "pxe@%s" % (physical_machine), "sh -c 'VBoxManage unregistervm %s --delete || exit 0'" % (vmname)]
+    cmd0 = ["ssh", "-t", "pxe@%s" % (physical_machine), "sh -c 'VBoxManage unregistervm %s || exit 0'" % (vmname)]
     cmd1 = ["ssh", "pxe@%s" % physical_machine, "mkdir -p %s" % vmdir]
     cmd2 = ["scp", os.path.join(vmdir, vmname + ".vbox"), 
             "pxe@%s:.VirtualBox" % (physical_machine)]
