@@ -435,7 +435,7 @@ delete from hosts where hostname = '${hostname}';
 """
 
 ALL_HOSTS_SQL = """
-select * from hosts;
+select * from hosts ORDER BY hostname;
 """
 
 APT_PACKAGES = """
@@ -1073,7 +1073,9 @@ def generate_top_html(db):
     con = open_db(db)
     machines = all_hosts(con)
     host_strs = []
-    for (hostname, ip_mac) in machines.items():
+    hosts = sorted(machines.keys())
+    for hostname in hosts:
+        ip_mac = machines[hostname]
         ip = ip_mac["ip"]
         mac = ip_mac["macaddress"]
         root = ip_mac["root"]
