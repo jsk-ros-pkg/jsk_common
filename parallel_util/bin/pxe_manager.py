@@ -83,7 +83,7 @@ VIRTUALBOX_XML_TEMPLATE = """<?xml version="1.0"?>
       </BIOS>
       <USBController enabled="true" enabledEhci="false"/>
       <Network>
-        <Adapter slot="0" enabled="true" MACAddress="${macaddress}" cable="true" speed="0" type="Am79C973">
+        <Adapter slot="0" enabled="true" MACAddress="${macaddress}" cable="true" speed="0" type="82545EM">
           <DisabledModes>
             <NAT>
               <DNS pass-domain="true" use-proxy="false" use-host-resolver="false"/>
