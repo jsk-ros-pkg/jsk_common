@@ -136,10 +136,11 @@ class EvaluationServer(object):
                         if t.req is None:
                             if not t.servicechecked:
                                 try:
-                                    t.service.wait_for_service(1.0)
+                                    t.service.wait_for_service(2.0)
                                     rospy.loginfo('service %s is verified'%t.service.resolved_name)
                                     t.servicechecked = True
-                                except rospy.ROSException:
+                                except rospy.ROSException,e:
+                                    rospy.loginfo('service %s timed out'%t.service.resolved_name)
                                     continue
                             service = t
                             break
