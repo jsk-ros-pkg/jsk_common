@@ -142,7 +142,7 @@ class EvaluationServer(object):
                         for t in busythreads:
                             if t.req is None and not t.servicechecked:
                                 try:
-                                    t.service.wait_for_service(2.0)
+                                    t.service.wait_for_service(0.5)
                                     rospy.loginfo('service %s is verified'%t.service.resolved_name)
                                     t.servicechecked = True
                                     service = t
