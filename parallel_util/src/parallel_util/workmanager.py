@@ -62,6 +62,7 @@ class EvaluationServerThread(threading.Thread):
         self.ok = True
         self.starteval = threading.Condition(threading.Lock())
         self.req = None
+        self.servicechecked = False
 
     def run(self):
         with self.starteval:
@@ -101,9 +102,6 @@ class EvaluationServer(object):
 
     def setservices(self,servicenames):
         self.shutdownservices()
-        rospy.loginfo('waiting for services: %s'%servicenames)
-        for servicename in servicenames:
-            rospy.wait_for_service(servicename)
         rospy.loginfo('starting service threads...')
         self.allthreads = [EvaluationServerThread(rospy.ServiceProxy(name, PickledService,persistent=True), self.processResult) for name in servicenames]
         for t in self.allthreads:
@@ -136,6 +134,13 @@ class EvaluationServer(object):
                 while service == None:
                     for t in busythreads:
                         if t.req is None:
+                            if not t.servicechecked:
+                                try:
+                                    t.service.wait_for_service(1.0)
+                                    rospy.loginfo('service %s is verified'%t.service.resolved_name)
+                                    t.servicechecked = True
+                                except rospy.ROSException:
+                                    continue
                             service = t
                             break
                     if service is None:
