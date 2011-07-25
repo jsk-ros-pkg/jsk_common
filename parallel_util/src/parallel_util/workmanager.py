@@ -78,10 +78,12 @@ class EvaluationServerThread(threading.Thread):
                 self.req = None
 
 class EvaluationServer(object):
-    def __init__(self,module,servicenames):
+    def __init__(self,module,servicenames,numbatchjobs=1):
         self.evallock = threading.Lock()
         self.allthreads = []
         self.module = module
+        self.numbatchjobs=numbatchjobs
+        assert(numbatchjobs>0)
         self.setservices(servicenames)
 
     def __del__(self):
@@ -107,10 +109,11 @@ class EvaluationServer(object):
         for t in self.allthreads:
             t.start()
 
-    def processResult(self,res):
-        if res is not None:
+    def processResult(self,responses):
+        if responses is not None:
             with self.evallock:
-                self.module.server_processresponse(*res)
+                for response in responses:
+                    self.module.server_processresponse(*response)
             
     def run(self):
         starttime = time.time()
@@ -121,23 +124,28 @@ class EvaluationServer(object):
             t.starteval.release()
 
         num = 0
+        requests = []
         while True:
             request = self.module.server_requestwork()
+            if request is not None:
+                requests.append(request)
+                num += 1
+            if request is None or len(requests) >= self.numbatchjobs:
+                rospy.logdebug('job %d'%num)
+                service = None
+                while service == None:
+                    for t in busythreads:
+                        if t.req is None:
+                            service = t
+                            break
+                    if service is None:
+                        time.sleep(0.01)
+                with service.starteval:
+                    service.req = PickledServiceRequest(input = pickle.dumps(requests))
+                    requests = []
+                    service.starteval.notifyAll()
             if request is None:
                 break
-            rospy.logdebug('job %d'%num)
-            num += 1
-            service = None
-            while service == None:
-                for t in busythreads:
-                    if t.req is None:
-                        service = t
-                        break
-                if service is None:
-                    time.sleep(0.01)
-            with service.starteval:
-                service.req = PickledServiceRequest(input = pickle.dumps(request))
-                service.starteval.notifyAll()
 
         # wait for all threads to finish
         rospy.loginfo('waiting for all threads to finish')
@@ -151,7 +159,7 @@ class EvaluationServer(object):
         rospy.loginfo('finished, total time: %f'%(time.time()-starttime))
 
 
-def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''):
+def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args='',numbatchjobs=1):
     servicenames = ''
     programname = os.path.split(sys.argv[0])[1]
     modulepath=os.path.split(os.path.abspath(inspect.getfile(module)))[0]
@@ -160,7 +168,7 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
         nodes += """<machine name="m%d" address="%s" default="false" %s/>\n"""%(i,serviceaddr[0],serviceaddr[1])
         nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,programname,module.__name__,args,i)
         servicenames += ' --service=openraveservice%d '%i
-    nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,programname,module.__name__,servicenames,args)
+    nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --numbatchjobs=%d --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,programname,numbatchjobs,module.__name__,servicenames,args)
     xml_text = '<launch>\n<env name="PYTHONPATH" value="$(optenv PYTHONPATH):%s"/>\n'%modulepath
     if rosnamespace is not None and len(rosnamespace) > 0:
         xml_text += """<group ns="%s">\n%s</group>"""%(rosnamespace,nodes)
@@ -186,5 +194,9 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
 
 def StartService(module,args):
     module.service_start(args.split())
-    s = rospy.Service('openraveservice', PickledService, lambda req: PickledServiceResponse(output=pickle.dumps(module.service_processrequest(*pickle.loads(req.input)))))
+    def service_call(req):
+        responses = [module.service_processrequest(*request) for request in pickle.loads(req.input)]
+        return PickledServiceResponse(output=pickle.dumps(responses))
+    
+    s = rospy.Service('openraveservice', PickledService, service_call)
     return s
