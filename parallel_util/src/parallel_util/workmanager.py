@@ -168,10 +168,11 @@ class EvaluationServer(object):
                     if t.req is None:
                         repeat = False
 
-        rospy.loginfo('finished, total time: %f'%(time.time()-starttime))
+        rospy.loginfo('services finished processing, total time: %f'%(time.time()-starttime))
 
 
 def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args='',numbatchjobs=1):
+    starttime = time.time()
     servicenames = ''
     programname = os.path.split(sys.argv[0])[1]
     modulepath=os.path.split(os.path.abspath(inspect.getfile(module)))[0]
@@ -192,14 +193,13 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     launchscript = roslaunch_caller.ScriptRoslaunch(xml_text)
     launchscript.start()
     try:
-        starttime = time.time()
         controlname = [name for name in launchscript.pm.get_active_names() if name.find('openraveserver')>=0]
         while True:
             controlproc = launchscript.pm.get_process(controlname[0])
             if controlproc is None or not controlproc.is_alive():
                 break
             time.sleep(1)
-        rospy.loginfo('%s finished in %ss'%(module.__name__,time.time()-starttime))
+        rospy.loginfo('roslaunch %s finished in %ss'%(module.__name__,time.time()-starttime))
     finally:
         rospy.loginfo('shutting down')
         launchscript.shutdown()
