@@ -140,7 +140,7 @@ class EvaluationServer(object):
                                     rospy.loginfo('service %s is verified'%t.service.resolved_name)
                                     t.servicechecked = True
                                 except rospy.ROSException,e:
-                                    rospy.loginfo('service %s timed out'%t.service.resolved_name)
+                                    rospy.loginfo('service %s timed out (%s)'%(t.service.resolved_name,str(e)))
                                     continue
                             service = t
                             break
