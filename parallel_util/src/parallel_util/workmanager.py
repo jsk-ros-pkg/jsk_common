@@ -53,6 +53,7 @@ import cPickle as pickle
 
 from srv import PickledService, PickledServiceRequest, PickledServiceResponse
 from cpuinfo import cpuinfos
+from numpy import random
 
 class EvaluationServerThread(threading.Thread):
     def __init__(self, service, finishcb):
@@ -133,17 +134,22 @@ class EvaluationServer(object):
                 service = None
                 while service == None:
                     for t in busythreads:
-                        if t.req is None:
-                            if not t.servicechecked:
+                        if t.req is None and t.servicechecked:
+                            service = t
+                            break
+                    if service == None:
+                        random.shuffle(busythreads)
+                        for t in busythreads:
+                            if t.req is None and not t.servicechecked:
                                 try:
                                     t.service.wait_for_service(2.0)
                                     rospy.loginfo('service %s is verified'%t.service.resolved_name)
                                     t.servicechecked = True
+                                    service = t
                                 except rospy.ROSException,e:
                                     rospy.loginfo('service %s timed out (%s)'%(t.service.resolved_name,str(e)))
-                                    continue
-                            service = t
-                            break
+                                break
+
                     if service is None:
                         time.sleep(0.01)
                 with service.starteval:
