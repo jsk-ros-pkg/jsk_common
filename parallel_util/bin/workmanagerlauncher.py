@@ -31,6 +31,8 @@ if __name__=='__main__':
                       help='If set, will start a service on the ROS network offering to evaluate kinematics equations')
     parser.add_option('--service', action='append', type='string', dest='servicenames',default=[],
                       help='The services used to evaluate kinematics')
+    parser.add_option('--numbatchjobs', action='store', type='int', dest='numbatchjobs',default=1,
+                      help='The number of batch jobs to request and send to ROS at one time (used to reduce bandwidth)')
     parser.add_option('--launchservice', action='append', dest='launchservices',default=[],
                       help="""If specified, will roslaunch the services and setup the correct bindings for parallel processing (recommended). Usage: "python prog.py --launchservice='4*localhost' ...""")
     parser.add_option('--csshgroup', action='store', type='string', dest='csshgroup',default=None,
@@ -45,7 +47,7 @@ if __name__=='__main__':
     elif len(options.servicenames) > 0:
         module.server_start(options.args.split())
         rospy.init_node('servicenode',anonymous=True)
-        self = workmanager.EvaluationServer(module,options.servicenames)
+        self = workmanager.EvaluationServer(module,options.servicenames,numbatchjobs=options.numbatchjobs)
         self.run()
         self.shutdownservices()
         module.server_end()
@@ -75,5 +77,5 @@ if __name__=='__main__':
                     serviceaddrs.append([addr,args])
             else:
                 serviceaddrs.append([addr,args])
-        workmanager.LaunchNodes(module,serviceaddrs=serviceaddrs,rosnamespace=options.modulename,args=options.args)
+        workmanager.LaunchNodes(module,serviceaddrs=serviceaddrs,rosnamespace=options.modulename,args=options.args,numbatchjobs=options.numbatchjobs)
     sys.exit(0)
