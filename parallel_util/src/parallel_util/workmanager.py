@@ -50,6 +50,7 @@ import threading
 import rospy, roslaunch
 import roslaunch_caller
 import cPickle as pickle
+import re
 
 from srv import PickledService, PickledServiceRequest, PickledServiceResponse
 from cpuinfo import cpuinfos
@@ -124,7 +125,8 @@ class EvaluationServer(object):
 
         num = 0
         requests = []
-        while True:
+        doshutdown = False
+        while not doshutdown:
             request = self.module.server_requestwork()
             if request is not None:
                 requests.append(request)
@@ -132,7 +134,7 @@ class EvaluationServer(object):
             if request is None or len(requests) >= self.numbatchjobs:
                 rospy.logdebug('job %d'%num)
                 service = None
-                while service == None:
+                while service == None and not doshutdown:
                     for t in busythreads:
                         if t.req is None and t.servicechecked:
                             service = t
@@ -146,16 +148,21 @@ class EvaluationServer(object):
                                     rospy.loginfo('service %s is verified'%t.service.resolved_name)
                                     t.servicechecked = True
                                     service = t
+                                except rospy.ROSInterruptException,e:
+                                    rospy.loginfo('timed out (%s)'%str(e))
+                                    doshutdown = True
+                                    break
                                 except rospy.ROSException,e:
                                     rospy.loginfo('service %s timed out (%s)'%(t.service.resolved_name,str(e)))
                                 break
 
                     if service is None:
                         time.sleep(0.01)
-                with service.starteval:
-                    service.req = PickledServiceRequest(input = pickle.dumps(requests))
-                    requests = []
-                    service.starteval.notifyAll()
+                if service is not None:
+                    with service.starteval:
+                        service.req = PickledServiceRequest(input = pickle.dumps(requests))
+                        requests = []
+                        service.starteval.notifyAll()
             if request is None:
                 break
 
@@ -176,13 +183,15 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     servicenames = ''
     programname = os.path.split(sys.argv[0])[1]
     modulepath=os.path.split(os.path.abspath(inspect.getfile(module)))[0]
+    processedargs = re.sub("'","&quot;",args)
     nodes = """<machine name="localhost" address="localhost" default="true"/>\n"""
     for i,serviceaddr in enumerate(serviceaddrs):
         nodes += """<machine name="m%d" address="%s" default="false" %s/>\n"""%(i,serviceaddr[0],serviceaddr[1])
-        nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,programname,module.__name__,args,i)
+        nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,programname,module.__name__,processedargs,i)
         servicenames += ' --service=openraveservice%d '%i
-    nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --numbatchjobs=%d --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,programname,numbatchjobs,module.__name__,servicenames,args)
+    nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --numbatchjobs=%d --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,programname,numbatchjobs,module.__name__,servicenames,processedargs)
     xml_text = '<launch>\n<env name="PYTHONPATH" value="$(optenv PYTHONPATH):%s"/>\n'%modulepath
+    print xml_text
     if rosnamespace is not None and len(rosnamespace) > 0:
         xml_text += """<group ns="%s">\n%s</group>"""%(rosnamespace,nodes)
     else:
