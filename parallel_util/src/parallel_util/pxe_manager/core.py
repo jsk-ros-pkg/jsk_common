@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+import logging
 from .template import *
 import random
 from socket import gethostbyaddr
@@ -25,6 +25,11 @@ import binascii
 import os
 from subprocess import check_call
 from string import Template
+
+def create_logger(log_file_name):
+    logger = logging.getLogger("pxe")
+    return logger
+
 
 def send_wol_magick_packet(macs, ipaddr, port):
     "http://www.emptypage.jp/gadgets/wol.html"
@@ -60,7 +65,7 @@ def add_host(con, host, ip, mac, root):
                                "ip": ip,
                                "macaddress": mac,
                                "root": root})
-    con.execute(sql) 
+    con.execute(sql)
     con.commit()
 
 def all_hosts(con):
