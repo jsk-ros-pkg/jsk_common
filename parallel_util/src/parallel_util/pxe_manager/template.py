@@ -549,9 +549,26 @@ root directory
 </html>
 """
 
-HTML_HOST_TMPL = """
+HTML_ALIVE_HOST_TMPL = """
 <tr>
-<td> ${hostname} </td>
+<td style="background-color: #99cc00"> ${hostname} </td>
+<td> ${ip} </td>
+<td> ${macaddress} </td>
+<td> ${root} </td>
+<td>
+  <form method="get" action="delete">
+   <input type="submit" value="delete" name="${hostname}"/>
+  </form>
+</td>
+<td>
+booting
+</td>
+</tr>
+"""
+
+HTML_DEAD_HOST_TMPL = """
+<tr>
+<td style="background-color: #00cc99"> ${hostname} </td>
 <td> ${ip} </td>
 <td> ${macaddress} </td>
 <td> ${root} </td>

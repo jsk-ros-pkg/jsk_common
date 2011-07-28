@@ -23,11 +23,18 @@ import sqlite3
 import socket
 import binascii
 import os
+import ping                     # easy_install ping
 from subprocess import check_call
 from string import Template
 
 LOGGER_FILE_FORMAT = '[%(asctime)s] %(name)s [%(levelname)s] %(message)s'
 LOGGER_CONSOLE_FORMAT = '>> %(message)s'
+
+def ping_host(hostname):
+    logger = logging.getLogger("pxe")
+    logger.info("ping to %s" % (hostname))
+    ping_ret = ping.quiet_ping(hostname, timeout=0.1)
+    return ping_ret[0] == 0     # verify return core is 0
 
 def create_logger(log_file_name):
     logger = logging.getLogger("pxe")
@@ -353,11 +360,19 @@ def generate_top_html(db):
         ip = ip_mac["ip"]
         mac = ip_mac["macaddress"]
         root = ip_mac["root"]
-        template = Template(HTML_HOST_TMPL)
-        host_strs.append(template.substitute({"hostname": hostname,
-                                              "ip": ip,
-                                              "macaddress": mac,
-                                              "root": root}))
+        alivep = ping_host(ip)
+        if alivep:
+            template = Template(HTML_ALIVE_HOST_TMPL)
+            host_strs.append(template.substitute({"hostname": hostname,
+                                                  "ip": ip,
+                                                  "macaddress": mac,
+                                                  "root": root}))
+        else:
+            template = Template(HTML_DEAD_HOST_TMPL)
+            host_strs.append(template.substitute({"hostname": hostname,
+                                                  "ip": ip,
+                                                  "macaddress": mac,
+                                                  "root": root}))
     con.close()
     html_template = Template(HTML_TMPL)
     return html_template.substitute({"hosts": "\n".join(host_strs)})
