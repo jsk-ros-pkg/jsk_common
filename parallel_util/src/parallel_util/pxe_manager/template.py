@@ -520,7 +520,7 @@ HTML_TMPL = """
          <input type="submit" value="add host"/>
        </form>
        </p>
-      </div>
+      </div> <!-- #add -->
 <div id="auto_add">
 <p>
 <form method="get" action="auto_add">
@@ -529,7 +529,7 @@ root directory
 <input type="submit" value="add auto host"/>
 </form>
 </p>
-</div>
+</div> <!-- #auto_add -->
       <div id="host_table">
         <table border="1">
           <caption> hosts </caption>
@@ -543,8 +543,12 @@ root directory
             </tr>
           ${hosts}
         </table>
-      </div>
-    </div>
+      </div> <!-- #host_table -->
+<div id="log">
+<h1>log</h1>
+${log}
+</div> <!-- #log -->
+    </div> <!-- #main -->
   </body>
 </html>
 """
