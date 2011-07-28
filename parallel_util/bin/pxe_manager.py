@@ -17,7 +17,6 @@ import os
 from optparse import OptionParser
 
 import roslib; roslib.load_manifest("parallel_util")
-import sys
 import parallel_util
 from parallel_util.pxe_manager.core import *
 
@@ -26,6 +25,9 @@ def parse_options():
     parser.add_option("-v", "--verbose", dest = "verbose",
                       action = "store_true",
                       help = "run pxe_manager.py in verbose mode")
+    parser.add_option("--log", dest = "log",
+                      default = "pxe.log",
+                      help = "specify the path to log file")
     parser.add_option("--boot-vm", dest = "boot_vm",
                       nargs = 2,
                       metavar = "VMNAME PHYSICAL_MACHINE",
@@ -109,6 +111,9 @@ defaults to 64""")
                       action = "store_true",
                       help = """overwrite dhcp configuration file or not.
 (defaults to false)""")
+    parser.add_option("--restart-dhcp", dest = "restart_dhcp",
+                      action = "store_true",
+                      help = """restart dhcp after generating dhcpd.conf""")
     parser.add_option("--generate-virtualbox-macaddress",
                       action = "store_true",
                       help = """generate a random macaddress for virtualbox""")
@@ -196,6 +201,8 @@ filesystem (will)  locate(s) (defaults to /data/tftpboot/root_template)""")
 
 def main():
     options = parse_options()
+    # first of all, create logger
+    logger = create_logger(options.log)
     if options.web:
         run_web(options)
     else:
@@ -218,7 +225,8 @@ def main():
                           options.pxe_server,
                           options.pxe_filename,
                           options.overwrite_dhcp,
-                          options.dhcp_conf_file)
+                          options.dhcp_conf_file,
+                          options.restart_dhcp)
         elif options.list:
             print_machine_list(options.db)
         elif options.wol:
