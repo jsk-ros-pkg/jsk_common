@@ -53,7 +53,7 @@ VIRTUALBOX_XML_TEMPLATE = """<?xml version="1.0"?>
         <Order position="4" device="None"/>
       </Boot>
       <Display VRAMSize="${vramsize}" monitorCount="1" accelerate3D="true" accelerate2DVideo="false"/>
-      <RemoteDisplay enabled="false" authType="Null" authTimeout="5000" allowMultiConnection="true">
+      <RemoteDisplay enabled="true" authType="Null" authTimeout="5000" allowMultiConnection="true">
         <VRDEProperties>
           <Property name="TCP/Ports" value="8888"/>
         </VRDEProperties>
