@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import xml.sax.saxutils
 import logging
 from .template import *
 import random
@@ -350,7 +350,7 @@ def generate_pxe_filesystem(template_dir, target_dir, apt_sources,
     setup_pxe_dphys(target_dir)
     update_initram(target_dir)
 
-def generate_top_html(db):
+def generate_top_html(db, log):
     con = open_db(db)
     machines = all_hosts(con)
     host_strs = []
@@ -363,19 +363,25 @@ def generate_top_html(db):
         alivep = ping_host(ip)
         if alivep:
             template = Template(HTML_ALIVE_HOST_TMPL)
-            host_strs.append(template.substitute({"hostname": hostname,
-                                                  "ip": ip,
-                                                  "macaddress": mac,
-                                                  "root": root}))
         else:
             template = Template(HTML_DEAD_HOST_TMPL)
-            host_strs.append(template.substitute({"hostname": hostname,
-                                                  "ip": ip,
-                                                  "macaddress": mac,
-                                                  "root": root}))
+        host_strs.append(template.substitute({"hostname": hostname,
+                                              "ip": ip,
+                                              "macaddress": mac,
+                                              "root": root}))
     con.close()
+    # generate log
+    f = open(log)
+    log_lines = f.readlines()[-1000:] # max 1000 lines
+    log_strs = []
+    for line in log_lines:
+        log_strs.append("<p>" + xml.sax.saxutils.escape(line) + "</p>")
+    log_strs.reverse()
+    f.close()
     html_template = Template(HTML_TMPL)
-    return html_template.substitute({"hosts": "\n".join(host_strs)})
+    
+    return html_template.substitute({"hosts": "\n".join(host_strs),
+                                     "log": "\n".join(log_strs)})
 
 def update_dhcp_from_web():
     if global_options.overwrite_dhcp:
@@ -471,7 +477,7 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                                             + ":" +
                                             str(global_options.web_port))
             else:
-                html = generate_top_html(db_name)
+                html = generate_top_html(db_name, global_options.log)
             s.wfile.write(html)
         except Exception, e:
             html = generate_error_html(e,
