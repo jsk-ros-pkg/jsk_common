@@ -26,10 +26,21 @@ import os
 from subprocess import check_call
 from string import Template
 
+LOGGER_FILE_FORMAT = '[%(asctime)s] %(name)s [%(levelname)s] %(message)s'
+LOGGER_CONSOLE_FORMAT = '>> %(message)s'
+
 def create_logger(log_file_name):
     logger = logging.getLogger("pxe")
+    fh = logging.FileHandler(log_file_name)
+    fh.setLevel(logging.INFO)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    fh.setFormatter(logging.Formatter(LOGGER_FILE_FORMAT))
+    ch.setFormatter(logging.Formatter(LOGGER_CONSOLE_FORMAT))
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+    logger.setLevel(logging.INFO)
     return logger
-
 
 def send_wol_magick_packet(macs, ipaddr, port):
     "http://www.emptypage.jp/gadgets/wol.html"
@@ -46,6 +57,8 @@ def send_wol_magick_packet(macs, ipaddr, port):
     s.close()
     
 def open_db(db):
+    logger = logging.getLogger("pxe")
+    logger.info("opening %s as DB" % (db))
     if os.path.exists(db):
         con = sqlite3.connect(db)
     else:
@@ -92,12 +105,16 @@ def find_by_hostname(con, hostname):
     raise "cannot find %s" % (hostname)
 
 def delete_machine(hostname, db):
+    logger = logging.getLogger("pxe")
     con = open_db(db)
+    logger.info("deleteing a machine:: %s" % hostname)
     delete_host(con, hostname)
     con.close()
     
 def add_machine(hostname, mac, ip, root, db):
+    logger = logging.getLogger("pxe")
     con = open_db(db)
+    logger.info("adding a machine:: hostname - %s, mac - %s, ip - %s, root - %s" % (hostname, mac, ip, root))
     add_host(con, hostname, ip, mac, root)
     con.close()
     
@@ -114,7 +131,10 @@ def generate_dhcp(db,
                   pxe_server,
                   pxe_filename,
                   overwrite_dhcp,
-                  dhcp_conf_file):
+                  dhcp_conf_file,
+                  restart_dhcp):
+    logger = logging.getLogger("pxe")
+    logger.info("generating dhcpd.conf")
     con = open_db(db)
     machines = all_hosts(con)
     generated_string = []
@@ -128,6 +148,7 @@ def generate_dhcp(db,
                                         "mac": mac})
         generated_string.append(host_str)
     if prefix_dhcp_file:
+        logger.info("adding %s as prefix" % (prefix_dhcp_file))
         f = open(prefix_dhcp_file)
         prefix_str = "".join(f.readlines())
     else:
@@ -147,14 +168,19 @@ def generate_dhcp(db,
                     "hosts": "\n".join(generated_string)}
     dhcp_subnet_str = dhcp_subnet_tmpl.substitute(replace_dict)
     if overwrite_dhcp:
+        logger.info("overwriting %s" % (dhcp_conf_file))
         path = dhcp_conf_file
         f = open(path, "w")
         f.write(prefix_str + dhcp_subnet_str)
         f.close()
+        if restart_dhcp:
+            logger.info("restarting dhcp")
+            check_call(["sudo", "/etc/init.d/dhcp3-server", "restart"])
     else:
         print prefix_str + dhcp_subnet_str
 
 def print_machine_list(db):
+    logger = logging.getLogger("pxe")
     con = open_db(db)
     machines = all_hosts(con)
     for hostname, ip_mac in machines.items():
@@ -168,31 +194,34 @@ def print_machine_list(db):
 """ % (hostname, ip, mac, root)
 
 def wake_on_lan(hostname, port, broadcast, db):
+    logger = logging.getLogger("pxe")
     con = open_db(db)
+    logger.info("wake on lan %s" % (hostname))
     mac = find_by_hostname(con, hostname)["macaddress"]
     send_wol_magick_packet([mac], broadcast, port)
 
 def chroot_command(chroot_dir, *args):
     command = ["sudo", "chroot", chroot_dir]
     command.extend(*args)
-    print command
     return check_call(command)
     
 def generate_pxe_template_filesystem(template_dir):
-    print ">>> generating template filesystem"
+    logger = logging.getLogger("pxe")
+    logger.info("generating template filesyste")
     try:
         check_call(["sudo", "debootstrap", "lucid", template_dir])
     except:
         # remove template_dir
-        print ">>> removing template dir"
+        logger.info("removing template dir")
         check_call(["sudo", "rm", "-rf", template_dir])
         raise
 
 
 def copy_template_filesystem(template_dir, target_dir, apt_sources):
-    print ">>> copying filesystem"
+    logger = logging.getLogger("pxe")
+    logger.info("copying filesystem")
     check_call(["sudo", "cp", "-ax", template_dir, target_dir])
-    print ">>> copying etc/apt/sources.list"
+    logger.info("copying etc/apt/sources.list")
     check_call(["sudo", "cp", apt_sources,
                 os.path.join(target_dir, "etc", "apt", "sources.list")])
     return
@@ -224,7 +253,8 @@ class ChrootEnvironment():
 def install_apt_packages(target_dir):
     env = ChrootEnvironment(target_dir)
     with env:
-        print ">>> installing base apt packages"
+        logger = logging.getLogger("pxe")
+        logger.info("installing base apt packages")
         chroot_command(target_dir, ["apt-get", "update"])
         chroot_command(target_dir, ["apt-get", "install", "wget"])
         chroot_command(target_dir, ["sh", "-c",
@@ -236,7 +266,7 @@ def install_apt_packages(target_dir):
         chroot_command(target_dir, ["apt-get", "update"])
         chroot_command(target_dir,
                        ["apt-get", "install", "--force-yes", "-y"] + APT_PACKAGES.split())
-        print "  >>> installing ros and openrave apt packages"
+        logger.info("installing ros and openrave apt packages")
         chroot_command(target_dir, ["sh", "-c",
                                     "echo deb http://packages.ros.org/ros/ubuntu lucid main > /etc/apt/sources.list.d/ros-latest.list"])
         chroot_command(target_dir, ["sh", "-c",
@@ -248,6 +278,8 @@ def install_apt_packages(target_dir):
 def setup_user(target_dir, user, passwd):
     env = ChrootEnvironment(target_dir)
     with env:
+        logger = logging.getLogger("pxe")
+        logger.info("adding pxe user")
         chroot_command(target_dir, ["sh", "-c",
                                     "id %s || useradd %s -g sudo -s /bin/bash" % (user,
                                                                                   user)])
@@ -258,6 +290,8 @@ def setup_user(target_dir, user, passwd):
 def update_initram(target_dir):
     env = ChrootEnvironment(target_dir)
     with env:
+        logger = logging.getLogger("pxe")
+        logger.info("updating initram.img")
         chroot_command(target_dir, ["sh", "-c",
                                     "echo '%s' > /etc/initramfs-tools/initramfs.conf" % (INITRAMFS_CONF)])
         chroot_command(target_dir, ["sh", "-c",
@@ -269,16 +303,9 @@ def update_initram(target_dir):
 
 def setup_pxe_dphys(target_dir):
     env = ChrootEnvironment(target_dir)
-    # f = open(os.path.join(target_dir, "usr/local/sbin/pxe-dphys-swapfile"), "w")
-    # f.write(PXE_DPHYS_SWAPFILE)
-    # f.close()
-    # f = open(os.path.join(target_dir, "etc/init.d/pxe-dphys-swapfile"), "w")
-    # f.write(PXE_DPHYS_SWAPFILE_INIT_D)
-    # f.close()
-    # f = open(os.path.join(target_dir, "etc/dphys-swapfile"), "w")
-    # f.write(PXE_DPHYS_CONFIG)
-    # f.close()
     with env:
+        logger = logging.getLogger("pxe")
+        logger.info("setup pxe_dphys")
         chroot_command(target_dir,
                        ["sh", "-c",
                         """cat > /usr/local/sbin/pxe-dphys-swapfile <<EOF
@@ -304,6 +331,7 @@ EOF""" % (PXE_DPHYS_CONFIG)])
         
 def generate_pxe_filesystem(template_dir, target_dir, apt_sources,
                             user, passwd):
+    logger = logging.getLogger("pxe")
     if not os.path.exists(template_dir):
         generate_pxe_template_filesystem(template_dir)
     if not os.path.exists(target_dir):
@@ -336,6 +364,7 @@ def generate_top_html(db):
 
 def update_dhcp_from_web():
     if global_options.overwrite_dhcp:
+        logger = logging.getLogger("pxe")
         generate_dhcp(global_options.db,
                       global_options.prefix_dhcp_file,
                       global_options.subnet,
@@ -449,7 +478,8 @@ def run_web(options):
 
 def generate_pxe_config_files(db, generate_pxe_config_files, tftp_dir):
     if generate_pxe_config_files:
-        print ">>> generate the pxe configuration files"
+        logger = logging.getLogger("pxe")
+        logger.info("generate the pxe configuration files")
         con = open_db(db)
         machines = all_hosts(con)
         for hostname in machines.keys():
@@ -558,6 +588,7 @@ def lookup_free_host(db, dhcp_range_start, dhcp_range_stop):
     print "none"
 
 def auto_add_vm(options):
+    logger = logging.getLogger("pxe")
     root = options.auto_add
     free_host_ip = lookup_free_host(options.db,
                                     options.dhcp_range_start,
@@ -565,14 +596,7 @@ def auto_add_vm(options):
     free_host = free_host_ip.split()[0]
     free_ip = free_host_ip.split()[1]
     mac_address = generate_virtualbox_macaddress()
-    if options.verbose:
-        print ">>> add host: %s/%s/%s/%s" % (free_host,
-                                            free_ip,
-                                            mac_address,
-                                            root)
     add_machine(free_host, mac_address, free_ip, root, options.db)
-    if options.verbose:
-        print ">>> update dhcp.conf"
     options.overwrite_dhcp = True # force to be True
     generate_dhcp(options.db,
                   options.prefix_dhcp_file,
@@ -588,8 +612,6 @@ def auto_add_vm(options):
                   options.pxe_filename,
                   options.overwrite_dhcp,
                   options.dhcp_conf_file)
-    if options.verbose:
-        print ">>> update pxelinux.cfg/"
     options.generate_pxe_config_files = True # force to be True
     generate_pxe_config_files(options.db,
                               options.generate_pxe_config_files,
@@ -597,6 +619,7 @@ def auto_add_vm(options):
     print free_host
 
 def boot_vm(vmdir, vmname, physical_machine):
+    logger = logging.getLogger("pxe")
     cmd0 = ["ssh", "-t", "pxe@%s" % (physical_machine),
             "sh -c 'VBoxManage unregistervm %s || exit 0'" % (vmname)]
     cmd1 = ["ssh", "pxe@%s" % physical_machine, "mkdir -p %s" % vmdir]
@@ -606,14 +629,13 @@ def boot_vm(vmdir, vmname, physical_machine):
             "VBoxManage registervm %s" % (vmname + ".vbox")]
     cmd4 = ["ssh", "pxe@%s" % physical_machine,
             "screen -d -m VBoxHeadless -s %s" % vmname]
-    print cmd0
+    logger.info("exec => %s" % (cmd0))
     check_call(cmd0)
-    print cmd1
+    logger.info("exec => %s" % (cmd1))
     check_call(cmd1)
-    print cmd2
+    logger.info("exec => %s" % (cmd2))
     check_call(cmd2)
-    print cmd3
+    logger.info("exec => %s" % (cmd3))
     check_call(cmd3)
-    print cmd4
+    logger.info("exec => %s" % (cmd4))
     check_call(cmd4)
-    
