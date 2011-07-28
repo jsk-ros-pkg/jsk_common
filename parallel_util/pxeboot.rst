@@ -146,3 +146,9 @@ Commandline Interface to VirtualBox
 
   VBoxManage registervm foo.vms
   
+5. connect to a headless VM
+
+.. code-block:: bash
+
+  rdesktop-vrdb HVNAME:8888
+  
