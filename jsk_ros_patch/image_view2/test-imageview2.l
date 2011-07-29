@@ -47,6 +47,7 @@
           (4
            (send mrk :type image_view2::ImageMarker2::*POINTS*)
            (send mrk :points (list (instance geometry_msgs::Point :init :x 320 :y 240)))
+	   (send mrk :scale 10.0)
            )
           (5
            (send mrk :type image_view2::ImageMarker2::*FRAMES*)
