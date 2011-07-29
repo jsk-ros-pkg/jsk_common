@@ -565,7 +565,7 @@ HTML_ALIVE_HOST_TMPL = """
   </form>
 </td>
 <td>
-booting
+booted
 </td>
 </tr>
 """
