@@ -86,7 +86,7 @@ private:
   sensor_msgs::CameraInfoConstPtr info_msg_;
   sensor_msgs::CvBridge img_bridge_;
   boost::mutex image_mutex_;
-  cv::Mat image_;
+  cv::Mat image_, draw_;
 
   tf::TransformListener tf_listener_;
   image_geometry::PinholeCameraModel cam_model_;
@@ -98,6 +98,7 @@ private:
   int font_;
   static CvRect window_selection_;
   int count_;
+  bool blurry_mode;
 
   ros::Publisher point_pub_;
   ros::Publisher rectangle_pub_;
@@ -122,6 +123,8 @@ public:
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
 
     local_nh.param("autosize", autosize, false);
+
+    local_nh.param("blurry", blurry_mode, false);
 
     local_nh.param("filename_format", format_string, std::string("frame%04i.jpg"));
     filename_format_.parse(format_string);
@@ -212,6 +215,11 @@ public:
     }
 
     // Draw Section
+    if ( blurry_mode ) {
+      draw_ = cv::Mat(image_.size(), image_.type(), CV_RGB(0,0,0));
+    } else {
+      draw_ = image_;
+    }
     if ( !local_queue.empty() )
       {
         V_ImageMarkerMessage::iterator message_it = local_queue.begin();
@@ -234,56 +242,137 @@ public:
             switch ( marker->type ) {
             case image_view2::ImageMarker2::CIRCLE: {
               cv::Point2d uv = cv::Point2d(marker->position.x, marker->position.y);
-              cv::circle(image_, uv, (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale),
-		       MsgToRGB(marker->outline_color), LINE_WIDTH);
+	      if ( blurry_mode ) {
+		int s0 = LINE_WIDTH;
+		CvScalar co = MsgToRGB(marker->outline_color);
+		for (int s1 = s0*10; s1 >= s0; s1--) {
+		  double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
+		  cv::circle(draw_, uv,
+			     (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale),
+			     CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m),
+			     s1);
+		}
+	      } else {
+		cv::circle(draw_, uv, (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale), MsgToRGB(marker->outline_color), LINE_WIDTH);
+	      }
               break;
             }
             case image_view2::ImageMarker2::LINE_STRIP: {
               cv::Point2d p0, p1;
-              std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
-              std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
-              p0 = cv::Point2d(it->x, it->y); it++;
-              for ( ; it!= end; it++ ) {
-                p1 = cv::Point2d(it->x, it->y);
-                cv::line(image_, p0, p1, *col_it, LINE_WIDTH);
-                p0 = p1;
-		if(++col_it == colors.end()) col_it = colors.begin();
-              }
+	      if ( blurry_mode ) {
+		int s0 = LINE_WIDTH;
+		std::vector<CvScalar>::iterator col_it = colors.begin();
+		CvScalar co = (*col_it);
+		for (int s1 = s0*10; s1 >= s0; s1--) {
+		  double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
+		  std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
+		  std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
+		  p0 = cv::Point2d(it->x, it->y); it++;
+		  for ( ; it!= end; it++ ) {
+		    p1 = cv::Point2d(it->x, it->y);
+		    cv::line(draw_, p0, p1,
+			     CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m),
+			     s1);
+		    p0 = p1;
+		    if(++col_it == colors.end()) col_it = colors.begin();
+		  }
+		}
+	      } else {
+		std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
+		std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
+		p0 = cv::Point2d(it->x, it->y); it++;
+		for ( ; it!= end; it++ ) {
+		  p1 = cv::Point2d(it->x, it->y);
+		  cv::line(draw_, p0, p1, *col_it, LINE_WIDTH);
+		  p0 = p1;
+		  if(++col_it == colors.end()) col_it = colors.begin();
+		}
+	      }
               break;
             }
             case image_view2::ImageMarker2::LINE_LIST: {
               cv::Point2d p0, p1;
-              std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
-              std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
-              for ( ; it!= end; ) {
-                p0 = cv::Point2d(it->x, it->y); it++;
-                if ( it != end ) p1 = cv::Point2d(it->x, it->y);
-                cv::line(image_, p0, p1, *col_it, LINE_WIDTH);
-                it++;
-		if(++col_it == colors.end()) col_it = colors.begin();
-              }
+	      if ( blurry_mode ) {
+		int s0 = LINE_WIDTH;
+		std::vector<CvScalar>::iterator col_it = colors.begin();
+		CvScalar co = (*col_it);
+		for (int s1 = s0*10; s1 >= s0; s1--) {
+		  double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
+		  std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
+		  std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
+		  for ( ; it!= end; ) {
+		    p0 = cv::Point2d(it->x, it->y); it++;
+		    if ( it != end ) p1 = cv::Point2d(it->x, it->y);
+		    cv::line(draw_, p0, p1, CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m), s1);
+		    it++;
+		    if(++col_it == colors.end()) col_it = colors.begin();
+		  }
+		}
+	      } else {
+		std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
+		std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
+		for ( ; it!= end; ) {
+		  p0 = cv::Point2d(it->x, it->y); it++;
+		  if ( it != end ) p1 = cv::Point2d(it->x, it->y);
+		  cv::line(draw_, p0, p1, *col_it, LINE_WIDTH);
+		  it++;
+		  if(++col_it == colors.end()) col_it = colors.begin();
+		}
+	      }
               break;
             }
             case image_view2::ImageMarker2::POLYGON: {
               cv::Point2d p0, p1;
-              std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
-              std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
-              p0 = cv::Point2d(it->x, it->y); it++;
-              for ( ; it!= end; it++ ) {
-                p1 = cv::Point2d(it->x, it->y);
-                cv::line(image_, p0, p1, *col_it, LINE_WIDTH);
-                p0 = p1;
-		if(++col_it == colors.end()) col_it = colors.begin();
-              }
-              it = marker->points.begin();
-              p1 = cv::Point2d(it->x, it->y);
-              cv::line(image_, p0, p1, *col_it, LINE_WIDTH);
+	      if ( blurry_mode ) {
+		int s0 = LINE_WIDTH;
+		std::vector<CvScalar>::iterator col_it = colors.begin();
+		CvScalar co = (*col_it);
+		for (int s1 = s0*10; s1 >= s0; s1--) {
+		  double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
+		  std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
+		  std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
+		  p0 = cv::Point2d(it->x, it->y); it++;
+		  for ( ; it!= end; it++ ) {
+		    p1 = cv::Point2d(it->x, it->y);
+		    cv::line(draw_, p0, p1, CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m), s1);
+		    p0 = p1;
+		    if(++col_it == colors.end()) col_it = colors.begin();
+		  }
+		  it = marker->points.begin();
+		  p1 = cv::Point2d(it->x, it->y);
+		  cv::line(draw_, p0, p1, CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m), s1);
+		}
+	      } else {
+		std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
+		std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
+		p0 = cv::Point2d(it->x, it->y); it++;
+		for ( ; it!= end; it++ ) {
+		  p1 = cv::Point2d(it->x, it->y);
+		  cv::line(draw_, p0, p1, *col_it, LINE_WIDTH);
+		  p0 = p1;
+		  if(++col_it == colors.end()) col_it = colors.begin();
+		}
+		it = marker->points.begin();
+		p1 = cv::Point2d(it->x, it->y);
+		cv::line(draw_, p0, p1, *col_it, LINE_WIDTH);
+	      }
               break;
             }
             case image_view2::ImageMarker2::POINTS: {
               BOOST_FOREACH(geometry_msgs::Point p, marker->points)  {
                 cv::Point2d uv = cv::Point2d(p.x, p.y);
-		cv::circle(image_, uv, 3, *col_it, -1);
+		if ( blurry_mode ) {
+		  int s0 = (marker->scale == 0 ? 3 : marker->scale);
+		  CvScalar co = (*col_it);
+		  for (int s1 = s0*2; s1 >= s0; s1--) {
+		    double m = pow((1.0-((double)(s1 - s0))/s0),2);
+		    cv::circle(draw_, uv, s1,
+			       CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m),
+			       -1);
+		  }
+		} else {
+		  cv::circle(draw_, uv, (marker->scale == 0 ? 3 : marker->scale) , *col_it, -1);
+		}
 		if(++col_it == colors.end()) col_it = colors.begin();
               }
               break;
@@ -325,7 +414,7 @@ public:
                 cam_model_.project3dToPixel(pt_cv, uv);
 
                 static const int RADIUS = 3;
-		cv::circle(image_, uv, RADIUS, DEFAULT_COLOR, -1);
+		cv::circle(draw_, uv, RADIUS, DEFAULT_COLOR, -1);
 
                 // x, y, z
                 cv::Point2d uv0, uv1, uv2;
@@ -345,10 +434,29 @@ public:
                 tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
                 cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()), uv2);
 
-                // draw
-                cv::line(image_, uv, uv0, CV_RGB(255,0,0), 2);
-                cv::line(image_, uv, uv1, CV_RGB(0,255,0), 2);
-                cv::line(image_, uv, uv2, CV_RGB(0,0,255), 2);
+		// draw
+		if ( blurry_mode ) {
+		  int s0 = 2;
+		  CvScalar c0 = CV_RGB(255,0,0);
+		  CvScalar c1 = CV_RGB(0,255,0);
+		  CvScalar c2 = CV_RGB(0,0,255);
+		  for (int s1 = s0*10; s1 >= s0; s1--) {
+		    double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
+		    cv::line(draw_, uv, uv0,
+			     CV_RGB(c0.val[2] * m,c0.val[1] * m,c0.val[0] * m),
+			     s1);
+		    cv::line(draw_, uv, uv1,
+			     CV_RGB(c1.val[2] * m,c1.val[1] * m,c1.val[0] * m),
+			     s1);
+		    cv::line(draw_, uv, uv2,
+			     CV_RGB(c2.val[2] * m,c2.val[1] * m,c2.val[0] * m),
+			     s1);
+		  }
+		} else {
+		  cv::line(draw_, uv, uv0, CV_RGB(255,0,0), 2);
+		  cv::line(draw_, uv, uv1, CV_RGB(0,255,0), 2);
+		  cv::line(draw_, uv, uv2, CV_RGB(0,0,255), 2);
+		}
 
                 // index
 		cv::Size text_size;
@@ -356,7 +464,7 @@ public:
                 text_size = cv::getTextSize(frame_id.c_str(), font_, 1.0, 1.0, &baseline);
 		cv::Point origin = cv::Point(uv.x - text_size.width / 2,
 					     uv.y - RADIUS - baseline - 3);
-                cv::putText(image_, frame_id.c_str(), origin, font_, 1.0, DEFAULT_COLOR, 1.5);
+                cv::putText(draw_, frame_id.c_str(), origin, font_, 1.0, DEFAULT_COLOR, 1.5);
               }
               break;
             }
@@ -368,7 +476,7 @@ public:
 					  1.0, 1.0, &baseline);
 	      cv::Point origin = cv::Point(marker->position.x - text_size.width/2,
 					   marker->position.y - baseline-3);
-	      cv::putText(image_, marker->text.c_str(), origin, font_, 10, DEFAULT_COLOR);
+	      cv::putText(draw_, marker->text.c_str(), origin, font_, 10, DEFAULT_COLOR);
               break;
             }
 	    default: {
@@ -378,11 +486,12 @@ public:
           }
         }
       }
-
-    cv::rectangle(image_, cv::Point(window_selection_.x, window_selection_.y),
+    cv::rectangle(draw_, cv::Point(window_selection_.x, window_selection_.y),
 		  cv::Point(window_selection_.x + window_selection_.width,
 			    window_selection_.y + window_selection_.height),
 		USER_ROI_COLOR, 3, 8, 0);
+
+    if ( blurry_mode ) cv::addWeighted(image_, 0.9, draw_, 1.0, 0.0, image_);
     cv::imshow(window_name_.c_str(), image_);
     cv_bridge::CvImage out_msg;
     out_msg.header   = msg->header;
