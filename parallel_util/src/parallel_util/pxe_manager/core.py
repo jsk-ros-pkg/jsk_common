@@ -452,6 +452,7 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                                             + ":" +
                                             str(global_options.web_port))
             elif s.path.startswith("/boot"):
+                logger = logging.getLogger("pxe")
                 html = SUCCESS_HTML_TMPL % ("http://" +
                                             global_options.web_hostname
                                             + ":" +
@@ -459,6 +460,7 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 params = cgi.parse_qs(s.path.split("?")[1])
                 vmname = params["vmname"][0]
                 physc = params["physical"][0]
+                logger.info("invoke %s @ %s" % (vmname, physc))
                 try:
                     global_options.generate_virtualbox_image = vmname
                     global_options.refer_physical_machine = physc
