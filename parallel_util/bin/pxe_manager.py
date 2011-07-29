@@ -75,6 +75,9 @@ under pxelinux.cfg/""")
                       metavar = "vmname",
                       help = """generate an empty virtualbox image for
 pxe booting""")
+    parser.add_option("--remote-user", default = None,
+                      help = """username to be used
+when a remote access is required""")
     parser.add_option("--refer-physical-machine",
                       metavar = "hostname",
                       help = """decide the parameters of virtualbox image from
@@ -250,7 +253,8 @@ def main():
                                       options.virtualbox_cpunum,
                                       options.virtualbox_memsize,
                                       options.virtualbox_vramsize,
-                                      options.virtualbox_macaddress)
+                                      options.virtualbox_macaddress,
+                                      options.remote_user)
         elif options.generate_virtualbox_macaddress:
             print_virtualbox_macaddress()
         elif options.lookup_free_host:
