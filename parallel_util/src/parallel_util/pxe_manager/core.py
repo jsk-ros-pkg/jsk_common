@@ -33,8 +33,6 @@ LOGGER_FILE_FORMAT = '[%(asctime)s] %(name)s [%(levelname)s] %(message)s'
 LOGGER_CONSOLE_FORMAT = '>> %(message)s'
 
 def ping_host(hostname):
-    logger = logging.getLogger("pxe")
-    logger.info("ping to %s" % (hostname))
     ping_ret = ping.quiet_ping(hostname, timeout=0.1)
     return ping_ret[0] == 0     # verify return core is 0
 
