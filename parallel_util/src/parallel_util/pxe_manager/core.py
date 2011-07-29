@@ -655,7 +655,7 @@ def boot_vm(vmdir, vmname, physical_machine):
     logger = logging.getLogger("pxe")
     cmd0 = ["ssh", "-t", "pxe@%s" % (physical_machine),
             "sh -c 'VBoxManage unregistervm %s || exit 0'" % (vmname)]
-    cmd1 = ["ssh", "pxe@%s" % physical_machine, "mkdir -p %s" % vmdir]
+    cmd1 = ["ssh", "pxe@%s" % physical_machine, "mkdir -p .VirtualBox"]
     cmd2 = ["scp", os.path.join(vmdir, vmname + ".vbox"), 
             "pxe@%s:.VirtualBox" % (physical_machine)]
     cmd3 = ["ssh", "-t", "pxe@%s" % (physical_machine),
