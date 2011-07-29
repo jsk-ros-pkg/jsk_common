@@ -157,5 +157,5 @@ def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout,
         return (host, False)
     except Exception, e:
         if verbose:
-            sys.stderr.write("[%s] connection missed\n" % (host))
+            sys.stderr.write("[%s] connection missed: %s\n" % (host, e))
         return (host, False)
