@@ -386,7 +386,7 @@ public:
     cv::imshow(window_name_.c_str(), image_);
     cv_bridge::CvImage out_msg;
     out_msg.header   = msg->header;
-    out_msg.encoding = sensor_msgs::image_encodings::TYPE_32FC1;
+    out_msg.encoding = "bgr8";
     out_msg.image    = image_;
     image_pub_.publish(out_msg.toImageMsg());
     old_time = ros::Time::now();
