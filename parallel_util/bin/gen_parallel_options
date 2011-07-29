@@ -25,6 +25,9 @@ def parse_options():
                                              ".cssh-clusters"),
                       help = """input cssh configuration file.
 it defaults to ~/.cssh-clusters""")
+    parser.add_option("-u", "--user", dest = "user",
+                      default = None,
+                      help = """username to connect ssh""")
     parser.add_option("-g", "--group", dest = "group",
                       help = "specify the group of the cssh cluster")
     parser.add_option("-p", "--port", dest = "port",
@@ -51,7 +54,8 @@ def main():
                      cssh_group = options.group,
                      verbose = not options.quiet,
                      timeout = options.timeout,
-                     ros_port = options.port)
+                     ros_port = options.port,
+                     username = options.user)
     if infos[1]:
         print "port %s is available" % (options.port)
     else:

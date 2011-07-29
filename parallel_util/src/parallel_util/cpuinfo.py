@@ -32,12 +32,21 @@ class ROSNotInstalled(Exception):
 
 class CPUInfoClient():
     "wrapper class of collect_cpuinfo for threading.Thread"
-    def __call__(self, host, ros_port, user_test_commands, verbose, timeout):
+    def __call__(self, host, ros_port, user_test_commands, verbose, timeout,
+                 user):
         self._result = collect_cpuinfo(host, ros_port, user_test_commands,
-                                       verbose, timeout)
+                                       verbose, timeout, user)
     def get_result(self):
         return self._result
 
+def split_host_user(host):
+    splitted_host = host.split("@")
+    if len(splitted_host) == 1:
+        return (splitted_host[0], None)
+    elif len(splitted_host) == 2:
+        return (splitted_host[0], splitted_host[1])
+    else:
+        raise "unknown hostname format %s" % (host)
 
 def cpuinfos(hosts=[], from_cssh_file = None,
              cssh_group = None,
@@ -45,7 +54,8 @@ def cpuinfos(hosts=[], from_cssh_file = None,
              ros_port = 11311,
              verbose = False,
              arch_filter = True,
-             user_test_commands = []):
+             user_test_commands = [],
+             username = None):
     """
     cpuinfos returns the hosts and the information of cpu and memory.
     it also check if a port is available for roscore or not.
@@ -68,7 +78,7 @@ def cpuinfos(hosts=[], from_cssh_file = None,
     cpuinfo_threads = [threading.Thread(target=client,
                                         args = (host, ros_port,
                                                 user_test_commands, verbose,
-                                                timeout))
+                                                timeout, username))
                        for client, host in zip(cpuinfo_clients, hosts)]
     # run clients
     for thread in cpuinfo_threads:
@@ -100,13 +110,14 @@ def parse_cssh_config(config_file, group):
             # matched!
             return line.split()[1:]
 
-def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout):
+def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout,
+                    username):
     try:
         client = paramiko.SSHClient()
         client.load_system_host_keys()
         if verbose:
             sys.stderr.write("[%s] connecting\n" % (host))
-        client.connect(host, timeout=timeout)
+        client.connect(host, timeout=timeout, username=username)
         if verbose:
             sys.stderr.write("[%s] connection established\n" % (host))
         (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(CPU_COUNT_COMMAND % (os.environ["SHELL"]))
