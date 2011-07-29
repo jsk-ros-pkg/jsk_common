@@ -482,6 +482,8 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 html = generate_top_html(db_name, global_options.log)
             s.wfile.write(html)
         except Exception, e:
+            logger = logging.getLogger("pxe")
+            logger.info("error has occurred: %s" % (e))
             html = generate_error_html(e,
                                        global_options.web_hostname,
                                        global_options.web_port)
