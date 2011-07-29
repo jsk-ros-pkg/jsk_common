@@ -33,9 +33,9 @@ class ROSNotInstalled(Exception):
 class CPUInfoClient():
     "wrapper class of collect_cpuinfo for threading.Thread"
     def __call__(self, host, ros_port, user_test_commands, verbose, timeout,
-                 user):
+                 user, ros_filter):
         self._result = collect_cpuinfo(host, ros_port, user_test_commands,
-                                       verbose, timeout, user)
+                                       verbose, timeout, user, ros_filter)
     def get_result(self):
         return self._result
 
@@ -53,6 +53,7 @@ def cpuinfos(hosts=[], from_cssh_file = None,
              timeout = None,
              ros_port = 11311,
              verbose = False,
+             ros_filter = True,
              arch_filter = True,
              user_test_commands = [],
              username = None):
@@ -78,7 +79,8 @@ def cpuinfos(hosts=[], from_cssh_file = None,
     cpuinfo_threads = [threading.Thread(target=client,
                                         args = (host, ros_port,
                                                 user_test_commands, verbose,
-                                                timeout, username))
+                                                timeout, username,
+                                                ros_filter))
                        for client, host in zip(cpuinfo_clients, hosts)]
     # run clients
     for thread in cpuinfo_threads:
@@ -111,7 +113,7 @@ def parse_cssh_config(config_file, group):
             return line.split()[1:]
 
 def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout,
-                    username):
+                    username, ros_filter):
     try:
         client = paramiko.SSHClient()
         client.load_system_host_keys()
@@ -139,7 +141,7 @@ def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout,
         # (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ROS_CHECK_COMMAND)
         # print ssh_stderr.readlines()
         ros_p = chan.recv_exit_status() == 0
-        if ros_p:
+        if ros_p or not ros_filter:
             chan = client.get_transport().open_session()
             chan.exec_command(ROSPORT_COMMAND % (os.environ["SHELL"], ros_port))
             # (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ROSPORT_COMMAND % (os.environ["SHELL"], ros_port))
