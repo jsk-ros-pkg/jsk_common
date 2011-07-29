@@ -469,7 +469,9 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                                               global_options.virtualbox_cpunum,
                                               global_options.virtualbox_memsize,
                                               global_options.virtualbox_vramsize,
-                                              global_options.virtualbox_macaddress, False)
+                                              global_options.virtualbox_macaddress,
+                                              global_options.remote_user,
+                                              False)
                 finally:
                     global_options.generate_virtualbox_image = None
                     global_options.refer_physical_machine = None
@@ -537,16 +539,22 @@ def generate_virtualbox_image(db,
                               virtualbox_memsize,
                               virtualbox_vramsize,
                               virtualbox_macaddress,
+                              remote_user,
                               register_vm = True):
+                              
     vmname = generate_virtualbox_image
+    logger = logging.getLogger("pxe")
     if not os.path.exists(virtualbox_path):
         os.makedirs(virtualbox_path)
     if refer_physical_machine:
         host = refer_physical_machine
+        logger.info("get cpuinfo of %s" % (host))
         infos = parallel_util.cpuinfos([host],
                                        arch_filter = False,
                                        verbose = True,
-                                       ros_filter = False)
+                                       ros_filter = False,
+                                       username = remote_user)
+        logger.info("cpuinfo of %s => %s" % (host, infos[0]))
         cpunum = infos[0][host][0]
         memsize = int(infos[0][host][1] * 0.8 / 1000)
     else:
