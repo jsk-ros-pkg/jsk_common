@@ -27,6 +27,8 @@ import ping                     # easy_install ping
 from subprocess import check_call
 from string import Template
 
+import parallel_util
+
 LOGGER_FILE_FORMAT = '[%(asctime)s] %(name)s [%(levelname)s] %(message)s'
 LOGGER_CONSOLE_FORMAT = '>> %(message)s'
 
