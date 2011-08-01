@@ -38,12 +38,12 @@ if __name__=='__main__':
                       help="""If specified, will roslaunch the services and setup the correct bindings for parallel processing (recommended). Usage: "python prog.py --launchservice='4*localhost' ...""")
     parser.add_option('--csshgroup', action='store', type='string', dest='csshgroup',default=None,
                       help='The group of computers to specify when launching')
+    #print 'python path: ',os.environ['PYTHONPATH']
     (options, args) = parser.parse_args()
-    print 'python path: ',os.environ['PYTHONPATH']
     module=__import__(options.modulename)
     if options.startservice:
         rospy.init_node('servicenode',anonymous=True)
-        s=workmanager.StartService(module,options.args)
+        s=workmanager.StartService(module,split(options.args))
         rospy.spin()
     elif len(options.servicenames) > 0:
         module.server_start(split(options.args))
@@ -54,6 +54,7 @@ if __name__=='__main__':
         module.server_end()
     else:
         assert(masterapi.is_online())
+        print 'split args: ',split(options.args)
         options.args += ' ' + module.launcher_start(split(options.args))
         serviceaddrs = []
         if options.csshgroup is not None:
