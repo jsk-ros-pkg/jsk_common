@@ -214,7 +214,7 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
         launchscript.shutdown()
 
 def StartService(module,args):
-    module.service_start(args.split())
+    module.service_start(args)
     def service_call(req):
         responses = [module.service_processrequest(*request) for request in pickle.loads(req.input)]
         return PickledServiceResponse(output=pickle.dumps(responses))
