@@ -11,7 +11,9 @@ HG_REVISION = robot_model-1.5.1
 HG_PATCH = rosdep.patch
 include $(shell rospack find mk)/hg_checkout.mk
 
-installed: $(HG_DIR) patched
+installed: $(HG_DIR)
+	cd $(HG_DIR) && hg revert --all
+        $(foreach PATCH, $(HG_PATCH), patch -d $(HG_DIR) -p0 < $(PATCH) &&) echo patched
 	cd $(HG_DIR)/collada_urdf && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make
 	touch installed
 
