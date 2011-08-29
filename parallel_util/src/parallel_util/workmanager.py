@@ -170,6 +170,8 @@ class EvaluationServer(object):
         rospy.loginfo('waiting for all threads to finish')
         for t in busythreads:
             repeat = True
+            if t.req is not None:
+                rospy.loginfo('shutting down service %s'%t.service.resolved_name)
             while(repeat):
                 with t.starteval:
                     if t.req is None:
