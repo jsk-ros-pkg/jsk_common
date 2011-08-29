@@ -48,10 +48,12 @@ if __name__=='__main__':
     elif len(options.servicenames) > 0:
         module.server_start(split(options.args))
         rospy.init_node('servicenode',anonymous=True)
-        self = workmanager.EvaluationServer(module,options.servicenames,numbatchjobs=options.numbatchjobs)
-        self.run()
-        self.shutdownservices()
-        module.server_end()
+        try:
+            self = workmanager.EvaluationServer(module,options.servicenames,numbatchjobs=options.numbatchjobs)
+            self.run()
+            self.shutdownservices()
+        finally:
+            module.server_end()
     else:
         assert(masterapi.is_online())
         print 'split args: ',split(options.args)
