@@ -172,10 +172,13 @@ class EvaluationServer(object):
             repeat = True
             if t.req is not None:
                 rospy.loginfo('shutting down service %s'%t.service.resolved_name)
-            while(repeat):
-                with t.starteval:
-                    if t.req is None:
-                        repeat = False
+            try:
+                while(repeat):
+                    with t.starteval:
+                        if t.req is None:
+                            repeat = False
+            except KeyboardInterrupt,e:
+                rospy.loginfo('ignore service %s'%t.service.resolved_name)
 
         rospy.loginfo('services finished processing, total time: %f'%(time.time()-starttime))
 
