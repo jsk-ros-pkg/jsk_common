@@ -11,8 +11,13 @@
 class OptNM3xCamera
 {
 private:
-  CvCapture *capture;
+  struct buffer {
+    void *start;
+    size_t length;
+  } *buffers;
+  unsigned int n_buffers;
   IplImage *frame, *frame_omni, *frame_wide, *frame_middle, *frame_narrow;
+  int width, height;
   int fd;
 
   bool v4l2_set_ioctl(int selector, int value);
@@ -28,6 +33,10 @@ private:
 public:
   OptNM3xCamera(int camera_index);
   ~OptNM3xCamera();
+
+  void device_open(int camera_index);
+  void device_close();
+  IplImage *read_frame();
 
   // obtaining images
   IplImage *queryFrame ();

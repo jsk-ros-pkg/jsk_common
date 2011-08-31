@@ -8,19 +8,291 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
-OptNM3xCamera::OptNM3xCamera(int camera_index)
+//
+#include <fcntl.h>
+#include <sys/mman.h>
+#define CLEAR(x) memset (&(x), 0, sizeof (x))
+
+/* convert from mjpeg to rgb24 */
+static bool
+mjpeg_to_rgb24 (int width, int height,
+		unsigned char *src, int length,
+		unsigned char *dst)
 {
-  if((capture=cvCaptureFromCAM(camera_index)) == NULL) {
-    fprintf(stderr, "ERROR : cvCaptureFromCAM");
+  cv::Mat temp=cv::imdecode(cv::Mat(std::vector<uchar>(src, src + length)), 1);
+  if( !temp.data || temp.cols != width || temp.rows != height )
+    return false;
+  memcpy(dst, temp.data, width*height*3);
+  return true;
+}
+
+void OptNM3xCamera::device_open(int camera_index)
+{
+  // open_device
+  char dev_name[128];
+  sprintf(dev_name, "/dev/video%1d", camera_index);
+  fprintf(stderr, "Opening device '%s'\n", dev_name);
+
+  width  = 640;
+  height = 480;
+
+ try_again:
+  fd = open(dev_name, O_RDWR, 0);
+
+  if (fd == -1) {
+    fprintf(stderr, "Cannot open '%s': %d, %s\n",
+	    dev_name, errno, strerror(errno));
+    exit(EXIT_FAILURE);
   }
 
-  typedef struct CvCaptureCAM_V4L {
-    int* tmp;
-    int* deviceHandle;
-  } CvCaptureCAM_V4L;
+  // init_device
+  struct v4l2_capability cap;
+  struct v4l2_format fmt;
 
-  CvCaptureCAM_V4L *cap = (CvCaptureCAM_V4L *)capture;
-  fd = *(cap->deviceHandle);
+  if (ioctl(fd, VIDIOC_QUERYCAP, &cap) == -1) {
+    if (EINVAL == errno) {
+      fprintf(stderr, "%s is no V4L2 device\n", dev_name);
+    }
+    perror("VIDIOC_QUERYCAP");
+    exit(EXIT_FAILURE);
+  }
+
+  if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
+    fprintf(stderr, "%s is no video capture device\n", dev_name);
+    exit(EXIT_FAILURE);
+  }
+
+  if (!(cap.capabilities & V4L2_CAP_STREAMING)) {
+    fprintf(stderr, "%s does not support streaming i/o\n", dev_name);
+    exit(EXIT_FAILURE);
+  }
+
+  CLEAR(fmt);
+
+  fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  fmt.fmt.pix.width = width;
+  fmt.fmt.pix.height = height;
+  fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
+  fmt.fmt.pix.field = V4L2_FIELD_INTERLACED;
+
+  if (ioctl(fd, VIDIOC_S_FMT, &fmt) == -1) {
+    perror("VIDIOC_S_FMT");
+    exit(EXIT_FAILURE);
+  }
+
+  // init mmap
+  struct v4l2_requestbuffers req;
+
+  CLEAR(req);
+
+  req.count = 4;
+  req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  req.memory = V4L2_MEMORY_MMAP;
+
+  if (ioctl(fd, VIDIOC_REQBUFS, &req) == -1) {
+    perror("VIDIOC_REQBUFS");
+    exit(EXIT_FAILURE);
+  }
+
+  if (req.count < 2) {
+    fprintf(stderr, "Insufficient buffer memory on %s\n", dev_name);
+    exit(EXIT_FAILURE);
+  }
+
+  buffers = (buffer *)calloc(req.count, sizeof(*buffers));
+
+  if (!buffers) {
+    fprintf(stderr, "Out of memory\n");
+    exit(EXIT_FAILURE);
+  }
+
+  for (n_buffers = 0; n_buffers < req.count; ++n_buffers) {
+    struct v4l2_buffer buf;
+
+    CLEAR(buf);
+
+    buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buf.memory = V4L2_MEMORY_MMAP;
+    buf.index = n_buffers;
+
+    if (ioctl(fd, VIDIOC_QUERYBUF, &buf) == -1) {
+      perror("VIDIOC_QUERYBUF");
+      exit(EXIT_FAILURE);
+    }
+
+    buffers[n_buffers].length = buf.length;
+    buffers[n_buffers].start = mmap(NULL /* start anywhere */ ,
+				    buf.length, PROT_READ | PROT_WRITE
+				    /* required */ ,
+				    MAP_SHARED /* recommended */ ,
+				    fd, buf.m.offset);
+
+    if (buffers[n_buffers].start == MAP_FAILED) {
+      perror("mmap");
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  // start capturing
+  unsigned int i;
+  enum v4l2_buf_type type;
+
+  for (i = 0; i < n_buffers; ++i) {
+    struct v4l2_buffer buf;
+
+    CLEAR(buf);
+
+    buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buf.memory = V4L2_MEMORY_MMAP;
+    buf.index = i;
+
+    if (ioctl(fd, VIDIOC_QBUF, &buf) == -1) {
+      if ( width == 640 && height == 480 ) {
+	device_close();
+	width = 320; height = 240;
+	goto try_again;
+      }
+      perror("VIDIOC_QBUF");
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+  if (ioctl(fd, VIDIOC_STREAMON, &type) == -1) {
+    if ( width == 640 && height == 480 ) {
+      device_close();
+      width = 320; height = 240;
+      goto try_again;
+    }
+    perror("VIDIOC_STREAMON");
+    exit(EXIT_FAILURE);
+  }
+  //
+  fprintf(stderr, "video capabilities\n");
+  fprintf(stderr, "cap.driver        =  %s\n", cap.driver);
+  fprintf(stderr, "cap.card          =  %s\n", cap.card);
+  fprintf(stderr, "cap.buf_info      =  %s\n", cap.bus_info);
+  fprintf(stderr, "cap.version       =  %d\n", cap.version);
+  fprintf(stderr, "cap.capabilities  =  0x%08x ", cap.capabilities);
+  if (cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)
+    fprintf(stderr, " VIDEO_CAPTURE");
+  if (cap.capabilities & V4L2_CAP_VIDEO_OUTPUT)
+    fprintf(stderr, " VIDEO_OUTPUT");
+  if (cap.capabilities & V4L2_CAP_VIDEO_OVERLAY)
+    fprintf(stderr, " VIDEO_OVERLAY");
+  if (cap.capabilities & V4L2_CAP_VBI_CAPTURE)
+    fprintf(stderr, " VBI_CAPTURE");
+  if (cap.capabilities & V4L2_CAP_VBI_OUTPUT)
+    fprintf(stderr, " VBI_OUTPUT");
+#ifdef V4L2_CAP_SLICED_VBI_CAPTURE
+  if (cap.capabilities & V4L2_CAP_SLICED_VBI_CAPTURE)
+    fprintf(stderr, " SLICED_VBI_CAPTURE");
+#endif
+#ifdef V4L2_CAP_SLICED_VBI_OUTPUT
+  if (cap.capabilities & V4L2_CAP_SLICED_VBI_OUTPUT)
+    fprintf(stderr, " VBI_SLICED_OUTPUT");
+#endif
+  if (cap.capabilities & V4L2_CAP_RDS_CAPTURE)
+    fprintf(stderr, " RDS_CAPTURE");
+#if V4L2_CAP_VIDEO_OUTPUT_OVERLAY
+  if (cap.capabilities & V4L2_CAP_VIDEO_OUTPUT_OVERLAY)
+    fprintf(stderr, " VIDEO_OUTPUT_OVERLAY");
+#endif
+  if (cap.capabilities & V4L2_CAP_TUNER)
+    fprintf(stderr, " TUNER");
+  if (cap.capabilities & V4L2_CAP_AUDIO)
+    fprintf(stderr, " AUDIO");
+  if (cap.capabilities & V4L2_CAP_RADIO)
+    fprintf(stderr, " RADIO");
+  if (cap.capabilities & V4L2_CAP_READWRITE)
+    fprintf(stderr, " READWRITE");
+  if (cap.capabilities & V4L2_CAP_ASYNCIO)
+    fprintf(stderr, " ASYNCIO");
+  if (cap.capabilities & V4L2_CAP_STREAMING)
+    fprintf(stderr, " STREAMING");
+  fprintf(stderr, "\n");
+  fprintf(stderr, "cap.width         =  %d\n", width);
+  fprintf(stderr, "cap.height        =  %d\n", height);
+
+  /* Set up Image data */
+  frame = (IplImage *)malloc(sizeof(IplImage));
+  cvInitImageHeader( frame,
+		     cvSize( width, height ),
+		     IPL_DEPTH_8U, 3, IPL_ORIGIN_TL, 4 );
+  /* Allocate space for RGBA data */
+  frame->imageData = (char *)cvAlloc(frame->imageSize);
+}
+
+void OptNM3xCamera::device_close()
+{
+  // stop capturing
+  enum v4l2_buf_type type;
+
+  type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+  if (ioctl(fd, VIDIOC_STREAMOFF, &type) == -1) {
+    perror("VIDIOC_STREAMOFF");
+    exit(EXIT_FAILURE);
+  }
+
+  // uninit_mmap
+  unsigned int i;
+
+  for (i = 0; i < n_buffers; ++i) {
+    if (munmap(buffers[i].start, buffers[i].length) == -1) {
+      perror("munmap");
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  // uninit_device
+  free(buffers);
+
+  // close_device
+  if (close(fd) == -1) {
+    perror("close");
+    exit(EXIT_FAILURE);
+  }
+  fd = -1;
+}
+
+IplImage *OptNM3xCamera::read_frame ()
+{
+  // read frame
+  struct v4l2_buffer buf;
+
+  CLEAR(buf);
+
+  buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  buf.memory = V4L2_MEMORY_MMAP;
+
+  if (ioctl(fd, VIDIOC_DQBUF, &buf) == -1) {
+    perror("VIDIOC_DQBUF");
+    return NULL;
+  }
+  assert(buf.index < n_buffers);
+
+  //process_image(buffers[buf.index].start);
+  if (!mjpeg_to_rgb24(width, height,
+		      (unsigned char*)(buffers[buf.index].start),
+		      buffers[buf.index].length,
+		      (unsigned char*)frame->imageData)) {
+    perror("mjpeg_to_rgb24");
+    return NULL;
+  }
+
+  if (ioctl(fd, VIDIOC_QBUF, &buf) == -1) {
+    perror("VIDIOC_QBUF");
+    return NULL;
+  }
+
+  return frame;
+}
+
+OptNM3xCamera::OptNM3xCamera(int camera_index)
+{
+  device_open(camera_index);
 
   setMode(4);
   if ( strcmp(getFirmwareVersion().c_str(), "") == 0 ) {
@@ -30,22 +302,23 @@ OptNM3xCamera::OptNM3xCamera(int camera_index)
   fprintf(stderr, "firmwareVersion -> %s\n", getFirmwareVersion().c_str());
   fprintf(stderr, "serialId -> %s\n", getSerialID().c_str());
 
-  frame = frame_omni = frame_wide = frame_middle = frame_narrow = NULL;
+  frame_omni = frame_wide = frame_middle = frame_narrow = NULL;
 }
 
 OptNM3xCamera::~OptNM3xCamera()
 {
-  cvReleaseCapture(&capture);
+  device_close();
 }
 
 // obtaining images
 IplImage *OptNM3xCamera::queryFrame ()
 {
-  frame = cvQueryFrame(capture);
-  if (frame==NULL) {
-    fprintf(stderr, "ERROR : cvQueryFrame returns NULL\n");
+  if ( read_frame()==NULL ) {
+    fprintf(stderr, "ERROR : read_frame returns NULL\n");
     return NULL;
   }
+
+
   int height = frame->height, width = frame->width;
   if ( ! ( frame_omni && (frame_omni->width  == height/2 &&
                           frame_omni->height == height/2 ) ) )
