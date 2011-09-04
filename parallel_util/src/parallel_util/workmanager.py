@@ -132,7 +132,7 @@ class EvaluationServer(object):
                 requests.append(request)
                 num += 1
             if request is None or len(requests) >= self.numbatchjobs:
-                rospy.logdebug('job %d'%num)
+                rospy.logdebug('%s: job %d'%(t.service.resolved_name,num))
                 service = None
                 while service == None and not doshutdown:
                     for t in busythreads:
@@ -183,7 +183,7 @@ class EvaluationServer(object):
         rospy.loginfo('services finished processing, total time: %f'%(time.time()-starttime))
 
 
-def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args='',numbatchjobs=1):
+def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args='',numbatchjobs=1,log_level='info'):
     starttime = time.time()
     servicenames = ''
     programname = os.path.split(sys.argv[0])[1]
@@ -192,9 +192,9 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     nodes = """<machine timeout="30" name="localhost" address="localhost" default="true"/>\n"""
     for i,serviceaddr in enumerate(serviceaddrs):
         nodes += """<machine timeout="30" name="m%d" address="%s" default="false" %s/>\n"""%(i,serviceaddr[0],serviceaddr[1])
-        nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,programname,module.__name__,processedargs,i)
+        nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --log_level=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,programname,module.__name__,log_level,processedargs,i)
         servicenames += ' --service=openraveservice%d '%i
-    nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --numbatchjobs=%d --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,programname,numbatchjobs,module.__name__,servicenames,processedargs)
+    nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --numbatchjobs=%d --log_level=%s --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,programname,numbatchjobs,log_level,module.__name__,servicenames,processedargs)
     xml_text = '<launch>\n<env name="PYTHONPATH" value="$(optenv PYTHONPATH):%s"/>\n'%modulepath
     print xml_text
     if rosnamespace is not None and len(rosnamespace) > 0:
