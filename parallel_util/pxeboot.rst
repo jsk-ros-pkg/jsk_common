@@ -150,5 +150,17 @@ Commandline Interface to VirtualBox
 
 .. code-block:: bash
 
-  rdesktop-vrdb HVNAME:8888
+  rdesktop-vrdb HYPERVISORNAME:8888
   
+6. restart a VM
+
+.. code-block:: bash
+
+  VBoxManage controlvm VMNAME reset
+
+7. restart all VMs using vboxapi
+
+.. code-block:: python
+
+  import vboxapi
+  # todo

@@ -38,16 +38,29 @@ if __name__=='__main__':
                       help="""If specified, will roslaunch the services and setup the correct bindings for parallel processing (recommended). Usage: "python prog.py --launchservice='4*localhost' ...""")
     parser.add_option('--csshgroup', action='store', type='string', dest='csshgroup',default=None,
                       help='The group of computers to specify when launching')
+    parser.add_option('--log_level', action='store', type='string', dest='log_level',default='info',
+                      help='The ros loglevel to set rospy at: debug, info, warn, error, fatal')
     #print 'python path: ',os.environ['PYTHONPATH']
     (options, args) = parser.parse_args()
+    log_level = rospy.INFO
+    if options.log_level == 'debug':
+        log_level = rospy.DEBUG
+    elif options.log_level == 'info':
+        log_level = rospy.INFO
+    elif options.log_level == 'warn':
+        log_level = rospy.WARN
+    elif options.log_level == 'error':
+        log_level = rospy.ERROR
+    elif options.log_level == 'fatal':
+        log_level = rospy.FATAL
     module=__import__(options.modulename)
     if options.startservice:
-        rospy.init_node('servicenode',anonymous=True)
+        rospy.init_node('servicenode',anonymous=True,log_level=log_level)
         s=workmanager.StartService(module,split(options.args))
         rospy.spin()
     elif len(options.servicenames) > 0:
         module.server_start(split(options.args))
-        rospy.init_node('servicenode',anonymous=True)
+        rospy.init_node('servicenode',anonymous=True,log_level=log_level)
         try:
             self = workmanager.EvaluationServer(module,options.servicenames,numbatchjobs=options.numbatchjobs)
             self.run()
@@ -81,5 +94,5 @@ if __name__=='__main__':
                     serviceaddrs.append([addr,args])
             else:
                 serviceaddrs.append([addr,args])
-        workmanager.LaunchNodes(module,serviceaddrs=serviceaddrs,rosnamespace=options.modulename,args=options.args,numbatchjobs=options.numbatchjobs)
+        workmanager.LaunchNodes(module,serviceaddrs=serviceaddrs,rosnamespace=options.modulename,args=options.args,numbatchjobs=options.numbatchjobs,log_level=options.log_level)
     sys.exit(0)
