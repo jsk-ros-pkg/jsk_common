@@ -78,7 +78,7 @@ class EvaluationServerThread(threading.Thread):
                 res = self.service(self.req)
                 if res is not None and self.ok:
                     self.finishcb(pickle.loads(res.output))
-                    rospy.logdebug('service %s done'%t.service.resolved_name)
+                    rospy.logdebug('service %s done'%self.service.resolved_name)
                 self.req = None
 
 class EvaluationServer(object):
