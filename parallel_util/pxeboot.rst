@@ -138,7 +138,7 @@ Commandline Interface to VirtualBox
 
 .. code-block:: bash
 
-  VBoxHeadless -s VMNAME
+  VBoxManage startvm VMNAME --type headless
 
 4. register a new vm (.vms file) to your virtualbox
 

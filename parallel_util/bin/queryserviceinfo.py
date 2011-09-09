@@ -28,5 +28,6 @@ if __name__=='__main__':
     threadinfo = pickle.loads(res.output)
     for name, num, duration, req in threadinfo:
         print '%s: num=%d, duration=%f, requests:'%(name,num,duration)
-        print pickle.loads(req.input)
+        if req is not None:
+            print pickle.loads(req.input)
         print '--------'
