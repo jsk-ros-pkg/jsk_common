@@ -78,6 +78,7 @@ class EvaluationServerThread(threading.Thread):
                 res = self.service(self.req)
                 if res is not None and self.ok:
                     self.finishcb(pickle.loads(res.output))
+                    rospy.logdebug('service %s done'%t.service.resolved_name)
                 self.req = None
 
 class EvaluationServer(object):
@@ -132,7 +133,6 @@ class EvaluationServer(object):
                 requests.append(request)
                 num += 1
             if request is None or len(requests) >= self.numbatchjobs:
-                rospy.logdebug('%s: job %d'%(t.service.resolved_name,num))
                 service = None
                 while service == None and not doshutdown:
                     for t in busythreads:
@@ -160,6 +160,7 @@ class EvaluationServer(object):
                         time.sleep(0.01)
                 if service is not None:
                     with service.starteval:
+                        rospy.logdebug('%s: job %d'%(t.service.resolved_name,num))
                         service.req = PickledServiceRequest(input = pickle.dumps(requests))
                         requests = []
                         service.starteval.notifyAll()
