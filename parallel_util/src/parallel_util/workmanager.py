@@ -65,6 +65,8 @@ class EvaluationServerThread(threading.Thread):
         self.starteval = threading.Condition(threading.Lock())
         self.req = None
         self.servicechecked = False
+        self.num = -1
+        self.starttime = 0
 
     def run(self):
         with self.starteval:
@@ -75,10 +77,11 @@ class EvaluationServerThread(threading.Thread):
                 if self.req is None:
                     rospy.logwarn('dummy command?')
                     continue
+                self.starttime = time.time()
                 res = self.service(self.req)
                 if res is not None and self.ok:
                     self.finishcb(pickle.loads(res.output))
-                    rospy.logdebug('service %s done'%self.service.resolved_name)
+                    rospy.logdebug('%s: job %d done'%(self.service.resolved_name,self.num))
                 self.req = None
 
 class EvaluationServer(object):
@@ -115,8 +118,16 @@ class EvaluationServer(object):
             with self.evallock:
                 for response in responses:
                     self.module.server_processresponse(*response)
-            
+
+    def QueryServiceInfo(self,req):
+        threadinfo = []
+        for t in self.allthreads:
+            threadinfo.append([t.service.resolved_name, t.num, time.time()-t.starttime, t.req])
+        return PickledServiceResponse(output=pickle.dumps(threadinfo))
+
     def run(self):
+        self.queryservice = rospy.Service('queryserviceinfo', PickledService, self.QueryServiceInfo)
+
         starttime = time.time()
         busythreads = self.allthreads[:]
         # reset the evaluated threads
@@ -161,6 +172,7 @@ class EvaluationServer(object):
                 if service is not None:
                     with service.starteval:
                         rospy.logdebug('%s: job %d'%(t.service.resolved_name,num))
+                        service.num = num
                         service.req = PickledServiceRequest(input = pickle.dumps(requests))
                         requests = []
                         service.starteval.notifyAll()
