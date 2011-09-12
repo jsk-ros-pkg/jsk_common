@@ -386,7 +386,7 @@ public:
                 }
                 cam_model_.fromCameraInfo(info_msg_);
               }
-	      static map<std::string, int> tf_fail;
+	      static std::map<std::string, int> tf_fail;
               BOOST_FOREACH(std::string frame_id, marker->frames)  {
                 tf::StampedTransform transform;
                 ros::Time acquisition_time = msg->header.stamp;
