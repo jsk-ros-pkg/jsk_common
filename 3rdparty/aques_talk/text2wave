@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# for festival compaibility
+ARGS=`echo $@ | sed 's/\-eval\ ()//' | sed 's/\-eval\ (\(.\+\))\ \(.\+\)$/\2\ \-p\ \1/'`
+eval set -- "$ARGS"
+
 INPUT_FILE=$1;shift;
 OUTPUT_FILE=/tmp/_aques_talk_sound_$$.wav
 JPTEXT_FILE=/tmp/_aques_talk_text_$$.txt
