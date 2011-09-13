@@ -12,7 +12,7 @@
 
   <rosdep name="kakasi" />
   <rosdep name="nkf" />
-  <depend package="sound_play_jsk_patch" />
+  <depend package="sound_play" />
 
 </package>
 
