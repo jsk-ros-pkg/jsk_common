@@ -203,6 +203,11 @@ public:
 	}
 	local_queue.push_back(*new_msg);
 	marker_queue_.erase(new_msg);
+	// if action == REMOVE and id == -1, clear all marker_queue
+	if ( (*new_msg)->action == image_view2::ImageMarker2::REMOVE &&
+	     (*new_msg)->id == -1 ) {
+	  local_queue.clear();
+	}
       }
     }
 
@@ -229,6 +234,8 @@ public:
         for ( ; message_it != message_end; ++message_it )
           {
             image_view2::ImageMarker2::ConstPtr& marker = *message_it;
+
+	    ROS_DEBUG_STREAM("message type = " << marker->type << ", id " << marker->id);
 
 	    // outline colors
 	    std::vector<CvScalar> colors;
