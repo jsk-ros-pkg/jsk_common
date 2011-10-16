@@ -55,6 +55,7 @@ import re
 from srv import PickledService, PickledServiceRequest, PickledServiceResponse
 from cpuinfo import cpuinfos
 from numpy import random
+import std_msgs.msg
 
 class EvaluationServerThread(threading.Thread):
     def __init__(self, service, finishcb):
@@ -92,7 +93,8 @@ class EvaluationServer(object):
         self.numbatchjobs=numbatchjobs
         assert(numbatchjobs>0)
         self.setservices(servicenames)
-
+        self.pubResults = rospy.Publisher('results', std_msgs.msg.String)
+        
     def __del__(self):
         self.shutdownservices()
 
@@ -118,6 +120,9 @@ class EvaluationServer(object):
             with self.evallock:
                 for response in responses:
                     self.module.server_processresponse(*response)
+                    if self.pubResults.get_num_connections() > 0:
+                        # republish the results
+                        self.pubResults.publish(pickle.dumps(response))
 
     def QueryServiceInfo(self,req):
         threadinfo = []
@@ -196,10 +201,14 @@ class EvaluationServer(object):
         rospy.loginfo('services finished processing, total time: %f'%(time.time()-starttime))
 
 
-def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args='',numbatchjobs=1,log_level='info'):
+def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args='',numbatchjobs=1,log_level='info',programname=None,feedbackfn=None):
+    """feedbackfn is called once in a while inside the loop. If it returns True, then will shutdown the roslaunch process
+    """
+    assert(len(serviceaddrs)>0)
     starttime = time.time()
     servicenames = ''
-    programname = os.path.split(sys.argv[0])[1]
+    if programname is None:
+        programname = os.path.split(sys.argv[0])[1]
     modulepath=os.path.split(os.path.abspath(inspect.getfile(module)))[0]
     processedargs = re.sub("'","&quot;",args)
     nodes = """<machine timeout="30" name="localhost" address="localhost" default="true"/>\n"""
@@ -209,7 +218,6 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
         servicenames += ' --service=openraveservice%d '%i
     nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --numbatchjobs=%d --log_level=%s --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,programname,numbatchjobs,log_level,module.__name__,servicenames,processedargs)
     xml_text = '<launch>\n<env name="PYTHONPATH" value="$(optenv PYTHONPATH):%s"/>\n'%modulepath
-    print xml_text
     if rosnamespace is not None and len(rosnamespace) > 0:
         xml_text += """<group ns="%s">\n%s</group>"""%(rosnamespace,nodes)
     else:
@@ -225,7 +233,12 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
             controlproc = launchscript.pm.get_process(controlname[0])
             if controlproc is None or not controlproc.is_alive():
                 break
-            time.sleep(1)
+            if feedbackfn is not None:
+                if feedbackfn():
+                    rospy.loginfo('terminate by feedback function')
+                    break
+            else:
+                time.sleep(1)
         rospy.loginfo('roslaunch %s finished in %ss'%(module.__name__,time.time()-starttime))
     finally:
         rospy.loginfo('shutting down')
