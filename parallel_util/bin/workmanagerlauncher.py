@@ -12,8 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-PKG='parallel_util'
-import roslib; roslib.load_manifest(PKG)
+import roslib; roslib.load_manifest('parallel_util')
 from parallel_util import workmanager
 import sys,os
 import rospy
@@ -94,5 +93,5 @@ if __name__=='__main__':
                     serviceaddrs.append([addr,args])
             else:
                 serviceaddrs.append([addr,args])
-        workmanager.LaunchNodes(module,serviceaddrs=serviceaddrs,rosnamespace=options.modulename,args=options.args,numbatchjobs=options.numbatchjobs,log_level=options.log_level)
+        workmanager.LaunchNodes(module,serviceaddrs=serviceaddrs,rosnamespace=options.modulename,args=options.args,numbatchjobs=options.numbatchjobs,log_level=options.log_level,programname=os.path.split(sys.argv[0])[1])
     sys.exit(0)
