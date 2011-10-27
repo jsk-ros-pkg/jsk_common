@@ -8,6 +8,10 @@ How to use pxe_manager.py
 
 .. code-block:: bash
 
+  sudo apt-get install dhcp3-server tftpd-hpa syslinux nfs-kernel-server initramfs-tools dphys-swapfile
+
+.. code-block:: bash
+
   cat /etc/default/tftpd-hpa
 
 the output is
@@ -34,6 +38,12 @@ in order to run without superuser permission, we need change the permissions.
   sudo chmod -R g+rw /data/tftpboot/pxelinux.cfg
   sudo chgrp tftp /etc/dhcp3/dhcpd.conf
   sudo chmod g+rw /etc/dhcp3/dhcpd.conf
+
+.. code-block:: bash
+
+  ls -l /data
+  > drwxrwxrwx 9 root tftp  4096 2011-08-29 11:46 tftpboot
+
 
 1. generate a filesystem for pxe boot
 
@@ -73,6 +83,13 @@ the spec of the machine. The parameters are the number of cpu and the size of me
 .. code-block:: bash
 
   ./pxe_manager.py --generate-virtualbox-image VMNAME --refer-physical-machine PHYS_MACHINE
+
+References
+==========
+
+- https://help.ubuntu.com/community/DisklessUbuntuHowto
+
+- http://neil.franklin.ch/Projects/dphys-swapfile/
   
 Setting up VirtualBox with PXE Boot
 -----------------------------------
@@ -84,7 +101,7 @@ Setting up VirtualBox with PXE Boot
   wget -q  http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | sudo apt-key add -
   echo "deb http://download.virtualbox.org/virtualbox/debian `lsb_release -cs` contrib non-free" | sudo tee /etc/apt/sources.list.d/virtualbox.list
   sudo apt-get update
-  sudo apt-get install virtualbox-4.0
+  sudo apt-get install virtualbox-4.1
 
 2. Configure your OS:
 
