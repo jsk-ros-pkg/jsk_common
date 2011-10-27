@@ -8,7 +8,7 @@ How to use pxe_manager.py
 
 .. code-block:: bash
 
-  sudo apt-get install dhcp3-server tftpd-hpa syslinux nfs-kernel-server initramfs-tools dphys-swapfile
+  sudo apt-get install dhcp3-server tftpd-hpa syslinux nfs-kernel-server initramfs-tools
 
 .. code-block:: bash
 
