@@ -280,7 +280,7 @@ def install_apt_packages(target_dir):
                                     "wget http://packages.ros.org/ros.key -O - | apt-key add -"])
         chroot_command(target_dir, ["add-apt-repository", "ppa:openrave/release"])
         chroot_command(target_dir, ["apt-get", "update"])
-        chroot_command(target_dir, ["apt-get", "install", "--force-yes", "-y", "ros-diamondback-ros-base", "openrave"])
+        #chroot_command(target_dir, ["apt-get", "install", "--force-yes", "-y", "ros-diamondback-ros-base", "openrave"])
 
 def setup_user(target_dir, user, passwd):
     env = ChrootEnvironment(target_dir)
