@@ -1,5 +1,10 @@
 #!/usr/bin/env roseus
+;;
+;; FOR PR2 USER ONLY
+;; for non-pr2 users, use test-imageview2.l
+;;
 ;; rosrun image_view2 image_view2 image:=/wide_stereo/left/image_raw camera_info:=/wide_stereo/left/camera_info
+;;
 (ros::roseus-add-msgs "geometry_msgs")
 (ros::roseus-add-msgs "image_view2")
 ;;;

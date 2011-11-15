@@ -1,6 +1,11 @@
 #!/usr/bin/env roseus
 
 #|
+;;
+;; imageview2 sample program
+;;
+;; before invoke this script, first launch following programs
+;;
 roslaunch roseus_tutorials usb-camera.launch
 roslaunch rosues_tutorials image-view.launch
 rosrun tf static_transform_publisher 0 0 1 0 0 0 /camera /target 10
