@@ -10,6 +10,5 @@ Includes emacs scripts, ros tool alias generator, and launch doc generator.
   <url>http://ros.org/wiki/jsk_tools</url>
   <export>
     <rosdoc config="rosdoc.yaml" />
-    <python path="${prefix}/bin" />
   </export>
 </package>
