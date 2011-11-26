@@ -27,9 +27,10 @@ import xml.etree.ElementTree as ElementTree
 
 sphinx_conf = """
 # -*- coding: utf-8 -*-
+import roslib; roslib.load_manifest('jsk_tools')
 import sys, os
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.ifconfig']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.ifconfig', 'jsk_tools.shellblock_directive']
 templates_path = ['.templates']
 source_suffix = '.rst'
 #source_encoding = 'utf-8'
