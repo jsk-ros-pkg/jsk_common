@@ -96,10 +96,12 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
     pkgdir = roslib.packages.get_pkg_dir(args[0])
     manifest = roslib.manifest.parse_file(os.path.join(pkgdir,'manifest.xml'))
-    atts = {'project':args[0],'author':manifest.author,'license':manifest.license,'brief':manifest.brief}
+    atts = {'project':args[0],'author':manifest.author,'license':manifest.license,'brief':manifest.brief,'description':re.sub('\\n','\n  ',manifest.description)}
     atts['titlebar'] = '='*(17+len(args[0]))
     sphinxdoc = """%(project)s ROS Launch Files\n%(titlebar)s\n
 **Description:** %(brief)s
+
+  %(description)s
 
 **License:** %(license)s
 
