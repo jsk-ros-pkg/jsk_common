@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 function error {
     rosrun rosunit clean_junit_xml.py
     exit 1
