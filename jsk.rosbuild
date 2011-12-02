@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+function error {
+    rosrun rosunit clean_junit_xml.py
+    exit 1
+}
+trap error ERR
+
+# http://www.ros.org/wiki/electric/Installation/Ubuntu
+sudo apt-get -y --force-yes install build-essential python-yaml cmake subversion wget python-setuptools git-core mercurial aptitude
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list'
+wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+sudo apt-get update
+sudo apt-get -y --force-yes install python-setuptools
+sudo easy_install -U rosinstall
+sudo apt-get -y --force-yes install ros-electric-wg-pr2-apps ros-electric-pr2-apps ros-electric-pr2-desktop ros-electric-openni-kinect ros-electric-sound-drivers ros-electric-turtlebot || sudo apt-get -y --force-yes install ros-electric-wg-pr2-apps ros-electric-pr2-apps ros-electric-pr2-desktop ros-electric-openni-kinect ros-electric-sound-drivers ros-electric-turtlebot # pr2-desktop is not ready for oneiric
+
+# setup workspaceand buildspace
+# if jenkins
+if [ "$JENKINS_URL" != "" ]; then
+    export BUILDDIR=$WORKSPACE/stacks-$BUILD_NUMBER
+    export ROS_HOME=$WORKSPACE/.ros
+else # else
+    export BUILDDIR=$HOME/ros/electric
+    export ROS_HOME=$HOME/.ros
+fi
+#
+
+# jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
+/usr/local/bin/rosinstall --continue-on-error $BUILDDIR /opt/ros/electric http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
+# source
+. $BUILDDIR/setup.sh
+
+# sometimes sourceforge returns error
+rospack profile
+(cd `rospack find euslisp`; svn up; svn up)
+
+# set environment variables
+if [ -f /proc/xen -o "`grep -c 'QEMU Virtual CPU' /proc/cpuinfo`" != "0" ]; then
+    export ROS_PARALLEL_JOBS=-j1
+else
+    export ROS_PARALLEL_JOBS=-j4
+fi
+unset SVN_REVISION ## this jenkins environment valiables conflicts with mk/svn_checkout.mk
+
+# start rosmake
+ROSMAKE='rosmake --status-rate=0 --rosdep-install --rosdep-yes'
+$ROSMAKE euslisp
+$ROSMAKE roseus
+$ROSMAKE euscollada || $ROSMAKE euscollada || $ROSMAKE euscollada || $ROSMAKE euscollada # very difficult to compile euscollada
+$ROSMAKE pr2eus
+$ROSMAKE pr2eus_openrave
+
+# test
+export DISPLAY=:0.0
+export PATH=$PATH:`rospack find roseus`/bin
+$ROSMAKE --test-only roseus
+$ROSMAKE --test-only pr2eus
+$ROSMAKE --test-only euscollada
+
+# check error
+rosrun rosunit clean_junit_xml.py
+
