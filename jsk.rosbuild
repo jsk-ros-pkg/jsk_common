@@ -16,20 +16,16 @@ sudo easy_install -U rosinstall
 sudo apt-get -y --force-yes install ros-electric-wg-pr2-apps ros-electric-pr2-apps ros-electric-pr2-desktop ros-electric-openni-kinect ros-electric-sound-drivers ros-electric-turtlebot || sudo apt-get -y --force-yes install ros-electric-wg-pr2-apps ros-electric-pr2-apps ros-electric-pr2-desktop ros-electric-openni-kinect ros-electric-sound-drivers ros-electric-turtlebot # pr2-desktop is not ready for oneiric
 
 # setup workspaceand buildspace
-# if jenkins
-if [ "$JENKINS_URL" != "" ]; then
-    export BUILDDIR=$WORKSPACE/stacks-$BUILD_NUMBER
-    export ROS_HOME=$WORKSPACE/.ros
-else # else
-    export BUILDDIR=$HOME/ros/electric
-    export ROS_HOME=$HOME/.ros
+# if not jenkins
+if [ "$JENKINS_URL" == "" ]; then
+    export WORKSPACE=$HOME/ros/electric
 fi
 #
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
-/usr/local/bin/rosinstall --continue-on-error $BUILDDIR /opt/ros/electric http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
+/usr/local/bin/rosinstall --continue-on-error $WORKSPACE /opt/ros/electric http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
 # source
-. $BUILDDIR/setup.sh
+. $WORKSPACE/setup.sh
 
 # sometimes sourceforge returns error
 rospack profile
@@ -41,6 +37,7 @@ if [ -f /proc/xen -o "`grep -c 'QEMU Virtual CPU' /proc/cpuinfo`" != "0" ]; then
 else
     export ROS_PARALLEL_JOBS=-j4
 fi
+export ROS_HOME=$WORKSPACE/.ros
 unset SVN_REVISION ## this jenkins environment valiables conflicts with mk/svn_checkout.mk
 
 # start rosmake
