@@ -16,16 +16,17 @@ sudo easy_install -U rosinstall
 sudo apt-get -y --force-yes install ros-electric-wg-pr2-apps ros-electric-pr2-apps ros-electric-pr2-desktop ros-electric-openni-kinect ros-electric-sound-drivers ros-electric-turtlebot || sudo apt-get -y --force-yes install ros-electric-wg-pr2-apps ros-electric-pr2-apps ros-electric-pr2-desktop ros-electric-openni-kinect ros-electric-sound-drivers ros-electric-turtlebot # pr2-desktop is not ready for oneiric
 
 # setup workspaceand buildspace
-# if not jenkins
-if [ "$JENKINS_URL" == "" ]; then
-    export WORKSPACE=$HOME/ros/electric
+if [ "$JENKINS_URL" == "" ]; then # if not jenkins
+    export ROS_INSTALLDIR=$HOME/ros/electric
+else                              # if jenkins
+    export ROS_INSTALLDIR=$WORKSPACE/ros/electric
 fi
 #
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
-/usr/local/bin/rosinstall --continue-on-error $WORKSPACE /opt/ros/electric http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
+/usr/local/bin/rosinstall --continue-on-error $ROS_INSTALLDIR /opt/ros/electric http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
 # source
-. $WORKSPACE/setup.sh
+. $ROS_INSTALLDIR/setup.sh
 
 # sometimes sourceforge returns error
 rospack profile
