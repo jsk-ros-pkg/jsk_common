@@ -15,7 +15,7 @@ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 sudo apt-get update
 sudo apt-get -y --force-yes install python-setuptools
 sudo easy_install -U rosinstall
-sudo apt-get -y --force-yes install ros-electric-wg-pr2-apps ros-electric-pr2-apps ros-electric-pr2-desktop ros-electric-openni-kinect ros-electric-sound-drivers ros-electric-turtlebot || sudo apt-get -y --force-yes install ros-electric-wg-pr2-apps ros-electric-pr2-apps ros-electric-openni-kinect ros-electric-sound-drivers ros-electric-turtlebot # pr2-desktop is not ready for oneiric
+sudo apt-get -y --force-yes install ros-electric-wg-pr2-apps ros-electric-pr2-apps ros-electric-pr2-desktop ros-electric-openni-kinect ros-electric-sound-drivers ros-electric-turtlebot || sudo apt-get -y --force-yes install ros-electric-wg-pr2-apps ros-electric-pr2-apps ros-electric-desktop-full ros-electric-openni-kinect ros-electric-sound-drivers ros-electric-turtlebot # pr2-desktop is not ready for oneiric
 
 # setup workspaceand buildspace
 if [ "$JENKINS_URL" == "" ]; then # if not jenkins
