@@ -3,24 +3,21 @@
 #
 all: installed
 
-HG_DIR = robot_model-1.5.1_hg
+HG_DIR = build/robot_model-1.6.3
 HG_URL = https://kforge.ros.org/robotmodel/robot_model
-HG_REVISION = robot_model-1.5.1
-#HG_PATCH = color.patch
-#HG_PATCH = cyliner_box_sphere.patch rosdep.patch
-HG_PATCH = rosdep.patch
+HG_REVISION = robot_model-1.6.3
+HG_PATCH = cyliner_box_sphere.patch
 include $(shell rospack find mk)/hg_checkout.mk
 
 installed: $(HG_DIR)
-	(cd $(HG_DIR) && hg revert --all)
-	$(foreach PATCH, $(HG_PATCH), patch -d $(HG_DIR) -p1 < $(PATCH) &&) echo patched
-	ROS_PACKAGE_PATH=`pwd`/$(HG_DIR):$$ROS_PACKAGE_PATH rosmake collada_urdf
+	ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:$$ROS_PACKAGE_PATH make -C `pwd`/$(HG_DIR)/collada_urdf
+	cp `pwd`/$(HG_DIR)/collada_urdf/bin/urdf_to_collada .
 	touch installed
 
 clean:
-	-cd $(HG_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make clean
+	ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:$$ROS_PACKAGE_PATH make -C `pwd`/$(HG_DIR)/collada_urdf clean
 	rm -rf installed patched
-	if [ -e $(HG_DIR)/rosdep.yaml ]; then patch -R -d $(HG_DIR) -p0 < rosdep.patch; fi
+	rm urdf_to_collada
 
 wipe: clean
 	rm -rf $(HG_DIR)
