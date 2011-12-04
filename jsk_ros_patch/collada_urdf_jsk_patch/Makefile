@@ -9,6 +9,12 @@ HG_REVISION = robot_model-`rosversion robot_model`
 HG_PATCH = cyliner_box_sphere.patch
 include $(shell rospack find mk)/hg_checkout.mk
 
+# https://code.ros.org/trac/ros/ticket/3748
+$(HG_DIR):
+        mkdir -p `dirname $(HG_DIR)`; hg clone $(HG_URL) $(HG_DIR)
+        cd $(HG_DIR) && hg update $(HG_BRANCH) && hg update $(HG_REVISION)
+	touch rospack_nosubdirs
+
 installed: $(HG_DIR)
 	ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:$$ROS_PACKAGE_PATH make -C `pwd`/$(HG_DIR)/collada_urdf
 	cp `pwd`/$(HG_DIR)/collada_urdf/bin/urdf_to_collada .
