@@ -18,6 +18,7 @@ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 sudo apt-get update
 sudo apt-get -y --force-yes install python-setuptools
 sudo easy_install -U rosinstall
+# see http://ros.org/reps/rep-0113.html for variants and http://www.ros.org/debbuild/ for build status
 sudo apt-get -y --force-yes install ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-pr2-desktop ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-sound-drivers ros-$DISTRIBUTION-turtlebot || \
 sudo apt-get -y --force-yes install ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-desktop-full ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-sound-drivers ros-$DISTRIBUTION-turtlebot || \
 sudo apt-get -y --force-yes install ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-viz ros-$DISTRIBUTION-ros-tutorials ros-$DISTRIBUTION-common-tutorials ros-$DISTRIBUTION-geometry-tutorials ros-$DISTRIBUTION-visualization-tutorials ros-$DISTRIBUTION-sound-drivers || \
