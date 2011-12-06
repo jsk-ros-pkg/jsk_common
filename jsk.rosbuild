@@ -22,7 +22,7 @@ sudo easy_install -U rosinstall
 sudo apt-get -y --force-yes install ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-pr2-desktop ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-sound-drivers ros-$DISTRIBUTION-turtlebot || \
 sudo apt-get -y --force-yes install ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-desktop-full ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-sound-drivers ros-$DISTRIBUTION-turtlebot || \
 sudo apt-get -y --force-yes install ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-viz ros-$DISTRIBUTION-ros-tutorials ros-$DISTRIBUTION-common-tutorials ros-$DISTRIBUTION-geometry-tutorials ros-$DISTRIBUTION-visualization-tutorials ros-$DISTRIBUTION-sound-drivers || \
-sudo apt-get -y --force-yes install ros-$DISTRIBUTION-pr2-common ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-common-tutorials || \
+sudo apt-get -y --force-yes install ros-$DISTRIBUTION-pr2-common ros-$DISTRIBUTION-pr2-controllers ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-common-tutorials || \
 sudo apt-get -y --force-yes install ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-common-tutorials
 
 # setup workspaceand buildspace
