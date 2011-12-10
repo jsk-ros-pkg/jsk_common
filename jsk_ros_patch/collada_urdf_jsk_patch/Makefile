@@ -23,7 +23,7 @@ installed:$(HG_DIR) patched
 clean:
 	if [ -f $(HG_DIR)/collada_urdf ] ; then ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:$$ROS_PACKAGE_PATH make -C `pwd`/$(HG_DIR)/collada_urdf clean; fi
 	rm -rf installed patched
-	rm urdf_to_collada
+	rm -f urdf_to_collada
 
 wipe: clean
 	rm -rf $(HG_DIR)
