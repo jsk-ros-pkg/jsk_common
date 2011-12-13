@@ -1,6 +1,6 @@
 Index: include/pr2_teleop_general/pr2_teleop_general_commander.h
 ===================================================================
---- include/pr2_teleop_general/pr2_teleop_general_commander.h	(revision 51817)
+--- include/pr2_teleop_general/pr2_teleop_general_commander.h	(revision 53700)
 +++ include/pr2_teleop_general/pr2_teleop_general_commander.h	(working copy)
 @@ -130,8 +130,8 @@
  
@@ -15,7 +15,7 @@ Index: include/pr2_teleop_general/pr2_teleop_general_commander.h
    bool moveToWalkAlongArmPose();
 Index: manifest.xml
 ===================================================================
---- manifest.xml	(revision 51817)
+--- manifest.xml	(revision 53700)
 +++ manifest.xml	(working copy)
 @@ -19,6 +19,7 @@
    <depend package="pr2_controller_manager" />
@@ -27,7 +27,7 @@ Index: manifest.xml
    <depend package="pr2_common_action_msgs" />
 Index: src/pr2_teleop_general_joystick.cpp
 ===================================================================
---- src/pr2_teleop_general_joystick.cpp	(revision 51817)
+--- src/pr2_teleop_general_joystick.cpp	(revision 53700)
 +++ src/pr2_teleop_general_joystick.cpp	(working copy)
 @@ -63,12 +63,14 @@
  static const unsigned int OPEN_GRIPPER_BUTTON = 15;
@@ -363,7 +363,7 @@ Index: src/pr2_teleop_general_joystick.cpp
      }
 Index: src/pr2_teleop_general_keyboard.cpp
 ===================================================================
---- src/pr2_teleop_general_keyboard.cpp	(revision 51817)
+--- src/pr2_teleop_general_keyboard.cpp	(revision 53700)
 +++ src/pr2_teleop_general_keyboard.cpp	(working copy)
 @@ -460,91 +460,91 @@
              break;
@@ -495,17 +495,18 @@ Index: src/pr2_teleop_general_keyboard.cpp
              break;
 Index: src/pr2_teleop_general_commander.cpp
 ===================================================================
---- src/pr2_teleop_general_commander.cpp	(revision 51817)
+--- src/pr2_teleop_general_commander.cpp	(revision 53700)
 +++ src/pr2_teleop_general_commander.cpp	(working copy)
-@@ -32,6 +32,7 @@
+@@ -32,6 +32,8 @@
  
  #include <string>
  #include <boost/bind.hpp>
++#include <LinearMath/btQuaternion.h>
 +#include <LinearMath/btMatrix3x3.h>
  
  #include <pr2_mechanism_msgs/SwitchController.h>
  #include <geometry_msgs/Twist.h>
-@@ -768,7 +769,11 @@
+@@ -768,7 +770,11 @@
    if(control_rarm_) {
      tot_distance = sqrt(pow(des_r_wrist_roll_pose_.position.x-right_wrist_roll_pose_.position.x,2.0)+
                          pow(des_r_wrist_roll_pose_.position.y-right_wrist_roll_pose_.position.y,2.0)+
@@ -518,7 +519,7 @@ Index: src/pr2_teleop_general_commander.cpp
      
      //ROS_INFO_STREAM("Cur " << right_wrist_roll_pose_.position.x << " " << right_wrist_roll_pose_.position.y << " " << right_wrist_roll_pose_.position.z
      //                << " des " << des_r_wrist_roll_pose_.position.x << " " << des_r_wrist_roll_pose_.position.y << " " << des_r_wrist_roll_pose_.position.z);
-@@ -801,7 +806,12 @@
+@@ -801,7 +807,12 @@
    if(control_larm_) {
      tot_distance = sqrt(pow(des_l_wrist_roll_pose_.position.x-left_wrist_roll_pose_.position.x,2.0)+
                          pow(des_l_wrist_roll_pose_.position.y-left_wrist_roll_pose_.position.y,2.0)+
@@ -532,7 +533,7 @@ Index: src/pr2_teleop_general_commander.cpp
      
      if(tot_distance > max_dist) {
        des_l_wrist_roll_pose_ = left_wrist_roll_pose_;
-@@ -880,8 +890,8 @@
+@@ -880,8 +891,8 @@
    traj = unnormalized_trajectory; 
  }
  
@@ -543,7 +544,7 @@ Index: src/pr2_teleop_general_commander.cpp
                                          double hz) {
  
  
-@@ -890,12 +900,12 @@
+@@ -890,12 +901,12 @@
    double trajectory_duration = .2;
  
    //ROS_INFO_STREAM("Got vels " << r_x_vel << " " << r_y_vel << " " << r_z_vel);
@@ -558,7 +559,7 @@ Index: src/pr2_teleop_general_commander.cpp
        
        geometry_msgs::Pose right_trajectory_endpoint = des_r_wrist_roll_pose_;
        
-@@ -907,16 +917,44 @@
+@@ -907,16 +918,44 @@
        double pos_diff_x = r_x_vel*(1.0/hz);//*look_ahead;
        double pos_diff_y = r_y_vel*(1.0/hz);//*look_ahead;
        double pos_diff_z = r_z_vel*(1.0/hz);//*look_ahead;
@@ -568,9 +569,9 @@ Index: src/pr2_teleop_general_commander.cpp
 +      double pos_diff_pitch = r_pitch_vel*(1.0/hz);//*look_ahead;
 +      double pos_diff_yaw = r_yaw_vel;//*(1.0/hz);//*look_ahead;
 +
-+      btQuaternion::btQuaternion endpoint_quat, des_quat;
-+      btMatrix3x3::btMatrix3x3 end_rot, des_rot, diff_rot, duration_rot;
-+      end_rot.setRotation(btQuaternion::btQuaternion(
++      btQuaternion endpoint_quat, des_quat;
++      btMatrix3x3 end_rot, des_rot, diff_rot, duration_rot;
++      end_rot.setRotation(btQuaternion(
 +			      right_trajectory_endpoint.orientation.x,
 +			      right_trajectory_endpoint.orientation.y,
 +			      right_trajectory_endpoint.orientation.z,
@@ -605,7 +606,7 @@ Index: src/pr2_teleop_general_commander.cpp
        //ROS_INFO_STREAM("Desired " << des_r_wrist_roll_pose_.position.x << " " << des_r_wrist_roll_pose_.position.y << " " << des_r_wrist_roll_pose_.position.z);
        
        //todo - figure out yaw
-@@ -985,7 +1023,8 @@
+@@ -985,7 +1024,8 @@
      ros::Time afterCall = ros::Time::now();
    }
    if(control_larm_) {
@@ -615,7 +616,7 @@ Index: src/pr2_teleop_general_commander.cpp
  
        geometry_msgs::Pose left_trajectory_endpoint = des_l_wrist_roll_pose_;
  
-@@ -997,15 +1036,44 @@
+@@ -997,15 +1037,44 @@
        double pos_diff_x = l_x_vel*(1.0/hz);
        double pos_diff_y = l_y_vel*(1.0/hz);
        double pos_diff_z = l_z_vel*(1.0/hz);
@@ -624,9 +625,9 @@ Index: src/pr2_teleop_general_commander.cpp
 +      double pos_diff_pitch = l_pitch_vel*(1.0/hz);//*look_ahead;
 +      double pos_diff_yaw = l_yaw_vel*(1.0/hz);
 +
-+      btQuaternion::btQuaternion endpoint_quat, des_quat;
-+      btMatrix3x3::btMatrix3x3 end_rot, des_rot, diff_rot, duration_rot;
-+      end_rot.setRotation(btQuaternion::btQuaternion(
++      btQuaternion endpoint_quat, des_quat;
++      btMatrix3x3 end_rot, des_rot, diff_rot, duration_rot;
++      end_rot.setRotation(btQuaternion(
 +			      left_trajectory_endpoint.orientation.x,
 +			      left_trajectory_endpoint.orientation.y,
 +			      left_trajectory_endpoint.orientation.z,
@@ -661,7 +662,7 @@ Index: src/pr2_teleop_general_commander.cpp
        //todo - figure out yaw
  
        //now call ik
-@@ -1032,7 +1100,6 @@
+@@ -1032,7 +1101,6 @@
          }
        }
      
@@ -671,7 +672,7 @@ Index: src/pr2_teleop_general_commander.cpp
          //ROS_INFO("Ik succeeded");
 Index: launch/pr2_teleop_general_joystick.launch
 ===================================================================
---- launch/pr2_teleop_general_joystick.launch	(revision 51817)
+--- launch/pr2_teleop_general_joystick.launch	(revision 53700)
 +++ launch/pr2_teleop_general_joystick.launch	(working copy)
 @@ -27,7 +27,7 @@
    	<param name="controller_name" type="string" value="arm_controller"/>
