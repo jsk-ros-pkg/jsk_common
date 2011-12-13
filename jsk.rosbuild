@@ -62,6 +62,7 @@ $ROSMAKE pr2eus_openrave
 # test
 export DISPLAY=:0.0
 export PATH=$PATH:`rospack find roseus`/bin
+$ROSMAKE --test-only euslisp
 $ROSMAKE --test-only roseus
 $ROSMAKE --test-only pr2eus
 $ROSMAKE --test-only euscollada
