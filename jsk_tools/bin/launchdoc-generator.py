@@ -93,6 +93,8 @@ if __name__ == '__main__':
                       help="the tag in the xml file to look for (default=%default)")
     parser.add_option('--output_dir', action='store', type='string', dest='output_dir', default='launchdoc',
                       help="the output directory (default=%default)")
+    parser.add_option('--output_filename', action='store', type='string', dest='output_filename', default='index.rst',
+                      help="the output file name (default=%default)")
     parser.add_option('--nomakefile', action='store_true', dest='nomakefile', default=False,
                       help="if set will not output a makefile (default=%default)")
     (options, args) = parser.parse_args()
@@ -143,7 +145,7 @@ if __name__ == '__main__':
 all:
 \tsphinx-build -b html . %s
 """%os.path.relpath(os.path.join(pkgdir,'doc/launch'),os.path.join(pkgdir,options.output_dir))
-    open(os.path.join(pkgdir,options.output_dir,'index.rst'),'w').write(sphinxdoc)
+    open(os.path.join(pkgdir,options.output_dir,options.output_filename),'w').write(sphinxdoc)
     open(os.path.join(pkgdir,options.output_dir,'conf.py'),'w').write(sphinx_conf%atts)
     if not options.nomakefile:
         open(os.path.join(pkgdir,options.output_dir,'Makefile'),'w').write(Makefile)
