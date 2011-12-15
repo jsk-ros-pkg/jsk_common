@@ -60,6 +60,7 @@ $ROSMAKE pr2eus
 $ROSMAKE pr2eus_openrave
 
 # test
+trap "" ERR
 export DISPLAY=:0.0
 export PATH=$PATH:`rospack find roseus`/bin
 $ROSMAKE --test-only euslisp
