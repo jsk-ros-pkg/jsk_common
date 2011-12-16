@@ -399,6 +399,11 @@ public:
                 ros::Time acquisition_time = msg->header.stamp;
                 ros::Duration timeout(1.0 / 2); // wait 0.5 sec
                 try {
+		   ros::Time tm;
+		   tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+		   ros::Duration diff =  ros::Time::now() - tm;
+		   if ( diff > ros::Duration(1.0) ) { break; }
+
                   tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
                                                 acquisition_time, timeout);
                   tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
