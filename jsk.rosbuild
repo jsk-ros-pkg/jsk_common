@@ -60,13 +60,9 @@ $ROSMAKE pr2eus
 $ROSMAKE pr2eus_openrave
 
 # test
-trap "" ERR
 export DISPLAY=:0.0
 export PATH=$PATH:`rospack find roseus`/bin
-$ROSMAKE --test-only euslisp
-$ROSMAKE --test-only roseus
-$ROSMAKE --test-only pr2eus
-$ROSMAKE --test-only euscollada
+$ROSMAKE -k --test-only euslisp roseus pr2eus euscollada
 
 # check error
 rosrun rosunit clean_junit_xml.py
