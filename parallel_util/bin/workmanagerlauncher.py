@@ -34,7 +34,7 @@ if __name__=='__main__':
     parser.add_option('--numbatchjobs', action='store', type='int', dest='numbatchjobs',default=1,
                       help='The number of batch jobs to request and send to ROS at one time (used to reduce bandwidth)')
     parser.add_option('--launchservice', action='append', dest='launchservices',default=[],
-                      help="""If specified, will roslaunch the services and setup the correct bindings for parallel processing (recommended). Usage: "python prog.py --launchservice='4*localhost' ...""")
+                      help="""If specified, will roslaunch the services and setup the correct bindings for parallel processing (recommended). Usage: "python prog.py --launchservice='4*localhost' ..." """)
     parser.add_option('--csshgroup', action='store', type='string', dest='csshgroup',default=None,
                       help='The group of computers to specify when launching')
     parser.add_option('--log_level', action='store', type='string', dest='log_level',default='info',
@@ -52,7 +52,9 @@ if __name__=='__main__':
         log_level = rospy.ERROR
     elif options.log_level == 'fatal':
         log_level = rospy.FATAL
-    module=__import__(options.modulename)
+
+    module = __import__(options.modulename, globals(), locals(), [options.modulename.rsplit('.',1)[1]])
+    
     if options.startservice:
         rospy.init_node('servicenode',anonymous=True,log_level=log_level)
         s=workmanager.StartService(module,split(options.args))
