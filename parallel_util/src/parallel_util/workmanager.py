@@ -227,8 +227,8 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     print xml_text
     roslaunch.pmon._shutting_down = False # roslaunch registers its own signal handlers and shuts down automatically on sigints
     launchscript = roslaunch_caller.ScriptRoslaunch(xml_text)
-    launchscript.start()
     try:
+        launchscript.start()
         controlname = [name for name in launchscript.pm.get_active_names() if name.find('openraveserver')>=0]
         while True:
             controlproc = launchscript.pm.get_process(controlname[0])
