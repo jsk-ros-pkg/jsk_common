@@ -121,7 +121,7 @@ class EvaluationServer(object):
                 for response in responses:
                     self.module.server_processresponse(*response)
                     if self.pubResults.get_num_connections() > 0:
-                        # republish the results
+                        #rospy.loginfo('republish the results')
                         self.pubResults.publish(pickle.dumps(response))
 
     def QueryServiceInfo(self,req):
@@ -211,13 +211,14 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
         programname = os.path.split(sys.argv[0])[1]
     modulepath=os.path.split(os.path.abspath(inspect.getfile(module)))[0]
     processedargs = re.sub("'","&quot;",args)
+    processedargs += ' --loglevel=%s '%log_level
     nodes = """<machine timeout="30" name="localhost" address="localhost" default="true"/>\n"""
     for i,serviceaddr in enumerate(serviceaddrs):
         nodes += """<machine timeout="30" name="m%d" address="%s" default="false" %s/>\n"""%(i,serviceaddr[0],serviceaddr[1])
         nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --log_level=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,programname,module.__name__,log_level,processedargs,i)
         servicenames += ' --service=openraveservice%d '%i
     nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --numbatchjobs=%d --log_level=%s --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,programname,numbatchjobs,log_level,module.__name__,servicenames,processedargs)
-    xml_text = '<launch>\n<env name="PYTHONPATH" value="$(optenv PYTHONPATH):%s"/>\n'%modulepath
+    xml_text = '<?xml version="1.0" encoding="utf-8"?>\n<launch>\n<env name="PYTHONPATH" value="$(optenv PYTHONPATH):%s"/>\n'%modulepath
     if rosnamespace is not None and len(rosnamespace) > 0:
         xml_text += """<group ns="%s">\n%s</group>"""%(rosnamespace,nodes)
     else:
