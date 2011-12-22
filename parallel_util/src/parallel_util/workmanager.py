@@ -57,6 +57,8 @@ from cpuinfo import cpuinfos
 from numpy import random
 import std_msgs.msg
 
+from xml.sax.saxutils import quoteattr
+
 class EvaluationServerThread(threading.Thread):
     def __init__(self, service, finishcb):
         threading.Thread.__init__(self)
@@ -201,7 +203,7 @@ class EvaluationServer(object):
         rospy.loginfo('services finished processing, total time: %f'%(time.time()-starttime))
 
 
-def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args='',numbatchjobs=1,log_level='info',programname=None,feedbackfn=None):
+def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args='',numbatchjobs=1,log_level='info',programname=None,feedbackfn=None, rosuser=None):
     """feedbackfn is called once in a while inside the loop. If it returns True, then will shutdown the roslaunch process
     """
     assert(len(serviceaddrs)>0)
@@ -212,9 +214,12 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     modulepath=os.path.split(os.path.abspath(inspect.getfile(module)))[0]
     processedargs = re.sub("'","&quot;",args)
     processedargs += ' --loglevel=%s '%log_level
-    nodes = """<machine timeout="30" name="localhost" address="localhost" default="true"/>\n"""
+    userattr = ''
+    if rosuser is not None:
+        userattr = 'user="%s"%'%rosuser
+    nodes = """<machine timeout="30" name="localhost" address="localhost" %s default="true"/>\n"""%userattr
     for i,serviceaddr in enumerate(serviceaddrs):
-        nodes += """<machine timeout="30" name="m%d" address="%s" default="false" %s/>\n"""%(i,serviceaddr[0],serviceaddr[1])
+        nodes += """<machine timeout="30" name="m%d" address="%s" %s default="false" %s/>\n"""%(i,serviceaddr[0],serviceaddr[1],userattr)
         nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --log_level=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,programname,module.__name__,log_level,processedargs,i)
         servicenames += ' --service=openraveservice%d '%i
     nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --numbatchjobs=%d --log_level=%s --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,programname,numbatchjobs,log_level,module.__name__,servicenames,processedargs)
