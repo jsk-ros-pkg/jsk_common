@@ -220,9 +220,9 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     nodes = """<machine timeout="30" name="localhost" address="localhost" %s default="true"/>\n"""%userattr
     for i,serviceaddr in enumerate(serviceaddrs):
         nodes += """<machine timeout="30" name="m%d" address="%s" %s default="false" %s/>\n"""%(i,serviceaddr[0],serviceaddr[1],userattr)
-        nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --log_level=%s --args='%s'" output="log" cwd="node">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,programname,module.__name__,log_level,processedargs,i)
+        nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args="--startservice --module=%s --log_level=%s --args='%s'" output="log" cwd="node" respawn="true">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,programname,module.__name__,log_level,processedargs,i)
         servicenames += ' --service=openraveservice%d '%i
-    nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --numbatchjobs=%d --log_level=%s --module=%s %s --args='%s'" output="screen" cwd="node"/>\n"""%(PKG,programname,numbatchjobs,log_level,module.__name__,servicenames,processedargs)
+    nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=" --numbatchjobs=%d --log_level=%s --module=%s %s --args='%s'" output="screen" cwd="node" respawn="true"/>\n"""%(PKG,programname,numbatchjobs,log_level,module.__name__,servicenames,processedargs)
     xml_text = '<?xml version="1.0" encoding="utf-8"?>\n<launch>\n<env name="PYTHONPATH" value="$(optenv PYTHONPATH):%s"/>\n'%modulepath
     if rosnamespace is not None and len(rosnamespace) > 0:
         xml_text += """<group ns="%s">\n%s</group>"""%(rosnamespace,nodes)
