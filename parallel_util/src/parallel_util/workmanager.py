@@ -216,7 +216,7 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     processedargs += ' --loglevel=%s '%log_level
     userattr = ''
     if rosuser is not None:
-        userattr = 'user="%s"%'%rosuser
+        userattr = ' user="%s" '%rosuser
     nodes = """<machine timeout="30" name="localhost" address="localhost" %s default="true"/>\n"""%userattr
     for i,serviceaddr in enumerate(serviceaddrs):
         nodes += """<machine timeout="30" name="m%d" address="%s" %s default="false" %s/>\n"""%(i,serviceaddr[0],serviceaddr[1],userattr)
