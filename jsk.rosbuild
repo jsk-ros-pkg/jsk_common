@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -x
-
 function error {
     rosrun rosunit clean_junit_xml.py
     echo "source $ROS_WORKSPACE/setup.bash"
@@ -9,38 +7,32 @@ function error {
 }
 trap error ERR
 
-DISTRIBUTION=${@-"electric"}
+# command line parse
+OPT=`getopt -o hip -l help,show-install,show-package -- $*`
+if [ $? != 0 ]; then
+    usage
+fi
 
-# http://www.ros.org/wiki/electric/Installation/Ubuntu
-sudo apt-get -y --force-yes install build-essential python-yaml cmake subversion wget python-setuptools git-core mercurial aptitude
-sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list'
-wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
-sudo apt-get update
-sudo apt-get -y --force-yes install python-setuptools
-sudo easy_install -U rosinstall
-# see http://ros.org/reps/rep-0113.html for variants and http://www.ros.org/debbuild/ for build status
-sudo apt-get -y --force-yes install ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-pr2-desktop ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-sound-drivers ros-$DISTRIBUTION-turtlebot || \
-sudo apt-get -y --force-yes install ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-desktop-full ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-sound-drivers ros-$DISTRIBUTION-turtlebot || \
-sudo apt-get -y --force-yes install ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-viz ros-$DISTRIBUTION-ros-tutorials ros-$DISTRIBUTION-common-tutorials ros-$DISTRIBUTION-geometry-tutorials ros-$DISTRIBUTION-visualization-tutorials ros-$DISTRIBUTION-sound-drivers || \
-sudo apt-get -y --force-yes install ros-$DISTRIBUTION-pr2-common ros-$DISTRIBUTION-pr2-controllers ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-common-tutorials || \
-sudo apt-get -y --force-yes install ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-common-tutorials
+eval set -- $OPT
+while [ -n "$1" ] ; do
+    case $1 in
+	-h|--help) usage ;;
+	-i|--show-install) SHOW="install"; shift;;
+	-p|--show-package) SHOW="package"; shift;;
+	--) shift; break;;
+	*) echo "Unknown option($1)"; usage;;
+    esac
+done
+
+# set environment variables
+# set distribution
+DISTRIBUTION=${@-"electric"}
 
 # setup workspaceand buildspace
 if [ "$WORKSPACE" == "" ]; then # if not jenkins
     export WORKSPACE=$HOME
 fi
 export ROS_INSTALLDIR=$WORKSPACE/ros/$DISTRIBUTION
-
-#
-
-# jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
-/usr/local/bin/rosinstall --rosdep-yes --continue-on-error  --delete-changed-uris $ROS_INSTALLDIR /opt/ros/$DISTRIBUTION http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
-# source
-. $ROS_INSTALLDIR/setup.sh
-
-# sometimes sourceforge returns error
-rospack profile
-(cd `rospack find euslisp`; svn up; svn up)
 
 # set environment variables
 if [ -f /proc/xen -o "`grep -c 'QEMU Virtual CPU' /proc/cpuinfo`" != "0" ]; then
@@ -51,19 +43,93 @@ fi
 export ROS_HOME=$WORKSPACE/.ros
 unset SVN_REVISION ## this jenkins environment valiables conflicts with mk/svn_checkout.mk
 
-# start rosmake
-ROSMAKE='rosmake --status-rate=0 --rosdep-install --rosdep-yes'
-$ROSMAKE euslisp
-$ROSMAKE roseus
-$ROSMAKE euscollada || $ROSMAKE euscollada || $ROSMAKE euscollada || $ROSMAKE euscollada # very difficult to compile euscollada
-$ROSMAKE pr2eus
-$ROSMAKE pr2eus_openrave
+# define functions
+# http://www.ros.org/wiki/electric/Installation/Ubuntu
+function setup-ros {
+    sudo apt-get -y --force-yes install build-essential python-yaml cmake subversion wget python-setuptools git-core mercurial aptitude
+    sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list'
+    wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+    sudo apt-get update
+    sudo apt-get -y --force-yes install python-setuptools
+    sudo easy_install -U rosinstall
+}
 
-# test
-export DISPLAY=:0.0
-export PATH=$PATH:`rospack find roseus`/bin
-$ROSMAKE -k --test-only euslisp roseus pr2eus euscollada
+# see http://ros.org/reps/rep-0113.html for variants and http://www.ros.org/debbuild/ for build status
+INSTALL_ROS_PACKAGE="ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-pr2-desktop ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-sound-drivers ros-$DISTRIBUTION-turtlebot"
+function apt-get-ros-package {
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE || \
+    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE//pr2-desktop/desktop-full} ; \
+     sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
+    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-openni-kinect/} ; \
+     sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
+    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-desktop-full/ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-viz ros-$DISTRIBUTION-ros-tutorials ros-$DISTRIBUTION-common-tutorials ros-$DISTRIBUTION-geometry-tutorials ros-$DISTRIBUTION-visualization-tutorials} ; \
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
+    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-wg-pr2-apps/} ; \
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
+    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-apps/ros-$DISTRIBUTION-pr2-common ros-$DISTRIBUTION-pr2-controllers} ; \
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
+    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-viz} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-visualization-tutorials} ; \
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
+    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-sound-drivers} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-turtlebot} ; \
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
+    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-geometry-tutorials} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-ros-tutorials} ; \
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
+    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-common} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-controllers} ; \
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE)
+}
 
-# check error
-rosrun rosunit clean_junit_xml.py
+# jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
+function install-jsk-ros-pkg {
+    /usr/local/bin/rosinstall --rosdep-yes --continue-on-error  --delete-changed-uris $ROS_INSTALLDIR /opt/ros/$DISTRIBUTION http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
+# source
+    . $ROS_INSTALLDIR/setup.sh
+}
+
+function compile-jsk-ros-pkg {
+    # sometimes sourceforge returns error
+    rospack profile
+    (cd `rospack find euslisp`; svn up; svn up)
+
+    # start rosmake
+    ROSMAKE='rosmake --status-rate=0 --rosdep-install --rosdep-yes'
+    $ROSMAKE euslisp
+    $ROSMAKE roseus
+    $ROSMAKE euscollada || $ROSMAKE euscollada || $ROSMAKE euscollada || $ROSMAKE euscollada # very difficult to compile euscollada
+    $ROSMAKE pr2eus
+    $ROSMAKE pr2eus_openrave
+}
+
+function test-jsk-ros-pkg {
+    # test
+    export DISPLAY=:0.0
+    export PATH=$PATH:`rospack find roseus`/bin
+    $ROSMAKE -k --test-only euslisp roseus pr2eus euscollada
+
+    # check error
+    rosrun rosunit clean_junit_xml.py
+}
+
+function usage {
+    echo >&2 "usage: $0"
+    echo >&2 "          [-h|--help] print this message"
+    echo >&2 "          [-i|--show-install] show how to install "
+    echo >&2 "          [-p|--show-package] display packages to install"
+    exit 0
+}
+
+
+# show-* option
+case "$SHOW" in
+    install) declare -f setup-ros | awk '/^\ /{print $0}' | sed -e 's/^[ ]*//'; exit 0;;
+    package) echo "sudo apt-get -y --force-yes intall $INSTALL_ROS_PACKAGE" ; exit 0;;
+esac
+
+# main program
+set -x
+
+setup-ros
+apt-get-ros-package
+install-jsk-ros-pkg
+compile-jsk-ros-pkg
+test-jsk-ros-pkg
 
