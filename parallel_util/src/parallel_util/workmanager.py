@@ -226,6 +226,8 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     processedargs = """--numbatchjobs=%d --log_level=%s --module=%s %s --args='%s --loglevel=%s'"""%(numbatchjobs,log_level,module.__name__,servicenames,args,log_level)
     nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=%s output="screen" cwd="node" respawn="false"/>\n"""%(PKG,programname,quoteattr(processedargs))
     xml_text = '<?xml version="1.0" encoding="utf-8"?>\n<launch>\n<env name="PYTHONPATH" value="$(optenv PYTHONPATH):%s"/>\n'%modulepath
+    if 'LANG' in os.environ:
+        xml_text += '<env name="LANG" value="%s"/>\n'%os.environ['LANG']
     if rosnamespace is not None and len(rosnamespace) > 0:
         xml_text += """<group ns="%s">\n%s</group>"""%(rosnamespace,nodes)
     else:
