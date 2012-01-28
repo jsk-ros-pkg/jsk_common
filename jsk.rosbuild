@@ -72,7 +72,7 @@ function apt-get-ros-package {
     for PACKAGE in $INSTALL_ROS_PACKAGE
     do
 	echo "install $PACKAGE"
-	sudo apt-get -qq -y --force-yes install $PACKAGE
+	sudo apt-get -y --force-yes install $PACKAGE
     done
 }
 
