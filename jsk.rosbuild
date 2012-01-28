@@ -57,25 +57,26 @@ function setup-ros {
 # see http://ros.org/reps/rep-0113.html for variants and http://www.ros.org/debbuild/ for build status
 INSTALL_ROS_PACKAGE="ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-pr2-desktop ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-sound-drivers ros-$DISTRIBUTION-turtlebot"
 function apt-get-ros-package {
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE || \
-    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE//pr2-desktop/desktop-full} ; \
-     sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
-    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-openni-kinect/} ; \
-     sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
-    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-desktop-full/ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-viz ros-$DISTRIBUTION-ros-tutorials ros-$DISTRIBUTION-common-tutorials ros-$DISTRIBUTION-geometry-tutorials ros-$DISTRIBUTION-visualization-tutorials} ; \
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
-    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-wg-pr2-apps/} ; \
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
-    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-apps/ros-$DISTRIBUTION-pr2-common ros-$DISTRIBUTION-pr2-controllers} ; \
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
-    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-viz} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-visualization-tutorials} ; \
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
-    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-sound-drivers} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-turtlebot} ; \
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
-    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-geometry-tutorials} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-ros-tutorials} ; \
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE) || \
-    (INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-common} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-controllers} ; \
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE)
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE//pr2-desktop/desktop-full}
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-openni-kinect/}
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-desktop-full/ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-viz ros-$DISTRIBUTION-ros-tutorials ros-$DISTRIBUTION-common-tutorials ros-$DISTRIBUTION-geometry-tutorials ros-$DISTRIBUTION-visualization-tutorials}
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-wg-pr2-apps/}
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-apps/ros-$DISTRIBUTION-pr2-common ros-$DISTRIBUTION-pr2-controllers}
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-viz} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-visualization-tutorials}
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-sound-drivers} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-turtlebot}
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-geometry-tutorials} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-ros-tutorials}
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-common} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-controllers}
+    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
+    return 1
 }
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
