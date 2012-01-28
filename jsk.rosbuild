@@ -69,7 +69,7 @@ function apt-get-ros-package {
     INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-simulators/ros-$DISTRIBUTION-simulator-stage ros-$DISTRIBUTION-simulator-gazebo ros-$DISTRIBUTION-stage ros-$DISTRIBUTION-physics-ode}
     INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-viz/ros-$DISTRIBUTION-visualization-common ros-$DISTRIBUTION-visualization ros-$DISTRIBUTION-rx ros-$DISTRIBUTION-image-common ros-$DISTRIBUTION-laser-pipeline ros-$DISTRIBUTION-executive-smach-visualization ros-$DISTRIBUTION-diagnostics-monitors ros-$DISTRIBUTION-geometry-visualization ros-$DISTRIBUTION-robot-model-visualization ros-$DISTRIBUTION-geometry-experimental}
     INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-robot/ros-$DISTRIBUTION-ros-base ros-$DISTRIBUTION-bond-core ros-$DISTRIBUTION-common-msgs ros-$DISTRIBUTION-common ros-$DISTRIBUTION-diagnostics ros-$DISTRIBUTION-driver-common ros-$DISTRIBUTION-eigen ros-$DISTRIBUTION-filters ros-$DISTRIBUTION-bullet ros-$DISTRIBUTION-geometry ros-$DISTRIBUTION-nodelet-core ros-$DISTRIBUTION-orocos-kinematics-dynamics ros-$DISTRIBUTION-pluginlib ros-$DISTRIBUTION-assimp ros-$DISTRIBUTION-robot-model ros-$DISTRIBUTION-executive-smach ros-$DISTRIBUTION-xacro}
-    INSTALL_ROS_PACKAGE=`echo $INSTALL_ROS_PACKAGE | rev`
+    INSTALL_ROS_PACKAGE=`echo $INSTALL_ROS_PACKAGE | tac -s' '`
     for PACKAGE in $INSTALL_ROS_PACKAGE
     do
 	echo "install $PACKAGE"
