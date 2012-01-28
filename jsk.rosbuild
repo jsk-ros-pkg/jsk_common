@@ -74,6 +74,7 @@ function apt-get-ros-package {
 	echo "install $PACKAGE"
 	sudo apt-get -y --force-yes install $PACKAGE
     done
+    return 0
 }
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
