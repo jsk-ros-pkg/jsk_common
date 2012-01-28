@@ -58,25 +58,22 @@ function setup-ros {
 INSTALL_ROS_PACKAGE="ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-pr2-desktop ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-sound-drivers ros-$DISTRIBUTION-turtlebot"
 function apt-get-ros-package {
     sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
-    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE//pr2-desktop/desktop-full}
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
-    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-openni-kinect/}
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
-    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-desktop-full/ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-viz ros-$DISTRIBUTION-ros-tutorials ros-$DISTRIBUTION-common-tutorials ros-$DISTRIBUTION-geometry-tutorials ros-$DISTRIBUTION-visualization-tutorials}
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
-    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-wg-pr2-apps/}
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
-    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-apps/ros-$DISTRIBUTION-pr2-common ros-$DISTRIBUTION-pr2-controllers}
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
-    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-viz} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-visualization-tutorials}
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
-    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-sound-drivers} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-turtlebot}
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
-    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-geometry-tutorials} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-ros-tutorials}
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
-    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-common} ; INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-controllers}
-    sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
-    return 1
+    #
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-desktop/ros-$DISTRIBUTION-desktop-full ros-$DISTRIBUTION-pr2-base ros-$DISTRIBUTION-pr2-gui ros-$DISTRIBUTION-pr2-simulator ros-$DISTRIBUTION-pr2-power-drivers ros-$DISTRIBUTION-pr2-ethercat-drivers ros-$DISTRIBUTION-geometry-visualization}
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-base/ros-$DISTRIBUTION-mobile ros-$DISTRIBUTION-perception ros-$DISTRIBUTION-move-arm ros-$DISTRIBUTION-control ros-$DISTRIBUTION-object-manipulation ros-$DISTRIBUTION-robot-calibration ros-$DISTRIBUTION-point-cloud-perception ros-$DISTRIBUTION-pr2-common ros-$DISTRIBUTION-pr2-controllers ros-$DISTRIBUTION-pr2-mechanism ros-$DISTRIBUTION-web-interface ros-$DISTRIBUTION-pr2-calibration ros-$DISTRIBUTION-pr2-navigation ros-$DISTRIBUTION-pr2-kinematics ros-$DISTRIBUTION-pr2-arm-navigation ros-$DISTRIBUTION-pr2-object-manipulation ros-$DISTRIBUTION-pr2-tabletop-manipulation-apps ros-$DISTRIBUTION-ros-realtime ros-$DISTRIBUTION-tabletop-object-perception ros-$DISTRIBUTION-sql-database ros-$DISTRIBUTION-geometry-experimental}
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-desktop-full/ros-$DISTRIBUTION-desktop ros-$DISTRIBUTION-mobile ros-$DISTRIBUTION-perception ros-$DISTRIBUTION-simulators}
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-desktop/ros-$DISTRIBUTION-ros-full ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-viz ros-$DISTRIBUTION-ros-tutorials ros-$DISTRIBUTION-common-tutorials ros-$DISTRIBUTION-geometry-tutorials ros-$DISTRIBUTION-visualization-tutorials}
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-perception/ros-$DISTRIBUTION-image-common ros-$DISTRIBUTION-image-transport-plugins ros-$DISTRIBUTION-image-pipeline ros-$DISTRIBUTION-vision-opencv}
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-mobile/ros-$DISTRIBUTION-robot ros-$DISTRIBUTION-navigation ros-$DISTRIBUTION-slam-gmapping ros-$DISTRIBUTION-laser-pipeline ros-$DISTRIBUTION-perception-pcl}
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-move-arm/ros-$DISTRIBUTION-arm-navigation ros-$DISTRIBUTION-octomap-mapping ros-$DISTRIBUTION-physics-ode ros-$DISTRIBUTION-perception-pcl ros-$DISTRIBUTION-pr2-controllers ros-$DISTRIBUTION-control ros-$DISTRIBUTION-pr2-mechanism ros-$DISTRIBUTION-pr2-common}
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-simulators/ros-$DISTRIBUTION-simulator-stage ros-$DISTRIBUTION-simulator-gazebo ros-$DISTRIBUTION-stage ros-$DISTRIBUTION-physics-ode}
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-viz/ros-$DISTRIBUTION-visualization-common ros-$DISTRIBUTION-visualization ros-$DISTRIBUTION-rx ros-$DISTRIBUTION-image-common ros-$DISTRIBUTION-laser-pipeline ros-$DISTRIBUTION-executive-smach-visualization ros-$DISTRIBUTION-diagnostics-monitors ros-$DISTRIBUTION-geometry-visualization ros-$DISTRIBUTION-robot-model-visualization ros-$DISTRIBUTION-geometry-experimental}
+    INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-robot/ros-$DISTRIBUTION-ros-base ros-$DISTRIBUTION-bond-core ros-$DISTRIBUTION-common-msgs ros-$DISTRIBUTION-common ros-$DISTRIBUTION-diagnostics ros-$DISTRIBUTION-driver-common ros-$DISTRIBUTION-eigen ros-$DISTRIBUTION-filters ros-$DISTRIBUTION-bullet ros-$DISTRIBUTION-geometry ros-$DISTRIBUTION-nodelet-core ros-$DISTRIBUTION-orocos-kinematics-dynamics ros-$DISTRIBUTION-pluginlib ros-$DISTRIBUTION-assimp ros-$DISTRIBUTION-robot-model ros-$DISTRIBUTION-executive-smach ros-$DISTRIBUTION-xacro}
+    for PACKAGE in $INSTALL_ROS_PACKAGE
+    do
+	echo "install $PACKAGE"
+	sudo apt-get -qq -y --force-yes install $PACKAGE
+    done
 }
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
