@@ -81,6 +81,7 @@ function apt-get-ros-package {
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
 function install-jsk-ros-pkg {
     /usr/local/bin/rosinstall --rosdep-yes --continue-on-error  --delete-changed-uris $ROS_INSTALLDIR /opt/ros/$DISTRIBUTION http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
+    . /opt/ros/$DISTRIBUTION/setup.sh # for furtle https://kforge.ros.org/vcstools/trac/ticket/16
 # source
     . $ROS_INSTALLDIR/setup.sh
 }
