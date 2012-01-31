@@ -5,9 +5,22 @@ python-paramiko:
 
 glc:
   ubuntu: |
+    codename=`lsb_release -c | cut -f 2`
     if [ ! -f /usr/bin/glc-capture ] ; then
-      yes | sudo apt-add-repository ppa:arand
-      sudo apt-get update
-      sudo apt-get install -y glc
+      if [ $codename = "lucid" -o $codename = "maveric" ] ; then
+        sudo apt-get install build-essential cmake libx11-dev libxxf86vm-dev libgl1-mesa-dev libasound2-dev libpng12-dev
+        sudo apt-get install gcc-multilib
+        sudo ln -s /usr/lib32/libGL.so.1 /usr/lib32/libGL.so
+        sudo ln -s /usr/lib32/libasound.so.2 /usr/lib32/libasound.so
+        sudo ln -s /usr/lib32/libXxf86vm.so.1 /usr/lib32/libXxf86vm.so
+        sudo ln -s /usr/lib32/libX11.so.6 /usr/lib32/libX11.so
+        sudo ln -s /usr/lib32/libpng12.so.0 /usr/lib32/libpng.so
+        wget https://raw.github.com/ienorand/glc/ppa/scripts/glc-build.sh
+        chmod a+x glc-build.sh
+        printf "/usr\n\ny\n" | sudo ./glc-build.sh
+      else
+        yes | sudo apt-add-repository ppa:arand
+        sudo apt-get update
+        sudo apt-get install -y glc
+      fi
     fi
-     
