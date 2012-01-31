@@ -2,3 +2,12 @@ python-meminfo-total:
   ubuntu: python-meminfo-total
 python-paramiko:
   ubuntu: python-paramiko
+
+glc:
+  ubuntu: |
+    if [ ! -f /usr/bin/glc-capture ] ; then
+      sudo apt-add-repository -y ppa:arand
+      sudo apt-get update
+      sudo apt-get install -y glc
+    fi
+     
