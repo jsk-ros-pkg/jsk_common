@@ -91,25 +91,30 @@ function install-jsk-ros-pkg {
     fi
 }
 
+function rosdep_and_rosmake {
+    local package=$1
+    rosdep install -y $package
+    rosmake --status-rate=0 $package
+}
+
 function compile-jsk-ros-pkg {
     # sometimes sourceforge returns error
     rospack profile
     (cd `rospack find euslisp`; svn up; svn up)
 
-    # start rosmake
-    ROSMAKE='rosmake --status-rate=0 --rosdep-install --rosdep-yes'
-    $ROSMAKE euslisp
-    $ROSMAKE roseus
-    $ROSMAKE euscollada || $ROSMAKE euscollada || $ROSMAKE euscollada || $ROSMAKE euscollada # very difficult to compile euscollada
-    $ROSMAKE pr2eus
-    $ROSMAKE pr2eus_openrave
+    # start rosdep_and_rosmake
+    rosdep_and_rosmake euslisp
+    rosdep_and_rosmake roseus
+    rosdep_and_rosmake euscollada || rosdep_and_rosmake euscollada || rosdep_and_rosmake euscollada || rosdep_and_rosmake euscollada # very difficult to compile euscollada
+    rosdep_and_rosmake pr2eus
+    rosdep_and_rosmake pr2eus_openrave
 }
 
 function test-jsk-ros-pkg {
     # test
     export DISPLAY=:0.0
     export PATH=$PATH:`rospack find roseus`/bin
-    $ROSMAKE -k --test-only euslisp roseus pr2eus euscollada
+    rosmake -k --test-only --status-rate=0 euslisp roseus pr2eus euscollada
 
     # check error
     rosrun rosunit clean_junit_xml.py
