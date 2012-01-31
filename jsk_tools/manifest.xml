@@ -11,4 +11,7 @@ Includes emacs scripts, ros tool alias generator, and launch doc generator.
   <export>
     <rosdoc config="rosdoc.yaml" />
   </export>
+
+  <rosdep name="glc" />
+  <rosdep name="ffmpeg" />
 </package>
