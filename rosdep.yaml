@@ -9,6 +9,7 @@ glc:
     if [ ! -f /usr/bin/glc-capture ] ; then
       if [ $codename = "lucid" -o $codename = "maverick" ] ; then
         sudo apt-get install build-essential cmake libx11-dev libxxf86vm-dev libgl1-mesa-dev libasound2-dev libpng12-dev
+        sudo apt-get install ia32-libs
         sudo apt-get install gcc-multilib
         sudo ln -s /usr/lib32/libGL.so.1 /usr/lib32/libGL.so
         sudo ln -s /usr/lib32/libasound.so.2 /usr/lib32/libasound.so
