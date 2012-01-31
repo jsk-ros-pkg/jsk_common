@@ -7,7 +7,7 @@ glc:
   ubuntu: |
     codename=`lsb_release -c | cut -f 2`
     if [ ! -f /usr/bin/glc-capture ] ; then
-      if [ $codename = "lucid" -o $codename = "maveric" ] ; then
+      if [ $codename = "lucid" -o $codename = "maverick" ] ; then
         sudo apt-get install build-essential cmake libx11-dev libxxf86vm-dev libgl1-mesa-dev libasound2-dev libpng12-dev
         sudo apt-get install gcc-multilib
         sudo ln -s /usr/lib32/libGL.so.1 /usr/lib32/libGL.so
