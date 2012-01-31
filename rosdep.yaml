@@ -6,7 +6,7 @@ python-paramiko:
 glc:
   ubuntu: |
     if [ ! -f /usr/bin/glc-capture ] ; then
-      sudo apt-add-repository -y ppa:arand
+      yes | sudo apt-add-repository ppa:arand
       sudo apt-get update
       sudo apt-get install -y glc
     fi
