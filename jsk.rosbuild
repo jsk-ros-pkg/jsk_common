@@ -87,7 +87,7 @@ function install-jsk-ros-pkg {
 # source
     . $ROS_INSTALLDIR/setup.sh
     if [ "$DISTRIBUTION" == "fuerte" ]; then
-	export ROS_PACKAGE_PATH=ROS_PACKAGE_PATH:/opt/ros/fuerte/share:/opt/ros/fuerte/tacks # for fuerte https://kforge.ros.org/vcstools/trac/ticket/16
+	export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/opt/ros/fuerte/share:/opt/ros/fuerte/tacks # for fuerte https://kforge.ros.org/vcstools/trac/ticket/16
     fi
 }
 
