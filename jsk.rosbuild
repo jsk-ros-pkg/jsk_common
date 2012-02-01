@@ -114,7 +114,13 @@ function test-jsk-ros-pkg {
     # test
     export DISPLAY=:0.0
     export PATH=$PATH:`rospack find roseus`/bin
-    rosmake -k --test-only --status-rate=0 euslisp roseus pr2eus euscollada
+    rosmake -k --test-only --status-rate=0 euslisp roseus pr2eus euscollada pr2eus_openrave
+
+    # doc
+    for PACKAGE in pr2eus_openrave
+    do
+	roscd $PACKAGE; rosrun rosdoc rosdoc $PACKAGE
+    done
 
     # check error
     rosrun rosunit clean_junit_xml.py
