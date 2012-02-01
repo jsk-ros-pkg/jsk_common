@@ -14,5 +14,5 @@ Includes emacs scripts, ros tool alias generator, and launch doc generator.
 
   <rosdep name="glc" />
   <rosdep name="vlc" />
-  <rosdep name="ffmpeg-jsk" />
+  <rosdep name="ffmpeg-bin" />
 </package>
