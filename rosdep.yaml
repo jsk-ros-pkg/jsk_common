@@ -3,6 +3,10 @@ python-meminfo-total:
 python-paramiko:
   ubuntu: python-paramiko
 
+ffmpeg-jsk:
+  ubuntu: ffmpeg
+vlc:
+  ubuntu: vlc
 glc:
   ubuntu: |
     codename=`lsb_release -c | cut -f 2`
