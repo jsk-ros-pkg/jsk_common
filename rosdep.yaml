@@ -9,6 +9,7 @@ vlc:
   ubuntu: vlc
 glc:
   ubuntu: |
+    #!/bin/bash
     codename=`lsb_release -c | cut -f 2`
     if [ ! -f /usr/bin/glc-capture ] ; then
       if [ $codename = "lucid" -o $codename = "maverick" ] ; then
