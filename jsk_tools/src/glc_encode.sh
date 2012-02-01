@@ -23,7 +23,13 @@ do
 done
 
 OUTFILE=${OUTFILE/xml:/}
-touch $OUTFILE
+cat<<EOF $OUTFILE
+<testsuite errors="0" failures="0" name="unittest.suite.TestSuite" tests="1" time="0.0">
+  <testcase classname="__main__.TestGlcEncode" name="test_glc_encode" time="0.0"></testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
+EOF
 
 #
 echo "glc-play $GLC_FILENAME -o - -y $CTXNUM | ffmpeg -i - -sameq -y $MP4_FILENAME"
