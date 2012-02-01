@@ -3,7 +3,7 @@ python-meminfo-total:
 python-paramiko:
   ubuntu: python-paramiko
 
-ffmpeg-jsk:
+ffmpeg-bin:
   ubuntu: ffmpeg
 vlc:
   ubuntu: vlc
