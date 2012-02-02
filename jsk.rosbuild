@@ -114,10 +114,10 @@ function test-jsk-ros-pkg {
     # test
     export DISPLAY=:0.0
     export PATH=$PATH:`rospack find roseus`/bin
-    rosmake -k --test-only --status-rate=0 euslisp roseus pr2eus euscollada pr2eus_openrave
+    rosmake -k --test-only --status-rate=0 euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2
 
     # doc
-    for PACKAGE in pr2eus_openrave
+    for PACKAGE in pr2eus_openrave elevator_move_base_pr2
     do
 	(cd `rospack find $PACKAGE`; rosrun rosdoc rosdoc $PACKAGE)
     done
