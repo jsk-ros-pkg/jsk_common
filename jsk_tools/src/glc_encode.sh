@@ -5,8 +5,7 @@ usage_exit() {
     exit 1
 }
 GLC_FILENAME=$1
-MP4_FILENAME=${GLC_FILENAME%.glc}.mp4
-GIF_FILENAME=${GLC_FILENAME%.glc}.gif
+BASE_NAME=${GLC_FILENAME%.glc}
 MEDIA_DIR=/tmp
 GIF_RATE=3
 GIF_DELAY=20
@@ -17,17 +16,20 @@ eval set -- "$GETOPT"
 while true
 do
   case $1 in
-  --gtest_output)     OUTFILE=$2      ; shift 2 ;;
-  -o|--output)        MP4_FILENAME=$2 ; shift 2 ;;
-  --ctx)              CTXNUM=$2       ; shift 2 ;;
+  --gtest_output)  OUTFILE=$2      ; shift 2 ;;
+  -o|--output)     BASE_NAME=$2    ; shift 2 ;;
+  --ctx)           CTXNUM=$2       ; shift 2 ;;
   -h)   usage_exit ;;
   --)   shift ; break ;;
   *)   shift ; break ;;
   esac
 done
 
+MP4_FILENAME=${BASE_NAME}.mp4
+GIF_FILENAME=${BASE_NAME}.gif
+
 OUTFILE=${OUTFILE/xml:/}
-cat<<EOF > $OUTFILE
+cat<<EOF > ${OUTFILE}
 <testsuite errors="0" failures="0" name="unittest.suite.TestSuite" tests="1" time="0.0">
   <testcase classname="__main__.TestGlcEncode" name="test_glc_encode" time="0.0"></testcase>
   <system-out><![CDATA[]]></system-out>
@@ -35,10 +37,20 @@ cat<<EOF > $OUTFILE
 </testsuite>
 EOF
 
+# if ctx is 0 -> generate each ctx
+if [ $CTXNUM -eq 0 ] ; then
+  cp -rf ${GLC_FILENAME} /tmp/
+  CTX=`glc-play ${GLC_FILENAME} -i 2 | grep "stream id" | wc -l`
+  for ID in $(seq $CTX)
+  do
+    $0 /tmp/`basename ${GLC_FILENAME}` --ctx $ID -o ${BASE_NAME}-${ID}
+  done
+  exit
+fi
+
 #
 rm -rf $MEDIA_DIR/glc*.png $MEDIA_DIR/gifglc*.png
 
-echo "glc-play $GLC_FILENAME -o - -y $CTXNUM | ffmpeg -i - -sameq -y $MP4_FILENAME"
 glc-play $GLC_FILENAME -o - -y $CTXNUM | ffmpeg -i - -sameq -y $MP4_FILENAME
 ffmpeg -i $MP4_FILENAME -r $GIF_RATE $MEDIA_DIR/glc%03d.png
 
