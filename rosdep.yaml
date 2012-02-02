@@ -10,9 +10,9 @@ vlc:
 glc:
   ubuntu: |
     #!/bin/bash
-    codename=`lsb_release -c | cut -f 2`
+    codename=`lsb_release -cs`
     if [ ! -f /usr/bin/glc-capture ] ; then
-      if [ $codename = "lucid" -o $codename = "maverick" ] ; then
+      if [ $codename = "lucid" -o $codename = "maverick" -o $codename = "natty" ] ; then
         sudo apt-get install -y build-essential cmake libx11-dev libxxf86vm-dev libgl1-mesa-dev libasound2-dev libpng12-dev
         sudo apt-get install -y ia32-libs
         sudo apt-get install -y gcc-multilib
