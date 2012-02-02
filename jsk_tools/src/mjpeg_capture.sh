@@ -29,4 +29,6 @@ done
 OUTFILE=${OUTFILE/xml:/}
 touch $OUTFILE
 
+sleep 3
+
 vlc -I dummy $INPUT :sout="#transcode{vcodec=mp2v,vb=4096,acodec=mp2a,ab=192,scale=1,channels=2,deinterlace,audio-sync}:std{access=file, mux=ps,dst=\"$OUTPUT\"}" & (sleep $TIME && kill -INT $!)
