@@ -100,7 +100,7 @@ function rosdep_and_rosmake {
 function compile-jsk-ros-pkg {
     # sometimes sourceforge returns error
     rospack profile
-    (cd `rospack find euslisp`; svn up; svn up; rosdep install -y euslisp; make)
+    (cd `rospack find euslisp`; svn up; svn up)
 
     # start rosdep_and_rosmake
     rosdep_and_rosmake euslisp
