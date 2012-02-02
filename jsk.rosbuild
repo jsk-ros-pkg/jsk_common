@@ -119,7 +119,7 @@ function test-jsk-ros-pkg {
     # doc
     for PACKAGE in pr2eus_openrave elevator_move_base_pr2
     do
-	(cd `rospack find $PACKAGE`; rosrun rosdoc rosdoc $PACKAGE)
+	(cd $ROS_INSTALLDIR; rosrun rosdoc rosdoc $PACKAGE)
     done
 
     # check error
