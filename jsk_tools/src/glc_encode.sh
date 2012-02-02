@@ -27,7 +27,7 @@ do
 done
 
 OUTFILE=${OUTFILE/xml:/}
-cat<<EOF $OUTFILE
+cat<<EOF > $OUTFILE
 <testsuite errors="0" failures="0" name="unittest.suite.TestSuite" tests="1" time="0.0">
   <testcase classname="__main__.TestGlcEncode" name="test_glc_encode" time="0.0"></testcase>
   <system-out><![CDATA[]]></system-out>
