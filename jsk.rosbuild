@@ -55,7 +55,7 @@ function setup-ros {
 }
 
 # see http://ros.org/reps/rep-0113.html for variants and http://www.ros.org/debbuild/ for build status
-INSTALL_ROS_PACKAGE="ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-pr2-desktop ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-audio-common ros-$DISTRIBUTION-turtlebot"
+INSTALL_ROS_PACKAGE="ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-pr2-desktop ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-audio-common ros-$DISTRIBUTION-turtlebot ros-$DISTRIBUTION-remote-lab"
 function apt-get-ros-package {
     sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
     #
