@@ -107,8 +107,6 @@ function compile-jsk-ros-pkg {
     rosdep_and_rosmake roseus
     rosdep_and_rosmake euscollada || rosdep_and_rosmake euscollada || rosdep_and_rosmake euscollada || rosdep_and_rosmake euscollada # very difficult to compile euscollada
     rosdep_and_rosmake pr2eus
-    # patch for 11.10 for now
-    (roscd openrave; rosmake; cd openrave_svn; patch -N -p0 < `rospack find euslisp`/../tvtk.11.10.patch)
     rosdep_and_rosmake pr2eus_openrave
 }
 
