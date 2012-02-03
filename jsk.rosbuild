@@ -136,7 +136,7 @@ EOF
    :target: $PACKAGE/html/index.html
 
 EOF
-    fi
+    done
     rst2html $ROS_INSTALLDIR/doc/index.rst $ROS_INSTALLDIR/doc/index.html
 
     # check error
