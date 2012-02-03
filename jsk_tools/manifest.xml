@@ -18,4 +18,6 @@ Includes emacs scripts, ros tool alias generator, and launch doc generator.
   <rosdep name="vlc" />
   <rosdep name="ffmpeg-bin" />
   <rosdep name="wkhtmltopdf" />
+  <rosdep name="imagemagic" />
+  <rosdep name="python-docutils" />
 </package>

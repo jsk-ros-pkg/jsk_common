@@ -3,6 +3,10 @@ python-meminfo-total:
 python-paramiko:
   ubuntu: python-paramiko
 
+imagemagic:
+  ubuntu: imagemagic
+python-docutils:
+  ubuntu: python-docutils
 wkhtmltopdf:
   ubuntu: wkhtmltopdf
 ffmpeg-bin:
