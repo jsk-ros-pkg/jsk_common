@@ -66,7 +66,7 @@ do
 	if [ `diff $img $nextimg | wc -l` -gt 0 ]; then
     	    gif_file=`printf /tmp/gifglc%03d.png $gifcount`
     	    echo $gif_file
-    	    cp $img $gif_file
+    	    cp $nextimg $gif_file
     	    gifcount=`expr $gifcount + 1`
 	fi
     fi
