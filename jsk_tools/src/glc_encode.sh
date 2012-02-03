@@ -11,7 +11,7 @@ GIF_RATE=3
 GIF_DELAY=20
 CTXNUM=1
 
-GETOPT=`getopt -o o: -l output:,ctx:,gtest_output: -- "$@"` ; [ $? != 0 ] && usage_exit
+GETOPT=`getopt -o o: -l output:,text,ctx:,gtest_output: -- "$@"` ; [ $? != 0 ] && usage_exit
 eval set -- "$GETOPT"
 while true
 do
