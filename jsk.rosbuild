@@ -92,12 +92,14 @@ function install-jsk-ros-pkg {
 }
 
 function rosdep_and_rosmake {
+    trap error ERR
     local package=$1
     rosdep install -y $package
     rosmake --status-rate=0 $package
 }
 
 function compile-jsk-ros-pkg {
+    trap error ERR
     # sometimes sourceforge returns error
     rospack profile
     (cd `rospack find euslisp`; svn up; svn up)
@@ -111,6 +113,7 @@ function compile-jsk-ros-pkg {
 }
 
 function test-jsk-ros-pkg {
+    trap error ERR
     # test
     export DISPLAY=:0.0
     export PATH=$PATH:`rospack find roseus`/bin
