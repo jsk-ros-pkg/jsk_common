@@ -120,10 +120,24 @@ function test-jsk-ros-pkg {
     rosmake -k --test-only --status-rate=0 euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2
 
     # doc
+    cat<<EOF >  doc/index.rst
+==========================
+jsk-ros-pkg Test Results
+==========================
+EOF
     for PACKAGE in pr2eus_openrave elevator_move_base_pr2
     do
 	(cd $ROS_INSTALLDIR; rosrun rosdoc rosdoc $PACKAGE)
-    done
+	wkhtmltopdf $ROS_INSTALLDIR/doc/$PACKAGE/html/index.html $ROS_INSTALLDIR/doc/$PACKAGE.pdf
+	convert $ROS_INSTALLDIR/doc/$PACKAGE.pdf $ROS_INSTALLDIR/doc/$PACKAGE.png
+	cat <<EOF >> doc/index.rst
+.. image:: $PACKAGE-0.png
+   :width: 320
+   :target: $PACKAGE/html/index.html
+
+EOF
+    fi
+    rst2html $ROS_INSTALLDIR/doc/index.rst $ROS_INSTALLDIR/doc/index.html
 
     # check error
     rosrun rosunit clean_junit_xml.py
