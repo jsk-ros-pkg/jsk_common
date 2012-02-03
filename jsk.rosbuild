@@ -110,6 +110,7 @@ function compile-jsk-ros-pkg {
     rosdep_and_rosmake euscollada || rosdep_and_rosmake euscollada || rosdep_and_rosmake euscollada || rosdep_and_rosmake euscollada # very difficult to compile euscollada
     rosdep_and_rosmake pr2eus
     rosdep_and_rosmake pr2eus_openrave
+    rosdep_and_rosmake elevator_move_base_pr2
 }
 
 function test-jsk-ros-pkg {
