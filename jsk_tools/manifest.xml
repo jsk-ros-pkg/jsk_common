@@ -17,4 +17,5 @@ Includes emacs scripts, ros tool alias generator, and launch doc generator.
   <rosdep name="glc" />
   <rosdep name="vlc" />
   <rosdep name="ffmpeg-bin" />
+  <rosdep name="wkhtmltopdf" />
 </package>

@@ -3,6 +3,8 @@ python-meminfo-total:
 python-paramiko:
   ubuntu: python-paramiko
 
+wkhtmltopdf:
+  ubuntu: wkhtmltopdf
 ffmpeg-bin:
   ubuntu: ffmpeg
 vlc:
