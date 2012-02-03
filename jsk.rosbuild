@@ -121,7 +121,8 @@ function test-jsk-ros-pkg {
     rosmake -k --test-only --status-rate=0 euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2
 
     # doc
-    cat<<EOF >  $ROS_INSTALLDIR/doc/index.rst
+    mkdir -p $ROS_INSTALLDIR/doc
+    cat<<EOF > $ROS_INSTALLDIR/doc/index.rst
 ==========================
 jsk-ros-pkg Test Results
 ==========================
