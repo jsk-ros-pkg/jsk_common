@@ -95,7 +95,7 @@ function rosdep_and_rosmake {
     trap error ERR
     local package=$1
     rosdep install -y $package
-    rosmake --status-rate=0 $package
+    rosmake --profile -V --status-rate=0 $package
 }
 
 function compile-jsk-ros-pkg {
