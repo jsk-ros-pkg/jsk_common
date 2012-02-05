@@ -3,6 +3,8 @@ python-meminfo-total:
 python-paramiko:
   ubuntu: python-paramiko
 
+gifsicle:
+  ubuntu: gifsicle
 imagemagick:
   ubuntu: imagemagick
 python-docutils:

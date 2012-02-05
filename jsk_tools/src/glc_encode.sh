@@ -49,7 +49,7 @@ if [ $CTXNUM -eq 0 ] ; then
 fi
 
 #
-rm -rf $MEDIA_DIR/glc*.png $MEDIA_DIR/gifglc*.png
+rm -rf $MEDIA_DIR/glc*.png $MEDIA_DIR/gifglc*.gif
 
 glc-play $GLC_FILENAME -o - -y $CTXNUM | ffmpeg -i - -sameq -y $MP4_FILENAME
 ffmpeg -i $MP4_FILENAME -r $GIF_RATE $MEDIA_DIR/glc%03d.png
@@ -64,15 +64,15 @@ do
     echo $nextimg
     if [ -a $nextimg ]; then
 	if [ `diff $img $nextimg | wc -l` -gt 0 ]; then
-    	    gif_file=`printf /tmp/gifglc%03d.png $gifcount`
+    	    gif_file=`printf /tmp/gifglc%03d.gif $gifcount`
     	    echo $gif_file
-    	    cp $nextimg $gif_file
+    	    convert $nextimg $gif_file
     	    gifcount=`expr $gifcount + 1`
 	fi
     fi
 done
 
-convert -delay $GIF_DELAY $MEDIA_DIR/gifglc*.png $GIF_FILENAME
-rm -rf $MEDIA_DIR/glc*.png $MEDIA_DIR/gifglc*.png
+gifsicle --colors 256 --delay $GIF_DELAY $MEDIA_DIR/gifglc*.gif $GIF_FILENAME
+rm -rf $MEDIA_DIR/glc*.png $MEDIA_DIR/gifglc*.gif
 
 
