@@ -54,15 +54,18 @@ class NodeGraph:
             print("Communication with [%s=%s] failed!"%(node_name,node_api))
             return ['']
 
-        cmd = ['ps','w','--pid',str(pid)]
+        cmd = ['ps','ww','--pid',str(pid)]
         if os.environ['ROS_IP'] != host and os.environ['ROS_HOSTNAME'] != host:
             ssh_target = self.user + '@' + host if self.user else hostname
             cmd = ['ssh', ssh_target] + cmd
             self.add_pkginfo_remote(host)
 
         ps = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
-        parsed = ps.split('/')
-        result = [pkg[0] for pkg in self.pkginfo[host] if (pkg[0] in parsed)]
+        res = ps[ps.find('/'):]
+        node_args = res.split(' ')
+        parsed = node_args[0].split('/')
+        pkgnames = [pkg[0] for pkg in self.pkginfo[host]]
+        result = [dirname for dirname in parsed if (dirname in pkgnames)]
         if len(result) == 0:
             result = ['']
         return result
@@ -90,22 +93,24 @@ class NodeGraph:
     # generate dot code
     def generate_node_dotcode(self, node, g, quiet):
         safename = rxgraph.dotcode.safe_dotcode_name(node)
-        pkgname = ''
+        pkgpath = ''
         if node in self.nodepkgmap.keys():
             pkg = self.nodepkgmap[node]
-            pkgpath = [p[1] for p in self.pkginfo_local if p[0]==pkg]
-            pkgpath = pkgpath[0]
+            for p in self.pkginfo_local:
+                if p[0] == pkg:
+                    pkgpath = p[1]
+                    break
+        # set node color and shape
+        color = 'blue'
+        shape = 'octagon'
         if 'jsk' in pkgpath:
             color = 'red'
         elif 'rtm' in pkgpath:
             color = 'orange'
-        else:
-            color = 'blue'
-        shape = 'doublecircle'
         return '  %s [color="%s", shape="%s", label="%s", URL="node:%s"];' % (safename, color, shape, node, node)
 
 
 if __name__=='__main__':
     obj = NodeGraph()
-    print(obj.nodepkgmap)
+    # print(obj.nodepkgmap)
     obj.run()
