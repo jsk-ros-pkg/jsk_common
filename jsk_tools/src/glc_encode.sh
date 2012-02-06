@@ -72,7 +72,7 @@ do
     fi
 done
 
-gifsicle --colors 256 --delay $GIF_DELAY $MEDIA_DIR/gifglc*.gif $GIF_FILENAME
+gifsicle --colors 256 --delay $GIF_DELAY $MEDIA_DIR/gifglc*.gif -o $GIF_FILENAME
 rm -rf $MEDIA_DIR/glc*.png $MEDIA_DIR/gifglc*.gif
 
 
