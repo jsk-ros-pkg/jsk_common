@@ -52,6 +52,7 @@ function setup-ros {
     sudo apt-get update
     sudo apt-get -y --force-yes install python-setuptools
     sudo easy_install -U rosinstall
+    echo "done" # easy_install for rosinstall does not work? 2011/02/07
 }
 
 # see http://ros.org/reps/rep-0113.html for variants and http://www.ros.org/debbuild/ for build status
