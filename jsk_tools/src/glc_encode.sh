@@ -8,7 +8,7 @@ GLC_FILENAME=$1
 BASE_NAME=${GLC_FILENAME%.glc}
 MEDIA_DIR=/tmp
 GIF_RATE=3
-GIF_DELAY=20
+GIF_DELAY=10
 CTXNUM=1
 
 GETOPT=`getopt -o o: -l output:,text,ctx:,gtest_output: -- "$@"` ; [ $? != 0 ] && usage_exit
@@ -72,7 +72,7 @@ do
     fi
 done
 
-gifsicle --colors 256 --delay $GIF_DELAY $MEDIA_DIR/gifglc*.gif -o $GIF_FILENAME
+gifsicle --colors 256 --loop --delay $GIF_DELAY $MEDIA_DIR/gifglc*.gif -o $GIF_FILENAME
 rm -rf $MEDIA_DIR/glc*.png $MEDIA_DIR/gifglc*.gif
 
 
