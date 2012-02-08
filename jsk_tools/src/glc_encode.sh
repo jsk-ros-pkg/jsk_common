@@ -54,20 +54,30 @@ rm -rf $MEDIA_DIR/glc*.png $MEDIA_DIR/gifglc*.gif
 glc-play $GLC_FILENAME -o - -y $CTXNUM | ffmpeg -i - -sameq -y $MP4_FILENAME
 ffmpeg -i $MP4_FILENAME -r $GIF_RATE $MEDIA_DIR/glc%03d.png
 
+skipstart=0
 gifcount=0
 for img in $MEDIA_DIR/glc*.png
 do
     count=`echo $img | cut -c 9-11`
     nextcount=`expr $count + 1`
     nextimg=`printf /tmp/glc%03d.png $nextcount`
-    echo $img
-    echo $nextimg
-    if [ -a $nextimg ]; then
-	if [ `diff $img $nextimg | wc -l` -gt 0 ]; then
-    	    gif_file=`printf /tmp/gifglc%03d.gif $gifcount`
-    	    echo $gif_file
-    	    convert $nextimg $gif_file
-    	    gifcount=`expr $gifcount + 1`
+    echo "current image: $img"
+    echo "   next image: $nextimg"
+    echo " initial skip: $skipstart"
+    if [ $skipstart -eq 0 ]; then
+	`compare -metric PSNR $img $nextimg /tmp/compare.png`
+	if [ $? -eq 0 ]; then
+	    echo "skip..."
+	    skipstart=1
+	fi
+    else
+	if [ -a $nextimg ]; then
+	    if [ `diff $img $nextimg | wc -l` -gt 0 ]; then
+    		gif_file=`printf /tmp/gifglc%03d.gif $gifcount`
+    		echo $gif_file
+    		convert $nextimg $gif_file
+    		gifcount=`expr $gifcount + 1`
+	    fi
 	fi
     fi
 done
