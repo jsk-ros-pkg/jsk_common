@@ -124,7 +124,7 @@ function test-jsk-ros-pkg {
 
     # doc
     mkdir -p $ROS_INSTALLDIR/doc
-    SVN_REVISION=`LANGUAGE=C svn info| grep Revision`
+    SVN_REVISION=`LANGUAGE=C svn info $ROS_INSTALLDIR/jsk-ros-pkg | grep Revision`
     cat<<EOF > $ROS_INSTALLDIR/doc/index.rst
 ==========================
 jsk-ros-pkg($SVN_REVISION) Test Results
