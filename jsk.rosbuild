@@ -122,6 +122,12 @@ function test-jsk-ros-pkg {
 	(cd `rospack find $PACKAGE`; make test)
     done
 
+    # if there are xdisplay, generate doc and index doc
+    if [ "`xdpyinfo > /dev/null || echo "fail"`" == "fail" ] ; then
+	echo "Could not connect to Xserver, so exit without running launchdoc"
+	return 0
+    fi
+
     # doc
     mkdir -p $ROS_INSTALLDIR/doc
     SVN_REVISION=`LANGUAGE=C svn info $ROS_INSTALLDIR/jsk-ros-pkg | grep Revision`
@@ -145,9 +151,6 @@ EOF
 	fi
     done
     rst2html $ROS_INSTALLDIR/doc/index.rst $ROS_INSTALLDIR/doc/index.html
-
-    # check error
-    rosrun rosunit clean_junit_xml.py
 }
 
 function usage {
@@ -173,4 +176,5 @@ apt-get-ros-package
 install-jsk-ros-pkg
 compile-jsk-ros-pkg
 test-jsk-ros-pkg
+rosrun rosunit clean_junit_xml.py     # check error
 
