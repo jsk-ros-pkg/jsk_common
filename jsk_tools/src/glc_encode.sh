@@ -103,6 +103,6 @@ if [ ! -f ${MEDIA_DIR}/${BASE_NAME}_gifglc_010.gif ]; then
 fi
 echo "[glc_encode] write gif file to ${BASE_DIR}/${GIF_FILENAME}"
 gifsicle --colors 256 --loop --delay ${GIF_DELAY} ${MEDIA_DIR}/${BASE_NAME}_gifglc_*.gif -o ${BASE_DIR}/${GIF_FILENAME}
-#rm -rf $MEDIA_DIR/glc_${BASE_NAME}_*.png $MEDIA_DIR/gifglc_${BASE_NAME}_*.gif
 
+rm -rf $MEDIA_DIR/glc_${BASE_NAME}_*.png $MEDIA_DIR/gifglc_${BASE_NAME}_*.gif
 
