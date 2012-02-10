@@ -15,6 +15,10 @@ ffmpeg-bin:
   ubuntu: ffmpeg
 vlc:
   ubuntu: vlc
+arista:
+  ubuntu: arista
+recordmydesktop:
+  ubuntu: recordmydesktop
 glc:
   ubuntu: |
     #!/bin/bash
