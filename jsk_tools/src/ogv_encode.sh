@@ -8,7 +8,7 @@ OGV_FILENAME=$1
 BASE_NAME=`basename $OGV_FILENAME .ogv`
 BASE_DIR=`dirname $1`
 MEDIA_DIR=/tmp
-GIF_RATE=3
+GIF_RATE=1
 GIF_DELAY=10
 CTXNUM=1
 
@@ -48,7 +48,7 @@ rm -rf ${MEDIA_DIR}/${BASE_NAME}_ogv_*.png ${MEDIA_DIR}/${BASE_NAME}_gifogv_*.gi
 
 cp -rf ${OGV_FILENAME} ${MEDIA_DIR}/${BASE_NAME}.ogv
 arista-transcode ${MEDIA_DIR}/${BASE_NAME}.ogv -o ${BASE_DIR}/${MP4_FILENAME}
-ffmpeg -i ${BASE_DIR}/${MP4_FILENAME} -r $GIF_RATE ${MEDIA_DIR}/${BASE_NAME}_ogv_%03d.png
+ffmpeg -i ${BASE_DIR}/${MP4_FILENAME} -s vga -r $GIF_RATE ${MEDIA_DIR}/${BASE_NAME}_ogv_%03d.png
 
 # make gif files for animation
 # get list of ogv*.png files for animation
