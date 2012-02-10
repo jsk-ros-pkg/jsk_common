@@ -47,11 +47,12 @@ EOF
 rm -rf ${MEDIA_DIR}/${BASE_NAME}_ogv_*.png ${MEDIA_DIR}/${BASE_NAME}_gifogv_*.gif
 
 cp -rf ${OGV_FILENAME} ${MEDIA_DIR}/${BASE_NAME}.ogv
-ffmpeg -i ${MEDIA_DIR}/${BASE_NAME}.ogv -sameq -y ${BASE_DIR}/${MP4_FILENAME}
+arista-transcode ${MEDIA_DIR}/${BASE_NAME}.ogv -o ${BASE_DIR}/${MP4_FILENAME}
 ffmpeg -i ${BASE_DIR}/${MP4_FILENAME} -r $GIF_RATE ${MEDIA_DIR}/${BASE_NAME}_ogv_%03d.png
 
 # make gif files for animation
 # get list of ogv*.png files for animation
+giflength=`ls -al ${MEDIA_DIR}/${BASE_NAME}_ogv_*.png | wc -l`
 gifcount=0
 currimg="${MEDIA_DIR}/${BASE_NAME}_ogv_001.png"
 nextcount=2
@@ -60,7 +61,7 @@ skipcount=0
 while [ -f $nextimg ]; do
     SIMILAR=`compare -metric mse $currimg $nextimg null: 2>&1`
     COMPARE_RET=$?
-    echo "compare $currimg $nextimg $COMPARE_RET/$SIMILAR (skip:$skipcount, gif:$gifcount)" 1>&2
+    echo "compare $currimg $nextimg $COMPARE_RET/$SIMILAR (skip:$skipcount, gif:$gifcount, len: $giflength)" 1>&2
     if [ $COMPARE_RET -eq 1 ]; then
 	SIMILAR=10000
     else
