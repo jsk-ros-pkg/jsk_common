@@ -17,6 +17,8 @@ Includes emacs scripts, ros tool alias generator, and launch doc generator.
   <rosdep name="glc" />
   <rosdep name="vlc" />
   <rosdep name="ffmpeg-bin" />
+  <rosdep name="arista" />
+  <rosdep name="recordmydesktop" />
   <rosdep name="wkhtmltopdf" />
   <rosdep name="gifsicle" />
   <rosdep name="python-docutils" />
