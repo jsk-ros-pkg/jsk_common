@@ -27,7 +27,10 @@ do
 done
 
 MP4_FILENAME=${BASE_NAME}.mp4
+OGV_FILENAME=${BASE_NAME}.ogv
+WEBM_FILENAME=${BASE_NAME}.webm
 GIF_FILENAME=${BASE_NAME}.gif
+PNG_FILENAME=${BASE_NAME}.png
 
 echo "[glc_encode] glc file name : $GLC_FILENAME"
 echo "[glc_encode] mp4 file name : $MP4_FILENAME"
@@ -59,6 +62,15 @@ fi
 rm -rf ${MEDIA_DIR}/${BASE_NAME}_glc_*.png ${MEDIA_DIR}/${BASE_NAME}_gifglc_*.gif
 
 glc-play ${GLC_FILENAME} -o - -y $CTXNUM | ffmpeg -i - -sameq -y ${BASE_DIR}/${MP4_FILENAME}
+arista-transcode ${BASE_DIR}/${MP4_FILENAME} -d web -o ${BASE_DIR}/${OGV_FILENAME}
+arista-transcode ${BASE_DIR}/${MP4_FILENAME} -d web -o ${BASE_DIR}/${WEBM_FILENAME}
+DURATION=`ffmpeg -i ${BASE_DIR}/${MP4_FILENAME} 2>&1 | grep Duration | cut -d " " -f 4 | sed  s/,// | awk 'BEGIN{FS=":"}{print ($1*60*60+$2*60+$3)/2}'`
+rm -f ${BASE_DIR}/${PNG_FILENAME}
+echo "ffmpeg -y -i  ${BASE_DIR}/${MP4_FILENAME}  -vframes 1 -ss ${DURATION} ${BASE_DIR}/${PNG_FILENAME}"
+ffmpeg -y -i ${BASE_DIR}/${MP4_FILENAME} -vframes 1 -ss ${DURATION} ${BASE_DIR}/${PNG_FILENAME}
+
+exit 0 ## do not generate gif
+
 ffmpeg -i ${BASE_DIR}/${MP4_FILENAME} -r $GIF_RATE ${MEDIA_DIR}/${BASE_NAME}_glc_%03d.png
 
 # make gif files for animation

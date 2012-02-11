@@ -28,10 +28,12 @@ class VideoDirective(Directive):
 def html_visit_video(self, node):
     self.body.append(self.starttag(node, 'p', CLASS='video'))
     # start video
-    self.body.append('  <video controls autoplay poster="_images/%s" width="%s">\n'%(node['poster'],node['width']))
-    self.builder.images[node['poster']]=os.path.basename(node['poster'])
+    src = node['poster']
+    dest= os.path.basename(src);
+    self.body.append('  <video controls autoplay poster="_images/%s" width="%s">\n'%(dest,node['width']))
+    self.builder.images[src]=dest
     # sources
-    for codec in ['mp4', 'ogv'] :
+    for codec in ['mp4', 'ogv', 'webm'] :
         src = "%s.%s"%(node['videoname'],codec)
         dest= os.path.basename(src);
         self.body.append('    <source src="_images/%s" >\n'%(dest))
