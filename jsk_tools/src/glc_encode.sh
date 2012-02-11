@@ -63,6 +63,7 @@ ffmpeg -i ${BASE_DIR}/${MP4_FILENAME} -r $GIF_RATE ${MEDIA_DIR}/${BASE_NAME}_glc
 
 # make gif files for animation
 # get list of glc*.png files for animation
+giflength=`ls -al ${MEDIA_DIR}/${BASE_NAME}_glc_*.png | wc -l`
 gifcount=0
 currimg="${MEDIA_DIR}/${BASE_NAME}_glc_001.png"
 nextcount=2
@@ -71,7 +72,7 @@ skipcount=0
 while [ -f $nextimg ]; do
     SIMILAR=`compare -metric mse $currimg $nextimg null: 2>&1`
     COMPARE_RET=$?
-    echo "compare $currimg $nextimg $COMPARE_RET/$SIMILAR (skip:$skipcount, gif:$gifcount)" 1>&2
+    echo "compare $currimg $nextimg $COMPARE_RET/$SIMILAR (skip:$skipcount, gif:$gifcount, :len: $giflength)" 1>&2
     if [ $COMPARE_RET -eq 1 ]; then
 	SIMILAR=10000
     else
