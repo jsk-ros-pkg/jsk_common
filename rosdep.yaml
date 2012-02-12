@@ -7,6 +7,8 @@ gifsicle:
   ubuntu: gifsicle
 imagemagick:
   ubuntu: imagemagick
+ffmpeg2theora:
+  ubuntu: ffmpeg2theora
 python-docutils:
   ubuntu: python-docutils
 wkhtmltopdf:
