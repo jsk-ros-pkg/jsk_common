@@ -10,8 +10,6 @@ GLC_FILENAME=$1
 BASE_NAME=`basename $GLC_FILENAME .glc`
 BASE_DIR=`dirname $1`
 MEDIA_DIR=/tmp
-GIF_RATE=3
-GIF_DELAY=10
 
 GETOPT=`getopt -o o: -l output:,text,ctx:,gtest_output: -- "$@"` ; [ $? != 0 ] && usage_exit
 eval set -- "$GETOPT"
