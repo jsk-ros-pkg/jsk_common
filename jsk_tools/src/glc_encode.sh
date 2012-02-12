@@ -17,7 +17,7 @@ while true
 do
   case $1 in
   --gtest_output)  OUTFILE=$2      ; shift 2 ;;
-  --ctx)           CTXNUM=$2       ; shift 2 ;;
+  -o|--output)     BASE_DIR=`dirname $2`; BASE_NAME=`basename $2`    ; shift 2 ;;
   -h)   usage_exit ;;
   --)   shift ; break ;;
   *)   shift ; break ;;
