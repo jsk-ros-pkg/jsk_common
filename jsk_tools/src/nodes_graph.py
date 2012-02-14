@@ -90,27 +90,48 @@ class NodeGraph:
         finally:
             rxgraph.impl.set_shutdown(True)
 
+    def get_package_image_url(self, package):
+        path = None
+        for p in self.pkginfo_local:
+            if p[0] == package:
+                path = p[1]
+        if not path:
+            return None
+        buff = []
+        for root, dirs, files in os.walk(path):
+            for fname in files:
+                if fname[-3:] in ['jpg','png','gif']:
+                    buff += ['%s/%s' % (root,fname)]
+        imgurl = buff[0] # how to get the best image ?
+        return imgurl
+
     # generate dot code
     def generate_node_dotcode(self, node, g, quiet):
         safename = rxgraph.dotcode.safe_dotcode_name(node)
+        pkgname = ''
         pkgpath = ''
         if node in self.nodepkgmap.keys():
-            pkg = self.nodepkgmap[node]
+            pkgname = self.nodepkgmap[node]
             for p in self.pkginfo_local:
-                if p[0] == pkg:
+                if p[0] == pkgname:
                     pkgpath = p[1]
                     break
         # set node color and shape
-        color = 'blue'
-        shape = 'octagon'
-        if 'jsk' in pkgpath:
-            color = 'red'
+        style = 'color="black", shape="ellipse"'
+        label = '"%s"' % node
+        if 'jsk-ros-pkg' in pkgpath:
+            style = 'color="red", shape="ellipse", style="filled", fillcolor="red"'
+            imgurl = None # self.get_package_image_url(pkgname)
+            if imgurl:
+                style = style.replace('ellipse','plaintext')
+                label = '<<table><tr><td><img src="%s"/></td></tr></table>>' % imgurl
         elif 'rtm' in pkgpath:
-            color = 'orange'
-        return '  %s [color="%s", shape="%s", label="%s", URL="node:%s"];' % (safename, color, shape, node, node)
+            style = 'color="orange", shape="ellipse", style="filled", fillcolor="orange"'
+        return '  %s [%s, label=%s, URL="node:%s"];' % (safename, style, label, node)
 
 
 if __name__=='__main__':
     obj = NodeGraph()
     # print(obj.nodepkgmap)
     obj.run()
+    subprocess.call(['dot', '-Tpng', '-o', '/tmp/graph.png', '/tmp/graph.dot'])
