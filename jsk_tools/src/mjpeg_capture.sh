@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage_exit() {
-    echo "Usage : $0 <stream_url> <output> [-p PORT(8080)] [--gtest_output file] [-t TIME(20sec)]" 1>&2
+    echo "Usage : $0 <stream_url> <output.mp4> [-p PORT(8080)] [--gtest_output file] [-t TIME(20sec)]" 1>&2
     exit 1
 }
 
@@ -39,4 +39,5 @@ do
     sleep 1
 done
 
-vlc -I dummy $INPUT :sout="#transcode{vcodec=mp2v,vb=4096,acodec=mp2a,ab=192,scale=1,channels=2,deinterlace,audio-sync}:std{access=file, mux=ps,dst=\"$OUTPUT\"}" & (sleep $TIME && kill -INT $!)
+# output mpeg4 video
+vlc -I dummy $INPUT :sout="#transcode{vcodec=mp4v,vb=4096,acodec=mp4a,ab=192,scale=1,channels=2,deinterlace,audio-sync}:std{access=file,mux=mp4,dst=\"$OUTPUT\"}" & (sleep $TIME && kill -INT $!)
