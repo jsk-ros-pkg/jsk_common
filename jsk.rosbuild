@@ -52,6 +52,7 @@ function setup-ros {
     sudo apt-get update
     sudo apt-get -y --force-yes install python-setuptools
     sudo easy_install -U rosinstall
+    sudo easy_install -U rosdep ## for rosdep2, > fuerte
     echo "done" # easy_install for rosinstall does not work? 2011/02/07
 }
 
