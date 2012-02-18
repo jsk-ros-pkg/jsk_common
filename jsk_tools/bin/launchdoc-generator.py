@@ -20,11 +20,13 @@ import os
 import fnmatch
 import tempfile
 import re
+import codecs
 from optparse import OptionParser
 
 from xml.parsers.expat import ExpatError
 import xml.etree.ElementTree as ElementTree
 
+encode = 'utf-8'
 sphinx_conf = """
 # -*- coding: utf-8 -*-
 import roslib; roslib.load_manifest('jsk_tools')
@@ -145,7 +147,7 @@ if __name__ == '__main__':
 all:
 \tsphinx-build -b html . %s
 """%os.path.relpath(os.path.join(pkgdir,'doc/launch'),os.path.join(pkgdir,options.output_dir))
-    open(os.path.join(pkgdir,options.output_dir,options.output_filename),'w').write(sphinxdoc)
-    open(os.path.join(pkgdir,options.output_dir,'conf.py'),'w').write(sphinx_conf%atts)
+    codecs.open(os.path.join(pkgdir,options.output_dir,options.output_filename),'w',encode).write(sphinxdoc)
+    codecs.open(os.path.join(pkgdir,options.output_dir,'conf.py'),'w',encode).write(sphinx_conf%atts)
     if not options.nomakefile:
         open(os.path.join(pkgdir,options.output_dir,'Makefile'),'w').write(Makefile)
