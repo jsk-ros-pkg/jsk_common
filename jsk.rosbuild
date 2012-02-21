@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+function usage {
+    echo >&2 "usage: $0"
+    echo >&2 "          [-h|--help] print this message"
+    echo >&2 "          [-i|--show-install] show how to install "
+    echo >&2 "          [-p|--show-package] display packages to install"
+    exit 0
+}
+
 function error {
     rosrun rosunit clean_junit_xml.py
     echo "source $ROS_WORKSPACE/setup.bash"
@@ -153,15 +161,6 @@ EOF
     done
     rst2html $ROS_INSTALLDIR/doc/index.rst $ROS_INSTALLDIR/doc/index.html
 }
-
-function usage {
-    echo >&2 "usage: $0"
-    echo >&2 "          [-h|--help] print this message"
-    echo >&2 "          [-i|--show-install] show how to install "
-    echo >&2 "          [-p|--show-package] display packages to install"
-    exit 0
-}
-
 
 # show-* option
 case "$SHOW" in
