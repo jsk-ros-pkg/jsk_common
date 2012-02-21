@@ -165,7 +165,7 @@ EOF
 # show-* option
 case "$SHOW" in
     install) declare -f setup-ros | awk '/^\ /{print $0}' | sed -e 's/^[ ]*//'; exit 0;;
-    package) echo "sudo apt-get -y --force-yes intall $INSTALL_ROS_PACKAGE" ; exit 0;;
+    package) echo "sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE" ; exit 0;;
 esac
 
 # main program
