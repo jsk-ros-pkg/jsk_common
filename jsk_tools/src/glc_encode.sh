@@ -27,6 +27,7 @@ done
 echo "[glc_encode] glc file name : $GLC_FILENAME"
 echo "[glc_encode] file base name: $BASE_NAME"
 echo "[glc_encode] file base dir : $BASE_DIR"
+echo "[glc_encode] gtest output  : $OUTFILE"
 
 OUTFILE=${OUTFILE/xml:/}
 if [ "${OUTFILE}" ]; then
