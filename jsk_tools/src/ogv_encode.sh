@@ -29,6 +29,7 @@ echo "[glc_encode] ogv file name : $OGV_FILENAME"
 echo "[glc_encode] file base name: $BASE_NAME"
 echo "[glc_encode] file base dir : $BASE_DIR"
 
+# write gtest
 OUTFILE=${OUTFILE/xml:/}
 if [ "${OUTFILE}" ]; then
     cat<<EOF > ${OUTFILE}
@@ -40,6 +41,7 @@ if [ "${OUTFILE}" ]; then
 EOF
 fi
 
+# setup variables
 MP4_FILENAME=${BASE_DIR}/${BASE_NAME}.mp4
 WEBM_FILENAME=${BASE_DIR}/${BASE_NAME}.webm
 PNG_FILENAME=${BASE_DIR}/${BASE_NAME}.png
@@ -47,12 +49,20 @@ PNG_FILENAME=${BASE_DIR}/${BASE_NAME}.png
 echo "[glc_encode] mp4 file name : $MP4_FILENAME"
 echo "[glc_encode] png file name : $PNG_FILENAME"
 
+# convert from ogv to mp4
 echo "[glc_encode] convert  from ${OGV_FILENAME} to ${MP4_FILENAME}"
 arista-transcode ${OGV_FILENAME} -o ${MP4_FILENAME}
 
+# convert from mp4 to png
 CAPTUREPOINT=`ffmpeg -i ${MP4_FILENAME} 2>&1 | grep Duration | cut -d " " -f 4 | sed  s/,// | awk 'BEGIN{FS=":"}{print ($1*60*60+$2*60+$3)/2}'`
 rm -f ${PNG_FILENAME}
 echo "[glc_encode] convert  from ${MP4_FILENAME} to ${PNG_FILENAME} at ${CAPTUREPOINT}"
 ffmpeg -y -i ${MP4_FILENAME} -vframes 1 -ss ${CAPTUREPOINT} ${PNG_FILENAME}
+
+# check size
+identify ${PNG_FILENAME}
+BPP=`identify -format "%[fx:10000000*b/(w*h)]" ${PNG_FILENAME}`
+echo "[glc_encode] (image file size)/(image pixel size) is $BPP (fail if < 1)"
+if [ "`echo \"$BPP < 1\" | bc`" == 1 ] ; then exit 1; fi
 
 exit 0
