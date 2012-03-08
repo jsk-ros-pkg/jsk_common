@@ -92,6 +92,7 @@ function apt-get-ros-package {
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
 function install-jsk-ros-pkg {
     if [ "$DISTRIBUTION" == "fuerte" ]; then
+	export PATH=$PATH:/usr/local/bin
 	. /opt/ros/$DISTRIBUTION/setup.sh # for fuerte https://kforge.ros.org/vcstools/trac/ticket/16
     fi
     /usr/local/bin/rosinstall --rosdep-yes --continue-on-error  --delete-changed-uris $ROS_INSTALLDIR /opt/ros/$DISTRIBUTION http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
