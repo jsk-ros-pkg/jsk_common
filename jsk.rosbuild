@@ -60,7 +60,7 @@ function setup-ros {
     wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
     sudo apt-get update
     sudo apt-get -y --force-yes install python-setuptools
-    sudo easy_install -U rosinstall
+    sudo easy_install -U "rosinstall==0.5.30" ##
     sudo easy_install -U rosdep ## for rosdep2, > fuerte
     echo "done" # easy_install for rosinstall does not work? 2011/02/07
 }
