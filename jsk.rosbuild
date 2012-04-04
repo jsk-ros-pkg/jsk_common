@@ -97,6 +97,7 @@ function install-jsk-ros-pkg {
 	(rm -fr rospack; \
 	 hg clone https://kforge.ros.org/rosrelease/rospack; \
 	 cd rospack; \
+	 sed s/add_subdirectory/#add_subdirectory/ -i CMakeLists.txt; \ 
 	 mkdir build; \
 	 cd build; \
 	 cmake -DGTEST_FOUND=0  -DCMAKE_INSTALL_PREFIX=/opt/ros/fuerte ..; \
