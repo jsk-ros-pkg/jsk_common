@@ -98,9 +98,9 @@ function install-jsk-ros-pkg {
 	 cd rospack; \
 	 mkdir build; \
 	 cd build; \
-	 cmake -DCMAKE_INSTALL_PREFIX=/opt/ros/fuerte ..; \
+	 cmake -DGTEST_FOUND=0  -DCMAKE_INSTALL_PREFIX=/opt/ros/fuerte ..; \
 	 make; \
-	 sudo make install)
+	 sudo make install) # https://code.ros.org/trac/ros/ticket/3884
     fi
     /usr/local/bin/rosinstall --rosdep-yes --continue-on-error  --delete-changed-uris $ROS_INSTALLDIR /opt/ros/$DISTRIBUTION http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
 # source
