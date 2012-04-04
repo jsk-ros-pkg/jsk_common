@@ -94,7 +94,8 @@ function install-jsk-ros-pkg {
     if [ "$DISTRIBUTION" == "fuerte" ]; then
 	export PATH=$PATH:/usr/local/bin
 	. /opt/ros/$DISTRIBUTION/setup.sh # for fuerte https://kforge.ros.org/vcstools/trac/ticket/16
-	(hg clone https://kforge.ros.org/rosrelease/rospack; \
+	(rm -fr rospack; \
+	 hg clone https://kforge.ros.org/rosrelease/rospack; \
 	 cd rospack; \
 	 mkdir build; \
 	 cd build; \
