@@ -108,6 +108,8 @@ function install-jsk-ros-pkg {
 # source
     . $ROS_INSTALLDIR/setup.sh
     if [ "$DISTRIBUTION" == "fuerte" ]; then
+	export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$ROS_INSTALLDIR/mjpeg_server
+	(cd $ROS_INSTALLDIR; svn co http://bosch-ros-pkg.svn.sourceforge.net/svnroot/bosch-ros-pkg/trunk/stacks/remote_lab/mjpeg_server mjpeg_server; cd mjpeg_server; rosdep -y install mjpeg_server; rosmake)
 	export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/opt/ros/fuerte/share:/opt/ros/fuerte/stacks # for fuerte https://kforge.ros.org/vcstools/trac/ticket/16
 	(sudo rosdep init; rosdep update; true) # only for rosdep 2
     fi
