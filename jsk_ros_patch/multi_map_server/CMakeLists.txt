@@ -3,4 +3,4 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 rosbuild_init()
 
 rosbuild_add_executable(bin/map_server src/main.cpp)
-target_link_libraries(bin/map_server image_loader SDL SDL_image)
+target_link_libraries(bin/map_server image_loader SDL SDL_image yaml-cpp)
