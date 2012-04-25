@@ -14,7 +14,7 @@ string ns		# namespace, used with id to form a unique id
 int32 id          	# unique id within the namespace
 int32 type        	# CIRCLE/LINE_STRIP/etc.
 int32 action      	# ADD/REMOVE
-geometry_msgs/Point position # used for CIRCLE, 2D in pixel-coords
+geometry_msgs/Point position # used for CIRCLE/TEXT, 2D in pixel-coords
 float32 scale	 	# the diameter for a circle, etc.
 std_msgs/ColorRGBA outline_color
 byte filled		# whether to fill in the shape with color
@@ -26,4 +26,4 @@ geometry_msgs/Point[] points # used for LINE_STRIP/LINE_LIST/POLYGON/POINTS., 2D
 std_msgs/ColorRGBA[] outline_colors # a color for each line, point, etc.
 
 string[] frames # used for FRAMES, tf names
-string text             # used for TEXT, draw size of text is scale.z
+string text             # used for TEXT, draw size of text is scale
