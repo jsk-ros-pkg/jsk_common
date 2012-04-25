@@ -488,7 +488,7 @@ public:
 					  1.0, 1.0, &baseline);
 	      cv::Point origin = cv::Point(marker->position.x - text_size.width/2,
 					   marker->position.y - baseline-3);
-	      cv::putText(draw_, marker->text.c_str(), origin, font_, 10, DEFAULT_COLOR);
+	      cv::putText(draw_, marker->text.c_str(), origin, font_, 1, DEFAULT_COLOR);
               break;
             }
 	    default: {
