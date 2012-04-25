@@ -37,7 +37,6 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
-#include <cv_bridge/CvBridge.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <image_transport/image_transport.h>
@@ -84,7 +83,7 @@ private:
 
   sensor_msgs::ImageConstPtr last_msg_;
   sensor_msgs::CameraInfoConstPtr info_msg_;
-  sensor_msgs::CvBridge img_bridge_;
+  cv_bridge::CvImage img_bridge_;
   boost::mutex image_mutex_;
   cv::Mat image_, draw_;
 
@@ -179,8 +178,8 @@ public:
 		       const_cast<uint8_t*>(&msg->data[0]), msg->step);
     } else {
       try {
-	image_ = img_bridge_.imgMsgToCv(msg, "bgr8");
-      } catch (sensor_msgs::CvBridgeException& e) {
+	image_ = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
+      } catch (cv_bridge::Exception& e) {
 	ROS_ERROR("Unable to convert %s image to bgr8", msg->encoding.c_str());
 	return;
       }
@@ -423,7 +422,7 @@ public:
                 tf::Point pt = transform.getOrigin();
                 cv::Point3d pt_cv(pt.x(), pt.y(), pt.z());
                 cv::Point2d uv;
-                cam_model_.project3dToPixel(pt_cv, uv);
+                uv = cam_model_.project3dToPixel(pt_cv);
 
                 static const int RADIUS = 3;
 		cv::circle(draw_, uv, RADIUS, DEFAULT_COLOR, -1);
@@ -435,16 +434,16 @@ public:
                 // x
                 pin = tf::Stamped<tf::Point>(tf::Point(0.05, 0, 0), acquisition_time, frame_id);
                 tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-                cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()), uv0);
+                uv0 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
                 // y
                 pin = tf::Stamped<tf::Point>(tf::Point(0, 0.05, 0), acquisition_time, frame_id);
                 tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-                cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()), uv1);
+                uv1 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
 
                 // z
                 pin = tf::Stamped<tf::Point>(tf::Point(0, 0, 0.05), acquisition_time, frame_id);
                 tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-                cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()), uv2);
+                uv2 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
 
 		// draw
 		if ( blurry_mode ) {
