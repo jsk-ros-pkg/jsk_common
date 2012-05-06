@@ -59,7 +59,7 @@ function setup-ros {
     sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list'
     wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
     sudo apt-get update
-    sudo apt-get upgrade
+    sudo apt-get upgrade -y --force-yes
     sudo apt-get -y --force-yes install python-setuptools
     sudo easy_install -U rosinstall vcstools rosdep
 }
