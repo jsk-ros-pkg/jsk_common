@@ -94,6 +94,7 @@ function install-jsk-ros-pkg {
 # source
     . $ROS_INSTALLDIR/setup.sh
     if [ "$DISTRIBUTION" == "fuerte" ]; then
+-       export PATH=$PATH:/usr/local/bin
 	(sudo rosdep init; rosdep update; true) # only for rosdep 2
 	export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$ROS_INSTALLDIR/mjpeg_server
 	(cd $ROS_INSTALLDIR; svn co http://bosch-ros-pkg.svn.sourceforge.net/svnroot/bosch-ros-pkg/trunk/stacks/remote_lab/mjpeg_server mjpeg_server; cd mjpeg_server; rosdep -y install mjpeg_server; rosmake)
