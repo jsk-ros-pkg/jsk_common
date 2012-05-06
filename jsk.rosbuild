@@ -138,6 +138,7 @@ function test-jsk-ros-pkg {
     # test
     export DISPLAY=:0.0
     export PATH=$PATH:`rospack find roseus`/bin
+    rm -fr $ROS_WORKSPACE/../../.ros/test_results
     PACKAGES="euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2"
 
     for PACKAGE in $PACKAGES
