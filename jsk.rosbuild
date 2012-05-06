@@ -59,10 +59,9 @@ function setup-ros {
     sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list'
     wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
     sudo apt-get update
+    sudo apt-get upgrade
     sudo apt-get -y --force-yes install python-setuptools
-    sudo easy_install -U "rosinstall==0.5.30" ##
-    sudo easy_install -U rosdep ## for rosdep2, > fuerte
-    echo "done" # easy_install for rosinstall does not work? 2011/02/07
+    sudo easy_install -U rosinstall vcstools rosdep
 }
 
 # see http://ros.org/reps/rep-0113.html for variants and http://www.ros.org/debbuild/ for build status
@@ -91,27 +90,13 @@ function apt-get-ros-package {
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
 function install-jsk-ros-pkg {
-    if [ "$DISTRIBUTION" == "fuerte" ]; then
-	export PATH=$PATH:/usr/local/bin
-	. /opt/ros/$DISTRIBUTION/setup.sh # for fuerte https://kforge.ros.org/vcstools/trac/ticket/16
-	(rm -fr rospack; \
-	 hg clone https://kforge.ros.org/rosrelease/rospack; \
-	 cd rospack; \
-	 sed s/add_subdirectory/#add_subdirectory/ -i CMakeLists.txt; \ 
-	 mkdir build; \
-	 cd build; \
-	 cmake -DGTEST_FOUND=0  -DCMAKE_INSTALL_PREFIX=/opt/ros/fuerte ..; \
-	 make; \
-	 sudo make install) # https://code.ros.org/trac/ros/ticket/3884
-    fi
     /usr/local/bin/rosinstall --rosdep-yes --continue-on-error  --delete-changed-uris $ROS_INSTALLDIR /opt/ros/$DISTRIBUTION http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
 # source
     . $ROS_INSTALLDIR/setup.sh
     if [ "$DISTRIBUTION" == "fuerte" ]; then
+	(sudo rosdep init; rosdep update; true) # only for rosdep 2
 	export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$ROS_INSTALLDIR/mjpeg_server
 	(cd $ROS_INSTALLDIR; svn co http://bosch-ros-pkg.svn.sourceforge.net/svnroot/bosch-ros-pkg/trunk/stacks/remote_lab/mjpeg_server mjpeg_server; cd mjpeg_server; rosdep -y install mjpeg_server; rosmake)
-	export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/opt/ros/fuerte/share:/opt/ros/fuerte/stacks # for fuerte https://kforge.ros.org/vcstools/trac/ticket/16
-	(sudo rosdep init; rosdep update; true) # only for rosdep 2
     fi
 }
 
