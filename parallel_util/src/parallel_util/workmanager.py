@@ -218,12 +218,12 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
         userattr = ' user="%s" '%rosuser
     nodes = """<machine timeout="30" name="localhost" address="localhost" %s default="true"/>\n"""%userattr
     for i,serviceaddr in enumerate(serviceaddrs):
-        serviceargs = """--startservice --module=%s --log_level=%s --args='%s --loglevel=%s'"""%(module.__name__,log_level,args,log_level)
+        serviceargs = """--startservice --module=%s --log_level=%s --args='%s --log_level=%s'"""%(module.__name__,log_level,args,log_level)
         nodes += """<machine timeout="30" name="m%d" address="%s" %s default="false" %s/>\n"""%(i,serviceaddr[0],serviceaddr[1],userattr)
         nodes += """<node machine="m%d" name="openraveservice%d" pkg="%s" type="%s" args=%s output="log" cwd="node" respawn="true">\n  <remap from="openraveservice" to="openraveservice%d"/>\n</node>"""%(i,i,PKG,programname,quoteattr(serviceargs),i)
         servicenames += ' --service=openraveservice%d '%i
 
-    processedargs = """--numbatchjobs=%d --log_level=%s --module=%s %s --args='%s --loglevel=%s'"""%(numbatchjobs,log_level,module.__name__,servicenames,args,log_level)
+    processedargs = """--numbatchjobs=%d --log_level=%s --module=%s %s --args='%s --log_level=%s'"""%(numbatchjobs,log_level,module.__name__,servicenames,args,log_level)
     nodes += """<node machine="localhost" name="openraveserver" pkg="%s" type="%s" args=%s output="screen" cwd="node" respawn="false"/>\n"""%(PKG,programname,quoteattr(processedargs))
     xml_text = '<?xml version="1.0" encoding="utf-8"?>\n<launch>\n<env name="PYTHONPATH" value="$(optenv PYTHONPATH):%s"/>\n'%modulepath
     if 'LANG' in os.environ:

@@ -53,7 +53,7 @@ if __name__=='__main__':
     elif options.log_level == 'fatal':
         log_level = rospy.FATAL
 
-    module = __import__(options.modulename, globals(), locals(), [options.modulename.rsplit('.',1)[1]])
+    module = __import__(options.modulename, globals(), locals(), options.modulename.rsplit('.',1)[1:])
     
     if options.startservice:
         rospy.init_node('servicenode',anonymous=True,log_level=log_level)
