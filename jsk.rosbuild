@@ -97,7 +97,34 @@ function install-jsk-ros-pkg {
 	export PATH=$PATH:/usr/local/bin
 	(sudo rosdep init; rosdep update; true) # only for rosdep 2
 	export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$ROS_INSTALLDIR/mjpeg_server
-	(cd $ROS_INSTALLDIR; svn co http://bosch-ros-pkg.svn.sourceforge.net/svnroot/bosch-ros-pkg/trunk/stacks/remote_lab/mjpeg_server mjpeg_server; cd mjpeg_server; rosdep -y install mjpeg_server; rosmake)
+	(cd $ROS_INSTALLDIR; svn co http://bosch-ros-pkg.svn.sourceforge.net/svnroot/bosch-ros-pkg/trunk/stacks/remote_lab/mjpeg_server mjpeg_server; cd mjpeg_server; patch -p0 <<EOF
+Index: manifest.xml
+===================================================================
+--- manifest.xml (revision 1327)
++++ manifest.xml (working copy)
+@@ -9,5 +9,5 @@
+   <depend package="roslib"/>
+   <depend package="cv_bridge"/>
+   <depend package="image_transport"/>
+-  <depend package="opencv2"/>
++  <rosdep name="opencv2"/>
+ </package>
+Index: CMakeLists.txt
+===================================================================
+--- CMakeLists.txt (revision 1327)
++++ CMakeLists.txt (working copy)
+@@ -19,6 +19,8 @@
+ rosbuild_add_boost_directories()
+ 
+ # mjpeg_server
++find_package(OpenCV REQUIRED)
+ rosbuild_add_executable(mjpeg_server src/mjpeg_server.cpp)
++target_link_libraries(mjpeg_server ${OpenCV_LIBS})
+ 
+ rosbuild_link_boost(${PROJECT_NAME} thread)
+\ No newline at end of file
+EOF
+ rosdep -y install mjpeg_server; rosmake)
     fi
 }
 
