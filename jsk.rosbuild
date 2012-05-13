@@ -119,7 +119,7 @@ Index: CMakeLists.txt
  # mjpeg_server
 +find_package(OpenCV REQUIRED)
  rosbuild_add_executable(mjpeg_server src/mjpeg_server.cpp)
-+target_link_libraries(mjpeg_server ${OpenCV_LIBS})
++target_link_libraries(mjpeg_server \${OpenCV_LIBS})
  
  rosbuild_link_boost(${PROJECT_NAME} thread)
 \ No newline at end of file
