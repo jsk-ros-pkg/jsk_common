@@ -44,3 +44,19 @@ glc:
         sudo apt-get install -y glc
       fi
     fi
+
+#  https://code.ros.org/trac/ros-pkg/ticket/5437
+opencv2:
+  ubuntu:
+    lucid:
+      apt:
+        packages: [libopencv2.3-dev=2.3.1+svn6514+branch23-12~lucid]
+    maverick:
+      apt:
+        packages: [libopencv2.3-dev=2.3.1+svn6514+branch23-12~maverick]
+    natty:
+      apt:
+        packages: [libopencv2.3-dev=2.3.1+svn6514+branch23-12~natty]
+    oneiric:
+      apt:
+        packages: [libopencv2.3-dev=2.3.1+svn6514+branch23-12~oneiric]
