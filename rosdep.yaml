@@ -35,7 +35,7 @@ glc:
         sudo ln -s /usr/lib32/libXxf86vm.so.1 /usr/lib32/libXxf86vm.so
         sudo ln -s /usr/lib32/libX11.so.6 /usr/lib32/libX11.so
         sudo ln -s /usr/lib32/libpng12.so.0 /usr/lib32/libpng.so
-        wget https://raw.github.com/ienorand/glc/ppa/scripts/glc-build.sh
+        wget https://raw.github.com/ienorand/glc/ppa/scripts/glc-build.sh -O glc-build.sh
         chmod a+x glc-build.sh
         printf "/usr\n\ny\n" | sudo ./glc-build.sh
       else
