@@ -11,6 +11,8 @@ ffmpeg2theora:
   ubuntu: ffmpeg2theora
 python-docutils:
   ubuntu: python-docutils
+python-sphinx:
+  ubuntu: python-shpinx
 wkhtmltopdf:
   ubuntu: wkhtmltopdf
 ffmpeg-bin:
