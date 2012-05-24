@@ -22,5 +22,5 @@ Includes emacs scripts, ros tool alias generator, and launch doc generator.
   <rosdep name="recordmydesktop" />
   <rosdep name="wkhtmltopdf" />
   <rosdep name="gifsicle" />
-  <rosdep name="python-docutils" />
+  <rosdep name="python-sphinx" />
 </package>
