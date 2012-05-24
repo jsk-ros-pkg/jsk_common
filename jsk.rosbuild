@@ -132,7 +132,7 @@ function rosdep_and_rosmake {
     trap error ERR
     local package=$1
     if [ "$DISTRIBUTION" == "fuerte" ]; then
-	rosdep install -R -y $package
+	(rosdep install -R -y $package; true)
     else
 	rosdep install -y $package
     fi
