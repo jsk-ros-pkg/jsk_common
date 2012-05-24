@@ -131,7 +131,11 @@ EOF
 function rosdep_and_rosmake {
     trap error ERR
     local package=$1
-    rosdep install -y $package
+    if [ "$DISTRIBUTION" == "fuerte" ]; then
+	rosdep install -R -y $package
+    else
+	rosdep install -y $package
+    fi
     rosmake --profile -V --status-rate=0 $package
 }
 
