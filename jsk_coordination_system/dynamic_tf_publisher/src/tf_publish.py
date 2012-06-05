@@ -15,6 +15,7 @@ from geometry_msgs.msg import TransformStamped,Quaternion,Vector3
 import tf
 import tf.msg
 import thread
+import yaml
 
 class dynamic_tf_publisher:
     def __init__(self):
@@ -29,6 +30,13 @@ class dynamic_tf_publisher:
         rospy.Service('/assoc_tf', AssocTF, self.assoc)
         rospy.Service('/dissoc_tf', DissocTF, self.dissoc)
         rospy.Service('/delete_tf', DeleteTF, self.delete)
+        # check the cache
+        if rospy.has_param('dynamic_tf_publisher'+rospy.get_name()) :
+            tfm = tf.msg.tfMessage()
+            roslib.message.fill_message_args(tfm,[yaml.load(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))])
+            for pose in tfm.transforms :
+                self.cur_tf[pose.header.frame_id] = pose
+            
 
     def publish_tf(self):
         self.lockobj.acquire()
@@ -38,6 +46,7 @@ class dynamic_tf_publisher:
             pose = self.cur_tf[frame_id]
             pose.header.stamp = time
             tfm.transforms.append(pose)
+        rospy.set_param('dynamic_tf_publisher'+rospy.get_name(),tfm.__str__())
         self.pub_tf.publish(tfm)
         self.pub_tf_mine.publish(tfm)
         self.lockobj.release()
