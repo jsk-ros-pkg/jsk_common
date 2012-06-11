@@ -99,6 +99,8 @@ if __name__ == '__main__':
                       help="the output file name (default=%default)")
     parser.add_option('--nomakefile', action='store_true', dest='nomakefile', default=False,
                       help="if set will not output a makefile (default=%default)")
+    parser.add_option('--setlocalmovie', action='store_true', dest='setlocalmovie', default=False,
+                      help="if set will output index.rst with local movie path instead of jenkins path (default=%default)")
     (options, args) = parser.parse_args()
     pkgdir = roslib.packages.get_pkg_dir(args[0])
     manifest = roslib.manifest.parse_file(os.path.join(pkgdir,'manifest.xml'))
@@ -124,7 +126,22 @@ if __name__ == '__main__':
         sphinxdoc += '.. code-block:: bash\n\n  roslaunch %s %s\n\n'%(args[0],filename)
         tag = parser.find(options.tag)
         if tag is not None:
-            sphinxdoc += tag.text+'\n\n'
+            raw_text = tag.text
+
+            if not options.setlocalmovie:
+                raw_text_split = raw_text.splitlines()
+                insert_counter = 0
+                for (i,rt) in zip(range(0,len(raw_text_split)),raw_text_split):
+                    if rt.find("video::") >= 0:
+                        video_text = rt.split(" ")
+                        for (j,vt) in zip(range(0,len(video_text)),video_text):
+                            if vt.find("video::") >= 0:
+                                tmp_text = video_text[j + 1].split("/")
+                                raw_text_split.insert(i + 1 + insert_counter, "  :url: http://jenkins.jsk.imi.i.u-tokyo.ac.jp:8080/job/agentsystem-test/lastSuccessfulBuild/artifact/%s-example/_images/%s"%(args[0],tmp_text[len(tmp_text) - 1]))
+                                insert_counter = insert_counter + 1
+                raw_text = "\n".join(raw_text_split)
+
+            sphinxdoc += raw_text+'\n\n'
             parser.getroot().remove(tag)
             tf = tempfile.TemporaryFile()
             parser.write(tf)
