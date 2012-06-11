@@ -136,8 +136,8 @@ if __name__ == '__main__':
                         video_text = rt.split(" ")
                         for (j,vt) in zip(range(0,len(video_text)),video_text):
                             if vt.find("video::") >= 0:
-                                tmp_text = video_text[j + 1].split("/")
-                                raw_text_split.insert(i + 1 + insert_counter, "  :url: http://jenkins.jsk.imi.i.u-tokyo.ac.jp:8080/job/agentsystem-test/lastSuccessfulBuild/artifact/%s-example/_images/%s"%(args[0],tmp_text[len(tmp_text) - 1]))
+                                tmp_text = os.path.basename(video_text[j + 1])
+                                raw_text_split.insert(i + 1 + insert_counter, "  :url: http://jenkins.jsk.imi.i.u-tokyo.ac.jp:8080/job/agentsystem-test/lastSuccessfulBuild/artifact/%s-example/_images/%s"%(args[0],tmp_text))
                                 insert_counter = insert_counter + 1
                 raw_text = "\n".join(raw_text_split)
 

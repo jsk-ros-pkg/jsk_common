@@ -47,7 +47,10 @@ def html_visit_video(self, node):
         self.builder.images[src]=dest
     # finish video
     self.body.append('    <p> Your browser does not support the <code>video</code> element. \n')
-    self.body.append('    <a href="_images/%s"> %s </a>\n'%(dest, dest))
+    if node['url'] != "":
+        self.body.append('    <a href="%s.%s"> %s </a>\n'%(node['url'],codec,dest))
+    else:
+        self.body.append('    <a href="_images/%s"> %s </a>\n'%(dest, dest))
     self.body.append('    </p>\n')
     self.body.append('  </video>\n')
     self.body.append('</p>\n')
