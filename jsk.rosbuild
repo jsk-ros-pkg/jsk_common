@@ -90,7 +90,7 @@ function apt-get-ros-package {
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
 function install-jsk-ros-pkg {
-    /usr/local/bin/rosinstall --rosdep-yes --continue-on-error  --delete-changed-uris $ROS_INSTALLDIR /opt/ros/$DISTRIBUTION http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
+    (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && rosws merge /opt/ros/$DISTRIBUTION && rosws merge http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall && rosws update)
 # source
     . $ROS_INSTALLDIR/setup.sh
     if [ "$DISTRIBUTION" == "fuerte" ]; then
