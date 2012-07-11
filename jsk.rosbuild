@@ -68,7 +68,7 @@ function setup-ros {
 # see http://ros.org/reps/rep-0113.html for variants and http://www.ros.org/debbuild/ for build status
 INSTALL_ROS_PACKAGE="ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-pr2-desktop ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-audio-common ros-$DISTRIBUTION-turtlebot ros-$DISTRIBUTION-remote-lab ros-$DISTRIBUTION-pr2-robot"
 function apt-get-ros-package {
-    echo "hddtemp hddtemp/daemon boolean true" | sudo debconf-set-selections
+    echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
     sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
     #
     INSTALL_ROS_PACKAGE=${INSTALL_ROS_PACKAGE/ros-$DISTRIBUTION-pr2-desktop/ros-$DISTRIBUTION-desktop-full ros-$DISTRIBUTION-pr2-base ros-$DISTRIBUTION-pr2-gui ros-$DISTRIBUTION-pr2-simulator ros-$DISTRIBUTION-pr2-power-drivers ros-$DISTRIBUTION-pr2-ethercat-drivers ros-$DISTRIBUTION-geometry-visualization}
