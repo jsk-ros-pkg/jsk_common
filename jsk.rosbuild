@@ -190,7 +190,7 @@ function install-jsk-ros-pkg {
 function compile-jsk-ros-pkg {
     compile-pkg pr2eus_openrave elevator_move_base_pr2
 }
-function test-jsk-ros-pkig {
+function test-jsk-ros-pkg {
     test-pkg euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2
 }
 # main program
