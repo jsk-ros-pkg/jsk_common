@@ -94,15 +94,6 @@ function apt-get-ros-package {
     return 0
 }
 
-# show-* option
-case "$SHOW" in
-    install) declare -f setup-ros | awk '/^\ /{print $0}' | sed -e 's/^[ ]*//'; exit 0;;
-    package) echo "sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE" ; exit 0;;
-    environment) env; return 0;;
-esac
-
-#####
-
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
 function install-pkg {
     (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && rosws merge /opt/ros/$DISTRIBUTION && for ROSINSTALL in $@; do rosws merge $ROSINSTALL; done && rosws update)
@@ -193,6 +184,14 @@ function compile-jsk-ros-pkg {
 function test-jsk-ros-pkg {
     test-pkg euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2
 }
+
+# show-* option
+case "$SHOW" in
+    install) declare -f setup-ros | awk '/^\ /{print $0}' | sed -e 's/^[ ]*//'; exit 0;;
+    package) echo "sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE" ; exit 0;;
+    environment) env; return 0;;
+esac
+
 # main program
 set -x
 
