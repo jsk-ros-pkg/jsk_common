@@ -92,7 +92,7 @@ function apt-get-ros-package {
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
 function install-jsk-ros-pkg {
-    (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && rosws merge /opt/ros/$DISTRIBUTION && rosws merge http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall && rosws update)
+    (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && rosws merge /opt/ros/$DISTRIBUTION && rosws merge $@ && rosws update)
 # source
     . $ROS_INSTALLDIR/setup.sh
     if [ "$DISTRIBUTION" == "fuerte" ]; then
@@ -115,22 +115,25 @@ function rosdep_and_rosmake {
 
 function compile-jsk-ros-pkg {
     trap error ERR
+    local PACKAGES=$@
     # sometimes sourceforge returns error
     rospack profile
     (cd `rospack find euslisp`; svn up; svn up)
 
     # start rosdep_and_rosmake
-    rosdep_and_rosmake pr2eus_openrave
-    rosdep_and_rosmake elevator_move_base_pr2
+    for PACKAGE in $PACKAGES
+    do
+	rosdep_and_rosmake $PACKAGE
+    done
 }
 
 function test-jsk-ros-pkg {
     trap error ERR
+    local PACKAGES=$@
     # test
     export DISPLAY=:0.0
     export PATH=$PATH:`rospack find roseus`/bin
     rm -fr $ROS_WORKSPACE/../../.ros/test_results
-    PACKAGES="euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2"
 
     for PACKAGE in $PACKAGES
     do
@@ -177,10 +180,15 @@ esac
 # main program
 set -x
 
-setup-ros
-apt-get-ros-package
-install-jsk-ros-pkg
-compile-jsk-ros-pkg
-test-jsk-ros-pkg
+if [ $# -gt 0 ]; then ## if we have arguments, check functions
+    $@
+else
+    setup-ros
+    apt-get-ros-package
+    install-jsk-ros-pkg http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
+    compile-jsk-ros-pkg pr2eus_openrave elevator_move_base_pr2
+    test-jsk-ros-pkg euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2
+fi
+
 rosrun rosunit clean_junit_xml.py     # check error
 
