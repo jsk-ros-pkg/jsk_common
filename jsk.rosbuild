@@ -16,7 +16,7 @@ function error {
 trap error ERR
 
 # command line parse
-OPT=`getopt -o hip -l help,show-install,show-package -- $*`
+OPT=`getopt -o hipe -l help,show-install,show-package,show-environment -- $*`
 if [ $? != 0 ]; then
     usage
 fi
@@ -27,6 +27,7 @@ while [ -n "$1" ] ; do
 	-h|--help) usage ;;
 	-i|--show-install) SHOW="install"; shift;;
 	-p|--show-package) SHOW="package"; shift;;
+	-e|--show-environment) SHOW="environment"; shift;;
 	--) shift; break;;
 	*) echo "Unknown option($1)"; usage;;
     esac
@@ -34,7 +35,10 @@ done
 
 # set environment variables
 # set distribution
-DISTRIBUTION=${@-"electric"}
+case $1 in
+    cturtle|diamondback|electric|fuerte) export DISTRIBUTION=$1;;
+    *)      export DISTRIBUTION=electric;;
+esac
 
 # setup workspaceand buildspace
 if [ "$WORKSPACE" == "" ]; then # if not jenkins
@@ -90,9 +94,18 @@ function apt-get-ros-package {
     return 0
 }
 
+# show-* option
+case "$SHOW" in
+    install) declare -f setup-ros | awk '/^\ /{print $0}' | sed -e 's/^[ ]*//'; exit 0;;
+    package) echo "sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE" ; exit 0;;
+    environment) env; exit 0;;
+esac
+
+#####
+
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
-function install-jsk-ros-pkg {
-    (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && rosws merge /opt/ros/$DISTRIBUTION && rosws merge $@ && rosws update)
+function install-pkg {
+    (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && rosws merge /opt/ros/$DISTRIBUTION && for ROSINSTALL in $@; do rosws merge $ROSINSTALL; done && rosws update)
 # source
     . $ROS_INSTALLDIR/setup.sh
     if [ "$DISTRIBUTION" == "fuerte" ]; then
@@ -113,7 +126,7 @@ function rosdep_and_rosmake {
     rosmake --profile -V --status-rate=0 $package
 }
 
-function compile-jsk-ros-pkg {
+function compile-pkg {
     trap error ERR
     local PACKAGES=$@
     # sometimes sourceforge returns error
@@ -127,7 +140,7 @@ function compile-jsk-ros-pkg {
     done
 }
 
-function test-jsk-ros-pkg {
+function test-pkg {
     trap error ERR
     local PACKAGES=$@
     # test
@@ -148,7 +161,7 @@ function test-jsk-ros-pkg {
 
     # doc
     mkdir -p $ROS_INSTALLDIR/doc
-    SVN_REVISION=`LANGUAGE=C svn info $ROS_INSTALLDIR/jsk-ros-pkg | grep Revision`
+    SVN_REVISION=`LANGUAGE=en LANG=C svn info $ROS_INSTALLDIR/jsk-ros-pkg | grep Revision`
     cat<<EOF > $ROS_INSTALLDIR/doc/index.rst
 ========================================
 jsk-ros-pkg($SVN_REVISION) Test Results
@@ -171,12 +184,15 @@ EOF
     rst2html $ROS_INSTALLDIR/doc/index.rst $ROS_INSTALLDIR/doc/index.html
 }
 
-# show-* option
-case "$SHOW" in
-    install) declare -f setup-ros | awk '/^\ /{print $0}' | sed -e 's/^[ ]*//'; exit 0;;
-    package) echo "sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE" ; exit 0;;
-esac
-
+function install-jsk-ros-pkg {
+    install-pkg http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
+}
+function compile-jsk-ros-pkg {
+    compile-pkg pr2eus_openrave elevator_move_base_pr2
+}
+function test-jsk-ros-pkig {
+    test-pkg euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2
+}
 # main program
 set -x
 
@@ -185,9 +201,9 @@ if [ $# -gt 0 ]; then ## if we have arguments, check functions
 else
     setup-ros
     apt-get-ros-package
-    install-jsk-ros-pkg http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
-    compile-jsk-ros-pkg pr2eus_openrave elevator_move_base_pr2
-    test-jsk-ros-pkg euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2
+    install-jsk-ros-pkg
+    compile-jsk-ros-pkg
+    test-jsk-ros-pkg
 fi
 
 rosrun rosunit clean_junit_xml.py     # check error
