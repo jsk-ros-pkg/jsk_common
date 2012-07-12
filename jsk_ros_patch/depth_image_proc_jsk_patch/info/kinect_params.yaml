@@ -3,6 +3,6 @@ projector_depth_baseline: 0.06649
 depth_rgb_rotation: [ 0.999960, -0.003659, 0.008119, 0.003723, 0.999962, -0.007904, -0.008089, 0.007933, 0.999936 ]
 depth_rgb_translation: [ -0.024850, -0.000542, 0.000873 ]
 projector_coefficients:
-    u_coeff: 2
+    u_coeff: 5.66902948e-05
     v_coeff: 8.76428726e-06
     disp_coeff: 0.97426575
