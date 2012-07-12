@@ -1,0 +1,7 @@
+<launch>
+  <include file="$(find depth_image_proc_jsk_patch)/launch/openni.launch">
+    <arg name="depth_camera_info_url" value="file://$(find depth_image_proc_jsk_patch)/info/calibration_depth.yaml"/>
+    <arg name="rgb_camera_info_url" value="file://$(find depth_image_proc_jsk_patch)/info/calibration_rgb.yaml"/>
+    <arg name="kinect_params_url" value="$(find depth_image_proc_jsk_patch)/info/kinect_params.yaml"/>
+  </include>
+</launch>

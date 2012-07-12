@@ -1,0 +1,11 @@
+<library path="lib/libdepth_image_proc">
+
+  <class name="depth_image_proc/undistort"
+	 type="depth_image_proc::UndistortNodelet"
+	 base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet to undistort depth image with zoom fitting parameters
+    </description>
+  </class>
+
+</library>
