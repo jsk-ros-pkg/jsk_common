@@ -98,6 +98,7 @@ private:
   static CvRect window_selection_;
   int count_;
   bool blurry_mode;
+  bool use_window;
 
   ros::Publisher point_pub_;
   ros::Publisher rectangle_pub_;
@@ -126,14 +127,18 @@ public:
     local_nh.param("blurry", blurry_mode, false);
 
     local_nh.param("filename_format", format_string, std::string("frame%04i.jpg"));
+    local_nh.param("use_window", use_window, true);
+
     filename_format_.parse(format_string);
 
-    cvNamedWindow(window_name_.c_str(), autosize ? CV_WINDOW_AUTOSIZE : 0);
-    cvSetMouseCallback(window_name_.c_str(), &ImageView2::mouse_cb, this);
-    font_ = cv::FONT_HERSHEY_DUPLEX;
-    window_selection_.x = window_selection_.y =
-      window_selection_.height = window_selection_.width = 0;
-    cvStartWindowThread();
+    if ( use_window ) {
+	cvNamedWindow(window_name_.c_str(), autosize ? CV_WINDOW_AUTOSIZE : 0);
+	cvSetMouseCallback(window_name_.c_str(), &ImageView2::mouse_cb, this);
+	font_ = cv::FONT_HERSHEY_DUPLEX;
+	window_selection_.x = window_selection_.y =
+	    window_selection_.height = window_selection_.width = 0;
+	cvStartWindowThread();
+    }
 
     image_sub_ = it.subscribe(camera, 1, &ImageView2::image_cb, this, transport);
     info_sub_ = nh.subscribe(camera_info, 1, &ImageView2::info_cb, this);
@@ -144,7 +149,9 @@ public:
 
   ~ImageView2()
   {
-    cvDestroyWindow(window_name_.c_str());
+    if ( use_window ) {
+	cvDestroyWindow(window_name_.c_str());
+    }
   }
 
   void marker_cb(const image_view2::ImageMarker2ConstPtr& marker)
@@ -505,7 +512,9 @@ public:
 		USER_ROI_COLOR, 3, 8, 0);
 
     if ( blurry_mode ) cv::addWeighted(image_, 0.9, draw_, 1.0, 0.0, image_);
-    cv::imshow(window_name_.c_str(), image_);
+    if ( use_window ) {
+	cv::imshow(window_name_.c_str(), image_);
+    }
     cv_bridge::CvImage out_msg;
     out_msg.header   = msg->header;
     out_msg.encoding = "bgr8";
