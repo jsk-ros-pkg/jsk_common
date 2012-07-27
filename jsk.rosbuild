@@ -165,6 +165,8 @@ EOF
 	    (wkhtmltopdf $ROS_INSTALLDIR/doc/$PACKAGE/html/index.html $ROS_INSTALLDIR/doc/$PACKAGE.pdf; true)
 	    convert $ROS_INSTALLDIR/doc/$PACKAGE.pdf $ROS_INSTALLDIR/doc/$PACKAGE.png
 	    cat <<EOF >> $ROS_INSTALLDIR/doc/index.rst
+`$PACKAGE <http://ros.org/wiki/$PACKAGE>`_
+
 .. image:: $PACKAGE-0.png
    :width: 320
    :target: $PACKAGE/html/index.html
