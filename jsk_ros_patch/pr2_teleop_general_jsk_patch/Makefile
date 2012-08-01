@@ -11,7 +11,7 @@ include $(shell rospack find mk)/svn_checkout.mk
 
 installed: $(SVN_DIR) patched
 	cp -f `rospack find move_base`/../rosdep.yaml $(SVN_DIR)
-	cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH rosmake --rosdep-install
+	cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH rosmake
 	touch installed
 
 clean:
