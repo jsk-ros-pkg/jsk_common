@@ -164,16 +164,34 @@ EOF
 	    (cd $ROS_INSTALLDIR; rosrun rosdoc rosdoc $PACKAGE)
 	    (wkhtmltopdf $ROS_INSTALLDIR/doc/$PACKAGE/html/index.html $ROS_INSTALLDIR/doc/$PACKAGE.pdf; true)
 	    convert $ROS_INSTALLDIR/doc/$PACKAGE.pdf $ROS_INSTALLDIR/doc/$PACKAGE.png
+	    if [ -f $ROS_INSTALLDIR/doc/$PACKAGE.png ]; then
+		PACKAGEPNG=$PACKAGE.png
+	    else
+		PACKAGEPNG=$PACKAGE-0.png
+	    fi
 	    cat <<EOF >> $ROS_INSTALLDIR/doc/index.rst
-`$PACKAGE <http://ros.org/wiki/$PACKAGE>`_
 
-.. image:: $PACKAGE-0.png
+.. image:: $PACKAGEPNG
    :width: 320
    :target: $PACKAGE/html/index.html
 
 EOF
 	fi
     done
+    for PACKAGE in $PACKAGES
+    do
+	if [ -f `rospack find $PACKAGE`/index.rst ]; then
+	    cat <<EOF >> $ROS_INSTALLDIR/doc/index.rst
+$PACKAGE
+
+  ros wiki page http://ros.org/wiki/$PACKAGE/
+
+  ros api page http://ros.org/doc/api/$PACKAGE/html/
+
+EOF
+	fi
+    done
+
     rst2html $ROS_INSTALLDIR/doc/index.rst $ROS_INSTALLDIR/doc/index.html
 }
 
