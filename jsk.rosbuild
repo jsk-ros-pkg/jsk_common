@@ -143,7 +143,7 @@ function test-pkg {
     do
 	(cd `rospack find $PACKAGE`; make test)
 	if [ -f `rospack find $PACKAGE`/build/index.rst ] ; then
-	    (cd `rospack find $PACKAGE`; cp build/index.rst ./; cp build/conf.py ./ svn add --non-interactive --username $SVN_USERNAME --password $SVN_PASSWORD index.rst conf.py; svn commit --non-interactive --username $SVN_USERNAME --password $SVN_PASSWORD -m "update index.rst,conf.py by Jenkins" index.rst conf.py)
+	    (cd `rospack find $PACKAGE`; cp build/index.rst ./; cp build/conf.py ./; svn add --non-interactive --username $SVN_USERNAME --password $SVN_PASSWORD index.rst conf.py; svn commit --non-interactive --username $SVN_USERNAME --password $SVN_PASSWORD -m "update index.rst,conf.py by Jenkins" index.rst conf.py)
 	fi
     done
 
