@@ -205,7 +205,7 @@ function compile-jsk-ros-pkg {
     compile-pkg pr2eus_openrave elevator_move_base_pr2
 }
 function test-jsk-ros-pkg {
-    test-pkg euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2 kinect_near_mode_calibration detect_cans_in_fridge_201202 jsk_pcl_ros jsk_android_gui android_camera_viewer
+    test-pkg euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2 kinect_near_mode_calibration detect_cans_in_fridge_201202 jsk_pcl_ros
 }
 
 # show-* option
