@@ -99,7 +99,7 @@ if __name__ == '__main__':
                       help="the output file name (default=%default)")
     parser.add_option('--nomakefile', action='store_true', dest='nomakefile', default=False,
                       help="if set will not output a makefile (default=%default)")
-    parser.add_option('--setlocalmovie', action='store_true', dest='setlocalmovie', default=False,
+    parser.add_option('--setlocalmovie', action='store_true', dest='setlocalmovie', default=True,
                       help="if set will output index.rst with local movie path instead of jenkins path (default=%default)")
     (options, args) = parser.parse_args()
     pkgdir = roslib.packages.get_pkg_dir(args[0])
