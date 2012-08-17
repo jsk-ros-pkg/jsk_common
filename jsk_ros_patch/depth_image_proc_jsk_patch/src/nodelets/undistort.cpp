@@ -69,19 +69,16 @@ void UndistortNodelet::depthCb(const sensor_msgs::ImageConstPtr& input_msg,
 
   const uint16_t* input_data = reinterpret_cast<const uint16_t*>(&input_msg->data[0]);
   uint16_t* depth_data = reinterpret_cast<uint16_t*>(&depth_msg->data[0]);
-  double u_coeff, v_coeff, disp_coeff, shift_offset;
+  double u_coeff, v_coeff, z_coeff;
   if(!ros::param::get ("/projector_coefficients/u_coeff", u_coeff)){
     u_coeff = 0.0;
   }
   if(!ros::param::get ("/projector_coefficients/v_coeff", v_coeff)){
     v_coeff = 0.0;
   }
-  if(!ros::param::get ("/projector_coefficients/disp_coeff", disp_coeff)){
-    disp_coeff = 1.0;
-  }    
-  if(!ros::param::get ("/projector_coefficients/shift_offset", shift_offset)){
-    shift_offset = 1088.6594;
-  }    
+  if(!ros::param::get ("/projector_coefficients/z_coeff", z_coeff)){
+    z_coeff = 1.0;
+  }
 
   float cx = info_msg->K[2];
   float cy = info_msg->K[5];
@@ -91,9 +88,8 @@ void UndistortNodelet::depthCb(const sensor_msgs::ImageConstPtr& input_msg,
     float i = input_data[index];
     float u = cx - index%depth_msg->width;
     float v = cy - index/depth_msg->width;
-    //float i_fitted =  i*disp_coeff + u_coeff*u*u + v_coeff*v*v;
-    float disparity = disp_coeff * SHIFT_SCALE * (shift_offset - i) + u_coeff*u*u + v_coeff*v*v;
-    float i_fitted = shift_offset - (disparity / SHIFT_SCALE);
+    float i_fitted = z_coeff * i + u_coeff*u*u + v_coeff*v*v;
+
     if (0 < i_fitted){
       depth_data[index] = i_fitted;
     }else{

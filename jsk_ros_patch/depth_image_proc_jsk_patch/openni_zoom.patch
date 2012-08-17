@@ -1,6 +1,6 @@
 diff -r d8164bcedd91 depth_image_proc/CMakeLists.txt
 --- a/depth_image_proc/CMakeLists.txt	Fri Jan 13 16:29:51 2012 -0800
-+++ b/depth_image_proc/CMakeLists.txt	Thu Jul 12 20:50:41 2012 +0900
++++ b/depth_image_proc/CMakeLists.txt	Fri Aug 17 17:18:32 2012 +0900
 @@ -16,7 +16,7 @@
  #set the default path for built libraries to the "lib" directory
  set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
@@ -12,7 +12,7 @@ diff -r d8164bcedd91 depth_image_proc/CMakeLists.txt
  #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
 diff -r d8164bcedd91 depth_image_proc/nodelet_plugins.xml
 --- a/depth_image_proc/nodelet_plugins.xml	Fri Jan 13 16:29:51 2012 -0800
-+++ b/depth_image_proc/nodelet_plugins.xml	Thu Jul 12 20:50:41 2012 +0900
++++ b/depth_image_proc/nodelet_plugins.xml	Fri Aug 17 17:18:32 2012 +0900
 @@ -40,4 +40,12 @@
      </description>
    </class>
@@ -28,8 +28,8 @@ diff -r d8164bcedd91 depth_image_proc/nodelet_plugins.xml
  </library>
 diff -r d8164bcedd91 depth_image_proc/src/nodelets/undistort.cpp
 --- /dev/null	Thu Jan 01 00:00:00 1970 +0000
-+++ b/depth_image_proc/src/nodelets/undistort.cpp	Thu Jul 12 20:50:41 2012 +0900
-@@ -0,0 +1,111 @@
++++ b/depth_image_proc/src/nodelets/undistort.cpp	Fri Aug 17 17:18:32 2012 +0900
+@@ -0,0 +1,107 @@
 +#include <ros/ros.h>
 +#include <nodelet/nodelet.h>
 +#include <image_transport/image_transport.h>
@@ -101,19 +101,16 @@ diff -r d8164bcedd91 depth_image_proc/src/nodelets/undistort.cpp
 +
 +  const uint16_t* input_data = reinterpret_cast<const uint16_t*>(&input_msg->data[0]);
 +  uint16_t* depth_data = reinterpret_cast<uint16_t*>(&depth_msg->data[0]);
-+  double u_coeff, v_coeff, disp_coeff, shift_offset;
++  double u_coeff, v_coeff, z_coeff;
 +  if(!ros::param::get ("/projector_coefficients/u_coeff", u_coeff)){
 +    u_coeff = 0.0;
 +  }
 +  if(!ros::param::get ("/projector_coefficients/v_coeff", v_coeff)){
 +    v_coeff = 0.0;
 +  }
-+  if(!ros::param::get ("/projector_coefficients/disp_coeff", disp_coeff)){
-+    disp_coeff = 1.0;
-+  }    
-+  if(!ros::param::get ("/projector_coefficients/shift_offset", shift_offset)){
-+    shift_offset = 1088.6594;
-+  }    
++  if(!ros::param::get ("/projector_coefficients/z_coeff", z_coeff)){
++    z_coeff = 1.0;
++  }
 +
 +  float cx = info_msg->K[2];
 +  float cy = info_msg->K[5];
@@ -123,9 +120,8 @@ diff -r d8164bcedd91 depth_image_proc/src/nodelets/undistort.cpp
 +    float i = input_data[index];
 +    float u = cx - index%depth_msg->width;
 +    float v = cy - index/depth_msg->width;
-+    //float i_fitted =  i*disp_coeff + u_coeff*u*u + v_coeff*v*v;
-+    float disparity = disp_coeff * SHIFT_SCALE * (shift_offset - i) + u_coeff*u*u + v_coeff*v*v;
-+    float i_fitted = shift_offset - (disparity / SHIFT_SCALE);
++    float i_fitted = z_coeff * i + u_coeff*u*u + v_coeff*v*v;
++
 +    if (0 < i_fitted){
 +      depth_data[index] = i_fitted;
 +    }else{
@@ -143,7 +139,7 @@ diff -r d8164bcedd91 depth_image_proc/src/nodelets/undistort.cpp
 +PLUGINLIB_DECLARE_CLASS (depth_image_proc, undistort, depth_image_proc::UndistortNodelet, nodelet::Nodelet);
 diff -r d8164bcedd91 openni_launch/launch/includes/depth.launch
 --- a/openni_launch/launch/includes/depth.launch	Fri Jan 13 16:29:51 2012 -0800
-+++ b/openni_launch/launch/includes/depth.launch	Thu Jul 12 20:50:41 2012 +0900
++++ b/openni_launch/launch/includes/depth.launch	Fri Aug 17 17:18:32 2012 +0900
 @@ -17,10 +17,15 @@
      <param name="interpolation" value="0" />
    </node>
@@ -172,7 +168,7 @@ diff -r d8164bcedd91 openni_launch/launch/includes/depth.launch
  </launch>
 diff -r d8164bcedd91 openni_launch/launch/includes/depth_registered.launch
 --- a/openni_launch/launch/includes/depth_registered.launch	Fri Jan 13 16:29:51 2012 -0800
-+++ b/openni_launch/launch/includes/depth_registered.launch	Thu Jul 12 20:50:41 2012 +0900
++++ b/openni_launch/launch/includes/depth_registered.launch	Fri Aug 17 17:18:32 2012 +0900
 @@ -20,8 +20,8 @@
      <!-- Explicit topic remappings, shouldn't need all of these -->
      <remap from="rgb/camera_info"             to="$(arg rgb)/camera_info" />
@@ -195,7 +191,7 @@ diff -r d8164bcedd91 openni_launch/launch/includes/depth_registered.launch
  
 diff -r d8164bcedd91 openni_launch/launch/includes/device.launch
 --- a/openni_launch/launch/includes/device.launch	Fri Jan 13 16:29:51 2012 -0800
-+++ b/openni_launch/launch/includes/device.launch	Thu Jul 12 20:50:41 2012 +0900
++++ b/openni_launch/launch/includes/device.launch	Fri Aug 17 17:18:32 2012 +0900
 @@ -49,14 +49,14 @@
    </include>
  
@@ -215,7 +211,7 @@ diff -r d8164bcedd91 openni_launch/launch/includes/device.launch
      <arg name="depth" value="$(arg depth)" />
 diff -r d8164bcedd91 openni_launch/launch/openni.launch
 --- a/openni_launch/launch/openni.launch	Fri Jan 13 16:29:51 2012 -0800
-+++ b/openni_launch/launch/openni.launch	Thu Jul 12 20:50:41 2012 +0900
++++ b/openni_launch/launch/openni.launch	Fri Aug 17 17:18:32 2012 +0900
 @@ -19,6 +19,9 @@
    <arg name="rgb_camera_info_url"   default="" />
    <arg name="depth_camera_info_url" default="" />
