@@ -1,5 +1,5 @@
 #
-# https://code.ros.org/trac/ros-pkg/ticket/xxxx
+# https://code.ros.org/trac/ros-pkg/ticket/5529
 #
 include $(shell rospack find mk)/cmake.mk
 
