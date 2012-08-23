@@ -8,7 +8,9 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/image_view_jsk_patch</url>
+
   <depend package="image_view"/>
+  <depend package="std_srvs"/>
 
 </package>
 

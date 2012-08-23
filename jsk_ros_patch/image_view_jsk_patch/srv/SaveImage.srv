@@ -1,5 +1,0 @@
-string filename
-string directory
-string encoding
----
-bool result
