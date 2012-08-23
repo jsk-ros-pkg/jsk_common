@@ -113,7 +113,7 @@ function rosdep_and_rosmake {
     else
 	rosdep install -y $package
     fi
-    rosmake --profile -V --status-rate=0 $package
+    rosmake --profile --status-rate=0 $package
 }
 
 function compile-pkg {
