@@ -1,0 +1,27 @@
+--- src/nodes/image_saver.cpp.bak	2012-08-23 12:01:23.067493237 +0900
++++ src/nodes/image_saver.cpp	2012-08-23 12:15:33.427463161 +0900
+@@ -13,6 +13,7 @@
+ int g_count = 0;
+ boost::format g_format;
+ bool save_all_image, save_image_service;
++std::string encoding;
+ 
+ bool service(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res) {
+   save_image_service = true;
+@@ -21,7 +22,7 @@
+ 
+ void callback(const sensor_msgs::ImageConstPtr& image, const sensor_msgs::CameraInfoConstPtr& info)
+ {
+-  if (g_bridge.fromImage(*image, "bgr8")) {
++  if (g_bridge.fromImage(*image, encoding)) {
+     IplImage *image = g_bridge.toIpl();
+     if (image) {
+       std::string filename;
+@@ -63,6 +64,7 @@
+   ros::NodeHandle local_nh("~");
+   std::string format_string;
+   local_nh.param("filename_format", format_string, std::string("left%04i.%s"));
++  local_nh.param("encoding", encoding, std::string("bgr8"));
+   local_nh.param("save_all_image", save_all_image, true);
+   g_format.parse(format_string);
+   ros::ServiceServer save = local_nh.advertiseService ("save", service);
