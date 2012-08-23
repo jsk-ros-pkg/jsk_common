@@ -9,7 +9,6 @@ function usage {
 }
 
 function error {
-    rosrun rosunit clean_junit_xml.py
     echo "source $ROS_WORKSPACE/setup.bash"
     exit 1
 }
