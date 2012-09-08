@@ -5,6 +5,7 @@ function usage {
     echo >&2 "          [-h|--help] print this message"
     echo >&2 "          [-i|--show-install] show how to install "
     echo >&2 "          [-p|--show-package] display packages to install"
+    echo >&2 "          [-e|--environment] display environment variables"
     exit 0
 }
 
