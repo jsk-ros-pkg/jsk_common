@@ -6,7 +6,6 @@ function usage {
     echo >&2 "          [-i|--show-install] show how to install "
     echo >&2 "          [-p|--show-package] display packages to install"
     echo >&2 "          [-e|--environment] display environment variables"
-    echo >&2 "          [-c|--commit] commit generated document (for jenkins)"
     exit 0
 }
 
@@ -17,7 +16,7 @@ function error {
 trap error ERR
 
 # command line parse
-OPT=`getopt -o hipec -l help,show-install,show-package,show-environment,commit -- $*`
+OPT=`getopt -o hipe -l help,show-install,show-package,show-environment -- $*`
 if [ $? != 0 ]; then
     usage
 fi
@@ -29,7 +28,6 @@ while [ -n "$1" ] ; do
 	-i|--show-install) SHOW="install"; shift;;
 	-p|--show-package) SHOW="package"; shift;;
 	-e|--show-environment) SHOW="environment"; shift;;
-	-c|--commit) COMMIT="true"; shift;;
 	--) shift; break;;
 	*) echo "Unknown option($1)"; usage;;
     esac
@@ -140,7 +138,7 @@ function test-pkg {
     do
 	(cd `rospack find $PACKAGE`; make test)
         # chnage to JENKINS_URL and commit for jenkins
-	if [ "$COMMIT" == "true" -a "$JENKINS_URL" != "" -a -f `rospack find $PACKAGE`/build/index.rst ] ; then
+	if [ "$JENKINS_URL" != "" -a "$SVN_USERNAME" != "" -a "$SVN_PASSWORD" != "" -a -f `rospack find $PACKAGE`/build/index.rst ] ; then
 	    sed -i "s@^.. image:: build/@.. image:: $JENKINS_URL/job/$JOB_NAME/lastSuccessfulBuild/artifact/doc/$PACKAGE/html/_images/@" `rospack find $PACKAGE`/build/index.rst
 	    sed -i "s@^.. video:: build/@.. video:: $JENKINS_URL/job/$JOB_NAME/lastSuccessfulBuild/artifact/doc/$PACKAGE/html/_images/@" `rospack find $PACKAGE`/build/index.rst
 	    (cd `rospack find $PACKAGE`; cp build/index.rst ./; cp build/conf.py ./; svn add --non-interactive --username $SVN_USERNAME --password $SVN_PASSWORD index.rst conf.py; svn commit --non-interactive --username $SVN_USERNAME --password $SVN_PASSWORD -m "update index.rst,conf.py by Jenkins" index.rst conf.py)
