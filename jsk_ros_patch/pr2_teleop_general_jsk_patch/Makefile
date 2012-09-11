@@ -10,7 +10,7 @@ SVN_REVISION= -r 53700
 include $(shell rospack find mk)/svn_checkout.mk
 
 installed: $(SVN_DIR) patched
-	cp -f `rospack find move_base`/../rosdep.yaml $(SVN_DIR)
+	wget https://kforge.ros.org/navigation/navigation/file/0e595d0774c1/rosdep.yaml -O $(SVN_DIR)/rosdep.yaml
 	cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH rosmake
 	touch installed
 
