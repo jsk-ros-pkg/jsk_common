@@ -16,7 +16,7 @@ python-sphinx:
 wkhtmltopdf:
   ubuntu: wkhtmltopdf
 ffmpeg-bin:
-  ubuntu: ffmpeg
+  ubuntu: ffmpeg libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
 vlc:
   ubuntu: vlc
 arista:
