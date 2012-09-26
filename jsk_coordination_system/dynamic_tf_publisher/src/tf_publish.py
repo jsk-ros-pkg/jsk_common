@@ -16,6 +16,9 @@ import tf
 import tf.msg
 import thread
 import yaml
+import os
+if os.getenv('ROS_DISTRO') == 'fuerte' :
+    import genpy
 
 class dynamic_tf_publisher:
     def __init__(self):
@@ -33,7 +36,10 @@ class dynamic_tf_publisher:
         # check the cache
         if rospy.has_param('dynamic_tf_publisher'+rospy.get_name()) :
             tfm = tf.msg.tfMessage()
-            roslib.message.fill_message_args(tfm,[yaml.load(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))])
+            if os.getenv('ROS_DISTRO') == 'fuerte' :
+                genpy.message.fill_message_args(tfm,[yaml.load(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))])
+            else :
+                roslib.message.fill_message_args(tfm,[yaml.load(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))])
             for pose in tfm.transforms :
                 self.cur_tf[pose.header.frame_id] = pose
             
