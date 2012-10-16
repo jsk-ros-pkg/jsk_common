@@ -65,8 +65,9 @@ function setup-ros {
     wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
     sudo apt-get update
     sudo apt-get upgrade -y --force-yes
-    sudo apt-get -y --force-yes install python-setuptools
-    sudo easy_install -U rosinstall vcstools rosdep
+    sudo apt-get -y --force-yes install python-rosdep
+    sudo rosdep init
+    rosdep update
 }
 
 # see http://ros.org/reps/rep-0113.html for variants and http://www.ros.org/debbuild/ for build status
