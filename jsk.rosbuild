@@ -65,7 +65,7 @@ function setup-ros {
     wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
     sudo apt-get update
     sudo apt-get upgrade -y --force-yes
-    sudo apt-get -y --force-yes install python-rosdep
+    sudo apt-get -y --force-yes install python-rosdep python-rosinstall
     sudo rosdep init
     rosdep update
 }
