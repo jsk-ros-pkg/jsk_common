@@ -14,7 +14,7 @@ Includes emacs scripts, ros tool alias generator, and launch doc generator.
 
   <depend package="mjpeg_server" />
 
-  <rosdep name="glc" />
+  <!-- rosdep name="glc" / -->
   <rosdep name="vlc" />
   <rosdep name="ffmpeg" />
   <rosdep name="arista" />
