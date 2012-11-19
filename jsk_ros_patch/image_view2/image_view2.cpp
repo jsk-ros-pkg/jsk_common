@@ -251,6 +251,22 @@ public:
 	    if(colors.size() == 0) colors.push_back(DEFAULT_COLOR);
 	    std::vector<CvScalar>::iterator col_it = colors.begin();
 
+	    // check camera_info
+	    if( marker->type == image_view2::ImageMarker2::FRAMES ||
+		marker->type == image_view2::ImageMarker2::LINE_STRIP3D ||
+		marker->type == image_view2::ImageMarker2::LINE_LIST3D ||
+		marker->type == image_view2::ImageMarker2::POLYGON3D ||
+		marker->type == image_view2::ImageMarker2::POINTS3D ||
+		marker->type == image_view2::ImageMarker2::TEXT3D) {
+              {
+                boost::mutex::scoped_lock lock(info_mutex_);
+                if (!info_msg_) {
+                  ROS_WARN("[image_view2] camera_info could not found");
+                  continue;
+                }
+                cam_model_.fromCameraInfo(info_msg_);
+              }
+	    }
             // CIRCLE, LINE_STRIP, LINE_LIST, POLYGON, POINTS
             switch ( marker->type ) {
             case image_view2::ImageMarker2::CIRCLE: {
@@ -391,14 +407,6 @@ public:
               break;
             }
             case image_view2::ImageMarker2::FRAMES: {
-              {
-                boost::mutex::scoped_lock lock(info_mutex_);
-                if (!info_msg_) {
-                  ROS_WARN("[image_view2] camera_info could not found");
-                  break;
-                }
-                cam_model_.fromCameraInfo(info_msg_);
-              }
 	      static std::map<std::string, int> tf_fail;
               BOOST_FOREACH(std::string frame_id, marker->frames)  {
                 tf::StampedTransform transform;
@@ -499,6 +507,288 @@ public:
 	      cv::putText(draw_, marker->text.c_str(), origin, font_, scale, DEFAULT_COLOR);
               break;
             }
+            // LINE_STRIP3D, LINE_LIST3D, POLYGON3D, POINTS3D, TEXT3D
+            case image_view2::ImageMarker2::LINE_STRIP3D: {
+	      static std::map<std::string, int> tf_fail;
+	      std::string frame_id = marker->points3D.header.frame_id;
+	      tf::StampedTransform transform;
+	      ros::Time acquisition_time = msg->header.stamp;
+	      //ros::Time acquisition_time = msg->points3D.header.stamp;
+	      ros::Duration timeout(1.0 / 2); // wait 0.5 sec
+	      try {
+		ros::Time tm;
+		tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+		ros::Duration diff = ros::Time::now() - tm;
+		if ( diff > ros::Duration(1.0) ) { break; }
+		tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+					      acquisition_time, timeout);
+		tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
+					     acquisition_time, transform);
+		tf_fail[frame_id]=0;
+	      }
+	      catch (tf::TransformException& ex) {
+		tf_fail[frame_id]++;
+		if ( tf_fail[frame_id] < 5 ) {
+		  ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+		} else {
+		  ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+		}
+		break;
+	      }
+	      std::vector<geometry_msgs::Point> points2D;
+	      BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
+		tf::Point pt = transform.getOrigin();
+		geometry_msgs::PointStamped pt_cam, pt_;
+		pt_cam.header.frame_id = cam_model_.tfFrame();
+		pt_cam.header.stamp = acquisition_time;
+		pt_cam.point.x = pt.x();
+		pt_cam.point.y = pt.y();
+		pt_cam.point.z = pt.z();
+		tf_listener_.transformPoint(frame_id, pt_cam, pt_);
+
+		cv::Point2d uv;
+		tf::Stamped<tf::Point> pin, pout;
+		pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
+		tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+		uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+		geometry_msgs::Point point2D;
+		point2D.x = uv.x;
+		point2D.y = uv.y;
+		points2D.push_back(point2D);
+	      }
+              cv::Point2d p0, p1;
+	      std::vector<geometry_msgs::Point>::const_iterator it = points2D.begin();
+	      std::vector<geometry_msgs::Point>::const_iterator end = points2D.end();
+	      p0 = cv::Point2d(it->x, it->y); it++;
+	      for ( ; it!= end; it++ ) {
+		p1 = cv::Point2d(it->x, it->y);
+		cv::line(draw_, p0, p1, *col_it, LINE_WIDTH);
+		p0 = p1;
+		if(++col_it == colors.end()) col_it = colors.begin();
+	      }
+              break;
+	    }
+            case image_view2::ImageMarker2::LINE_LIST3D: {
+	      static std::map<std::string, int> tf_fail;
+	      std::string frame_id = marker->points3D.header.frame_id;
+	      tf::StampedTransform transform;
+	      ros::Time acquisition_time = msg->header.stamp;
+	      //ros::Time acquisition_time = msg->points3D.header.stamp;
+	      ros::Duration timeout(1.0 / 2); // wait 0.5 sec
+	      try {
+		ros::Time tm;
+		tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+		ros::Duration diff = ros::Time::now() - tm;
+		if ( diff > ros::Duration(1.0) ) { break; }
+		tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+					      acquisition_time, timeout);
+		tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
+					     acquisition_time, transform);
+		tf_fail[frame_id]=0;
+	      }
+	      catch (tf::TransformException& ex) {
+		tf_fail[frame_id]++;
+		if ( tf_fail[frame_id] < 5 ) {
+		  ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+		} else {
+		  ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+		}
+		break;
+	      }
+	      std::vector<geometry_msgs::Point> points2D;
+	      BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
+		tf::Point pt = transform.getOrigin();
+		geometry_msgs::PointStamped pt_cam, pt_;
+		pt_cam.header.frame_id = cam_model_.tfFrame();
+		pt_cam.header.stamp = acquisition_time;
+		pt_cam.point.x = pt.x();
+		pt_cam.point.y = pt.y();
+		pt_cam.point.z = pt.z();
+		tf_listener_.transformPoint(frame_id, pt_cam, pt_);
+
+		cv::Point2d uv;
+		tf::Stamped<tf::Point> pin, pout;
+		pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
+		tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+		uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+		geometry_msgs::Point point2D;
+		point2D.x = uv.x;
+		point2D.y = uv.y;
+		points2D.push_back(point2D);
+	      }
+              cv::Point2d p0, p1;
+	      std::vector<geometry_msgs::Point>::const_iterator it = points2D.begin();
+	      std::vector<geometry_msgs::Point>::const_iterator end = points2D.end();
+	      for ( ; it!= end; ) {
+		p0 = cv::Point2d(it->x, it->y); it++;
+		if ( it != end ) p1 = cv::Point2d(it->x, it->y);
+		cv::line(draw_, p0, p1, *col_it, LINE_WIDTH);
+		it++;
+		if(++col_it == colors.end()) col_it = colors.begin();
+	      }
+              break;
+	    }
+            case image_view2::ImageMarker2::POLYGON3D: {
+	      static std::map<std::string, int> tf_fail;
+	      std::string frame_id = marker->points3D.header.frame_id;
+	      tf::StampedTransform transform;
+	      ros::Time acquisition_time = msg->header.stamp;
+	      //ros::Time acquisition_time = msg->points3D.header.stamp;
+	      ros::Duration timeout(1.0 / 2); // wait 0.5 sec
+	      try {
+		ros::Time tm;
+		tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+		ros::Duration diff = ros::Time::now() - tm;
+		if ( diff > ros::Duration(1.0) ) { break; }
+		tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+					      acquisition_time, timeout);
+		tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
+					     acquisition_time, transform);
+		tf_fail[frame_id]=0;
+	      }
+	      catch (tf::TransformException& ex) {
+		tf_fail[frame_id]++;
+		if ( tf_fail[frame_id] < 5 ) {
+		  ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+		} else {
+		  ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+		}
+		break;
+	      }
+	      std::vector<geometry_msgs::Point> points2D;
+	      BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
+		tf::Point pt = transform.getOrigin();
+		geometry_msgs::PointStamped pt_cam, pt_;
+		pt_cam.header.frame_id = cam_model_.tfFrame();
+		pt_cam.header.stamp = acquisition_time;
+		pt_cam.point.x = pt.x();
+		pt_cam.point.y = pt.y();
+		pt_cam.point.z = pt.z();
+		tf_listener_.transformPoint(frame_id, pt_cam, pt_);
+
+		cv::Point2d uv;
+		tf::Stamped<tf::Point> pin, pout;
+		pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
+		tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+		uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+		geometry_msgs::Point point2D;
+		point2D.x = uv.x;
+		point2D.y = uv.y;
+		points2D.push_back(point2D);
+	      }
+              cv::Point2d p0, p1;
+	      std::vector<geometry_msgs::Point>::const_iterator it = points2D.begin();
+	      std::vector<geometry_msgs::Point>::const_iterator end = points2D.end();
+	      p0 = cv::Point2d(it->x, it->y); it++;
+	      for ( ; it!= end; it++ ) {
+		p1 = cv::Point2d(it->x, it->y);
+		cv::line(draw_, p0, p1, *col_it, LINE_WIDTH);
+		p0 = p1;
+		if(++col_it == colors.end()) col_it = colors.begin();
+	      }
+	      it = points2D.begin();
+	      p1 = cv::Point2d(it->x, it->y);
+	      cv::line(draw_, p0, p1, *col_it, LINE_WIDTH);
+              break;
+	    }
+            case image_view2::ImageMarker2::POINTS3D: {
+	      static std::map<std::string, int> tf_fail;
+	      std::string frame_id = marker->points3D.header.frame_id;
+	      tf::StampedTransform transform;
+	      ros::Time acquisition_time = msg->header.stamp;
+	      //ros::Time acquisition_time = msg->points3D.header.stamp;
+	      ros::Duration timeout(1.0 / 2); // wait 0.5 sec
+	      try {
+		ros::Time tm;
+		tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+		ros::Duration diff = ros::Time::now() - tm;
+		if ( diff > ros::Duration(1.0) ) { break; }
+		tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+					      acquisition_time, timeout);
+		tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
+					     acquisition_time, transform);
+		tf_fail[frame_id]=0;
+	      }
+	      catch (tf::TransformException& ex) {
+		tf_fail[frame_id]++;
+		if ( tf_fail[frame_id] < 5 ) {
+		  ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+		} else {
+		  ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+		}
+		break;
+	      }
+	      BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
+		tf::Point pt = transform.getOrigin();
+		geometry_msgs::PointStamped pt_cam, pt_;
+		pt_cam.header.frame_id = cam_model_.tfFrame();
+		pt_cam.header.stamp = acquisition_time;
+		pt_cam.point.x = pt.x();
+		pt_cam.point.y = pt.y();
+		pt_cam.point.z = pt.z();
+		tf_listener_.transformPoint(frame_id, pt_cam, pt_);
+
+		cv::Point2d uv;
+		tf::Stamped<tf::Point> pin, pout;
+		pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
+		tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+		uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+		cv::circle(draw_, uv, (marker->scale == 0 ? 3 : marker->scale) , *col_it, -1);
+              }
+              break;
+            }
+            case image_view2::ImageMarker2::TEXT3D: {
+	      static std::map<std::string, int> tf_fail;
+	      std::string frame_id = marker->position3D.header.frame_id;
+	      tf::StampedTransform transform;
+	      ros::Time acquisition_time = msg->header.stamp;
+	      //ros::Time acquisition_time = msg->position3D.header.stamp;
+	      ros::Duration timeout(1.0 / 2); // wait 0.5 sec
+	      try {
+		ros::Time tm;
+		tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+		ros::Duration diff = ros::Time::now() - tm;
+		if ( diff > ros::Duration(1.0) ) { break; }
+		tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+					      acquisition_time, timeout);
+		tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
+					     acquisition_time, transform);
+		tf_fail[frame_id]=0;
+	      }
+	      catch (tf::TransformException& ex) {
+		tf_fail[frame_id]++;
+		if ( tf_fail[frame_id] < 5 ) {
+		  ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+		} else {
+		  ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+		}
+		break;
+	      }
+	      tf::Point pt = transform.getOrigin();
+	      geometry_msgs::PointStamped pt_cam, pt_;
+	      pt_cam.header.frame_id = cam_model_.tfFrame();
+	      pt_cam.header.stamp = acquisition_time;
+	      pt_cam.point.x = pt.x();
+	      pt_cam.point.y = pt.y();
+	      pt_cam.point.z = pt.z();
+	      tf_listener_.transformPoint(frame_id, pt_cam, pt_);
+
+	      cv::Point2d uv;
+	      tf::Stamped<tf::Point> pin, pout;
+	      pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + marker->position3D.point.x, pt_.point.y + marker->position3D.point.y, pt_.point.z + marker->position3D.point.z), acquisition_time, frame_id);
+	      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+	      uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+	      cv::Size text_size;
+	      int baseline;
+	      float scale = marker->scale;
+	      if ( scale == 0 ) scale = 1.0;
+	      text_size = cv::getTextSize(marker->text.c_str(), font_,
+					  scale, scale, &baseline);
+	      cv::Point origin = cv::Point(uv.x - text_size.width/2,
+					   uv.y - baseline-3);
+	      cv::putText(draw_, marker->text.c_str(), origin, font_, scale, DEFAULT_COLOR);
+              break;
+	    }
 	    default: {
 	      ROS_WARN("Undefined Marker type(%d)", marker->type);
 	      break;

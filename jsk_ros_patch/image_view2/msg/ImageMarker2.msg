@@ -6,6 +6,12 @@ byte POINTS=4
 byte FRAMES=5
 byte TEXT=6
 
+byte LINE_STRIP3D=7
+byte LINE_LIST3D=8
+byte POLYGON3D=9
+byte POINTS3D=10
+byte TEXT3D=11
+
 byte ADD=0
 byte REMOVE=1
 
@@ -15,6 +21,7 @@ int32 id          	# unique id within the namespace
 int32 type        	# CIRCLE/LINE_STRIP/etc.
 int32 action      	# ADD/REMOVE
 geometry_msgs/Point position # used for CIRCLE/TEXT, 2D in pixel-coords
+geometry_msgs/PointStamped position3D # used for 3DTEXT
 float32 scale	 	# the diameter for a circle, etc.
 std_msgs/ColorRGBA outline_color
 byte filled		# whether to fill in the shape with color
@@ -23,6 +30,7 @@ duration lifetime       # How long the object should last before being automatic
 
 
 geometry_msgs/Point[] points # used for LINE_STRIP/LINE_LIST/POLYGON/POINTS., 2D in pixel coords
+PointArrayStamped points3D # used for 3DLINE_STRIP/3DLINE_LIST/3DPOLYGON/3DPOINTS
 std_msgs/ColorRGBA[] outline_colors # a color for each line, point, etc.
 
 string[] frames # used for FRAMES, tf names
