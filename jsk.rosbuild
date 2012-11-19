@@ -36,7 +36,7 @@ done
 # set environment variables
 # set distribution
 case $1 in
-    cturtle|diamondback|electric|fuerte) export DISTRIBUTION=$1; shift;;
+    cturtle|diamondback|electric|fuerte|groovy) export DISTRIBUTION=$1; shift;;
     *)      export DISTRIBUTION=electric;;
 esac
 
