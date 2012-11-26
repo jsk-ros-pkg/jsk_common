@@ -277,10 +277,19 @@ public:
   bool get_camera_info_method(std::string view_name, sensor_msgs::CameraInfo &info) {
     std::string cam_name = serial_id_+view_name;
     std::string ini_name = cam_name+".ini";
-    rospack::ROSPack rp;
     try {
+#ifdef ROSPACK_EXPORT
+      rospack::ROSPack rp;
       rospack::Package *p = rp.get_pkg("opt_camera");
       if (p!=NULL) ini_name = p->path + "/cfg/" + ini_name;
+#else
+      rospack::Rospack rp;
+      std::vector<std::string> search_path;
+      rp.getSearchPathFromEnv(search_path);
+      rp.crawl(search_path, 1);
+      std::string path;
+      if (rp.find("opt_camera",path)==true) ini_name = path + "/cfg" + ini_name;
+#endif
     } catch (std::runtime_error &e) {
     }
     if (!camera_calibration_parsers::readCalibration(ini_name, cam_name, info)) {
@@ -294,6 +303,7 @@ public:
     return true;
   }
 
+#ifdef ROSPACK_EXPORT
 #define set_camera_info_method(set_camera_info_method, view_name)       \
   bool set_camera_info_method(sensor_msgs::SetCameraInfo::Request& req, \
                               sensor_msgs::SetCameraInfo::Response& rsp) { \
@@ -315,7 +325,34 @@ public:
                                                                         \
     rsp.success = true;                                                 \
     return true;                                                        \
-  }                                                                     \
+  }
+#else
+#define set_camera_info_method(set_camera_info_method, view_name)       \
+  bool set_camera_info_method(sensor_msgs::SetCameraInfo::Request& req, \
+                              sensor_msgs::SetCameraInfo::Response& rsp) { \
+    ROS_INFO("New camera info received");                               \
+    sensor_msgs::CameraInfo &info = req.camera_info;                    \
+                                                                        \
+    std::string cam_name = serial_id_+view_name;            \
+    std::string ini_name = cam_name+".ini";                             \
+    rospack::Rospack rp;                                                \
+    try {                                                               \
+      std::vector<std::string> search_path;                             \
+      rp.getSearchPathFromEnv(search_path);                             \
+      rp.crawl(search_path, 1);                                         \
+      std::string path;                                                 \
+      if(rp.find("opt_camera", path)==true) ini_name = path + "/cfg/" + ini_name; \
+    } catch (std::runtime_error &e) {                                   \
+    }                                                                   \
+    if (!camera_calibration_parsers::writeCalibration(ini_name, cam_name.c_str(), info)) { \
+      rsp.status_message = "Error writing camera_info to " + cam_name + ".ini"; \
+      rsp.success = false;                                              \
+    }                                                                   \
+                                                                        \
+    rsp.success = true;                                                 \
+    return true;                                                        \
+  }
+#endif
 
   set_camera_info_method(set_camera_info,"")
   set_camera_info_method(set_camera_info_omni,"-omni")
