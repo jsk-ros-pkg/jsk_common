@@ -7,12 +7,13 @@ all: installed
 
 SVN_DIR = build/image_view
 SVN_URL = https://code.ros.org/svn/ros-pkg/stacks/image_pipeline/tags/electric/image_view/
-SVN_PATCH = image_saver-filename_format_param.patch image_saver-servicecall.patch image_saver-encoding.patch
+SVN_PATCH = image_saver-filename_format_param.patch image_saver-servicecall.patch image_saver-encoding.patch image_saver-update-param.patch
 include $(shell rospack find mk)/svn_checkout.mk
 
 installed: $(SVN_DIR) patched
 	mkdir -p `dirname $(SVN_DIR)`
 	cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make
+	cp $(SVN_DIR)/bin/image_saver `pwd`/bin
 	touch installed
 
 clean:
