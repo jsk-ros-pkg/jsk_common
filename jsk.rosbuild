@@ -37,7 +37,7 @@ done
 # set distribution
 case $1 in
     cturtle|diamondback|electric|fuerte|groovy) export DISTRIBUTION=$1; shift;;
-    *)      export DISTRIBUTION=electric;;
+    *)      export DISTRIBUTION=fuerte;;
 esac
 
 # setup workspaceand buildspace
@@ -195,6 +195,9 @@ EOF
 
 function install-jsk-ros-pkg {
     install-pkg http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
+    if [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" = "" ]; then
+        xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi
+    fi
 }
 function compile-jsk-ros-pkg {
     compile-pkg pr2eus_openrave elevator_move_base_pr2
