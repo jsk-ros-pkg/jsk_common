@@ -1,0 +1,12 @@
+<package>
+  <description brief="assimp_devel">
+    Assimp Library (development version)
+  </description>
+  <license>LGPL</license>
+  <author> JSK </author>
+  <export>
+    <cpp lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lassimp3" cflags="-I${prefix}/include"/>
+  </export>
+  <versioncontrol type="svn" url="https://assimp.svn.sourceforge.net/svnroot/assimp/trunk"/>
+
+</package>
