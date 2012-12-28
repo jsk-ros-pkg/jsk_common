@@ -196,7 +196,7 @@ EOF
 function install-jsk-ros-pkg {
     install-pkg http://jsk-ros-pkg.svn.sourceforge.net/viewvc/jsk-ros-pkg/trunk/jsk.rosinstall
     rosdep install euslisp
-    if [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" = "" ]; then
+    if [ "$DISPLAY" != "" -a "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" = "" ]; then
         xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi
     fi
 }
