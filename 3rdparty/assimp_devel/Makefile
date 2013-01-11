@@ -3,7 +3,7 @@ all: assimp_devel
 INSTALL_DIR=`rospack find assimp_devel`
 SVN_DIR = assimp_svn
 SVN_URL = https://assimp.svn.sourceforge.net/svnroot/assimp/trunk
-SVN_REVISION = -r1317
+SVN_REVISION = -r1347
 SVN_PATCH = assimp_r1317.patch
 include $(shell rospack find mk)/svn_checkout.mk
 
