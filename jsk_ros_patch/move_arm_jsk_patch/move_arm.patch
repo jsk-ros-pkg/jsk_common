@@ -1,6 +1,6 @@
 diff -r ebdb3ee14a58 move_arm/src/planning_components_visualizer.cpp
 --- a/move_arm/src/planning_components_visualizer.cpp	Wed Jun 13 10:25:26 2012 -0700
-+++ b/move_arm/src/planning_components_visualizer.cpp	Sat Jan 19 23:59:05 2013 +0900
++++ b/move_arm/src/planning_components_visualizer.cpp	Sun Jan 20 00:16:21 2013 +0900
 @@ -56,6 +56,9 @@
  #include <interactive_markers/menu_handler.h>
  #include <sensor_msgs/JointState.h>
@@ -34,7 +34,7 @@ diff -r ebdb3ee14a58 move_arm/src/planning_components_visualizer.cpp
  
        registerMenuEntry(menu_handler_map_["End Effector"], menu_entry_maps_["End Effector"], "Plan");
        registerMenuEntry(menu_handler_map_["End Effector"], menu_entry_maps_["End Effector"], "Filter Trajectory");
-+      registerMenuEntry(menu_handler_map_["End Effector"], menu_entry_maps_["End Effector"], "Exec Filter Trajectory");
++      registerMenuEntry(menu_handler_map_["End Effector"], menu_entry_maps_["End Effector"], "Exec Trajectory");
        registerMenuEntry(menu_handler_map_["End Effector"], menu_entry_maps_["End Effector"], "Randomly Perturb");
        registerMenuEntry(menu_handler_map_["End Effector"], menu_entry_maps_["End Effector"], "Go To Last Good State");
        registerMenuEntry(menu_handler_map_["End Effector"], menu_entry_maps_["End Effector"], "Deselect");
@@ -132,18 +132,22 @@ diff -r ebdb3ee14a58 move_arm/src/planning_components_visualizer.cpp
                  createSelectableJointMarkers(gc);
                  menu_handler_map_["End Effector"].reApply(*interactive_marker_server_);
                }
-@@ -1858,6 +1908,10 @@
+@@ -1856,8 +1906,14 @@
+             }
+             else if(menu_entry_maps_["End Effector"][handle] == "Filter Trajectory")
              {
++              planToEndEffectorState(gc);
                filterPlannerTrajectory(gc);
              }
-+            else if(menu_entry_maps_["End Effector"][handle] == "Exec Filter Trajectory")
++            else if(menu_entry_maps_["End Effector"][handle] == "Exec Trajectory")
 +            {
++              planToEndEffectorState(gc);
 +              filterPlannerTrajectory(gc, true);
 +            }
              else if(menu_entry_maps_["End Effector"][handle] == "Randomly Perturb")
              {
                randomlyPerturb(gc);
-@@ -2368,11 +2422,133 @@
+@@ -2368,11 +2424,133 @@
        }
      }
  
@@ -277,7 +281,7 @@ diff -r ebdb3ee14a58 move_arm/src/planning_components_visualizer.cpp
  
      boost::recursive_mutex lock_;
      boost::shared_ptr<InteractiveMarkerServer> interactive_marker_server_;
-@@ -2415,9 +2591,11 @@
+@@ -2415,9 +2593,11 @@
      MotionPlanRequest last_motion_plan_request_;
  
      ros::NodeHandle nh_;
@@ -289,7 +293,7 @@ diff -r ebdb3ee14a58 move_arm/src/planning_components_visualizer.cpp
      ros::ServiceClient set_planning_scene_diff_client_;
      ros::ServiceClient planner_service_client_;
      ros::ServiceClient trajectory_filter_service_client_;
-@@ -2432,6 +2610,8 @@
+@@ -2432,6 +2612,8 @@
      map<string, bool> joint_clicked_map_;
      map<string, tf::Transform> joint_prev_transform_map_;
    map<string, double> prev_joint_control_value_map_;
