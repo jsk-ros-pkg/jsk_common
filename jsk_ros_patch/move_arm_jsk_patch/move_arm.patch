@@ -1,6 +1,6 @@
 diff -r ebdb3ee14a58 move_arm/src/planning_components_visualizer.cpp
 --- a/move_arm/src/planning_components_visualizer.cpp	Wed Jun 13 10:25:26 2012 -0700
-+++ b/move_arm/src/planning_components_visualizer.cpp	Sun Jan 20 00:16:21 2013 +0900
++++ b/move_arm/src/planning_components_visualizer.cpp	Sun Jan 20 21:30:41 2013 +0900
 @@ -56,6 +56,9 @@
  #include <interactive_markers/menu_handler.h>
  #include <sensor_msgs/JointState.h>
@@ -57,27 +57,44 @@ diff -r ebdb3ee14a58 move_arm/src/planning_components_visualizer.cpp
      joint_state_lock_.lock();
      last_joint_state_msg_.header.frame_id =  cm_->getWorldFrameId();
      last_joint_state_msg_.header.stamp = ros::Time::now();
-@@ -1133,6 +1142,19 @@
+@@ -1133,8 +1142,21 @@
        transform_broadcaster_.sendTransform(trans);
      }
    }
 +  void updateToRealJointStates(GroupCollection& gc) {
 +    map<string, double> joint_values;
-+    for (int i = 0; i < current_real_joint_states_.name.size(); i++) {
++    for (unsigned int i = 0; i < current_real_joint_states_.name.size(); i++) {
 +      joint_values[current_real_joint_states_.name[i]] = current_real_joint_states_.position[i];
 +    }
 +    lock_.lock();
 +    gc.getState(ik_control_type_)->setKinematicState(joint_values);
-+
+ 
+-    bool planToEndEffectorState(PlanningComponentsVisualizer::GroupCollection& gc)
 +    map<string, double> stateMap;
 +    gc.getState(ik_control_type_)->getKinematicStateValues(stateMap);
 +    robot_state_->setKinematicState(stateMap);
 +    lock_.unlock();
 +  }
- 
-     bool planToEndEffectorState(PlanningComponentsVisualizer::GroupCollection& gc)
++
++    bool planToEndEffectorState(PlanningComponentsVisualizer::GroupCollection& gc, bool is_display = true)
      {
-@@ -1250,7 +1272,7 @@
+       MotionPlanRequest motion_plan_request;
+       motion_plan_request.group_name = gc.name_;
+@@ -1192,7 +1214,12 @@
+           return false;
+         }
+         last_motion_plan_request_ = motion_plan_request;
+-        playTrajectory(gc, "planner", plan_res.trajectory.joint_trajectory);
++        if (is_display) {
++          playTrajectory(gc, "planner", plan_res.trajectory.joint_trajectory);
++        } else {
++          disp.reset();
++          disp.joint_trajectory_ = plan_res.trajectory.joint_trajectory;
++        }
+         return true;
+       }
+       else
+@@ -1250,7 +1277,7 @@
        }
      }
  
@@ -86,7 +103,7 @@ diff -r ebdb3ee14a58 move_arm/src/planning_components_visualizer.cpp
      {
        FilterJointTrajectoryWithConstraints::Request filter_req;
        FilterJointTrajectoryWithConstraints::Response filter_res;
-@@ -1279,7 +1301,29 @@
+@@ -1279,7 +1306,29 @@
          gc.state_trajectory_display_map_["filter"].reset();
          return false;
        }
@@ -117,11 +134,85 @@ diff -r ebdb3ee14a58 move_arm/src/planning_components_visualizer.cpp
        return true;
      }
  
-@@ -1819,8 +1863,14 @@
+@@ -1425,6 +1474,18 @@
+         bad_color.g = 0.0;
+         bad_color.b = 0.0;
+ 
++        std_msgs::ColorRGBA start_color;
++        start_color.a = 0.4;
++        start_color.r = 0.4;
++        start_color.g = 0.8;
++        start_color.b = 0.8;
++
++        std_msgs::ColorRGBA end_color;
++        end_color.a = 0.4;
++        end_color.r = 0.8;
++        end_color.g = 0.8;
++        end_color.b = 0.4;
++
+         GroupCollection& gc = group_map_[current_group_name_];
+         const KinematicModel* kinematic_model = cm_->getKinematicModel();
+ 
+@@ -1442,25 +1503,40 @@
+         {
+           if(gc.getState(otherState) != NULL)
+           {
+-            cm_->getGroupAndUpdatedJointMarkersGivenState(*gc.getState(otherState), arr, current_group_name_, group_color,
+-                                                        updated_color, ros::Duration(0.1));
++            if (otherState == StartPosition) {
++              cm_->getGroupAndUpdatedJointMarkersGivenState(*gc.getState(otherState), arr, current_group_name_, start_color,
++                                                            updated_color, ros::Duration(0.1));
++            } else {
++              cm_->getGroupAndUpdatedJointMarkersGivenState(*gc.getState(otherState), arr, current_group_name_, end_color,
++                                                            updated_color, ros::Duration(0.1));
++            }
+           }
+           else
+           {
+             ROS_ERROR("Other state invalid!");
+           }
+         }
+-
+         if(!gc.good_ik_solution_ && gc.getState(ik_control_type_) != NULL)
+         {
+           vector<string> lnames =
+               kinematic_model->getChildLinkModelNames(kinematic_model->getLinkModel(gc.ik_link_name_));
+ 
++          cm_->getGroupAndUpdatedJointMarkersGivenState(*gc.getState(ik_control_type_), arr, current_group_name_, bad_color,
++                                                        updated_color, ros::Duration(0.1));
++
+           cm_->getRobotMarkersGivenState(*gc.getState(ik_control_type_), arr, bad_color,
+                                          current_group_name_, ros::Duration(0.1), &lnames);
+           cm_->getAttachedCollisionObjectMarkers(*gc.getState(ik_control_type_), arr, current_group_name_, bad_color,
+                                                  ros::Duration(.2));
+ 
++        } else if (gc.getState(ik_control_type_) != NULL) {
++          if (ik_control_type_ == StartPosition) {
++            cm_->getGroupAndUpdatedJointMarkersGivenState(*gc.getState(ik_control_type_), arr, current_group_name_, start_color,
++                                                          updated_color, ros::Duration(0.1));
++          } else {
++            cm_->getGroupAndUpdatedJointMarkersGivenState(*gc.getState(ik_control_type_), arr, current_group_name_, end_color,
++                                                          updated_color, ros::Duration(0.1));
++          }
+         }
+         for(map<string, StateTrajectoryDisplay>::iterator it = gc.state_trajectory_display_map_.begin(); it
+             != gc.state_trajectory_display_map_.end(); it++)
+@@ -1489,6 +1565,10 @@
+           }
+         }
+       }
++      // reindex id (dirty hack)
++      for (unsigned int i = 0; i < arr.markers.size(); i++) {
++        arr.markers[i].id = i;
++      }
+       vis_marker_array_publisher_.publish(arr);
+       lock_.unlock();
+     }
+@@ -1819,8 +1899,14 @@
                {
                  menu_handler_map_["End Effector"].setCheckState(end_position_handle_, MenuHandler::UNCHECKED);
                  ik_control_type_ = StartPosition;
-+
++                // update for real robot
 +                updateToRealJointStates (gc);
 +                tf::Transform cur = robot_state_->getLinkState(gc.ik_link_name_)->getGlobalLinkTransform();
 +                setNewEndEffectorPosition(gc, cur, collision_aware_);
@@ -132,22 +223,65 @@ diff -r ebdb3ee14a58 move_arm/src/planning_components_visualizer.cpp
                  createSelectableJointMarkers(gc);
                  menu_handler_map_["End Effector"].reApply(*interactive_marker_server_);
                }
-@@ -1856,8 +1906,14 @@
+@@ -1856,8 +1942,14 @@
              }
              else if(menu_entry_maps_["End Effector"][handle] == "Filter Trajectory")
              {
-+              planToEndEffectorState(gc);
++              planToEndEffectorState(gc,false);
                filterPlannerTrajectory(gc);
              }
 +            else if(menu_entry_maps_["End Effector"][handle] == "Exec Trajectory")
 +            {
-+              planToEndEffectorState(gc);
++              planToEndEffectorState(gc,false);
 +              filterPlannerTrajectory(gc, true);
 +            }
              else if(menu_entry_maps_["End Effector"][handle] == "Randomly Perturb")
              {
                randomlyPerturb(gc);
-@@ -2368,11 +2424,133 @@
+@@ -1924,6 +2016,42 @@
+             tf::Transform cur = toBulletTransform(feedback->pose);
+             setNewEndEffectorPosition(gc, cur, collision_aware_);
+             last_ee_poses_[current_group_name_] = feedback->pose;
++            if (ik_control_type_ == StartPosition) {
++            // create trajectory
++              map<string, double> joint_values;
++              for (unsigned int i = 0; i < current_real_joint_states_.name.size(); i++) {
++                joint_values[current_real_joint_states_.name[i]] = current_real_joint_states_.position[i];
++              }
++              map<string, double> stateMap;
++              lock_.lock();
++              gc.getState(ik_control_type_)->getKinematicStateValues(stateMap);
++              lock_.unlock();
++
++              trajectory_msgs::JointTrajectory tmp_traj;
++              for (unsigned int i = 0; i < current_real_joint_states_.name.size(); i++) {
++                tmp_traj.joint_names.push_back (current_real_joint_states_.name[i]);
++              }
++#if 0
++              { // set real position
++                trajectory_msgs::JointTrajectoryPoint p;
++                p.time_from_start = ros::Duration (0.05);
++                for (unsigned int i = 0; i < current_real_joint_states_.name.size(); i++) {
++                  p.positions.push_back (current_real_joint_states_.position[i]);
++                }
++                tmp_traj.points.push_back (p);
++              }
++#endif
++              { // set desire position
++                trajectory_msgs::JointTrajectoryPoint p;
++                p.time_from_start = ros::Duration (0.2); //
++                for (unsigned int i = 0; i < tmp_traj.joint_names.size(); i++) {
++                  p.positions.push_back (stateMap[tmp_traj.joint_names[i]]);
++                }
++                tmp_traj.points.push_back (p);
++              }
++              //
++              sendTrajectory (tmp_traj);
++            }
+           }
+           else if(is_joint_control_active_ && feedback->marker_name.rfind("_joint_control") != string::npos)
+           {
+@@ -2368,11 +2496,133 @@
        }
      }
  
@@ -281,7 +415,7 @@ diff -r ebdb3ee14a58 move_arm/src/planning_components_visualizer.cpp
  
      boost::recursive_mutex lock_;
      boost::shared_ptr<InteractiveMarkerServer> interactive_marker_server_;
-@@ -2415,9 +2593,11 @@
+@@ -2415,9 +2665,11 @@
      MotionPlanRequest last_motion_plan_request_;
  
      ros::NodeHandle nh_;
@@ -293,7 +427,7 @@ diff -r ebdb3ee14a58 move_arm/src/planning_components_visualizer.cpp
      ros::ServiceClient set_planning_scene_diff_client_;
      ros::ServiceClient planner_service_client_;
      ros::ServiceClient trajectory_filter_service_client_;
-@@ -2432,6 +2612,8 @@
+@@ -2432,6 +2684,8 @@
      map<string, bool> joint_clicked_map_;
      map<string, tf::Transform> joint_prev_transform_map_;
    map<string, double> prev_joint_control_value_map_;
