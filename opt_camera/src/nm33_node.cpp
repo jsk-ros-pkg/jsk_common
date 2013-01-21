@@ -6,7 +6,7 @@
 #include <camera_calibration_parsers/parse.h>
 
 #include <opencv/cv.h>
-#include <cv_bridge/CvBridge.h>
+#include <cv_bridge/cv_bridge.h>
 
 #include <dynamic_reconfigure/server.h>
 #include <opt_camera/OptNM33CameraConfig.h>
@@ -170,7 +170,7 @@ public:
         cvReleaseImage(&tmp_img_);
       }
     }
-    catch (sensor_msgs::CvBridgeException& e)
+    catch (cv_bridge::Exception& e)
       {
         ROS_ERROR("Could not convert from opencv to message.");
       }
