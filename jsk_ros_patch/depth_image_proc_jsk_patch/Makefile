@@ -3,7 +3,7 @@ include $(shell rospack find mk)/cmake.mk
 all: installed
 
 HG_DIR = build/openni_kinect
-HG_URL = https://kforge.ros.org/openni/openni_ros
+HG_URL = http://kforge.ros.org/openni/openni_ros
 HG_REVISION = openni_kinect-`rosversion openni_kinect`
 HG_PATCH = openni_zoom.patch
 include $(shell rospack find mk)/hg_checkout.mk
