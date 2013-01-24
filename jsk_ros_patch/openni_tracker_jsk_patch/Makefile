@@ -4,7 +4,7 @@
 all: installed
 
 HG_DIR = build_openni_tracker
-HG_URL = https://kforge.ros.org/openni/openni_tracker
+HG_URL = http://kforge.ros.org/openni/openni_tracker
 #HG_PATCH = openni_tracker_use_calibfile.patch
 HG_PATCH = openni_tracker_auto_calibration.patch
 HG_REVISION = openni_tracker-0.1.0
