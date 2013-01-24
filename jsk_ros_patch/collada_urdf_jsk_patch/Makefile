@@ -4,7 +4,7 @@
 all: installed
 
 HG_DIR = build/robot_model
-HG_URL = https://kforge.ros.org/robotmodel/robot_model
+HG_URL = http://kforge.ros.org/robotmodel/robot_model
 HG_REVISION = robot_model-`rosversion robot_model`
 HG_PATCH = cyliner_box_sphere.patch set_url_name.patch
 include $(shell rospack find mk)/hg_checkout.mk
