@@ -4,7 +4,7 @@
 all: installed
 
 HG_DIR = build_arm_navigation
-HG_URL = https://kforge.ros.org/armnavigation/armnavigation
+HG_URL = http://kforge.ros.org/armnavigation/armnavigation
 HG_PATCH = move_arm.patch
 HG_REVISION = fuerte
 include $(shell rospack find mk)/hg_checkout.mk
