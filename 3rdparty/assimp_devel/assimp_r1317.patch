@@ -1,12 +1,15 @@
 Index: code/ColladaExporter.cpp
 ===================================================================
---- code/ColladaExporter.cpp	(リビジョン 1317)
+--- code/ColladaExporter.cpp	(リビジョン 1347)
 +++ code/ColladaExporter.cpp	(作業コピー)
-@@ -125,7 +125,8 @@
+@@ -124,8 +124,10 @@
+ 	mOutput << startstr << "</contributor>" << endstr;
    mOutput << startstr << "<created>2000-01-01T23:59:59</created>" << endstr;
    mOutput << startstr << "<modified>2000-01-01T23:59:59</modified>" << endstr;
- 	mOutput << startstr << "<unit name=\"centimeter\" meter=\"0.01\" />" << endstr;
+-	mOutput << startstr << "<unit name=\"centimeter\" meter=\"0.01\" />" << endstr;
 -	mOutput << startstr << "<up_axis>Y_UP</up_axis>" << endstr;
++	//mOutput << startstr << "<unit name=\"centimeter\" meter=\"0.01\" />" << endstr;
++	mOutput << startstr << "<unit name=\"meter\" meter=\"1.0\" />" << endstr;
 +	//mOutput << startstr << "<up_axis>Y_UP</up_axis>" << endstr;
 +	mOutput << startstr << "<up_axis>Z_UP</up_axis>" << endstr;
  	PopTag();
@@ -14,7 +17,7 @@ Index: code/ColladaExporter.cpp
  }
 Index: code/ColladaLoader.cpp
 ===================================================================
---- code/ColladaLoader.cpp	(リビジョン 1317)
+--- code/ColladaLoader.cpp	(リビジョン 1347)
 +++ code/ColladaLoader.cpp	(作業コピー)
 @@ -146,7 +146,7 @@
  
