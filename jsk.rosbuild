@@ -158,7 +158,7 @@ EOF
     for PACKAGE in $PACKAGES
     do
 	if [ -f `rospack find $PACKAGE`/index.rst ]; then
-	    (cd $ROS_INSTALLDIR; rosdoc_lite $PACKAGE)
+	    (cd $ROS_INSTALLDIR; rosdoc_lite `rospack find $PACKAGE`)
 	    (wkhtmltopdf $ROS_INSTALLDIR/doc/$PACKAGE/html/index.html $ROS_INSTALLDIR/doc/$PACKAGE.pdf; true)
 	    convert $ROS_INSTALLDIR/doc/$PACKAGE.pdf $ROS_INSTALLDIR/doc/$PACKAGE.png
 	    if [ -f $ROS_INSTALLDIR/doc/$PACKAGE.png ]; then
