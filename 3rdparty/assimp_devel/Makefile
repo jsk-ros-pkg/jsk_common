@@ -23,6 +23,7 @@ assimp_devel: $(SVN_DIR)
 	mv $(INSTALL_DIR)/include/assimp $(INSTALL_DIR)/include/assimp3
 	mv $(INSTALL_DIR)/bin/assimp $(INSTALL_DIR)/bin/assimp_cmd
 	ln -sf $(INSTALL_DIR)/lib/libassimp.so $(INSTALL_DIR)/lib/libassimp3.so
+	sudo ln -sf $(INSTALL_DIR)/lib/libassimp.so.3 /usr/local/lib/libassimp.so.3
 
 clean:
 	ls .
