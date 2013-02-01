@@ -43,7 +43,6 @@ esac
 # check ros distribution and ubuntu distribution
 # http://ros.org/reps/rep-0003.html
 export LSB_RELEASE=`lsb_release -cs`
-export LSB_RELEASE=lucid
 if ( [ "$DISTRIBUTION" == "cturtle" ] && \
     [[ $LSB_RELEASE =~ (lucid|maverick) ]] ) || \
    ( [ "$DISTRIBUTION" == "diamondback" ] && \
