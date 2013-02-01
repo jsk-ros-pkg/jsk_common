@@ -90,7 +90,7 @@ function setup-ros {
     sudo apt-get upgrade -y --force-yes
     sudo apt-get -y --force-yes install python-rosdep python-rosinstall
     if [ -e /etc/ros/rosdep/sources.list.d/20-default.list ] ; then
-        rm /etc/ros/rosdep/sources.list.d/20-default.list;  # rosdep init fails when arleady initialized
+        sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list;  # rosdep init fails when arleady initialized
     fi
     sudo rosdep init
     rosdep update
