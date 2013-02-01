@@ -1,0 +1,31 @@
+<package>
+  <name>opt_camera</name>
+  <version>0.0.1</version>
+  <description>opt_camera</description>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/opt_camera</url>
+  <url type="bugtracker">http://sourceforge.net/tracker/?group_id=324828</url>
+  <url type="repository">https://jsk-ros-pkg.svn.sourceforge.net/svnroot/jsk-ros-pkg</url>
+
+
+  <author>Kei Okada</author>
+  <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>driver_base</build_depend>
+  <build_depend>image_proc</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>camera_calibration_parsers</build_depend>
+  <build_depend>compressed_image_transport</build_depend>
+
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>driver_base</run_depend>
+  <run_depend>image_proc</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>camera_calibration_parsers</run_depend>
+  <run_depend>compressed_image_transport</run_depend>
+</package>
