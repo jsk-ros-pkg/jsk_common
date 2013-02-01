@@ -40,6 +40,30 @@ case $1 in
     *)      export DISTRIBUTION=fuerte;;
 esac
 
+# check ros distribution and ubuntu distribution
+# http://ros.org/reps/rep-0003.html
+export LSB_RELEASE=`lsb_release -cs`
+export LSB_RELEASE=lucid
+if ( [ "$DISTRIBUTION" == "cturtle" ] && \
+    [[ $LSB_RELEASE =~ (lucid|maverick) ]] ) || \
+   ( [ "$DISTRIBUTION" == "diamondback" ] && \
+    [[ $LSB_RELEASE =~ (lucid|maverick|natty) ]] ) || \
+   ( [ "$DISTRIBUTION" == "diamondback" ] && \
+    [[ $LSB_RELEASE =~ (lucid|maverick|natty) ]] ) || \
+   ( [ "$DISTRIBUTION" == "electric" ] && \
+    [[ $LSB_RELEASE =~ (lucid|maverick|natty|oneiric) ]] ) || \
+   ( [ "$DISTRIBUTION" == "fuerte" ] && \
+    [[ $LSB_RELEASE =~ (lucid|oneiric|precise) ]] ) || \
+   ( [ "$DISTRIBUTION" == "groovy" ] && \
+    [[ $LSB_RELEASE =~ (oneiric|precise|quantal) ]] ) then
+    echo "Install $DISTRIBUTION to $LSB_RELEASE"
+else
+    echo "target distribution($DISTRIBUTION) does not support $LSB_RELEASE platform, exit install program"
+    exit
+fi
+
+
+
 # setup workspaceand buildspace
 if [ "$WORKSPACE" == "" ]; then # if not jenkins
     export WORKSPACE=$HOME
