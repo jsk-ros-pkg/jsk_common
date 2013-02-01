@@ -58,7 +58,7 @@ if ( [ "$DISTRIBUTION" == "cturtle" ] && \
     echo "Install $DISTRIBUTION to $LSB_RELEASE"
 else
     echo "target distribution($DISTRIBUTION) does not support $LSB_RELEASE platform, exit install program"
-    exit
+    exit -1
 fi
 
 
