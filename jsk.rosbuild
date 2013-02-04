@@ -77,6 +77,7 @@ else
 fi
 export ROS_HOME=$WORKSPACE/.ros
 export PATH=$PATH:/usr/local/bin ## for ros tools
+export LC_ALL=en_US.UTF-8
 unset SVN_REVISION ## this jenkins environment valiables conflicts with mk/svn_checkout.mk
 
 # define functions
