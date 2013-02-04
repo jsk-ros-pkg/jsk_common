@@ -388,7 +388,7 @@ public:
               break;
             }
             case image_view2::ImageMarker2::POINTS: {
-              BOOST_FOREACH(geometry_msgs::Point p, marker->points)  {
+              BOOST_FOREACH(geometry_msgs::Point p, marker->points) {
                 cv::Point2d uv = cv::Point2d(p.x, p.y);
 		if ( blurry_mode ) {
 		  int s0 = (marker->scale == 0 ? 3 : marker->scale);
@@ -408,14 +408,14 @@ public:
             }
             case image_view2::ImageMarker2::FRAMES: {
 	      static std::map<std::string, int> tf_fail;
-              BOOST_FOREACH(std::string frame_id, marker->frames)  {
+              BOOST_FOREACH(std::string frame_id, marker->frames) {
                 tf::StampedTransform transform;
                 ros::Time acquisition_time = msg->header.stamp;
                 ros::Duration timeout(1.0 / 2); // wait 0.5 sec
                 try {
 		   ros::Time tm;
 		   tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-		   ros::Duration diff =  ros::Time::now() - tm;
+		   ros::Duration diff = ros::Time::now() - tm;
 		   if ( diff > ros::Duration(1.0) ) { break; }
 
                   tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
@@ -786,7 +786,7 @@ public:
 					  scale, scale, &baseline);
 	      cv::Point origin = cv::Point(uv.x - text_size.width/2,
 					   uv.y - baseline-3);
-	      cv::putText(draw_, marker->text.c_str(), origin, font_, scale, DEFAULT_COLOR);
+	      cv::putText(draw_, marker->text.c_str(), origin, font_, scale, CV_RGB(0,255,0),3);
               break;
 	    }
 	    default: {
