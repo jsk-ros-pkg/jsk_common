@@ -93,7 +93,9 @@ function setup-ros {
     if [ -e /etc/ros/rosdep/sources.list.d/20-default.list ] ; then
         sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list;  # rosdep init fails when arleady initialized
     fi
-    sudo rosdep init
+    while [ ! -e /etc/ros/rosdep/sources.list.d/20-default.list ]; do
+        sudo rosdep init
+    done
     rosdep update
 }
 
