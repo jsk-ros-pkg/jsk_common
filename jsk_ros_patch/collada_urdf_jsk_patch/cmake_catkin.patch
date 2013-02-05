@@ -1,10 +1,10 @@
-diff -r ee52b9c56e9a collada_urdf/CMakeLists.txt
---- a/collada_urdf/CMakeLists.txt	Thu Jan 10 20:40:58 2013 +0200
-+++ b/collada_urdf/CMakeLists.txt	Mon Feb 04 22:29:54 2013 +0900
-@@ -47,12 +47,17 @@
-   link_directories(${COLLADA_DOM_LIBRARY_DIRS})
- endif()
+diff -r 57cb2365cf54 collada_urdf/CMakeLists.txt
+--- a/collada_urdf/CMakeLists.txt      Sat Dec 22 15:41:12 2012 +0200
++++ b/collada_urdf/CMakeLists.txt      Tue Feb 05 17:53:38 2013 +0900
+@@ -46,13 +46,18 @@
  
+
+
 +include(FindPkgConfig)
 +pkg_check_modules(GLIB REQUIRED glib-2.0)
 +include_directories(${GLIB_INCLUDE_DIRS})
@@ -13,6 +13,7 @@ diff -r ee52b9c56e9a collada_urdf/CMakeLists.txt
  include_directories(${catkin_INCLUDE_DIRS})
  link_directories(${catkin_LIBRARY_DIRS})
  
+
  add_library(${PROJECT_NAME} src/collada_urdf.cpp)
  target_link_libraries(${PROJECT_NAME} ${tinyxml_library} ${ASSIMP_LIBRARIES} ${catkin_LIBRARIES} ${COLLADA_DOM_LIBRARIES}  
 -  ${Boost_LIBRARIES})

@@ -7,7 +7,7 @@ HG_DIR = build/robot_model
 HG_URL = http://kforge.ros.org/robotmodel/robot_model
 HOGE=$(shell rosversion -d)
 ifeq ($(shell rosversion -d),groovy)
-HG_REVISION = robot_model-`rosversion collada_urdf`
+HG_REVISION = `rosversion collada_urdf`
 HG_PATCH =  cyliner_box_sphere.patch set_url_name.patch cmake_catkin.patch
 HG_BIN_DIR  = `pwd`/$(HG_DIR)/collada_urdf/build/devel/lib/collada_urdf
 else
