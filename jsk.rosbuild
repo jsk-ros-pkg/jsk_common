@@ -96,7 +96,7 @@ function setup-ros {
     while [ ! -e /etc/ros/rosdep/sources.list.d/20-default.list ]; do
         sudo rosdep init
     done
-    rosdep update
+    (rosdep update; true)
 }
 
 # see http://ros.org/reps/rep-0113.html for variants and http://www.ros.org/debbuild/ for build status
