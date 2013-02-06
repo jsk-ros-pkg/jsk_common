@@ -16,8 +16,7 @@
 #include <sensor_msgs/CameraInfo.h>
 #include <posedetection_msgs/ImageFeature0D.h>
 
-#include <opencv/highgui.h>
-#include <opencv/cv.h>
+#include <opencv2/highgui/highgui.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <map>
@@ -25,7 +24,7 @@
 #include <cstdio>
 #include <vector>
 
-#include <cv_bridge/CvBridge.h>
+#include <cv_bridge/cv_bridge.h>
 
 using namespace std;
 using namespace ros;
@@ -35,7 +34,7 @@ class Feature0DView
     ros::NodeHandle _node;
     Subscriber _sub;
     string _window_name;
-    sensor_msgs::CvBridge _bridge;
+    cv_bridge::CvImage _bridge;
 public:
     Feature0DView()
     { 
@@ -53,22 +52,21 @@ public:
 
     void image_cb(const posedetection_msgs::ImageFeature0DConstPtr& msg_ptr)
     {
-        IplImage *frame = NULL;
+        cv_bridge::CvImagePtr cv_ptr;
         try {
-            _bridge.fromImage(msg_ptr->image, "bgr8");
-            frame = _bridge.toIpl();
+            cv_ptr = cv_bridge::toCvCopy(msg_ptr->image, "bgr8");
             for(size_t i = 0; i < msg_ptr->features.positions.size()/2; ++i) {
                 float scale = i < msg_ptr->features.scales.size() ? msg_ptr->features.scales[i] : 10.0;
                 CvPoint center = cvPoint(msg_ptr->features.positions[2*i+0],msg_ptr->features.positions[2*i+1]);
-                cvCircle(frame,center,scale,CV_RGB(0,255,0));
+                cv::circle(cv_ptr->image,center,scale,CV_RGB(0,255,0));
                 if( i < msg_ptr->features.orientations.size() ) {
                     // draw line indicating orientation
-                    cvLine(frame,center,cvPoint(center.x+std::cos(msg_ptr->features.orientations[i])*scale,center.y+std::sin(msg_ptr->features.orientations[i])*scale),CV_RGB(255,0,0));
+                    cv::line(cv_ptr->image,center,cvPoint(center.x+std::cos(msg_ptr->features.orientations[i])*scale,center.y+std::sin(msg_ptr->features.orientations[i])*scale),CV_RGB(255,0,0));
                 }
             }
-            cvShowImage(_window_name.c_str(),frame);
+            cv::imshow(_window_name.c_str(),cv_ptr->image);
         }
-        catch (sensor_msgs::CvBridgeException error) {
+        catch (cv_bridge::Exception error) {
             ROS_WARN("bad frame");
             return;
         }
