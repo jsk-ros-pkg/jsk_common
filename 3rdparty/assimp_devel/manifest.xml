@@ -1,9 +1,9 @@
 <package>
   <description brief="assimp_devel">
-    Assimp Library (development version)
+    Compiling assimp library (development version)
   </description>
   <license>LGPL</license>
-  <author> JSK </author>
+  <author> Maintained by YoheiKakiuchi (youhei@jsk.t.u-tokoy.ac.jp) </author>
   <export>
     <cpp lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lassimp3" cflags="-I${prefix}/include"/>
   </export>
