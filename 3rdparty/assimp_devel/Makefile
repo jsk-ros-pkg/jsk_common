@@ -1,0 +1,33 @@
+all: assimp_devel
+
+INSTALL_DIR=`rospack find assimp_devel`
+SVN_DIR = assimp_svn
+SVN_URL = https://assimp.svn.sourceforge.net/svnroot/assimp/trunk
+SVN_REVISION = -r1347
+SVN_PATCH = assimp_r1317.patch
+include $(shell rospack find mk)/svn_checkout.mk
+
+.PHONY: assimp_devel
+
+build: SVN_UP assimp_devel
+
+BOOST_INCLUDE_DIRS=$(shell rosboost-cfg --include_dirs)
+BOOST_LIBRARY_DIRS=$(shell rosboost-cfg --lib_dirs)
+
+BUILDDIR=$(shell if [ $(DEBUG) ]; then echo builddebug; else echo build; fi)
+CMAKE_BUILD_TYPE=$(shell if [ $(DEBUG) ]; then echo Debug; else echo RelWithDebInfo; fi)
+
+assimp_devel: $(SVN_DIR)
+	cd $(SVN_DIR) && mkdir -p $(BUILDDIR) && cd $(BUILDDIR) && BOOST_INCLUDEDIR=$(BOOST_INCLUDE_DIRS) BOOST_LIBRARYDIR=$(BOOST_LIBRARY_DIRS) cmake -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DCMAKE_BUILD_TYPE=$(CMAKE_BUILD_TYPE) .. && make $(ROS_PARALLEL_JOBS) install
+	if [ -e $(INSTALL_DIR)/include/assimp3 ]; then rm -rf $(INSTALL_DIR)/include/assimp3; fi
+	mv $(INSTALL_DIR)/include/assimp $(INSTALL_DIR)/include/assimp3
+	mv $(INSTALL_DIR)/bin/assimp $(INSTALL_DIR)/bin/assimp_cmd
+	ln -sf $(INSTALL_DIR)/lib/libassimp.so $(INSTALL_DIR)/lib/libassimp3.so
+	sudo ln -sf $(INSTALL_DIR)/lib/libassimp.so.3 /usr/local/lib/libassimp.so.3
+
+clean:
+	ls .
+
+wipe: clean
+	cd $(INSTALL_DIR) && rm -rf $(SVN_DIR) include lib share patched
+
