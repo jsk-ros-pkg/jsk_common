@@ -21,15 +21,3 @@ diff -r 57cb2365cf54 collada_urdf/CMakeLists.txt
  set_target_properties(${PROJECT_NAME} PROPERTIES COMPILER_FLAGS "${ASSIMP_CXX_FLAGS} ${ASSIMP_CFLAGS_OTHER}")
  set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "${ASSIMP_LINK_FLAGS}") 
  
-diff -r 57cb2365cf54 collada_urdf/src/collada_urdf.cpp
---- a/collada_urdf/src/collada_urdf.cpp	Sat Dec 22 15:41:12 2012 +0200
-+++ b/collada_urdf/src/collada_urdf.cpp	Wed Feb 13 15:26:20 2013 +0900
-@@ -85,6 +90,8 @@
- 
- namespace collada_urdf {
- 
-+namespace ColladaDOM150 { }
-+
- using namespace ColladaDOM150;
- 
- /// ResourceIOStream is copied from rviz (BSD, Willow Garage)
