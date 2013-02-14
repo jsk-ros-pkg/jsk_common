@@ -233,7 +233,7 @@ function compile-jsk-ros-pkg {
     compile-pkg pr2eus_openrave elevator_move_base_pr2
 }
 function test-jsk-ros-pkg {
-    test-pkg euslisp roseus pr2eus euscollada pr2eus_openrave elevator_move_base_pr2 kinect_near_mode_calibration detect_cans_in_fridge_201202 jsk_pcl_ros
+    test-pkg euslisp roseus pr2eus euscollada pr2eus_openrave jsk_pcl_ros kinect_near_mode_calibration elevator_move_base_pr2 #detect_cans_in_fridge_201202
 }
 
 # show-* option
