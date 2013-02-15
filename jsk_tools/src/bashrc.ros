@@ -1,0 +1,23 @@
+function rossetpr2() {
+    rossetrobot pr1012
+    rossetip
+}
+
+function rossetrobot() { # 自分のよく使うロボットのhostnameを入れる
+    local hostname=${1-"pr1012"}
+    local ros_port=${2-"11311"}
+    export ROS_MASTER_URI=http://$hostname:$ros_port
+    echo -e "\e[1;31mset ROS_MASTER_URI to $ROS_MASTER_URI\e[m"
+}
+
+function rossetlocal() {
+    export ROS_MASTER_URI=http://localhost:11311
+    echo -e "\e[1;31mset ROS_MASTER_URI to $ROS_MASTER_URI\e[m"
+}
+
+function rossetip() {
+  export ROS_IP=`LANGUAGE=en LANG=C LC_ALL=C ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`
+  export ROS_HOSTNAME=$ROS_IP
+  echo -e "\e[1;31mset ROS_IP and ROS_HOSTNAME to $ROS_IP\e[m"
+}
+
