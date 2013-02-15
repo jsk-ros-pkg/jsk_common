@@ -2,3 +2,6 @@
 - svn:
     uri: https://jsk-ros-pkg.svn.sourceforge.net/svnroot/jsk-ros-pkg/trunk
     local-name: jsk-ros-pkg
+- svn:
+    uri: https://tum-ros-pkg.svn.sourceforge.net/svnroot/tum-ros-pkg
+    local-name: tum-ros-pkg
