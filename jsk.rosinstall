@@ -3,5 +3,5 @@
     uri: https://jsk-ros-pkg.svn.sourceforge.net/svnroot/jsk-ros-pkg/trunk
     local-name: jsk-ros-pkg
 - svn:
-    uri: https://tum-ros-pkg.svn.sourceforge.net/svnroot/tum-ros-pkg
-    local-name: tum-ros-pkg
+    uri: https://tum-ros-pkg.svn.sourceforge.net/svnroot/tum-ros-pkg/highlevel/SnapMapICP
+    local-name: tum-ros-pkg/highlevel/SnapMapICP
