@@ -1,0 +1,119 @@
+diff -r 90c214410af7 colladadom/collada-dom.patch
+--- a/colladadom/collada-dom.patch	Tue Mar 06 14:59:02 2012 -0800
++++ b/colladadom/collada-dom.patch	Sun Feb 17 19:03:22 2013 +0900
+@@ -114,3 +114,115 @@
+  }
+  
+  
++--- dom/include/dae/daeTypes.h	2008-07-03 11:23:24.000000000 +0900
+++++ dom/include/dae/daeTypes.h	2013-02-17 17:22:32.972169211 +0900
++@@ -30,7 +30,7 @@
++ typedef PLATFORM_UINT16		daeUShort;
++ typedef PLATFORM_UINT32		daeUInt;
++ typedef PLATFORM_UINT64		daeULong;
++-typedef PLATFORM_FLOAT32	daeFloat;
+++typedef PLATFORM_FLOAT64	daeFloat;
++ typedef PLATFORM_FLOAT64	daeDouble;
++ 
++ // base types
++--- dom/src/dae/daeElement.cpp 	2008-07-03 11:23:24.000000000 +0900
+++++ dom/src/dae/daeElement.cpp	2013-02-17 18:11:36.395044490 +0900
++@@ -7,6 +7,7 @@
++ */ 
++ 
++ #include <iomanip>
+++#include <limits>
++ #include <dae/daeElement.h>
++ #include <dae/daeArray.h>
++ #include <dae/daeMetaAttribute.h>
++@@ -219,6 +219,7 @@
++ 	value = "";
++ 	if (daeMetaAttribute* attr = getAttributeObject(i)) {
++ 		std::ostringstream buffer;
+++		buffer << std::setprecision(std::numeric_limits<PLATFORM_FLOAT64>::digits10+1); // set the default precision to daeFloat digit
++ 		attr->memoryToString(this, buffer);
++ 		value = buffer.str();
++ 	}
++--- dom/src/dae/daeAtomicType.cpp	2008-11-03 22:36:02.000000000 +0900
+++++ dom/src/dae/daeAtomicType.cpp	2013-02-17 18:16:49.006031244 +0900
++@@ -7,6 +7,8 @@
++ */ 
++ 
++ #include <sstream>
+++#include <iomanip>
+++#include <limits>
++ #include <dae/daeAtomicType.h>
++ #include <dae/daeElement.h>
++ #include <dae/daeURI.h>
++@@ -475,7 +475,7 @@
++ 	else if ( *(daeUInt*)src == 0xff800000 ) // -INF
++ 		dst << "-INF";
++ 	else
++-		dst << *(daeFloat*)src;
+++		dst << std::setprecision(std::numeric_limits<daeFloat>::digits10+1) << *(daeFloat*)src;
++ 	return true;
++ }
++ 
++@@ -517,7 +517,7 @@
++ 		_snprintf(buffer, 64, _printFormat, *((daeDouble*)src));
++ 		dst << buffer;
++ #else
++-		dst << *(daeDouble*)src;
+++		dst << std::setprecision(std::numeric_limits<daeDouble>::digits10+1) << *(daeDouble*)src;
++ #endif
++ 	}
++ 	return true;
++--- dom/src/dae/daeMetaAttribute.cpp	2008-07-03 11:23:24.000000000 +0900
+++++ dom/src/dae/daeMetaAttribute.cpp	2013-02-17 18:12:57.213041065 +0900
++@@ -7,6 +7,8 @@
++ */ 
++ 
++ #include <sstream>
+++#include <iomanip>
+++#include <limits>
++ #include <dae/daeMetaAttribute.h>
++ #include <dae/daeMetaElement.h>
++ #include <dae/daeErrorHandler.h>
++@@ -126,6 +126,7 @@
++ 		_defaultValue = _type->create();
++ 	_type->copy(defaultVal, _defaultValue);
++ 	std::ostringstream buffer;
+++	buffer << std::setprecision(std::numeric_limits<PLATFORM_FLOAT64>::digits10+1); // set the default precision to daeFloat digit
++ 	_type->memoryToString(_defaultValue, buffer);
++ 	_defaultString = buffer.str();
++ }
++@@ -152,6 +153,7 @@
++ 		_defaultValue = (daeMemoryRef)_type->createArray();
++ 	_type->copyArray((daeArray&)*defaultVal, (daeArray&)*_defaultValue);
++ 	std::ostringstream buffer;
+++	buffer << std::setprecision(std::numeric_limits<PLATFORM_FLOAT64>::digits10+1); // set the default precision to daeFloat digit
++ 	_type->arrayToString((daeArray&)*_defaultValue, buffer);
++ 	_defaultString = buffer.str();
++ }
++--- dom/src/modules/LIBXMLPlugin/daeLIBXMLPlugin.cpp	2008-07-03 11:23:24.000000000 +0900
+++++ dom/src/modules/LIBXMLPlugin/daeLIBXMLPlugin.cpp	2013-02-17 18:14:11.364037925 +0900
++@@ -28,6 +28,8 @@
++ #include <dae/daeErrorHandler.h>
++ #include <dae/daeMetaElementAttribute.h>
++ 
+++#include <limits>
+++#include <iomanip>
++ using namespace std;
++ 
++ 
++@@ -427,6 +427,7 @@
++ void daeLIBXMLPlugin::writeAttribute( daeMetaAttribute* attr, daeElement* element)
++ {
++ 	ostringstream buffer;
+++	buffer << std::setprecision(std::numeric_limits<PLATFORM_FLOAT64>::digits10+1); // set the default precision to daeFloat digit
++ 	attr->memoryToString(element, buffer);
++ 	string str = buffer.str();
++ 
++@@ -455,6 +456,7 @@
++ void daeLIBXMLPlugin::writeValue(daeElement* element) {
++ 	if (daeMetaAttribute* attr = element->getMeta()->getValueAttribute()) {
++ 		ostringstream buffer;
+++		buffer << std::setprecision(std::numeric_limits<PLATFORM_FLOAT64>::digits10+1); // set the default precision to daeFloat digit
++ 		attr->memoryToString(element, buffer);
++ 		string s = buffer.str();
++ 		if (!s.empty()) {
