@@ -16,7 +16,7 @@ function rossetlocal() {
 }
 
 function rossetip() {
-  export ROS_IP=`LANGUAGE=en LANG=C LC_ALL=C ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`
+  export ROS_IP=`LANGUAGE=en LANG=C LC_ALL=C ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | tr -d '\n' | awk '{print $1}'`
   export ROS_HOSTNAME=$ROS_IP
   echo -e "\e[1;31mset ROS_IP and ROS_HOSTNAME to $ROS_IP\e[m"
 }
