@@ -10,12 +10,10 @@ ifeq ($(shell rosversion -d),groovy)
 HG_REVISION = `rosversion collada_urdf`
 HG_PATCH = collada.patch cyliner_box_sphere.patch set_url_name.patch cmake_catkin.patch
 HG_BIN_DIR  = `pwd`/$(HG_DIR)/collada_urdf/build/devel/lib/collada_urdf
-HG_ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:$$ROS_PACKAGE_PATH
 else
 HG_REVISION = robot_model-`rosversion robot_model`
 HG_PATCH = cyliner_box_sphere.patch set_url_name.patch cmake_rosbuild.patch collada-dom.patch
 HG_BIN_DIR  = `pwd`/$(HG_DIR)/collada_urdf/bin
-HG_ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:`pwd`/$(HG_DIR)/colladadom:$$ROS_PACKAGE_PATH
 endif
 include $(shell rospack find mk)/hg_checkout.mk
 
@@ -26,7 +24,13 @@ $(HG_DIR):
 	touch rospack_nosubdirs
 
 installed:$(HG_DIR) patched
-	ROS_PACKAGE_PATH=$(HG_ROS_PACKAGE_PATH) rosmake collada_urdf
+ifeq ($(shell rosversion -d),groovy)
+	ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:$$ROS_PACKAGE_PATH make -C `pwd`/$(HG_DIR)/collada_urdf
+	HG_ROS_PACKAGE_PATH=
+else
+	HG_ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:`pwd`/$(HG_DIR)/colladadom:$$ROS_PACKAGE_PATH make -C `pwd`/$(HG_DIR)/colladadom
+	HG_ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:`pwd`/$(HG_DIR)/colladadom:$$ROS_PACKAGE_PATH make -C `pwd`/$(HG_DIR)/collada_urdf
+endif
 	cp $(HG_BIN_DIR)/urdf_to_collada .
 	touch installed
 
