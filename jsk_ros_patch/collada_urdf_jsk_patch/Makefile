@@ -28,8 +28,8 @@ ifeq ($(shell rosversion -d),groovy)
 	ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:$$ROS_PACKAGE_PATH make -C `pwd`/$(HG_DIR)/collada_urdf
 	HG_ROS_PACKAGE_PATH=
 else
-	HG_ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:`pwd`/$(HG_DIR)/colladadom:$$ROS_PACKAGE_PATH make -C `pwd`/$(HG_DIR)/colladadom
-	HG_ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:`pwd`/$(HG_DIR)/colladadom:$$ROS_PACKAGE_PATH make -C `pwd`/$(HG_DIR)/collada_urdf
+	ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:`pwd`/$(HG_DIR)/colladadom:$$ROS_PACKAGE_PATH make -C `pwd`/$(HG_DIR)/colladadom
+	ROS_PACKAGE_PATH=`pwd`/$(HG_DIR)/collada_urdf:`pwd`/$(HG_DIR)/colladadom:$$ROS_PACKAGE_PATH make -C `pwd`/$(HG_DIR)/collada_urdf
 endif
 	cp $(HG_BIN_DIR)/urdf_to_collada .
 	touch installed
