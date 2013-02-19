@@ -1,0 +1,18 @@
+<package>
+  <description brief="openni_launch_jsk_patch">
+
+     openni_launch_jsk_patch
+
+  </description>
+  <author>leus</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/openni_launch_jsk_patch</url>
+
+  <depend package="openni_camera"/>
+  <depend package="openni_launch"/>
+  <depend package="depth_image_proc_jsk_patch"/>
+
+</package>
+
+
