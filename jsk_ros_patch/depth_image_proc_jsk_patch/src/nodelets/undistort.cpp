@@ -9,6 +9,8 @@ namespace depth_image_proc {
 namespace enc = sensor_msgs::image_encodings;
 
 #define SHIFT_SCALE 0.125
+#define FOCAL_LENGTH 570.342224121
+#define BASELINE 0.075
 
 class UndistortNodelet : public nodelet::Nodelet
 {
@@ -70,15 +72,22 @@ void UndistortNodelet::depthCb(const sensor_msgs::ImageConstPtr& input_msg,
 
   const uint16_t* input_data = reinterpret_cast<const uint16_t*>(&input_msg->data[0]);
   uint16_t* depth_data = reinterpret_cast<uint16_t*>(&depth_msg->data[0]);
-  double u_coeff, v_coeff, z_coeff;
+  double u_coeff, v_coeff, d_coeff, offset;
+  int dist;
   if(!ros::param::get ("/projector_coefficients/u_coeff", u_coeff)){
     u_coeff = 0.0;
   }
   if(!ros::param::get ("/projector_coefficients/v_coeff", v_coeff)){
     v_coeff = 0.0;
   }
-  if(!ros::param::get ("/projector_coefficients/z_coeff", z_coeff)){
-    z_coeff = 1.0;
+  if(!ros::param::get ("/projector_coefficients/d_coeff", d_coeff)){
+    d_coeff = 1.0;
+  }
+  if(!ros::param::get ("/projector_coefficients/offset", offset)){
+    offset = 0.0;
+  }
+  if(!ros::param::get ("/projector_coefficients/distance", dist)){
+    dist = 150;
   }
 
   float cx = info_msg->K[2];
@@ -89,9 +98,11 @@ void UndistortNodelet::depthCb(const sensor_msgs::ImageConstPtr& input_msg,
     float i = input_data[index];
     float u = cx - index%depth_msg->width;
     float v = cy - index/depth_msg->width;
-    float i_fitted = z_coeff * i + u_coeff*u*u + v_coeff*v*v;
+    float d = FOCAL_LENGTH * BASELINE / (i * 0.001);
+    float d_fitted = d_coeff * d + offset + u_coeff*u*u + v_coeff*v*v;
+    float i_fitted = (FOCAL_LENGTH * BASELINE / d_fitted) * 1000;
 
-    if (0 < i_fitted){
+    if ( (0 < i_fitted) && (u*u + v*v < dist*dist)){
       depth_data[index] = i_fitted;
     }else{
       depth_data[index] = 0;

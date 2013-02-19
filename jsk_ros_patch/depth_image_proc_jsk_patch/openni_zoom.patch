@@ -1,6 +1,6 @@
 diff -ruN depth_image_proc.bak/CMakeLists.txt depth_image_proc/CMakeLists.txt
---- image_pipeline/depth_image_proc.bak/CMakeLists.txt	2013-02-19 20:06:36.420988561 +0900
-+++ image_pipeline/depth_image_proc/CMakeLists.txt	2013-02-19 20:06:42.413230410 +0900
+--- image_pipeline/depth_image_proc.bak/CMakeLists.txt	2013-02-19 21:18:58.709700499 +0900
++++ image_pipeline/depth_image_proc/CMakeLists.txt	2013-02-19 21:21:16.443296378 +0900
 @@ -19,7 +19,7 @@
  #set the default path for built libraries to the "lib" directory
  set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
@@ -11,8 +11,8 @@ diff -ruN depth_image_proc.bak/CMakeLists.txt depth_image_proc/CMakeLists.txt
  #common commands for building c++ executables and libraries
  #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
 diff -ruN depth_image_proc.bak/nodelet_plugins.xml depth_image_proc/nodelet_plugins.xml
---- image_pipeline/depth_image_proc.bak/nodelet_plugins.xml	2013-02-19 20:06:36.420988561 +0900
-+++ image_pipeline/depth_image_proc/nodelet_plugins.xml	2013-02-19 20:06:42.413230410 +0900
+--- image_pipeline/depth_image_proc.bak/nodelet_plugins.xml	2013-02-19 21:18:58.709700499 +0900
++++ image_pipeline/depth_image_proc/nodelet_plugins.xml	2013-02-19 21:21:31.515913983 +0900
 @@ -40,4 +40,12 @@
      </description>
    </class>
@@ -28,8 +28,8 @@ diff -ruN depth_image_proc.bak/nodelet_plugins.xml depth_image_proc/nodelet_plug
  </library>
 diff -ruN depth_image_proc.bak/src/nodelets/undistort.cpp depth_image_proc/src/nodelets/undistort.cpp
 --- image_pipeline/depth_image_proc.bak/src/nodelets/undistort.cpp	1970-01-01 09:00:00.000000000 +0900
-+++ image_pipeline/depth_image_proc/src/nodelets/undistort.cpp	2013-02-19 20:07:44.863756228 +0900
-@@ -0,0 +1,108 @@
++++ image_pipeline/depth_image_proc/src/nodelets/undistort.cpp	2013-02-19 21:19:18.254500523 +0900
+@@ -0,0 +1,119 @@
 +#include <ros/ros.h>
 +#include <nodelet/nodelet.h>
 +#include <image_transport/image_transport.h>
@@ -41,6 +41,8 @@ diff -ruN depth_image_proc.bak/src/nodelets/undistort.cpp depth_image_proc/src/n
 +namespace enc = sensor_msgs::image_encodings;
 +
 +#define SHIFT_SCALE 0.125
++#define FOCAL_LENGTH 570.342224121
++#define BASELINE 0.075
 +
 +class UndistortNodelet : public nodelet::Nodelet
 +{
@@ -102,15 +104,22 @@ diff -ruN depth_image_proc.bak/src/nodelets/undistort.cpp depth_image_proc/src/n
 +
 +  const uint16_t* input_data = reinterpret_cast<const uint16_t*>(&input_msg->data[0]);
 +  uint16_t* depth_data = reinterpret_cast<uint16_t*>(&depth_msg->data[0]);
-+  double u_coeff, v_coeff, z_coeff;
++  double u_coeff, v_coeff, d_coeff, offset;
++  int dist;
 +  if(!ros::param::get ("/projector_coefficients/u_coeff", u_coeff)){
 +    u_coeff = 0.0;
 +  }
 +  if(!ros::param::get ("/projector_coefficients/v_coeff", v_coeff)){
 +    v_coeff = 0.0;
 +  }
-+  if(!ros::param::get ("/projector_coefficients/z_coeff", z_coeff)){
-+    z_coeff = 1.0;
++  if(!ros::param::get ("/projector_coefficients/d_coeff", d_coeff)){
++    d_coeff = 1.0;
++  }
++  if(!ros::param::get ("/projector_coefficients/offset", offset)){
++    offset = 0.0;
++  }
++  if(!ros::param::get ("/projector_coefficients/distance", dist)){
++    dist = 150;
 +  }
 +
 +  float cx = info_msg->K[2];
@@ -121,9 +130,11 @@ diff -ruN depth_image_proc.bak/src/nodelets/undistort.cpp depth_image_proc/src/n
 +    float i = input_data[index];
 +    float u = cx - index%depth_msg->width;
 +    float v = cy - index/depth_msg->width;
-+    float i_fitted = z_coeff * i + u_coeff*u*u + v_coeff*v*v;
++    float d = FOCAL_LENGTH * BASELINE / (i * 0.001);
++    float d_fitted = d_coeff * d + offset + u_coeff*u*u + v_coeff*v*v;
++    float i_fitted = (FOCAL_LENGTH * BASELINE / d_fitted) * 1000;
 +
-+    if (0 < i_fitted){
++    if ( (0 < i_fitted) && (u*u + v*v < dist*dist)){
 +      depth_data[index] = i_fitted;
 +    }else{
 +      depth_data[index] = 0;
