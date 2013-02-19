@@ -8,7 +8,7 @@ include $(shell rospack find mk)/git_checkout.mk
 installed: $(GIT_DIR)
 	cd $(GIT_DIR) && python setup.py build
 	cd $(GIT_DIR) && python setup.py install --prefix=$(TOP_DIR) --install-purelib=$(TOP_DIR)/src
-	mkdir -p bin && cp $(GIT_DIR)/sample/*.py ./bin && sed -i s@'import twoauth'@'import twoauth, roslib; roslib.load_manifest("python_twoauth")'@ bin/*.py && chmod a+x bin/*.py
+	mkdir -p bin && cp $(GIT_DIR)/sample/*.py ./bin && sed -i s@'import twoauth'@'import roslib; roslib.load_manifest("python_twoauth"); import twoauth'@ bin/*.py && chmod a+x bin/*.py
 	touch installed
 
 clean:
