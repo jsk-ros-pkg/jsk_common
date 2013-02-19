@@ -2,6 +2,7 @@
 #include <nodelet/nodelet.h>
 #include <image_transport/image_transport.h>
 #include <sensor_msgs/image_encodings.h>
+#include <boost/thread.hpp>
 
 namespace depth_image_proc {
 
