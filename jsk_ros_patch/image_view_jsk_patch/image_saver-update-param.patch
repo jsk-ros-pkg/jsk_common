@@ -1,6 +1,6 @@
---- src/nodes/image_saver.cpp.bak	2012-12-03 19:29:33.041205313 +0900
-+++ src/nodes/image_saver.cpp	2012-12-03 19:30:32.451359967 +0900
-@@ -14,6 +14,8 @@
+--- image_pipeline/image_view/src/nodes/image_saver.cpp.bak	2013-02-19 19:03:46.201290694 +0900
++++ image_pipeline/image_view/src/nodes/image_saver.cpp	2013-02-19 19:04:18.660877118 +0900
+@@ -13,6 +13,8 @@
  boost::format g_format;
  bool save_all_image, save_image_service;
  std::string encoding;
@@ -9,7 +9,7 @@
  
  bool service(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res) {
    save_image_service = true;
-@@ -22,6 +24,10 @@
+@@ -21,6 +23,10 @@
  
  void callback(const sensor_msgs::ImageConstPtr& image, const sensor_msgs::CameraInfoConstPtr& info)
  {
@@ -20,7 +20,7 @@
    if (g_bridge.fromImage(*image, encoding)) {
      IplImage *image = g_bridge.toIpl();
      if (image) {
-@@ -66,7 +72,8 @@
+@@ -62,7 +68,8 @@
    local_nh.param("filename_format", format_string, std::string("left%04i.%s"));
    local_nh.param("encoding", encoding, std::string("bgr8"));
    local_nh.param("save_all_image", save_all_image, true);

@@ -1,8 +1,8 @@
-Index: src/nodes/image_saver.cpp
-===================================================================
---- src/nodes/image_saver.cpp	(Revision 39154)
-+++ src/nodes/image_saver.cpp	(Working Copy)
-@@ -16,10 +16,20 @@
+diff --git a/image_view/src/nodes/image_saver.cpp b/image_view/src/nodes/image_saver.cpp
+index 21aee93..93e161e 100644
+--- a/image_view/src/nodes/image_saver.cpp
++++ b/image_view/src/nodes/image_saver.cpp
+@@ -16,10 +16,19 @@ void callback(const sensor_msgs::ImageConstPtr& image, const sensor_msgs::Camera
    if (g_bridge.fromImage(*image, "bgr8")) {
      IplImage *image = g_bridge.toIpl();
      if (image) {
@@ -17,7 +17,6 @@ Index: src/nodes/image_saver.cpp
 +      try {
 +        filename = (g_format % g_count % "jpg").str();
 +      } catch (...) { g_format.clear(); }
-+
        cvSaveImage(filename.c_str(), image);
        ROS_INFO("Saved image %s", filename.c_str());
 -      filename = (g_format % g_count % "ini").str();
@@ -25,7 +24,7 @@ Index: src/nodes/image_saver.cpp
        camera_calibration_parsers::writeCalibration(filename, "camera", *info);
        
        g_count++;
-@@ -35,10 +45,14 @@
+@@ -35,10 +44,14 @@ int main(int argc, char** argv)
  {
    ros::init(argc, argv, "image_saver", ros::init_options::AnonymousName);
    ros::NodeHandle nh;
@@ -33,11 +32,11 @@ Index: src/nodes/image_saver.cpp
    image_transport::ImageTransport it(nh);
    std::string topic = nh.resolveName("image");
    image_transport::CameraSubscriber sub = it.subscribeCamera(topic, 1, &callback);
- 
 +  ros::NodeHandle local_nh("~");
 +  std::string format_string;
 +  local_nh.param("filename_format", format_string, std::string("left%04i.%s"));
 +  g_format.parse(format_string);
 +
+ 
    ros::spin();
  }
