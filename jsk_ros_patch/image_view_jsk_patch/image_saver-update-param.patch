@@ -1,6 +1,6 @@
---- image_pipeline/image_view/src/nodes/image_saver.cpp.bak	2013-02-19 19:03:46.201290694 +0900
-+++ image_pipeline/image_view/src/nodes/image_saver.cpp	2013-02-19 19:04:18.660877118 +0900
-@@ -13,6 +13,8 @@
+--- image_pipeline/image_view/src/nodes/image_saver.cpp.bak	2013-02-19 19:25:09.832646384 +0900
++++ image_pipeline/image_view/src/nodes/image_saver.cpp	2013-02-19 19:25:44.478041164 +0900
+@@ -11,6 +11,8 @@
  boost::format g_format;
  bool save_all_image, save_image_service;
  std::string encoding;
@@ -9,18 +9,18 @@
  
  bool service(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res) {
    save_image_service = true;
-@@ -21,6 +23,10 @@
+@@ -19,6 +21,10 @@
  
- void callback(const sensor_msgs::ImageConstPtr& image, const sensor_msgs::CameraInfoConstPtr& info)
+ void callback(const sensor_msgs::ImageConstPtr& image_msg, const sensor_msgs::CameraInfoConstPtr& info)
  {
 +  ros::param::get(format_param, format_string);
 +  g_format.parse(format_string);
 +  ros::param::get(enc_param, encoding);
-+  
-   if (g_bridge.fromImage(*image, encoding)) {
-     IplImage *image = g_bridge.toIpl();
-     if (image) {
-@@ -62,7 +68,8 @@
++
+   cv::Mat image;
+   try
+   {
+@@ -66,7 +72,8 @@
    local_nh.param("filename_format", format_string, std::string("left%04i.%s"));
    local_nh.param("encoding", encoding, std::string("bgr8"));
    local_nh.param("save_all_image", save_all_image, true);

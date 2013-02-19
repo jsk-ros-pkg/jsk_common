@@ -1,11 +1,11 @@
 diff --git a/image_view/src/nodes/image_saver.cpp b/image_view/src/nodes/image_saver.cpp
-index 21aee93..93e161e 100644
+index b02b932..f8229be 100644
 --- a/image_view/src/nodes/image_saver.cpp
 +++ b/image_view/src/nodes/image_saver.cpp
-@@ -16,10 +16,19 @@ void callback(const sensor_msgs::ImageConstPtr& image, const sensor_msgs::Camera
-   if (g_bridge.fromImage(*image, "bgr8")) {
-     IplImage *image = g_bridge.toIpl();
-     if (image) {
+@@ -22,10 +22,19 @@ void callback(const sensor_msgs::ImageConstPtr& image_msg, const sensor_msgs::Ca
+   }
+   
+     if (!image.empty()) {
 -      std::string filename = (g_format % g_count % "jpg").str();
 +      std::string filename;
 +      try {
@@ -17,14 +17,14 @@ index 21aee93..93e161e 100644
 +      try {
 +        filename = (g_format % g_count % "jpg").str();
 +      } catch (...) { g_format.clear(); }
-       cvSaveImage(filename.c_str(), image);
+       cv::imwrite(filename, image);
        ROS_INFO("Saved image %s", filename.c_str());
 -      filename = (g_format % g_count % "ini").str();
 +      filename = filename.replace(filename.rfind("."), filename.length(),".ini");
        camera_calibration_parsers::writeCalibration(filename, "camera", *info);
        
        g_count++;
-@@ -35,10 +44,14 @@ int main(int argc, char** argv)
+@@ -38,10 +47,13 @@ int main(int argc, char** argv)
  {
    ros::init(argc, argv, "image_saver", ros::init_options::AnonymousName);
    ros::NodeHandle nh;
@@ -36,7 +36,6 @@ index 21aee93..93e161e 100644
 +  std::string format_string;
 +  local_nh.param("filename_format", format_string, std::string("left%04i.%s"));
 +  g_format.parse(format_string);
-+
  
    ros::spin();
  }

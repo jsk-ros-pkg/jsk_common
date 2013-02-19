@@ -1,6 +1,6 @@
---- image_pipeline/image_view/src/nodes/image_saver.cpp.bak	2013-02-19 18:50:15.361025259 +0900
-+++ image_pipeline/image_view/src/nodes/image_saver.cpp	2013-02-19 18:50:52.010880674 +0900
-@@ -12,6 +12,7 @@
+--- image_pipeline/image_view/src/nodes/image_saver.cpp.bak	2013-02-19 19:21:13.747129780 +0900
++++ image_pipeline/image_view/src/nodes/image_saver.cpp	2013-02-19 19:21:59.488974352 +0900
+@@ -10,6 +10,7 @@
  int g_count = 0;
  boost::format g_format;
  bool save_all_image, save_image_service;
@@ -8,16 +8,16 @@
  
  bool service(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res) {
    save_image_service = true;
-@@ -20,7 +21,7 @@
- 
- void callback(const sensor_msgs::ImageConstPtr& image, const sensor_msgs::CameraInfoConstPtr& info)
- {
--  if (g_bridge.fromImage(*image, "bgr8")) {
-+  if (g_bridge.fromImage(*image, encoding)) {
-     IplImage *image = g_bridge.toIpl();
-     if (image) {
-       std::string filename;
-@@ -59,6 +60,7 @@
+@@ -21,7 +22,7 @@
+   cv::Mat image;
+   try
+   {
+-    image = cv_bridge::toCvShare(image_msg, "bgr8")->image;
++    image = cv_bridge::toCvShare(image_msg, encoding)->image;
+   } catch(cv_bridge::Exception)
+   {
+     ROS_ERROR("Unable to convert %s image to bgr8", image_msg->encoding.c_str());
+@@ -63,6 +64,7 @@
    ros::NodeHandle local_nh("~");
    std::string format_string;
    local_nh.param("filename_format", format_string, std::string("left%04i.%s"));

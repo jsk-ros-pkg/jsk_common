@@ -7,7 +7,7 @@ all: installed
 
 GIT_DIR = build/image_pipeline
 GIT_URL = https://github.com/ros-perception/image_pipeline/
-GIT_REVISION = $(shell rosversion -d)
+GIT_REVISION = image_pipeline-1.8.4
 GIT_PATCH = image_saver-filename_format_param.patch image_saver-servicecall.patch image_saver-encoding.patch image_saver-update-param.patch
 include $(shell rospack find mk)/git_checkout.mk
 

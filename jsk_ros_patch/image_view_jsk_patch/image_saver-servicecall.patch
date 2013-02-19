@@ -1,6 +1,6 @@
-diff -urN image_view.bak/manifest.xml image_view/manifest.xml
---- image_pipeline/image_view.bak/manifest.xml	2013-02-19 18:28:27.050776804 +0900
-+++ image_pipeline/image_view/manifest.xml	2013-02-19 18:35:35.711643150 +0900
+diff -urN image_pipeline/image_view/manifest.xml image_pipeline/image_view.bak/manifest.xml
+--- image_pipeline/image_view/manifest.xml	2013-02-19 19:13:42.540981023 +0900
++++ image_pipeline/image_view.bak/manifest.xml	2013-02-19 19:15:30.601317253 +0900
 @@ -21,6 +21,7 @@
    <depend package="roscpp"/>
    <depend package="sensor_msgs"/>
@@ -9,16 +9,15 @@ diff -urN image_view.bak/manifest.xml image_view/manifest.xml
  
    <platform os="ubuntu" version="9.04"/>
    <platform os="ubuntu" version="9.10"/>
-diff -urN image_view.bak/src/nodes/image_saver.cpp image_view/src/nodes/image_saver.cpp
---- image_pipeline/image_view.bak/src/nodes/image_saver.cpp	2013-02-19 18:28:27.070795709 +0900
-+++ image_pipeline/image_view/src/nodes/image_saver.cpp	2013-02-19 18:38:29.031054394 +0900
-@@ -6,10 +6,17 @@
+diff -urN image_pipeline/image_view/src/nodes/image_saver.cpp image_pipeline/image_view.bak/src/nodes/image_saver.cpp
+--- image_pipeline/image_view/src/nodes/image_saver.cpp	2013-02-19 19:13:42.540981023 +0900
++++ image_pipeline/image_view.bak/src/nodes/image_saver.cpp	2013-02-19 19:15:11.464549496 +0900
+@@ -5,9 +5,16 @@
  #include <image_transport/image_transport.h>
  #include <camera_calibration_parsers/parse.h>
  #include <boost/format.hpp>
 +#include <std_srvs/Empty.h>
  
- sensor_msgs::CvBridge g_bridge;
  int g_count = 0;
  boost::format g_format;
 +bool save_all_image, save_image_service;
@@ -28,36 +27,36 @@ diff -urN image_view.bak/src/nodes/image_saver.cpp image_view/src/nodes/image_sa
 +  return true;
 +}
  
- void callback(const sensor_msgs::ImageConstPtr& image, const sensor_msgs::CameraInfoConstPtr& info)
+ void callback(const sensor_msgs::ImageConstPtr& image_msg, const sensor_msgs::CameraInfoConstPtr& info)
  {
-@@ -26,12 +33,14 @@
+@@ -32,12 +39,15 @@
        try {
          filename = (g_format % g_count % "jpg").str();
        } catch (...) { g_format.clear(); }
--      cvSaveImage(filename.c_str(), image);
+-      cv::imwrite(filename, image);
 -      ROS_INFO("Saved image %s", filename.c_str());
 -      filename = filename.replace(filename.rfind("."), filename.length(),".ini");
 -      camera_calibration_parsers::writeCalibration(filename, "camera", *info);
 -      
 -      g_count++;
 +      if ( save_all_image || save_image_service ) {
-+        cvSaveImage(filename.c_str(), image);
++        cv::imwrite(filename, image);
 +        ROS_INFO("Saved image %s", filename.c_str());
 +        filename = filename.replace(filename.rfind("."), filename.length(),".ini");
-+        camera_calibration_parsers::writeCalibration(filename, "camera", *info);      
++        camera_calibration_parsers::writeCalibration(filename, "camera", *info);
++        
 +        g_count++;
 +        save_image_service = false;
 +      }
      } else {
        ROS_WARN("Couldn't save image, no data!");
      }
-@@ -50,8 +59,9 @@
+@@ -53,7 +63,9 @@
    ros::NodeHandle local_nh("~");
    std::string format_string;
    local_nh.param("filename_format", format_string, std::string("left%04i.%s"));
 +  local_nh.param("save_all_image", save_all_image, true);
    g_format.parse(format_string);
--
 +  ros::ServiceServer save = local_nh.advertiseService ("save", service);
  
    ros::spin();
