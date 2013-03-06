@@ -1,6 +1,6 @@
 diff -r 7126145eb885 launch/includes/depth.launch
 --- a/launch/includes/depth.launch	Tue Dec 11 11:23:14 2012 -0800
-+++ b/launch/includes/depth.launch	Tue Feb 19 20:57:45 2013 +0900
++++ b/launch/includes/depth.launch	Wed Mar 06 20:58:54 2013 +0900
 @@ -21,11 +21,16 @@
      <param name="interpolation" value="0" />
    </node>
@@ -19,9 +19,18 @@ diff -r 7126145eb885 launch/includes/depth.launch
      <remap from="image"     to="image_rect" />
    </node>
    
+@@ -39,7 +44,7 @@
+ 	pkg="nodelet" type="nodelet" name="points"
+         args="load depth_image_proc/point_cloud_xyz $(arg manager) $(arg bond)"
+ 	respawn="$(arg respawn)">
+-    <remap from="image_rect" to="image_rect_raw"/>  <!-- Use raw image for efficiency -->
++    <remap from="image_rect" to="image_rect"/>  <!-- Use raw image for efficiency -->
+   </node>
+ 
+ </launch>
 diff -r 7126145eb885 launch/includes/depth_registered.launch
 --- a/launch/includes/depth_registered.launch	Tue Dec 11 11:23:14 2012 -0800
-+++ b/launch/includes/depth_registered.launch	Tue Feb 19 20:57:45 2013 +0900
++++ b/launch/includes/depth_registered.launch	Wed Mar 06 20:58:54 2013 +0900
 @@ -24,8 +24,8 @@
      <!-- Explicit topic remappings, shouldn't need all of these -->
      <remap from="rgb/camera_info"             to="$(arg rgb)/camera_info" />
@@ -44,7 +53,7 @@ diff -r 7126145eb885 launch/includes/depth_registered.launch
  
 diff -r 7126145eb885 launch/includes/processing.launch
 --- a/launch/includes/processing.launch	Tue Dec 11 11:23:14 2012 -0800
-+++ b/launch/includes/processing.launch	Tue Feb 19 20:57:45 2013 +0900
++++ b/launch/includes/processing.launch	Wed Mar 06 20:58:54 2013 +0900
 @@ -31,14 +31,14 @@
    </include>
  
@@ -64,7 +73,7 @@ diff -r 7126145eb885 launch/includes/processing.launch
      <arg name="depth" value="$(arg depth)" />
 diff -r 7126145eb885 launch/openni.launch
 --- a/launch/openni.launch	Tue Dec 11 11:23:14 2012 -0800
-+++ b/launch/openni.launch	Tue Feb 19 20:57:45 2013 +0900
++++ b/launch/openni.launch	Wed Mar 06 20:58:54 2013 +0900
 @@ -21,6 +21,9 @@
    <arg name="rgb_camera_info_url"   default="" />
    <arg name="depth_camera_info_url" default="" />
