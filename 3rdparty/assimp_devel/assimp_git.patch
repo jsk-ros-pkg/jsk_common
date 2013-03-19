@@ -1,0 +1,51 @@
+diff --git a/code/ColladaExporter.cpp b/code/ColladaExporter.cpp
+index 487d64a..39aedb1 100644
+--- a/code/ColladaExporter.cpp
++++ b/code/ColladaExporter.cpp
+@@ -124,8 +124,10 @@ void ColladaExporter::WriteHeader()
+ 	mOutput << startstr << "</contributor>" << endstr;
+   mOutput << startstr << "<created>2000-01-01T23:59:59</created>" << endstr;
+   mOutput << startstr << "<modified>2000-01-01T23:59:59</modified>" << endstr;
+-	mOutput << startstr << "<unit name=\"centimeter\" meter=\"0.01\" />" << endstr;
+-	mOutput << startstr << "<up_axis>Y_UP</up_axis>" << endstr;
++	//mOutput << startstr << "<unit name=\"centimeter\" meter=\"0.01\" />" << endstr;
++	mOutput << startstr << "<unit name=\"meter\" meter=\"1.0\" />" << endstr;
++	//mOutput << startstr << "<up_axis>Y_UP</up_axis>" << endstr;
++	mOutput << startstr << "<up_axis>Z_UP</up_axis>" << endstr;
+ 	PopTag();
+ 	mOutput << startstr << "</asset>" << endstr;
+ }
+diff --git a/code/ColladaLoader.cpp b/code/ColladaLoader.cpp
+index 5d83cca..75b1d82 100644
+--- a/code/ColladaLoader.cpp
++++ b/code/ColladaLoader.cpp
+@@ -154,7 +154,7 @@ void ColladaLoader::InternReadFile( const std::string& pFile, aiScene* pScene, I
+ 
+ 	// ... then fill the materials with the now adjusted settings
+ 	FillMaterials(parser, pScene);
+-
++#if 0
+ 	// Convert to Y_UP, if different orientation
+ 	if( parser.mUpDirection == ColladaParser::UP_X)
+ 		pScene->mRootNode->mTransformation *= aiMatrix4x4( 
+@@ -168,6 +168,20 @@ void ColladaLoader::InternReadFile( const std::string& pFile, aiScene* pScene, I
+ 			 0,  0,  1,  0,
+ 			 0, -1,  0,  0,
+ 			 0,  0,  0,  1);
++#endif
++	// Convert to Z_UP, if different orientation
++	if( parser.mUpDirection == ColladaParser::UP_X)
++		pScene->mRootNode->mTransformation *= aiMatrix4x4(
++			 0,  0, -1,  0,
++			 0,  1,  0,  0,
++			 1,  0,  0,  0,
++			 0,  0,  0,  1);
++	else if( parser.mUpDirection == ColladaParser::UP_Y)
++		pScene->mRootNode->mTransformation *= aiMatrix4x4(
++			 1,  0,  0,  0,
++			 0,  0, -1,  0,
++			 0,  1,  0,  0,
++			 0,  0,  0,  1);
+ 
+ 	// store all meshes
+ 	StoreSceneMeshes( pScene);
