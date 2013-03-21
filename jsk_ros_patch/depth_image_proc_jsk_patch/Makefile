@@ -1,5 +1,5 @@
 #
-# https://kforge.ros.org/openni/trac/ticket/54
+# https://kforge.ros.org/openni/trac/ticket/74
 #
 include $(shell rospack find mk)/cmake.mk
 
