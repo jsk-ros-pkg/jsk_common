@@ -1,109 +1,24 @@
-diff -ruN depth_image_proc.bak/CMakeLists.txt depth_image_proc/CMakeLists.txt
---- image_pipeline/depth_image_proc.bak/CMakeLists.txt	2013-02-19 21:18:58.709700499 +0900
-+++ image_pipeline/depth_image_proc/CMakeLists.txt	2013-02-19 21:21:16.443296378 +0900
-@@ -19,7 +19,7 @@
- #set the default path for built libraries to the "lib" directory
- set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+diff --git a/depth_image_proc/src/nodelets/register.cpp b/depth_image_proc/src/nodelets/register.cpp
+index 091a6a7..5967ef5 100644
+--- a/depth_image_proc/src/nodelets/register.cpp
++++ b/depth_image_proc/src/nodelets/register.cpp
+@@ -11,6 +11,10 @@
+ #include <Eigen/Core>
+ #include "depth_traits.h"
  
--rosbuild_add_library(depth_image_proc src/nodelets/convert_metric.cpp src/nodelets/disparity.cpp src/nodelets/point_cloud_xyz.cpp src/nodelets/point_cloud_xyzrgb.cpp src/nodelets/register.cpp)
-+rosbuild_add_library(depth_image_proc src/nodelets/convert_metric.cpp src/nodelets/disparity.cpp src/nodelets/point_cloud_xyz.cpp src/nodelets/point_cloud_xyzrgb.cpp src/nodelets/register.cpp src/nodelets/undistort.cpp)
- 
- #common commands for building c++ executables and libraries
- #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-diff -ruN depth_image_proc.bak/nodelet_plugins.xml depth_image_proc/nodelet_plugins.xml
---- image_pipeline/depth_image_proc.bak/nodelet_plugins.xml	2013-02-19 21:18:58.709700499 +0900
-+++ image_pipeline/depth_image_proc/nodelet_plugins.xml	2013-02-19 21:21:31.515913983 +0900
-@@ -40,4 +40,12 @@
-     </description>
-   </class>
- 
-+  <class name="depth_image_proc/undistort"
-+	 type="depth_image_proc::UndistortNodelet"
-+	 base_class_type="nodelet::Nodelet">
-+    <description>
-+      Nodelet to undistort image with zoom fitting parameters
-+    </description>
-+  </class>
-+
- </library>
-diff -ruN depth_image_proc.bak/src/nodelets/undistort.cpp depth_image_proc/src/nodelets/undistort.cpp
---- image_pipeline/depth_image_proc.bak/src/nodelets/undistort.cpp	1970-01-01 09:00:00.000000000 +0900
-+++ image_pipeline/depth_image_proc/src/nodelets/undistort.cpp	2013-02-19 21:19:18.254500523 +0900
-@@ -0,0 +1,119 @@
-+#include <ros/ros.h>
-+#include <nodelet/nodelet.h>
-+#include <image_transport/image_transport.h>
-+#include <sensor_msgs/image_encodings.h>
-+#include <boost/thread.hpp>
-+
-+namespace depth_image_proc {
-+
-+namespace enc = sensor_msgs::image_encodings;
-+
 +#define SHIFT_SCALE 0.125
 +#define FOCAL_LENGTH 570.342224121
 +#define BASELINE 0.075
 +
-+class UndistortNodelet : public nodelet::Nodelet
-+{
-+  // Subscriptions
-+  boost::shared_ptr<image_transport::ImageTransport> it_;
-+  image_transport::CameraSubscriber sub_camera_;
-+  
-+  // Publications
-+  boost::mutex connect_mutex_;
-+  image_transport::Publisher pub_depth_;
+ namespace depth_image_proc {
+ 
+ using namespace message_filters::sync_policies;
+@@ -181,7 +185,25 @@ void RegisterNodelet::convert(const sensor_msgs::ImageConstPtr& depth_msg,
+   double rgb_fx = rgb_model_.fx(), rgb_fy = rgb_model_.fy();
+   double rgb_cx = rgb_model_.cx(), rgb_cy = rgb_model_.cy();
+   double rgb_Tx = rgb_model_.Tx(), rgb_Ty = rgb_model_.Ty();
+-  
 +
-+  virtual void onInit();
-+
-+  void connectCb();
-+
-+  void depthCb(const sensor_msgs::ImageConstPtr& raw_msg,
-+               const sensor_msgs::CameraInfoConstPtr& inf_msg);
-+};
-+
-+void UndistortNodelet::onInit()
-+{
-+  ros::NodeHandle& nh = getNodeHandle();
-+  it_.reset(new image_transport::ImageTransport(nh));
-+
-+  // Monitor whether anyone is subscribed to the output
-+  image_transport::SubscriberStatusCallback connect_cb = boost::bind(&UndistortNodelet::connectCb, this);
-+  // Make sure we don't enter connectCb() between advertising and assigning to pub_depth_
-+  boost::lock_guard<boost::mutex> lock(connect_mutex_);
-+  pub_depth_ = it_->advertise("image_fitted", 1, connect_cb, connect_cb);
-+}
-+
-+// Handles (un)subscribing when clients (un)subscribe
-+void UndistortNodelet::connectCb()
-+{
-+  boost::lock_guard<boost::mutex> lock(connect_mutex_);
-+  if (pub_depth_.getNumSubscribers() == 0)
-+  {
-+    sub_camera_.shutdown();
-+  }
-+  else if (!sub_camera_)
-+  {
-+    sub_camera_ = it_->subscribeCamera("image_raw", 5, &UndistortNodelet::depthCb, this);
-+  }
-+}
-+
-+void UndistortNodelet::depthCb(const sensor_msgs::ImageConstPtr& input_msg,
-+                                 const sensor_msgs::CameraInfoConstPtr& info_msg)
-+{
-+  // Allocate new Image message
-+  sensor_msgs::ImagePtr depth_msg( new sensor_msgs::Image );
-+  depth_msg->header   = input_msg->header;
-+  depth_msg->encoding = input_msg->encoding;
-+  depth_msg->height   = input_msg->height;
-+  depth_msg->width    = input_msg->width;
-+  depth_msg->step     = input_msg->step;
-+  depth_msg->data.resize( depth_msg->height * depth_msg->step);
-+
-+  //float bad_point = std::numeric_limits<float>::quiet_NaN ();
-+
-+  const uint16_t* input_data = reinterpret_cast<const uint16_t*>(&input_msg->data[0]);
-+  uint16_t* depth_data = reinterpret_cast<uint16_t*>(&depth_msg->data[0]);
 +  double u_coeff, v_coeff, d_coeff, offset;
 +  int dist;
 +  if(!ros::param::get ("/projector_coefficients/u_coeff", u_coeff)){
@@ -122,30 +37,25 @@ diff -ruN depth_image_proc.bak/src/nodelets/undistort.cpp depth_image_proc/src/n
 +    dist = 150;
 +  }
 +
-+  float cx = info_msg->K[2];
-+  float cy = info_msg->K[5];
+   // Transform the depth values into the RGB frame
+   /// @todo When RGB is higher res, interpolate by rasterizing depth triangles onto the registered image  
+   const T* depth_row = reinterpret_cast<const T*>(&depth_msg->data[0]);
+@@ -197,6 +219,18 @@ void RegisterNodelet::convert(const sensor_msgs::ImageConstPtr& depth_msg,
+         continue;
+       
+       double depth = DepthTraits<T>::toMeters(raw_depth);
++      float uu = depth_cx - u;
++      float vv = depth_cy - v;
++      float d = FOCAL_LENGTH * BASELINE / depth;
++      float d_fitted = d_coeff * d + offset + u_coeff*uu*uu + v_coeff*vv*vv;
++      float depth_fitted = FOCAL_LENGTH * BASELINE / d_fitted;
 +
-+  for (unsigned index = 0; index < depth_msg->height * depth_msg->width; ++index)
-+  {
-+    float i = input_data[index];
-+    float u = cx - index%depth_msg->width;
-+    float v = cy - index/depth_msg->width;
-+    float d = FOCAL_LENGTH * BASELINE / (i * 0.001);
-+    float d_fitted = d_coeff * d + offset + u_coeff*u*u + v_coeff*v*v;
-+    float i_fitted = (FOCAL_LENGTH * BASELINE / d_fitted) * 1000;
++      if ( (0 < depth_fitted) && (uu*uu + vv*vv < dist*dist)){
++        depth = depth_fitted;
++      }else{
++        depth = 0;
++      }
 +
-+    if ( (0 < i_fitted) && (u*u + v*v < dist*dist)){
-+      depth_data[index] = i_fitted;
-+    }else{
-+      depth_data[index] = 0;
-+    }
-+  }
-+
-+  pub_depth_.publish(depth_msg);
-+}
-+
-+} // namespace depth_image_proc
-+
-+// Register as nodelet
-+#include <pluginlib/class_list_macros.h>
-+PLUGINLIB_DECLARE_CLASS (depth_image_proc, undistort, depth_image_proc::UndistortNodelet, nodelet::Nodelet);
+ 
+       /// @todo Combine all operations into one matrix multiply on (u,v,d)
+       // Reproject (u,v,Z) to (X,Y,Z,1) in depth camera frame
