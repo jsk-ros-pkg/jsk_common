@@ -1,5 +1,5 @@
 diff --git a/code/ColladaExporter.cpp b/code/ColladaExporter.cpp
-index 487d64a..39aedb1 100644
+index 7634806..208dfdc 100644
 --- a/code/ColladaExporter.cpp
 +++ b/code/ColladaExporter.cpp
 @@ -124,8 +124,10 @@ void ColladaExporter::WriteHeader()
@@ -15,8 +15,18 @@ index 487d64a..39aedb1 100644
  	PopTag();
  	mOutput << startstr << "</asset>" << endstr;
  }
+@@ -292,7 +294,8 @@ void ColladaExporter::WriteMaterials()
+       WriteTextureParamEntry( mat.specular, "specular", mat.name);
+       WriteTextureParamEntry( mat.reflective, "reflective", mat.name);
+ 
+-      mOutput << startstr << "<technique sid=\"standard\">" << endstr;
++      //mOutput << startstr << "<technique sid=\"standard\">" << endstr;
++      mOutput << startstr << "<technique sid=\"common\">" << endstr;
+       PushTag();
+       mOutput << startstr << "<phong>" << endstr;
+       PushTag();
 diff --git a/code/ColladaLoader.cpp b/code/ColladaLoader.cpp
-index 5d83cca..75b1d82 100644
+index dca2b8e..a1e6065 100644
 --- a/code/ColladaLoader.cpp
 +++ b/code/ColladaLoader.cpp
 @@ -154,7 +154,7 @@ void ColladaLoader::InternReadFile( const std::string& pFile, aiScene* pScene, I
