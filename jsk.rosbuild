@@ -10,6 +10,7 @@ function usage {
 }
 
 function error {
+    env
     echo "source $ROS_INSTALLDIR/setup.bash"
     exit 1
 }
@@ -129,7 +130,7 @@ function install-pkg {
     (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && ROS_WORKSPACE="" rosws merge /opt/ros/$DISTRIBUTION && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL; done && ROS_WORKSPACE="" rosws update)
 # source
     . $ROS_INSTALLDIR/setup.sh
-    export PATH=$PATH:/sbin
+    export PATH=$PATH:/usr/sbin:/usr/bin:/sbin:/bin
 }
 
 function rosdep_and_rosmake {
