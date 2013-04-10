@@ -129,6 +129,7 @@ function install-pkg {
     (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && ROS_WORKSPACE="" rosws merge /opt/ros/$DISTRIBUTION && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL; done && ROS_WORKSPACE="" rosws update)
 # source
     . $ROS_INSTALLDIR/setup.sh
+    export PATH=$PATH:/sbin
 }
 
 function rosdep_and_rosmake {
