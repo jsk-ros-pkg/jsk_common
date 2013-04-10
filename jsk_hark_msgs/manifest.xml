@@ -1,0 +1,14 @@
+<package>
+  <description brief="jsk_hark_msgs">
+
+     jsk_hark_msgs
+
+  </description>
+  <author>Shohei Fujii</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/jsk_hark_msgs</url>
+
+</package>
+
+
