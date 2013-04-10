@@ -164,7 +164,7 @@ function test-pkg {
 
     for PACKAGE in $PACKAGES
     do
-	(cd `rospack find $PACKAGE`; make test)
+	(cd `rospack find $PACKAGE`; make test || make tests) # catkin uses make tests, rosbuild uses make test
         # chnage to JENKINS_URL and commit for jenkins
 	if [ "$JENKINS_URL" != "" -a "$SVN_USERNAME" != "" -a "$SVN_PASSWORD" != "" -a -f `rospack find $PACKAGE`/build/index.rst ] ; then
 	    sed -i "s@^.. image:: build/@.. image:: $JENKINS_URL/job/$JOB_NAME/lastSuccessfulBuild/artifact/doc/$PACKAGE/html/_images/@" `rospack find $PACKAGE`/build/index.rst
