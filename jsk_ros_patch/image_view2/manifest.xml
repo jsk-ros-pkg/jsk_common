@@ -15,4 +15,5 @@
   <depend package="image_transport"/>
   <depend package="tf"/>
   <depend package="image_geometry"/>
+  <depend package="message_filters"/>
 </package>
