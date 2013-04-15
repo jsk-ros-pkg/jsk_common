@@ -1,0 +1,17 @@
+<package>
+  <name>jsk_hark_msgs</name>
+  <version>1.0.0</version>
+  <description>jsk_hark_msgs</description>
+  <maintainer>Shohei Fujii</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/jsk_hark_msgs</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Shohei Fujii</author>
+
+  <export>
+
+  </export>
+</package>
