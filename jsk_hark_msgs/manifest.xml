@@ -8,6 +8,9 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/jsk_hark_msgs</url>
+  <depend package="roscpp"/>
+  <depend package="roslib"/>
+  <depend package="rospy"/>
 
 </package>
 
