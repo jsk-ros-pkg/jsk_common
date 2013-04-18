@@ -1,6 +1,6 @@
 ## rosinstall file for http://jskeus.sourceforge.net
 - svn:
-    uri: http://svn.code.sf.net/p/jsk-ros-pkg/code/trunk
+    uri: https://svn.code.sf.net/p/jsk-ros-pkg/code/trunk
     local-name: jsk-ros-pkg
 - svn:
     uri: https://tum-ros-pkg.svn.sourceforge.net/svnroot/tum-ros-pkg/highlevel/SnapMapICP
