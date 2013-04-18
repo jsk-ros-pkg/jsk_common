@@ -1,4 +1,6 @@
-if(NOT $ENV{ROS_DISTRO} STREQUAL "fuerte")
+execute_process(COMMAND rosversion -d
+    OUTPUT_VARIABLE _ROS_DISTRO)
+if(NOT _ROS_DISTRO STREQUAL "fuerte")
   include(catkin.cmake)
   return()
 endif()
