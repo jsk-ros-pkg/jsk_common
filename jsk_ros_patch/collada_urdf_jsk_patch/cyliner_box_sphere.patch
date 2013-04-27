@@ -243,12 +243,13 @@ diff -r a1bbfb9c4ac3 collada_urdf/src/collada_urdf.cpp
  /// \brief Implements writing urdf::Model objects to a COLLADA DOM.
  class ColladaWriter : public daeErrorHandler
  {
-@@ -1192,6 +1420,55 @@
+@@ -1192,6 +1420,56 @@
          return out;
      }
  
 +  void _WriteGTSGeometry(GtsSurface * s, domGeometryRef pdomgeom, const urdf::Vector3& scale) {
-+	aiScene* scene = new aiScene();
++	aiScene* scene;
++	scene = (aiScene *)malloc(sizeof(aiScene));
 +	scene->mRootNode = new aiNode();
 +	scene->mRootNode->mNumMeshes = 1;
 +	scene->mRootNode->mMeshes  = (unsigned int*)malloc(sizeof(unsigned int));
