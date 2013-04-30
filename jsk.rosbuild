@@ -55,7 +55,9 @@ if ( [ "$DISTRIBUTION" == "cturtle" ] && \
    ( [ "$DISTRIBUTION" == "fuerte" ] && \
     [[ $LSB_RELEASE =~ (lucid|oneiric|precise) ]] ) || \
    ( [ "$DISTRIBUTION" == "groovy" ] && \
-    [[ $LSB_RELEASE =~ (oneiric|precise|quantal) ]] ) then
+    [[ $LSB_RELEASE =~ (oneiric|precise|quantal) ]] ) || \
+   ( [ "$DISTRIBUTION" == "hydro" ] && \
+    [[ $LSB_RELEASE =~ (precise|quantal|raring) ]] ) then
     echo "Install $DISTRIBUTION to $LSB_RELEASE"
 else
     echo "target distribution($DISTRIBUTION) does not support $LSB_RELEASE platform, exit install program"
