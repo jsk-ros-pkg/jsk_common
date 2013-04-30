@@ -1,0 +1,21 @@
+<package>
+  <description brief="laser_filters_jsk_patch">
+
+     laser_filters_jsk_patch
+
+  </description>
+  <author>k-okada</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/laser_filters_jsk_patch</url>
+
+  <depend package="laser_filters"/>
+  <depend package="filters"/>
+
+  <export>
+    <filters plugin="${prefix}/laser_filters_plugins.xml"/>
+  </export>
+
+</package>
+
+

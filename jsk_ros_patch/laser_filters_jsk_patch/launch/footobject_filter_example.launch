@@ -1,0 +1,6 @@
+<launch>
+<node pkg="laser_filters" type="scan_to_scan_filter_chain" output="screen" name="laser_filter_jsk_patch">
+      <remap from="scan" to="base_scan" />
+      <rosparam command="load" file="$(find laser_filters_jsk_patch)/launch/footobject_filter_example.yaml" />
+</node>
+</launch>
