@@ -4,4 +4,7 @@
   </description>
   <author>J.Hoffmann()</author>
   <license>GPL</license>
+
+  <rosdep name="flex"/>
+  <rosdep name="bison"/>
 </package>
