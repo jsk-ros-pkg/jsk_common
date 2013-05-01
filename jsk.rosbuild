@@ -103,7 +103,7 @@ function setup-ros {
 }
 
 # see http://ros.org/reps/rep-0113.html for variants and http://www.ros.org/debbuild/ for build status
-INSTALL_ROS_PACKAGE="ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-pr2-desktop ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-audio-common ros-$DISTRIBUTION-turtlebot ros-$DISTRIBUTION-remote-lab ros-$DISTRIBUTION-pr2-robot ros-$DISTRIBUTION-mjpeg-server ros-$DISTRIBUTION-robot-model ros-$DISTRIBUTION-rosdoc-lite ros-$DISTRIBUTION-actionlib"
+INSTALL_ROS_PACKAGE="ros-$DISTRIBUTION-wg-pr2-apps ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-pr2-desktop ros-$DISTRIBUTION-openni-kinect ros-$DISTRIBUTION-audio-common ros-$DISTRIBUTION-turtlebot ros-$DISTRIBUTION-remote-lab ros-$DISTRIBUTION-pr2-robot ros-$DISTRIBUTION-mjpeg-server ros-$DISTRIBUTION-robot-model ros-$DISTRIBUTION-rosdoc-lite ros-$DISTRIBUTION-actionlib ros-$DISTRIBUTION-bullet"
 function apt-get-ros-package {
     echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
     sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE && return 0
