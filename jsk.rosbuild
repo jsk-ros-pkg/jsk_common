@@ -129,7 +129,7 @@ function apt-get-ros-package {
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
 function install-pkg {
-    (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && ROS_WORKSPACE="" rosws merge /opt/ros/$DISTRIBUTION -y && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL -y ; done && ROS_WORKSPACE="" rosws update)
+    (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && ROS_WORKSPACE="" rosws merge /opt/ros/$DISTRIBUTION -r -y && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL -r -y ; done && ROS_WORKSPACE="" rosws update)
 # source
     . $ROS_INSTALLDIR/setup.sh
     export PATH=$PATH:/usr/sbin:/usr/bin:/sbin:/bin
