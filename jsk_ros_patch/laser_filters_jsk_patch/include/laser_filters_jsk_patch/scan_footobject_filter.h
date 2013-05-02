@@ -97,8 +97,8 @@ public:
 
     std::set<int> indices_to_publish;
     // assume that all points is pass thorugh shadow filter, so each blob is separeted by invalide scan data
-    std::vector<std::vector<double> > range_blobs;
-    std::vector<double> range_blob;
+    std::vector<std::vector<int> > range_blobs;
+    std::vector<int> range_blob;
     for (unsigned int i = 0; i < scan_in.ranges.size (); i++)
     {
       scan_out.ranges[i] = -1.0 * fabs(scan_in.ranges[i]); // set all ranges to invalid (*)
@@ -108,7 +108,7 @@ public:
           }
           range_blob.clear();
       }else{
-          range_blob.push_back(scan_in.ranges[i]);
+          range_blob.push_back(i);
       }
     }
     if ( range_blob.size() > min_points_ ) {
@@ -120,8 +120,8 @@ public:
         // check center of blob
         double center_x = 0, center_y = 0;
         for (unsigned int j = 0; j < size; j++) {
-            double x = range_blobs[i][j];
-            double y = range_blobs[i][j] * scan_in.angle_increment;
+            double x = scan_in.ranges[range_blobs[i][j]];
+            double y = scan_in.ranges[range_blobs[i][j]] * scan_in.angle_increment;
             center_x += x;
             center_y += y;
         }
@@ -131,15 +131,15 @@ public:
         // check range of blob
         double radius = 0;
         for (unsigned int j = 0; j < size; j++) {
-            double x = range_blobs[i][j];
-            double y = range_blobs[i][j] * scan_in.angle_increment;
+            double x = scan_in.ranges[range_blobs[i][j]];
+            double y = scan_in.ranges[range_blobs[i][j]] * scan_in.angle_increment;
             if ( radius < fabs(center_x - x) ) radius = fabs(center_x - x) ;
             if ( radius < fabs(center_y - y) ) radius = fabs(center_y - y) ;
         }
 
         ROS_INFO_STREAM("blob center " << center_x << " " << center_y << ", radius " << radius << ", num of ponits " << size);
         if ( radius < max_radius_ ) {
-            indices_to_publish.insert(i - size/2);
+            indices_to_publish.insert(range_blobs[i][0] + size/2);
         }
     }
     ROS_DEBUG("ScanFootObjectFilter  %d Points from scan with min radius: %.2f, num of pints: %d", (int)indices_to_publish.size(), max_radius_, min_points_);
