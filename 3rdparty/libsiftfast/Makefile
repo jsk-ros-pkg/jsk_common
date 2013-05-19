@@ -2,7 +2,7 @@ all: libsiftfast
 
 INSTALL_DIR=`rospack find libsiftfast`
 SVN_DIR = libsiftfast_svn
-SVN_URL = https://libsift.svn.sourceforge.net/svnroot/libsift/trunk
+SVN_URL = http://svn.code.sf.net/p/libsift/code/trunk
 include $(shell rospack find mk)/svn_checkout.mk
 
 .PHONY: libsiftfast
