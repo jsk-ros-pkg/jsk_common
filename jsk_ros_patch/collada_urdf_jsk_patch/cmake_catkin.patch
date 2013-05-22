@@ -1,23 +1,8 @@
-diff -r 57cb2365cf54 collada_urdf/CMakeLists.txt
---- a/collada_urdf/CMakeLists.txt      Sat Dec 22 15:41:12 2012 +0200
-+++ b/collada_urdf/CMakeLists.txt      Tue Feb 05 17:53:38 2013 +0900
-@@ -46,13 +46,18 @@
- 
-
-
-+include(FindPkgConfig)
-+pkg_check_modules(GLIB REQUIRED glib-2.0)
-+include_directories(${GLIB_INCLUDE_DIRS})
-+link_directories(${GLIB_LIBRARY_DIRS})
-+
- include_directories(${catkin_INCLUDE_DIRS})
- link_directories(${catkin_LIBRARY_DIRS})
- 
-
- add_library(${PROJECT_NAME} src/collada_urdf.cpp)
- target_link_libraries(${PROJECT_NAME} ${tinyxml_library} ${ASSIMP_LIBRARIES} ${catkin_LIBRARIES} ${COLLADA_DOM_LIBRARIES}  
--  ${Boost_LIBRARIES})
-+  ${Boost_LIBRARIES} gts)
- set_target_properties(${PROJECT_NAME} PROPERTIES COMPILER_FLAGS "${ASSIMP_CXX_FLAGS} ${ASSIMP_CFLAGS_OTHER}")
- set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "${ASSIMP_LINK_FLAGS}") 
- 
+diff --git a/collada_urdf/Makefile b/collada_urdf/Makefile
+new file mode 100644
+index 0000000..b75b928
+--- /dev/null
++++ b/collada_urdf/Makefile
+@@ -0,0 +1 @@
++include $(shell rospack find mk)/cmake.mk
+\ No newline at end of file
