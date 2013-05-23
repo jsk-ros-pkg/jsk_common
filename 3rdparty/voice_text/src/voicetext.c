@@ -8,7 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "/usr/vt/sayaka/M16/include/vt_jpn.h"
+#include "/usr/vt/sayaka/M16/inc/vt_jpn.h"
 
 int main(int argc, char *argv[])
 {

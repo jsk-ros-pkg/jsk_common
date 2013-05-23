@@ -9,6 +9,8 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/voice_text</url>
 
+  <rosdep name="nkf"/>
+
 </package>
 
 
