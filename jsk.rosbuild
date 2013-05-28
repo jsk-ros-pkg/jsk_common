@@ -222,10 +222,10 @@ function install-jsk-ros-pkg {
     fi
 }
 function compile-jsk-ros-pkg {
-    compile-pkg pr2eus_openrave elevator_move_base_pr2
+    compile-pkg pr2eus_openrave elevator_move_base_pr2 detect_cans_in_fridge_201202 jsk_2013_04_pr2_610
 }
 function test-jsk-ros-pkg {
-    test-pkg euslisp roseus pr2eus euscollada pr2eus_openrave jsk_pcl_ros kinect_near_mode_calibration elevator_move_base_pr2 detect_cans_in_fridge_201202
+    test-pkg euslisp roseus pr2eus euscollada pr2eus_openrave jsk_pcl_ros kinect_near_mode_calibration elevator_move_base_pr2 detect_cans_in_fridge_201202 jsk_2013_04_pr2_610
 }
 
 # show-* option
