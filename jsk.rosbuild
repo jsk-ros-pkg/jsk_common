@@ -148,6 +148,20 @@ function test-pkg {
     trap error ERR
     local PACKAGES=$@
     # test
+    export DISPLAY=
+    export PATH=$PATH:`rospack find roseus`/bin
+    rm -fr $ROS_INSTALLDIR/../../.ros/test_results
+
+    for PACKAGE in $PACKAGES
+    do
+	(cd `rospack find $PACKAGE`; make test || make tests) # catkin uses make tests, rosbuild uses make test
+    done
+}
+
+function doc-pkg {
+    trap error ERR
+    local PACKAGES=$@
+    # test
     export DISPLAY=:0.0
     export PATH=$PATH:`rospack find roseus`/bin
     rm -fr $ROS_INSTALLDIR/../../.ros/test_results
