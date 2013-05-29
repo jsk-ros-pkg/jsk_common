@@ -154,7 +154,12 @@ function test-pkg {
 
     for PACKAGE in $PACKAGES
     do
-	(cd `rospack find $PACKAGE`; make test || make tests) # catkin uses make tests, rosbuild uses make test
+        # catkin uses make tests, rosbuild uses make test
+        if [ $DISTRIBUTION == "electric" || $DISTRIBUTION == "fuerte" || ! -e `rospack find $PACKAGE`/package.xml ]; then
+            (cd `rospack find $PACKAGE`; make test  || echo "-- $PACKAGE failed" )
+        else
+            (cd `rospack find $PACKAGE`; make tests || echo "-- $PACKAGE failed" )
+        fi
     done
 }
 
