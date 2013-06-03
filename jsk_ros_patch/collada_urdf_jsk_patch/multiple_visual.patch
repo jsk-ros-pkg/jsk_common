@@ -1,0 +1,232 @@
+diff --git a/collada_urdf/src/collada_urdf.cpp b/collada_urdf/src/collada_urdf.cpp
+index 38b27e3..c0a131a 100644
+--- a/collada_urdf/src/collada_urdf.cpp
++++ b/collada_urdf/src/collada_urdf.cpp
+@@ -1148,24 +1148,66 @@ protected:
+             geometry_origin = plink->collision->origin;
+         }
+ 
++        urdf::Pose geometry_origin_inv = _poseInverse(geometry_origin);
++
+         if( !!geometry ) {
+-            int igeom = 0;
+-            string geomid = _ComputeId(str(boost::format("g%s_%s_geom%d")%strModelUri%linksid%igeom));
+-            domGeometryRef pdomgeom = _WriteGeometry(geometry, geomid);
+-            domInstance_geometryRef pinstgeom = daeSafeCast<domInstance_geometry>(pnode->add(COLLADA_ELEMENT_INSTANCE_GEOMETRY));
+-            pinstgeom->setUrl((string("#")+geomid).c_str());
+-
+-            // material
+-            _WriteMaterial(pdomgeom->getID(), material);
+-            domBind_materialRef pmat = daeSafeCast<domBind_material>(pinstgeom->add(COLLADA_ELEMENT_BIND_MATERIAL));
+-            domBind_material::domTechnique_commonRef pmattec = daeSafeCast<domBind_material::domTechnique_common>(pmat->add(COLLADA_ELEMENT_TECHNIQUE_COMMON));
+-            domInstance_materialRef pinstmat = daeSafeCast<domInstance_material>(pmattec->add(COLLADA_ELEMENT_INSTANCE_MATERIAL));
+-            pinstmat->setTarget(xsAnyURI(*pdomgeom, string("#")+geomid+string("_mat")));
+-            pinstmat->setSymbol("mat0");
++            bool write_visual = false;
++            if ( !!plink->visual ) {
++              if (plink->visual_groups.size() > 0) {
++                std::map<std::string, boost::shared_ptr<std::vector<boost::shared_ptr<urdf::Visual > > > >::const_iterator def_group
++                  = plink->visual_groups.find("default");
++                if (def_group != plink->visual_groups.end()) {
++                  std::cerr << "found default visual group" << std::endl;
++                  if (def_group->second->size() > 1) {
++                    std::cerr << "visual group size = " << def_group->second->size() << std::endl;
++                    int igeom = 0;
++                    for (std::vector<boost::shared_ptr<urdf::Visual > >::const_iterator it = def_group->second->begin();
++                         it != def_group->second->end(); it++) {
++                      // geom
++                      string geomid = _ComputeId(str(boost::format("g%s_%s_geom%d")%strModelUri%linksid%igeom));
++                      igeom++;
++                      domGeometryRef pdomgeom;
++                      if ( it != def_group->second->begin() ) {
++                        urdf::Pose org_trans =  _poseMult(geometry_origin_inv, (*it)->origin);
++                        pdomgeom = _WriteGeometry((*it)->geometry, geomid, &org_trans);
++                      } else {
++                        pdomgeom = _WriteGeometry((*it)->geometry, geomid);
++                      }
++                      domInstance_geometryRef pinstgeom = daeSafeCast<domInstance_geometry>(pnode->add(COLLADA_ELEMENT_INSTANCE_GEOMETRY));
++                      pinstgeom->setUrl((string("#") + geomid).c_str());
++                      // material
++                      _WriteMaterial(pdomgeom->getID(), (*it)->material);
++                      domBind_materialRef pmat = daeSafeCast<domBind_material>(pinstgeom->add(COLLADA_ELEMENT_BIND_MATERIAL));
++                      domBind_material::domTechnique_commonRef pmattec = daeSafeCast<domBind_material::domTechnique_common>(pmat->add(COLLADA_ELEMENT_TECHNIQUE_COMMON));
++                      domInstance_materialRef pinstmat = daeSafeCast<domInstance_material>(pmattec->add(COLLADA_ELEMENT_INSTANCE_MATERIAL));
++                      pinstmat->setTarget(xsAnyURI(*pdomgeom, string("#")+geomid+string("_mat")));
++                      pinstmat->setSymbol("mat0");
++                      write_visual = true;
++                    }
++                  }
++                }
++              }
++            }
++            if (!write_visual) {
++              std::cerr << "use default visual 1" << std::endl;
++              // just 1 visual
++              int igeom = 0;
++              string geomid = _ComputeId(str(boost::format("g%s_%s_geom%d")%strModelUri%linksid%igeom));
++              domGeometryRef pdomgeom = _WriteGeometry(geometry, geomid);
++              domInstance_geometryRef pinstgeom = daeSafeCast<domInstance_geometry>(pnode->add(COLLADA_ELEMENT_INSTANCE_GEOMETRY));
++              pinstgeom->setUrl((string("#")+geomid).c_str());
++
++              // material
++              _WriteMaterial(pdomgeom->getID(), material);
++              domBind_materialRef pmat = daeSafeCast<domBind_material>(pinstgeom->add(COLLADA_ELEMENT_BIND_MATERIAL));
++              domBind_material::domTechnique_commonRef pmattec = daeSafeCast<domBind_material::domTechnique_common>(pmat->add(COLLADA_ELEMENT_TECHNIQUE_COMMON));
++              domInstance_materialRef pinstmat = daeSafeCast<domInstance_material>(pmattec->add(COLLADA_ELEMENT_INSTANCE_MATERIAL));
++              pinstmat->setTarget(xsAnyURI(*pdomgeom, string("#")+geomid+string("_mat")));
++              pinstmat->setSymbol("mat0");
++            }
+         }
+ 
+         _WriteTransformation(pnode, geometry_origin);
+-        urdf::Pose geometry_origin_inv = _poseInverse(geometry_origin);
+ 
+         // process all children
+         FOREACHC(itjoint, plink->child_joints) {
+@@ -1230,14 +1272,14 @@ protected:
+         return out;
+     }
+ 
+-    domGeometryRef _WriteGeometry(boost::shared_ptr<urdf::Geometry> geometry, const std::string& geometry_id)
++    domGeometryRef _WriteGeometry(boost::shared_ptr<urdf::Geometry> geometry, const std::string& geometry_id, urdf::Pose *org_trans = NULL)
+     {
+         domGeometryRef cgeometry = daeSafeCast<domGeometry>(_geometriesLib->add(COLLADA_ELEMENT_GEOMETRY));
+         cgeometry->setId(geometry_id.c_str());
+         switch (geometry->type) {
+         case urdf::Geometry::MESH: {
+             urdf::Mesh* urdf_mesh = (urdf::Mesh*) geometry.get();
+-            _loadMesh(urdf_mesh->filename, cgeometry, urdf_mesh->scale);
++            _loadMesh(urdf_mesh->filename, cgeometry, urdf_mesh->scale, org_trans);
+             break;
+         }
+         case urdf::Geometry::SPHERE: {
+@@ -1285,7 +1327,7 @@ protected:
+                 sphere_vertices.push_back(Triangle(points[a], points[ring*seg+1], points[b]));
+             }
+ 
+-            _loadVertices(sphere_vertices, cgeometry);
++            _loadVertices(sphere_vertices, cgeometry, org_trans);
+             break;
+         }
+         case urdf::Geometry::BOX: {
+@@ -1309,7 +1351,7 @@ protected:
+             box_vertices.push_back(Triangle(urdf::Vector3(-x,  y, -z), urdf::Vector3(-x, -y,  z), urdf::Vector3(-x,  y,  z)));
+             box_vertices.push_back(Triangle(urdf::Vector3(-x, -y,  z), urdf::Vector3(-x,  y, -z), urdf::Vector3(-x, -y, -z)));
+ 
+-            _loadVertices(box_vertices, cgeometry);
++            _loadVertices(box_vertices, cgeometry, org_trans);
+             break;
+         }
+         case urdf::Geometry::CYLINDER: {
+@@ -1327,7 +1369,7 @@ protected:
+                 cylinder_vertices.push_back(Triangle(urdf::Vector3(r*s1, r*c1,-l/2), urdf::Vector3(r*s2, r*c2, l/2), urdf::Vector3(r*s1, r*c1, l/2)));
+                 cylinder_vertices.push_back(Triangle(urdf::Vector3(0, 0, l/2), urdf::Vector3(r*s1, r*c1, l/2), urdf::Vector3(r*s2, r*c2, l/2)));
+             }
+-            _loadVertices(cylinder_vertices, cgeometry);
++            _loadVertices(cylinder_vertices, cgeometry, org_trans);
+ 
+             break;
+         }
+@@ -1457,7 +1499,7 @@ protected:
+         return pmout;
+     }
+ 
+-    void _loadVertices(const std::vector<Triangle> vertices, domGeometryRef pdomgeom) {
++    void _loadVertices(const std::vector<Triangle> vertices, domGeometryRef pdomgeom, urdf::Pose *org_trans) {
+ #if defined(IS_ASSIMP3)
+             // aiScene::aiScene is a hidden symbol in assimp 3; so we hack..
+             aiScene* scene = (aiScene*)malloc(sizeof(aiScene));
+@@ -1479,22 +1521,25 @@ protected:
+             FOREACH(it, vertices) {
+                 scene->mMeshes[0]->mFaces[scene->mMeshes[0]->mNumFaces].mNumIndices = 3;
+                 scene->mMeshes[0]->mFaces[scene->mMeshes[0]->mNumFaces].mIndices = (unsigned int *)malloc(sizeof(unsigned int)*3);
+-
+-                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].x = it->p1.x;
+-                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].y = it->p1.y;
+-                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].z = it->p1.z;
++                urdf::Vector3 v1;
++                if (!!org_trans) v1 = _poseMult(*org_trans, it->p1); else v1 = it->p1;
++                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].x = v1.x;
++                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].y = v1.y;
++                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].z = v1.z;
+                 scene->mMeshes[0]->mFaces[scene->mMeshes[0]->mNumFaces].mIndices[0] = scene->mMeshes[0]->mNumVertices;
+                 scene->mMeshes[0]->mNumVertices++;
+-
+-                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].x = it->p2.x;
+-                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].y = it->p2.y;
+-                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].z = it->p2.z;
++                urdf::Vector3 v2;
++                if (!!org_trans) v2 = _poseMult(*org_trans, it->p2); else v2 = it->p2;
++                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].x = v2.x;
++                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].y = v2.y;
++                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].z = v2.z;
+                 scene->mMeshes[0]->mFaces[scene->mMeshes[0]->mNumFaces].mIndices[1] = scene->mMeshes[0]->mNumVertices;
+                 scene->mMeshes[0]->mNumVertices++;
+-
+-                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].x = it->p3.x;
+-                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].y = it->p3.y;
+-                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].z = it->p3.z;
++                urdf::Vector3 v3;
++                if (!!org_trans) v3 = _poseMult(*org_trans, it->p3); else v3 = it->p3;
++                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].x = v3.x;
++                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].y = v3.y;
++                scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].z = v3.z;
+                 scene->mMeshes[0]->mFaces[scene->mMeshes[0]->mNumFaces].mIndices[2] = scene->mMeshes[0]->mNumVertices;
+                 scene->mMeshes[0]->mNumVertices++;
+ 
+@@ -1535,7 +1580,7 @@ protected:
+             pacc->setCount(parray->getCount());
+     }
+ 
+-    void _loadMesh(std::string const& filename, domGeometryRef pdomgeom, const urdf::Vector3& scale)
++    void _loadMesh(std::string const& filename, domGeometryRef pdomgeom, const urdf::Vector3& scale, urdf::Pose *org_trans)
+     {
+         const aiScene* scene = _importer.ReadFile(filename, aiProcess_SortByPType|aiProcess_Triangulate); //|aiProcess_GenNormals|aiProcess_GenUVCoords|aiProcess_FlipUVs);
+         if( !scene ) {
+@@ -1580,11 +1625,11 @@ protected:
+             pvertinput->setSemantic("POSITION");
+             pvertinput->setSource(domUrifragment(*pvertsource, string("#")+string(pvertsource->getID())));
+         }
+-        _buildAiMesh(scene,scene->mRootNode,pdommesh,parray, pdomgeom->getID(),scale);
++        _buildAiMesh(scene,scene->mRootNode,pdommesh,parray, pdomgeom->getID(),scale,org_trans);
+         pacc->setCount(parray->getCount());
+     }
+ 
+-    void _buildAiMesh(const aiScene* scene, aiNode* node, domMeshRef pdommesh, domFloat_arrayRef parray, const string& geomid, const urdf::Vector3& scale)
++    void _buildAiMesh(const aiScene* scene, aiNode* node, domMeshRef pdommesh, domFloat_arrayRef parray, const string& geomid, const urdf::Vector3& scale, urdf::Pose *org_trans = NULL)
+     {
+         if( !node ) {
+             return;
+@@ -1616,9 +1661,20 @@ protected:
+                 for (uint32_t j = 0; j < input_mesh->mNumVertices; j++) {
+                     aiVector3D p = input_mesh->mVertices[j];
+                     p *= transform;
+-                    parray->getValue().append(p.x*scale.x);
+-                    parray->getValue().append(p.y*scale.y);
+-                    parray->getValue().append(p.z*scale.z);
++                    if (org_trans) {
++                      urdf::Vector3 vv;
++                      vv.x = p.x*scale.x;
++                      vv.y = p.y*scale.y;
++                      vv.z = p.z*scale.z;
++                      urdf::Vector3 nv = _poseMult(*org_trans, vv);
++                      parray->getValue().append(nv.x);
++                      parray->getValue().append(nv.y);
++                      parray->getValue().append(nv.z);
++                    } else {
++                      parray->getValue().append(p.x*scale.x);
++                      parray->getValue().append(p.y*scale.y);
++                      parray->getValue().append(p.z*scale.z);
++                    }
+                 }
+             }
+ 
+@@ -1701,7 +1757,7 @@ protected:
+         }
+ 
+         for (uint32_t i=0; i < node->mNumChildren; ++i) {
+-            _buildAiMesh(scene, node->mChildren[i], pdommesh,parray,geomid,scale);
++            _buildAiMesh(scene, node->mChildren[i], pdommesh,parray,geomid,scale,org_trans);
+         }
+     }
+ 
