@@ -20,9 +20,9 @@ macro(patch package)
   file(REMOVE ${PATCH_BATCH_FILE})
 endmacro(patch package)
 
-patch(face_detector_mono)
+patch(face_detector_mono) 
 patch(SnapMapICP)
-patch(safe_teleop_base)
+patch(safe_teleop_base) https://sourceforge.net/p/bosch-ros-pkg/tickets/9/
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
