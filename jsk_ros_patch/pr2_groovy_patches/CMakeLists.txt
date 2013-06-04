@@ -1,5 +1,5 @@
 if($ENV{ROS_DISTRO} STREQUAL "electric" OR $ENV{ROS_DISTRO} STREQUAL "fuerte")
-  mesage("this package is for groovy")
+  message("-- pr2_groovy_patches package is for groovy")
   return()
 endif()
 
