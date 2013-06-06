@@ -117,7 +117,7 @@ function apt-get-ros-package {
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
 function install-pkg {
-    (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && ROS_WORKSPACE="" rosws merge /opt/ros/$DISTRIBUTION -r -y && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL -r -y ; done && ROS_WORKSPACE="" rosws update)
+    (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && for ROSINSTALL in $@; do echo $ROSINSALL;sed -i s/@ROS_DISTRO@/$DISTRIBUTION/ $ROSINSTALL; sed -i s/^#@#// $ROSINSTALL; ROS_WORKSPACE="" rosws merge $ROSINSTALL -r -y ; done && ROS_WORKSPACE="" rosws update)
 # source
     . $ROS_INSTALLDIR/setup.sh
     export PATH=$PATH:/usr/sbin:/usr/bin:/sbin:/bin
@@ -234,7 +234,8 @@ EOF
 }
 
 function install-jsk-ros-pkg {
-    install-pkg 'http://svn.code.sf.net/p/jsk-ros-pkg/code/trunk/jsk.rosinstall?format=raw'
+    wget  'http://svn.code.sf.net/p/jsk-ros-pkg/code/trunk/jsk.rosinstall?format=raw' -O /tmp/jsk.rosinstall.$$
+    install-pkg /tmp/jsk.rosinstall.$$
     rosdep install euslisp
     if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
         xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi
