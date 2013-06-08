@@ -26,19 +26,19 @@ index 7634806..208dfdc 100644
        mOutput << startstr << "<phong>" << endstr;
        PushTag();
 diff --git a/code/ColladaLoader.cpp b/code/ColladaLoader.cpp
-index dca2b8e..a1e6065 100644
+index 52e592b..24a7d2e 100644
 --- a/code/ColladaLoader.cpp
 +++ b/code/ColladaLoader.cpp
-@@ -154,7 +154,7 @@ void ColladaLoader::InternReadFile( const std::string& pFile, aiScene* pScene, I
- 
- 	// ... then fill the materials with the now adjusted settings
- 	FillMaterials(parser, pScene);
+@@ -160,7 +160,7 @@ void ColladaLoader::InternReadFile( const std::string& pFile, aiScene* pScene, I
+                                                           0,  parser.mUnitSize,  0,  0,
+                                                           0,  0,  parser.mUnitSize,  0,
+                                                           0,  0,  0,  1);
 -
 +#if 0
- 	// Convert to Y_UP, if different orientation
+         // Convert to Y_UP, if different orientation
  	if( parser.mUpDirection == ColladaParser::UP_X)
  		pScene->mRootNode->mTransformation *= aiMatrix4x4( 
-@@ -168,6 +168,20 @@ void ColladaLoader::InternReadFile( const std::string& pFile, aiScene* pScene, I
+@@ -174,6 +174,20 @@ void ColladaLoader::InternReadFile( const std::string& pFile, aiScene* pScene, I
  			 0,  0,  1,  0,
  			 0, -1,  0,  0,
  			 0,  0,  0,  1);
