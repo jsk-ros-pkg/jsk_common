@@ -71,6 +71,7 @@ if [ "$WORKSPACE" == "" ]; then # if not jenkins
     export WORKSPACE=$HOME
 fi
 export ROS_INSTALLDIR=$WORKSPACE/ros/$DISTRIBUTION
+export PATH=$PATH:/usr/sbin:/usr/bin:/sbin:/bin
 
 # set environment variables
 if [ -f /proc/xen -o "`grep -c 'QEMU Virtual CPU' /proc/cpuinfo`" != "0" ]; then
@@ -119,8 +120,6 @@ function apt-get-ros-package {
 function install-pkg {
     (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || rosws init ) && for ROSINSTALL in $@; do echo $ROSINSALL;sed -i s/@ROS_DISTRO@/$DISTRIBUTION/ $ROSINSTALL; sed -i s/^#@#// $ROSINSTALL; ROS_WORKSPACE="" rosws merge $ROSINSTALL -r -y ; done && ROS_WORKSPACE="" rosws update)
 # source
-    . $ROS_INSTALLDIR/setup.sh
-    export PATH=$PATH:/usr/sbin:/usr/bin:/sbin:/bin
 }
 
 function rosdep_and_rosmake {
@@ -133,6 +132,7 @@ function rosdep_and_rosmake {
 function compile-pkg {
     trap error ERR
     local PACKAGES=$@
+    . $ROS_INSTALLDIR/setup.sh
     # sometimes sourceforge returns error
     rospack profile
     (cd `rospack find euslisp`; svn up; svn up)
@@ -147,6 +147,7 @@ function compile-pkg {
 function test-pkg {
     trap error ERR
     local PACKAGES=$@
+    . $ROS_INSTALLDIR/setup.sh
     # test
     export DISPLAY=
     export PATH=$PATH:`rospack find roseus`/bin
@@ -166,6 +167,7 @@ function test-pkg {
 function doc-pkg {
     trap error ERR
     local PACKAGES=$@
+    . $ROS_INSTALLDIR/setup.sh
     # test
     export DISPLAY=:0.0
     export PATH=$PATH:`rospack find roseus`/bin
