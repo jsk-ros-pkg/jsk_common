@@ -268,5 +268,6 @@ else
     test-jsk-ros-pkg
 fi
 
-rosrun rosunit clean_junit_xml.py     # check error
+#
+which rosrun && rosrun rosunit clean_junit_xml.py     # check error
 
