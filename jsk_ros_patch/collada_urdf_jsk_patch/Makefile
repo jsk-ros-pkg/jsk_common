@@ -10,7 +10,7 @@ ifeq ($(shell rosversion -d),groovy)
 GIT_DIR = build/robot_model
 GIT_URL = https://github.com/ros/robot_model.git
 GIT_REVISION = groovy-devel
-GIT_PATCH = multiple_visual.patch collada_cmake.patch set_url_name_groovy.patch cmake_catkin.patch
+GIT_PATCH = set_url_name_groovy.patch cmake_catkin.patch
 BUILD_BIN_DIR  = `pwd`/$(GIT_DIR)/collada_urdf/build/devel/lib/collada_urdf
 include $(shell rospack find mk)/git_checkout.mk
 SRC_DIR = $(GIT_DIR)
