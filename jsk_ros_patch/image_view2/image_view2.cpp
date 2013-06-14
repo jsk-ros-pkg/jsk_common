@@ -95,6 +95,8 @@ private:
   std::string window_name_;
   boost::format filename_format_;
   int font_;
+
+  static double resize_x_, resize_y_;
   static CvRect window_selection_;
   int count_;
   bool blurry_mode;
@@ -129,6 +131,11 @@ public:
     local_nh.param("filename_format", format_string, std::string("frame%04i.jpg"));
     local_nh.param("use_window", use_window, true);
 
+    double xx,yy;
+    local_nh.param("resize_scale_x", xx, 1.0);
+    local_nh.param("resize_scale_y", yy, 1.0);
+    resize_x_ = 1.0/xx;
+    resize_y_ = 1.0/yy;
     filename_format_.parse(format_string);
 
     if ( use_window ) {
@@ -833,21 +840,23 @@ public:
     case CV_EVENT_LBUTTONUP:
       if ( ( ros::Time::now().toSec() - left_buttondown_time.toSec() ) < 1.0 ) {
         geometry_msgs::PointStamped screen_msg;
-        screen_msg.point.x = window_selection_.x;
-        screen_msg.point.y = window_selection_.y;
+        screen_msg.point.x = window_selection_.x * resize_x_;
+        screen_msg.point.y = window_selection_.y * resize_y_;
         screen_msg.point.z = 0;
         screen_msg.header.stamp = ros::Time::now();
-        ROS_INFO("Publish screen point %s (%d %d)", iv->point_pub_.getTopic().c_str(), x, y);
+        ROS_INFO("Publish screen point %s (%f %f)", iv->point_pub_.getTopic().c_str(), screen_msg.point.x, screen_msg.point.y);
         iv->point_pub_.publish(screen_msg);
       } else {
         geometry_msgs::PolygonStamped screen_msg;
         screen_msg.polygon.points.resize(2);
-        screen_msg.polygon.points[0].x = window_selection_.x;
-        screen_msg.polygon.points[0].y = window_selection_.y;
-        screen_msg.polygon.points[1].x = window_selection_.x + window_selection_.width;
-        screen_msg.polygon.points[1].y = window_selection_.y + window_selection_.height;
+        screen_msg.polygon.points[0].x = window_selection_.x * resize_x_;
+        screen_msg.polygon.points[0].y = window_selection_.y * resize_y_;
+        screen_msg.polygon.points[1].x = (window_selection_.x + window_selection_.width) * resize_x_;
+        screen_msg.polygon.points[1].y = (window_selection_.y + window_selection_.height) * resize_y_;
         screen_msg.header.stamp = ros::Time::now();
-        ROS_INFO("Publish rectangle point %s (%d %d %d %d)", iv->rectangle_pub_.getTopic().c_str(), window_selection_.y, window_selection_.y, window_selection_.width, window_selection_.height);
+        ROS_INFO("Publish rectangle point %s (%f %f %f %f)", iv->rectangle_pub_.getTopic().c_str(),
+                 screen_msg.polygon.points[0].x, screen_msg.polygon.points[0].y,
+                 screen_msg.polygon.points[1].x, screen_msg.polygon.points[1].y);
         iv->rectangle_pub_.publish(screen_msg);
       }
       window_selection_.x = window_selection_.y =
@@ -889,3 +898,4 @@ int main(int argc, char **argv)
 }
 
 CvRect ImageView2::window_selection_;
+double ImageView2::resize_x_, ImageView2::resize_y_;
