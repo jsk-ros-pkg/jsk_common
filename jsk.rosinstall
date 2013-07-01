@@ -1,8 +1,6 @@
 # rosinstall file for http://jskeus.sourceforge.net
 # use #@# for special comment out, due to jsk.rosbuild specification
 #
-#@#- setup-file:
-#@#    local-name: /opt/ros/@ROS_DISTRO@/setup.sh
 
 - svn:
     uri: https://svn.code.sf.net/p/jsk-ros-pkg/code/trunk
