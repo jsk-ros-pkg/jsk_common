@@ -23,6 +23,7 @@ int32 action      	# ADD/REMOVE
 geometry_msgs/Point position # used for CIRCLE/TEXT, 2D in pixel-coords
 geometry_msgs/PointStamped position3D # used for 3DTEXT
 float32 scale	 	# the diameter for a circle, etc.
+float32 width	 	# the width for a line, etc.
 std_msgs/ColorRGBA outline_color
 byte filled		# whether to fill in the shape with color
 std_msgs/ColorRGBA fill_color # color [0.0-1.0]
