@@ -1,0 +1,46 @@
+diff --git a/twoauth/streaming.py b/twoauth/streaming.py
+index c89fe84..5515ac7 100644
+--- a/twoauth/streaming.py
++++ b/twoauth/streaming.py
+@@ -151,11 +151,11 @@ class StreamingAPI(object):
+         return params
+     
+     def sample(self):
+-        path = "https://stream.twitter.com/1/statuses/sample.json"
++        path = "https://stream.twitter.com/1.1/statuses/sample.json"
+         return Stream(self._request(path))
+     
+     def filter(self, follow = [], locations = [], track = [], **params):
+-        path = "https://stream.twitter.com/1/statuses/filter.json"
++        path = "https://stream.twitter.com/1.1/statuses/filter.json"
+         p = self._params(follow, locations, track)
+         p.update(params)
+         
+diff --git a/twoauth/twitpic.py b/twoauth/twitpic.py
+index 370b106..c113baa 100644
+--- a/twoauth/twitpic.py
++++ b/twoauth/twitpic.py
+@@ -45,7 +45,7 @@ import oauth
+ class Twitpic(object):
+     host = "api.twitpic.com"
+     url = "/2/upload.json"
+-    verify_credentials_url = "https://api.twitter.com/1/account/verify_credentials.json"
++    verify_credentials_url = "https://api.twitter.com/1.1/account/verify_credentials.json"
+     
+     def __init__(self, oauth, apikey):
+         self.oauth = oauth
+diff --git a/twoauth/url_method.py b/twoauth/url_method.py
+index 2ffcc97..19cc7f1 100644
+--- a/twoauth/url_method.py
++++ b/twoauth/url_method.py
+@@ -32,8 +32,8 @@ class TwitterURL(object):
+     protocol_http = "http"
+     protocol_https = "https"
+ 
+-    endpoint = "://api.twitter.com/1/"
+-    endpoint_upload = "://upload.twitter.com/1/"
++    endpoint = "://api.twitter.com/1.1/"
++    endpoint_upload = "://upload.twitter.com/1.1/"
+     
+     # Twitter REST API Methods
+     method = {
