@@ -151,7 +151,7 @@ function test-pkg {
     # test
     export DISPLAY=
     export PATH=$PATH:`rospack find roseus`/bin
-    rm -fr $ROS_INSTALLDIR/../../.ros/test_results
+    rm -fr $ROS_WORKSPACE/test_results
 
     for PACKAGE in $PACKAGES
     do
