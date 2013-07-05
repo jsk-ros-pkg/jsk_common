@@ -141,6 +141,7 @@ function compile-pkg {
     for PACKAGE in $PACKAGES
     do
 	rosdep_and_rosmake $PACKAGE
+        (roscd $PACKAGE; make) # make sure to compile package
     done
 }
 
