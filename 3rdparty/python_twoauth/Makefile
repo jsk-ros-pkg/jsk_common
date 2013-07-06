@@ -3,7 +3,6 @@ all: installed
 TOP_DIR = $(shell pwd)
 GIT_DIR = build/python-twoauth
 GIT_URL = https://github.com/techno/python-twoauth
-GIT_PATCH = api_1_1.patch
 include $(shell rospack find mk)/git_checkout.mk
 
 installed: $(GIT_DIR) patched
