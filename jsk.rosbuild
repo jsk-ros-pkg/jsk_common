@@ -139,7 +139,7 @@ function compile-pkg {
     for PACKAGE in $PACKAGES
     do
 	rosdep_and_rosmake $PACKAGE
-        (cd `rospack find $PACKAGE`; [ ! -e ROS_NOBUILD ] && make ) || echo "ROS_NOBUILD found" ) # make sure to compile package
+        (cd `rospack find $PACKAGE`; [ ! -e ROS_NOBUILD ] && make ) || echo "ROS_NOBUILD found" # make sure to compile package
     done
 }
 
