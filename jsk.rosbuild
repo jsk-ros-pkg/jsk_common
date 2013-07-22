@@ -151,6 +151,7 @@ function compile-pkg {
             (cd `rospack find $PACKAGE`; [ ! -e ROS_NOBUILD ] && make ) || echo "ROS_NOBUILD found" # make sure to compile package
         done
     else ## hydro and up, use catkin
+        . /opt/ros/$DISTRIBUTION/setup.sh
         (cd $ROS_INSTALLDIR && LC_ALL=C catkin_make && LC_ALL=C catkin_make install )
     fi
 }
