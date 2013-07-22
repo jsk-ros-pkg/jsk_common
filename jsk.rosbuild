@@ -118,7 +118,13 @@ function apt-get-ros-package {
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
 function install-pkg {
-    (mkdir -p $ROS_INSTALLDIR && cd $ROS_INSTALLDIR && ( [ -f .rosinstall ] || ( rosws init; rosws merge /opt/ros/$DISTRIBUTION/.rosinstall ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL -r -y ; done && ROS_WORKSPACE="" rosws update || (sleep 120; ROS_WORKSPACE="" rosws update) )
+    if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
+        ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR
+    else ## hydro and up, use catkin
+        ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR/src;
+        (cd $ROS_INSTALLDIR_SRC; catkin_init_workspace)
+    fi
+    (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( rosws init; rosws merge /opt/ros/$DISTRIBUTION/.rosinstall ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL -r -y ; done && ROS_WORKSPACE="" rosws update || (sleep 120; ROS_WORKSPACE="" rosws update) )
 # source
 }
 
@@ -132,21 +138,31 @@ function rosdep_and_rosmake {
 function compile-pkg {
     trap error ERR
     local PACKAGES=$@
-    . $ROS_INSTALLDIR/setup.sh
-    rospack profile
 
-    # start rosdep_and_rosmake
-    for PACKAGE in $PACKAGES
-    do
-	rosdep_and_rosmake $PACKAGE
-        (cd `rospack find $PACKAGE`; [ ! -e ROS_NOBUILD ] && make ) || echo "ROS_NOBUILD found" # make sure to compile package
-    done
+    if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
+        # start rosdep_and_rosmake
+        . $ROS_INSTALLDIR/setup.sh
+        rospack profile
+
+        for PACKAGE in $PACKAGES
+        do
+            echo "hoge"
+	    rosdep_and_rosmake $PACKAGE
+            (cd `rospack find $PACKAGE`; [ ! -e ROS_NOBUILD ] && make ) || echo "ROS_NOBUILD found" # make sure to compile package
+        done
+    else ## hydro and up, use catkin
+        (cd $ROS_INSTALLDIR && LC_ALL=C catkin_make && LC_ALL=C catkin_make install )
+    fi
 }
 
 function test-pkg {
     trap error ERR
     local PACKAGES=$@
-    . $ROS_INSTALLDIR/setup.sh
+    if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
+        . $ROS_INSTALLDIR/setup.sh
+    else
+        . $ROS_INSTALLDIR/devel/setup.sh
+    fi
     # test
     export DISPLAY=
     export PATH=$PATH:`rospack find roseus`/bin
