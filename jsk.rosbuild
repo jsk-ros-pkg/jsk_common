@@ -118,6 +118,7 @@ function apt-get-ros-package {
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
 function install-pkg {
+    (rosdep update; true)
     if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
         ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR
     else ## hydro and up, use catkin
@@ -146,7 +147,6 @@ function compile-pkg {
 
         for PACKAGE in $PACKAGES
         do
-            echo "hoge"
 	    rosdep_and_rosmake $PACKAGE
             (cd `rospack find $PACKAGE`; [ ! -e ROS_NOBUILD ] && make ) || echo "ROS_NOBUILD found" # make sure to compile package
         done
