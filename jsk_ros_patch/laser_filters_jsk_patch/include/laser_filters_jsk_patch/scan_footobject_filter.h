@@ -137,7 +137,7 @@ public:
             if ( radius < fabs(center_y - y) ) radius = fabs(center_y - y) ;
         }
 
-        ROS_INFO_STREAM("blob center " << center_x << " " << center_y << ", radius " << radius << ", num of ponits " << size);
+        ROS_DEBUG_STREAM("blob center " << center_x << " " << center_y << ", radius " << radius << ", num of ponits " << size);
         if ( radius < max_radius_ ) {
             indices_to_publish.insert(range_blobs[i][0] + size/2);
         }
