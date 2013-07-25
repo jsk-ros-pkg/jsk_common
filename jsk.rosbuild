@@ -167,18 +167,18 @@ function test-pkg {
     # test
     export DISPLAY=
     export PATH=$PATH:`rospack find roseus`/bin
-    export TEST_FAIL=0
+    TEST_FAIL=0
     rm -fr $ROS_WORKSPACE/test_results
 
     for PACKAGE in $PACKAGES
     do
         # catkin uses make tests, rosbuild uses make test
         if ( [ $DISTRIBUTION == "electric" ] || [ $DISTRIBUTION == "fuerte" ] || [ ! -e `rospack find $PACKAGE`/package.xml ] ); then
-            (cd `rospack find $PACKAGE`; make test  || (export TEST_FAIL=1; echo "-- $PACKAGE failed") )
+            (cd `rospack find $PACKAGE`; make test  ) || TEST_FAIL=`echo "-- $PACKAGE failed"`
         else
-            (cd `rospack find $PACKAGE`; make tests || (export test_FAIL=1; echo "-- $PACKAGE failed") )
+            (cd `rospack find $PACKAGE`; make tests ) || test_FAIL=`echo "-- $PACKAGE failed"`
         fi
-    if [ $TEST_FAIL == 1 ] ; then exit -1; fi
+    if [ "$TEST_FAIL" != "0" ] ; then exit -1; fi
     done
 }
 
