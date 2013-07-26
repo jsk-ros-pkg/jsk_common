@@ -125,7 +125,13 @@ function install-pkg {
         ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR/src;
         (cd $ROS_INSTALLDIR_SRC; catkin_init_workspace)
     fi
-    (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( rosws init; rosws merge /opt/ros/$DISTRIBUTION/.rosinstall ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL -r -y ; done && ROS_WORKSPACE="" rosws update || (sleep 120; ROS_WORKSPACE="" rosws update) )
+    (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( rosws init; rosws merge /opt/ros/$DISTRIBUTION/.rosinstall ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL -r -y ; done  )
+    success=0
+    retry=0
+    while [ $success == 0 -a $retry -lt 10 ]; do
+        (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" rosws update ) && success=1 || sleep 120
+        retry=`expr $retry + 1`
+    done
 # source
 }
 
