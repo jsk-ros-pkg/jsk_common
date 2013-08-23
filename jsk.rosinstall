@@ -8,11 +8,11 @@
 #
 # for snap map icp
 - svn:
-    uri: https://tum-ros-pkg.svn.sourceforge.net/svnroot/tum-ros-pkg/highlevel/SnapMapICP
+    uri: https://svn.code.sf.net/p/tum-ros-pkg/code/highlevel/SnapMapICP
     local-name: tum-ros-pkg/highlevel/SnapMapICP
 # for face_detector_mono
 - svn:
-    uri: https://tum-ros-pkg.svn.sourceforge.net/svnroot/tum-ros-pkg/perception
+    uri: https://svn.code.sf.net/p/tum-ros-pkg/code/perception/
     local-name: tum-ros-pkg/perception
 # for safe_teleop_pr2
 - svn:
