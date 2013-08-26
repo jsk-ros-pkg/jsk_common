@@ -14,19 +14,14 @@ GIT_PATCH = set_url_name_groovy.patch cmake_catkin.patch
 BUILD_BIN_DIR  = `pwd`/$(GIT_DIR)/collada_urdf/build/devel/lib/collada_urdf
 include $(shell rospack find mk)/git_checkout.mk
 SRC_DIR = $(GIT_DIR)
-else
-HG_DIR = build/robot_model
-HG_URL = http://kforge.ros.org/robotmodel/robot_model
-HG_REVISION = robot_model-`rosversion robot_model`
-HG_PATCH = cyliner_box_sphere.patch set_url_name.patch cmake_rosbuild.patch collada-dom.patch downloads.patch
-BUILD_BIN_DIR  = `pwd`/$(HG_DIR)/collada_urdf/bin
-include $(shell rospack find mk)/hg_checkout.mk
-SRC_DIR = $(HG_DIR)
-# https://code.ros.org/trac/ros/ticket/3748
-$(HG_DIR):
-	mkdir -p `dirname $(HG_DIR)`; hg clone $(HG_URL) $(HG_DIR)
-	cd $(HG_DIR) && hg update $(HG_BRANCH) && hg update $(HG_REVISION)
-	touch rospack_nosubdirs
+else ## fuerte
+GIT_DIR = build/robot_model
+GIT_URL = https://github.com/ros/robot_model.git
+GIT_REVISION = robot_model-`rosversion robot_model`
+GIT_PATCH = cyliner_box_sphere.patch set_url_name.patch cmake_rosbuild.patch collada-dom.patch downloads.patch
+BUILD_BIN_DIR  = `pwd`/$(GIT_DIR)/collada_urdf/bin
+include $(shell rospack find mk)/git_checkout.mk
+SRC_DIR = $(GIT_DIR)
 endif
 
 installed:$(SRC_DIR) patched
