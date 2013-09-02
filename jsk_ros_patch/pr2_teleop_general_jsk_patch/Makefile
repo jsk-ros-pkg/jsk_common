@@ -10,12 +10,11 @@ SVN_REVISION= -r 53700
 include $(shell rospack find mk)/svn_checkout.mk
 
 installed: $(SVN_DIR) patched
-	wget https://kforge.ros.org/navigation/navigation/file/0e595d0774c1/rosdep.yaml -O $(SVN_DIR)/rosdep.yaml
-	cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH rosmake
+	cd $(SVN_DIR) && rosmake
 	touch installed
 
 clean:
-	-cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make clean
+	-cd $(SVN_DIR) && make clean
 	rm -rf installed patched
 
 wipe: clean
