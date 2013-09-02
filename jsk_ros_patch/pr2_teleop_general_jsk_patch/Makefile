@@ -10,11 +10,11 @@ SVN_REVISION= -r 53700
 include $(shell rospack find mk)/svn_checkout.mk
 
 installed: $(SVN_DIR) patched
-	cd $(SVN_DIR) && rosmake
+	cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH rosmake
 	touch installed
 
 clean:
-	-cd $(SVN_DIR) && make clean
+	-cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make clean
 	rm -rf installed patched
 
 wipe: clean
