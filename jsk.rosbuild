@@ -10,9 +10,9 @@ function usage {
 }
 
 function error {
-    env
     echo "export ROS_HOME=$ROS_HOME"
     echo "source $ROS_INSTALLDIR/setup.bash"
+    (which rosrun && rosrun rosunit clean_junit_xml.py; echo "done")
     exit 1
 }
 trap error ERR
@@ -185,7 +185,7 @@ function test-pkg {
         else
             (cd `rospack find $PACKAGE`; make tests ) || test_FAIL=`echo "-- $PACKAGE failed"`
         fi
-    if [ "$TEST_FAIL" != "0" ] ; then exit -1; fi
+    if [ "$TEST_FAIL" != "0" ] ; then error; fi
     done
 }
 
