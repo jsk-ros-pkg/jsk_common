@@ -101,7 +101,7 @@ private:
   int count_;
   bool blurry_mode;
   bool use_window;
-
+  double tf_timeout;
   ros::Publisher point_pub_;
   ros::Publisher rectangle_pub_;
 
@@ -134,6 +134,8 @@ public:
     double xx,yy;
     local_nh.param("resize_scale_x", xx, 1.0);
     local_nh.param("resize_scale_y", yy, 1.0);
+    local_nh.param("tf_timeout", tf_timeout, 1.0);
+    
     resize_x_ = 1.0/xx;
     resize_y_ = 1.0/yy;
     filename_format_.parse(format_string);
@@ -418,7 +420,7 @@ public:
               BOOST_FOREACH(std::string frame_id, marker->frames) {
                 tf::StampedTransform transform;
                 ros::Time acquisition_time = msg->header.stamp;
-                ros::Duration timeout(1.0 / 2); // wait 0.5 sec
+                ros::Duration timeout(tf_timeout);
                 try {
 		   ros::Time tm;
 		   tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
@@ -521,7 +523,7 @@ public:
 	      tf::StampedTransform transform;
 	      ros::Time acquisition_time = msg->header.stamp;
 	      //ros::Time acquisition_time = msg->points3D.header.stamp;
-	      ros::Duration timeout(1.0 / 2); // wait 0.5 sec
+	      ros::Duration timeout(tf_timeout); // wait 0.5 sec
 	      try {
 		ros::Time tm;
 		tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
@@ -581,7 +583,7 @@ public:
 	      tf::StampedTransform transform;
 	      ros::Time acquisition_time = msg->header.stamp;
 	      //ros::Time acquisition_time = msg->points3D.header.stamp;
-	      ros::Duration timeout(1.0 / 2); // wait 0.5 sec
+	      ros::Duration timeout(tf_timeout); // wait 0.5 sec
 	      try {
 		ros::Time tm;
 		tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
@@ -641,7 +643,7 @@ public:
 	      tf::StampedTransform transform;
 	      ros::Time acquisition_time = msg->header.stamp;
 	      //ros::Time acquisition_time = msg->points3D.header.stamp;
-	      ros::Duration timeout(1.0 / 2); // wait 0.5 sec
+	      ros::Duration timeout(tf_timeout); // wait 0.5 sec
 	      try {
 		ros::Time tm;
 		tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
@@ -704,7 +706,7 @@ public:
 	      tf::StampedTransform transform;
 	      ros::Time acquisition_time = msg->header.stamp;
 	      //ros::Time acquisition_time = msg->points3D.header.stamp;
-	      ros::Duration timeout(1.0 / 2); // wait 0.5 sec
+	      ros::Duration timeout(tf_timeout); // wait 0.5 sec
 	      try {
 		ros::Time tm;
 		tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
@@ -750,7 +752,7 @@ public:
 	      tf::StampedTransform transform;
 	      ros::Time acquisition_time = msg->header.stamp;
 	      //ros::Time acquisition_time = msg->position3D.header.stamp;
-	      ros::Duration timeout(1.0 / 2); // wait 0.5 sec
+	      ros::Duration timeout(tf_timeout); // wait 0.5 sec
 	      try {
 		ros::Time tm;
 		tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
