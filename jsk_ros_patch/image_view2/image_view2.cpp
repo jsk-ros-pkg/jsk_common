@@ -291,7 +291,16 @@ public:
 			     s1);
 		}
 	      } else {
-		cv::circle(draw_, uv, (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale), MsgToRGB(marker->outline_color), (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+		cv::circle(draw_, uv,
+                           (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale),
+                           MsgToRGB(marker->outline_color),
+                           (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+                if (marker->filled) {
+                  cv::circle(draw_, uv,
+                             (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale) - (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width) / 2.0,
+                             MsgToRGB(marker->fill_color),
+                             -1);
+                }
 	      }
               break;
             }
