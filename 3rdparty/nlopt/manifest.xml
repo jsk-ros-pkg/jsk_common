@@ -1,0 +1,18 @@
+<package>
+  <description brief="nplot">
+
+     nplot
+
+  </description>
+  <author>k-okada</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/nplot</url>
+
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lnlopt"/>
+  </export>
+
+</package>
+
+
