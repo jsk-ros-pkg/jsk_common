@@ -39,7 +39,7 @@ done
 # set distribution
 case $1 in
     cturtle|diamondback|electric|fuerte|groovy|hydro) export DISTRIBUTION=$1; shift;;
-    *)      export DISTRIBUTION=fuerte;;
+    *)      export DISTRIBUTION=groovy;;
 esac
 
 # check ros distribution and ubuntu distribution
