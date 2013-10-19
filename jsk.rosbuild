@@ -124,7 +124,7 @@ function install-pkg {
         ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR
     else ## hydro and up, use catkin
         ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR/src;
-        (cd $ROS_INSTALLDIR_SRC; catkin_init_workspace)
+        (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC; catkin_init_workspace)
     fi
     (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( rosws init; rosws merge /opt/ros/$DISTRIBUTION/.rosinstall ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL -r -y ; done  )
     success=0
