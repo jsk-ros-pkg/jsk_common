@@ -147,6 +147,7 @@ function compile-pkg {
     trap error ERR
     local PACKAGES=$@
 
+    unset ROS_DISTRO
     if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
         # start rosdep_and_rosmake
         . $ROS_INSTALLDIR/setup.sh
@@ -160,17 +161,17 @@ function compile-pkg {
     else ## hydro and up, use catkin
         . /opt/ros/$DISTRIBUTION/setup.sh
         (cd $ROS_INSTALLDIR && LC_ALL=C catkin_make && LC_ALL=C catkin_make install )
+        ## use rosbuild for rest of componentes
+        (cd $ROS_INSTALLDIR; rm -f .rosinstall; rosws init . $ROS_INSTALLDIR/install )
+        . $ROS_INSTALLDIR/setup.sh
+        rospack profile
     fi
 }
 
 function test-pkg {
     trap error ERR
     local PACKAGES=$@
-    if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
-        . $ROS_INSTALLDIR/setup.sh
-    else
-        . $ROS_INSTALLDIR/devel/setup.sh
-    fi
+    . $ROS_INSTALLDIR/setup.sh
     # test
     export DISPLAY=
     export PATH=$PATH:`rospack find roseus`/bin
