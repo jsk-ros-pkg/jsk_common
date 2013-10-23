@@ -36,3 +36,7 @@
     uri: https://github.com/tork-a/visualization_rwt.git
     local-name: visualization_rwt
    
+# nao
+- svn:
+    uri: http://alufr-ros-pkg.googlecode.com/svn/trunk/humanoid_stacks
+    local-name: humanoid_stacks
