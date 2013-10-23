@@ -23,4 +23,5 @@ Includes emacs scripts, ros tool alias generator, and launch doc generator.
   <rosdep name="wkhtmltopdf" />
   <rosdep name="gifsicle" />
   <rosdep name="python-sphinx" />
+  <rosdep name="mjpeg_server" />
 </package>
