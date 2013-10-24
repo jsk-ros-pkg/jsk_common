@@ -1,0 +1,27 @@
+--- image_pipeline.bak/image_view/src/nodes/image_saver.cpp	2013-10-16 11:36:00.178755740 +0900
++++ image_pipeline/image_view/src/nodes/image_saver.cpp	2013-10-24 16:54:39.855383990 +0900
+@@ -47,14 +47,18 @@
+         filename = (g_format % g_count % "jpg").str();
+       } catch (...) { g_format.clear(); }
+       if ( save_all_image || save_image_service ) {
+-        cv::imwrite(filename, image);
+-        ROS_INFO("Saved image %s", filename.c_str());
+-        filename = filename.replace(filename.rfind("."), filename.length(),".ini");
+-        camera_calibration_parsers::writeCalibration(filename, "camera", *info);
++		  if ( cv::imwrite(filename, image)) {
++			  ROS_INFO("Saved image %s", filename.c_str());
++			  filename = filename.replace(filename.rfind("."), filename.length(),".ini");
++			  camera_calibration_parsers::writeCalibration(filename, "camera", *info);
+         
+-        g_count++;
+-        save_image_service = false;
++			  g_count++;
++		  } else {
++			  ROS_WARN("Couldn't save image %s", filename.c_str());
++			  ROS_WARN("Does the specified folder exist?");
++		  }
+       }
++	  save_image_service = false;
+     } else {
+       ROS_WARN("Couldn't save image, no data!");
+     }
