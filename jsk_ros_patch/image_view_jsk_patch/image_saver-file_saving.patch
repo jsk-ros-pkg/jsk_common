@@ -1,6 +1,15 @@
---- image_pipeline.bak/image_view/src/nodes/image_saver.cpp	2013-10-16 11:36:00.178755740 +0900
-+++ image_pipeline/image_view/src/nodes/image_saver.cpp	2013-10-24 16:54:39.855383990 +0900
-@@ -47,14 +47,18 @@
+--- image_pipeline.bak/image_view/src/nodes/image_saver.cpp	2013-10-26 19:24:57.928517468 +0900
++++ image_pipeline/image_view/src/nodes/image_saver.cpp	2013-10-26 19:43:02.368516562 +0900
+@@ -35,7 +35,7 @@
+     return;
+   }
+   
+-    if (!image.empty()) {
++  if (!image.empty()) {
+       std::string filename;
+       try {
+         filename = (g_format).str();
+@@ -47,17 +47,21 @@
          filename = (g_format % g_count % "jpg").str();
        } catch (...) { g_format.clear(); }
        if ( save_all_image || save_image_service ) {
@@ -18,10 +27,15 @@
 +			  g_count++;
 +		  } else {
 +			  ROS_WARN("Couldn't save image %s", filename.c_str());
-+			  ROS_WARN("Does the specified folder exist?");
++			  ROS_WARN("Does the specified folder exist? Please specify an absolute path.");
 +		  }
        }
+-    } else {
 +	  save_image_service = false;
-     } else {
++  } else {
        ROS_WARN("Couldn't save image, no data!");
-     }
+-    }
++  }
+ }
+ 
+ int main(int argc, char** argv)
