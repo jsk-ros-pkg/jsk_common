@@ -1,0 +1,26 @@
+<package>
+  <name>collada_urdf_jsk_patch</name>
+  <version>0.1.0</version>
+  <description>unaccepted patch for collada_urdf</description>
+
+  <maintainer email="youhei@jsk.t.u-tokyo.ac.jp">Yohei Kakiuchi</maintainer>
+  <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
+
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/collada_urdf_jsk_patch</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</author>
+  <author email="youhei@jsk.t.u-tokyo.ac.jp">Yohei Kakiuchi</author>
+
+
+  <build_depend>collada_urdf</build_depend>
+  <run_depend>collada_urdf</run_depend>
+  <!-- <test_depend>collada_urdf</test_depend> -->
+
+  <export>
+
+  </export>
+</package>
