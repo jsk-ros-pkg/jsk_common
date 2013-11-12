@@ -15,6 +15,7 @@
   <author email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</author>
   <author email="youhei@jsk.t.u-tokyo.ac.jp">Yohei Kakiuchi</author>
 
+  <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>collada_urdf</build_depend>
   <run_depend>collada_urdf</run_depend>
