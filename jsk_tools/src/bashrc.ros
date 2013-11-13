@@ -1,7 +1,7 @@
 # -*- mode: Shell-script; -*-
 
 function rossetrobot() { # 自分のよく使うロボットのhostnameを入れる
-    local hostname=${1-"pr1012"}
+    local hostname=${1-"pr1040"}
     local ros_port=${2-"11311"}
     export ROS_MASTER_URI=http://$hostname:$ros_port
     echo -e "\e[1;31mset ROS_MASTER_URI to $ROS_MASTER_URI\e[m"
@@ -13,7 +13,7 @@ function rossetlocal() {
 }
 
 function rossetip_dev() {
-  local device=${1-"(wlan0|eth0)"}
+  local device=${1-"(wlan4|eth4)"}
   export ROS_IP=`LANGUAGE=en LANG=C ifconfig | egrep -A1 "${device}"| grep inet\  | grep -v 127.0.0.1 | sed 's/.*inet addr:\([0-9\.]*\).*/\1/' | head -1`
   export ROS_HOSTNAME=$ROS_IP
   echo -e "\e[1;31mset ROS_IP and ROS_HOSTNAME to $ROS_IP\e[m"
