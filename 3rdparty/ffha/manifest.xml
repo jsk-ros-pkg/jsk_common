@@ -17,4 +17,6 @@ Contact emilkeyder@gmail.com with bug reports or questions.
   </description>
   <author>Emil Keyder, Hector Geffner</author>
   <license>GPL</license>
+  <rosdep name="flex" />
+  <rosdep name="bison" />
 </package>
