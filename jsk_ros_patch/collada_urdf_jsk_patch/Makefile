@@ -1,7 +1,7 @@
 #
 # https://code.ros.org/trac/ros-pkg/ticket/4276
 #
-all: installed
+all: urdf_to_collada
 
 
 ifeq ($(shell rosversion -d),groovy)
@@ -24,7 +24,7 @@ include $(shell rospack find mk)/git_checkout.mk
 SRC_DIR = $(GIT_DIR)
 endif
 
-installed:$(SRC_DIR) patched
+urdf_to_collada:$(SRC_DIR) patched
 ifeq ($(shell rosversion -d),groovy)
 	ROS_PACKAGE_PATH=`pwd`/$(SRC_DIR)/collada_urdf:$$ROS_PACKAGE_PATH make -C `pwd`/$(SRC_DIR)/collada_urdf
 	HG_ROS_PACKAGE_PATH=
@@ -33,7 +33,6 @@ else
 	ROS_PACKAGE_PATH=`pwd`/$(SRC_DIR)/collada_urdf:`pwd`/$(SRC_DIR)/colladadom:$$ROS_PACKAGE_PATH make -C `pwd`/$(SRC_DIR)/collada_urdf
 endif
 	cp $(BUILD_BIN_DIR)/urdf_to_collada .
-	touch installed
 
 clean:
 	if [ -f $(SRC_DIR)/collada_urdf ] ; then ROS_PACKAGE_PATH=`pwd`/$(SRC_DIR)/collada_urdf:$$ROS_PACKAGE_PATH make -C `pwd`/$(SRC_DIR)/collada_urdf clean; fi
