@@ -1,0 +1,127 @@
+#include <cstdio>
+#include <vector>
+#include <list>
+#include <boost/lambda/lambda.hpp>
+#include "ros/ros.h"
+#include "ros/header.h"
+#include "ros/console.h"
+#include "std_msgs/Header.h"
+#include "jsk_topic_tools/List.h"
+#include "topic_tools/shape_shifter.h"
+#include "topic_tools/parse.h"
+
+using std::string;
+using std::vector;
+using std::list;
+using namespace topic_tools;
+
+class pub_info_t
+{
+public:
+    std::string topic_name;
+    ros::Publisher pub;
+    ros::Subscriber *sub;
+    bool advertised;
+    boost::shared_ptr<ShapeShifter > msg;
+    ros::Timer timer;
+    ros::Duration rate;
+    ros::Time last_time_received;
+    bool topic_with_header;
+    uint32_t last_seq_received;
+    uint32_t topic_received;
+
+    void publish(const ros::TimerEvent &event)
+    {
+        if ( advertised == false ) return;
+
+        topic_received++;
+        if ( topic_with_header == true ) {
+            std_msgs::Header header;
+            uint8_t buf[msg->size()];
+            ros::serialization::OStream ostream(buf, msg->size());
+            ros::serialization::IStream istream(buf, msg->size());
+            msg->write(ostream);
+            ((uint32_t *)buf)[0] = last_seq_received + topic_received;
+            ros::Time tmp(last_time_received.toSec() + topic_received * rate.toSec());
+            ((uint32_t *)buf)[1] = tmp.sec;
+            ((uint32_t *)buf)[2] = tmp.nsec;
+            msg->read(istream);
+        }
+        pub.publish(msg);
+    }
+};
+
+typedef boost::shared_ptr<pub_info_t> pub_info_ref;
+
+static list<pub_info_ref> g_pubs;
+
+static ros::NodeHandle *g_node = NULL;
+
+
+
+void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
+           boost::shared_ptr<pub_info_t> s)
+{
+    using namespace boost::lambda;
+
+    s->msg = boost::const_pointer_cast<ShapeShifter>(msg);
+    s->topic_received = 0; // reset topic_received
+    if ( s->advertised == false ) {
+        s->pub = msg->advertise(*g_node, s->topic_name+string("_buffered"), 10);
+        s->advertised = true;
+    }
+    ROS_INFO_STREAM("advertised as " << s->topic_name+string("_buffered") << " running at " << 1/(s->rate.toSec()) << "Hz");
+
+    // check if msg has header
+    {
+        std_msgs::Header header;
+        uint8_t buf[msg->size()];
+        ros::serialization::OStream stream(buf, msg->size());
+        msg->write(stream);
+        header.seq = ((uint32_t *)buf)[0];
+        header.stamp.sec = ((uint32_t *)buf)[1];
+        header.stamp.nsec = ((uint32_t *)buf)[2];
+
+        if ( abs((header.stamp - ros::Time::now()).toSec()) < 5.0 ) {
+            ROS_INFO_STREAM(" this message contains headers.. seq =" <<  header.seq << " stamp = " << header.stamp);
+            s->topic_with_header = true;
+            s->last_seq_received = header.seq;
+            s->last_time_received = header.stamp;
+        }
+    }
+    //g_node->createTimer(ros::Duration(0.1), [](const ros::TimerEvent event) { std::cerr << "hoge" << std::endl; });
+    s->timer = g_node->createTimer(s->rate, &pub_info_t::publish, s);
+}
+
+
+int main(int argc, char **argv)
+{
+    ros::init(argc, argv, "topic_buffer_client", ros::init_options::AnonymousName);
+
+    ros::NodeHandle n;
+    ros::NodeHandle nh("~");
+
+    g_node = &n;
+
+    // New service
+    ros::ServiceClient sc_list = n.serviceClient<jsk_topic_tools::List>(string("/list"), true);
+    //ros::ServiceClient sc_update = n.serviceClient<jsk_topic_tools::Update>(string("update"), true);
+    jsk_topic_tools::List::Request req;
+    jsk_topic_tools::List::Response res;
+    bool ret = sc_list.call(req, res);
+    for(vector<jsk_topic_tools::TopicInfo>::iterator it = res.info.begin(); it != res.info.end(); ++it) {
+        boost::shared_ptr<pub_info_t> pub_info(new pub_info_t);
+        pub_info->topic_name = it->topic_name;
+        pub_info->rate = ros::Duration(it->rate);
+        pub_info->advertised = false;
+        pub_info->topic_with_header = false;
+        ROS_INFO_STREAM("subscribe " << pub_info->topic_name+string("_update"));
+        pub_info->sub = new ros::Subscriber(n.subscribe<ShapeShifter>(pub_info->topic_name+string("_update"), 10, boost::bind(in_cb, _1, pub_info)));
+
+        g_pubs.push_back(pub_info);
+    }
+
+    ros::spin();
+
+    return 0;
+}
