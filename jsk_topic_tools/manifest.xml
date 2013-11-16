@@ -1,0 +1,17 @@
+<package>
+  <description brief="jsk_topic_tools">
+
+     jsk_topic_tools
+
+  </description>
+
+  <author>k-okada</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/jsk_topic_tools</url>
+
+  <depend package="topic_tools"/>
+
+</package>
+
+
