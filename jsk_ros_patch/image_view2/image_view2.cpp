@@ -51,6 +51,8 @@
 #include <boost/thread.hpp>
 #include <boost/format.hpp>
 #include <boost/foreach.hpp>
+#include <boost/circular_buffer.hpp>
+#include <boost/lambda/lambda.hpp>
 
 
 typedef std::vector<image_view2::ImageMarker2::ConstPtr> V_ImageMarkerMessage;
@@ -101,6 +103,7 @@ private:
   int count_;
   bool blurry_mode;
   bool use_window;
+  bool show_info;
   double tf_timeout;
   ros::Publisher point_pub_;
   ros::Publisher rectangle_pub_;
@@ -130,6 +133,7 @@ public:
 
     local_nh.param("filename_format", format_string, std::string("frame%04i.jpg"));
     local_nh.param("use_window", use_window, true);
+    local_nh.param("show_info", show_info, false);
 
     double xx,yy;
     local_nh.param("resize_scale_x", xx, 1.0);
@@ -183,10 +187,39 @@ public:
 
   void image_cb(const sensor_msgs::ImageConstPtr& msg)
   {
-    static ros::Time old_time;
+    static ros::Time old_time, last_time;
+    static boost::circular_buffer<double> times(100);
+    static std::string info_str_1, info_str_2;
+
+    times.push_front(ros::Time::now().toSec() - old_time.toSec());
+
     ROS_DEBUG("image_cb");
     if(old_time.toSec() - ros::Time::now().toSec() > 0) {
       ROS_WARN("TF Cleared for old time");
+    }
+    if ( show_info && ( ros::Time::now().toSec() - last_time.toSec() > 2 ) ) {
+        int n = times.size();
+        double mean = 0, rate = 1.0, std_dev = 0.0, max_delta, min_delta;
+
+        std::for_each( times.begin(), times.end(), (mean += boost::lambda::_1) );
+        mean /= n;
+        rate /= mean;
+
+        std::for_each( times.begin(), times.end(), (std_dev += (boost::lambda::_1 - mean)*(boost::lambda::_1 - mean) ) );
+        std_dev = sqrt(std_dev/n);
+        min_delta = *std::min_element(times.begin(), times.end());
+        max_delta = *std::max_element(times.begin(), times.end());
+
+        std::stringstream f1, f2;
+        f1.precision(3); f1 << std::fixed;
+        f2.precision(3); f2 << std::fixed;
+        f1 << "" << image_sub_.getTopic() << " : rate:" << rate;
+        f2 << "min:" << min_delta << "s max: " << max_delta << "s std_dev: " << std_dev << "s n: " << n;
+        info_str_1 = f1.str();
+        info_str_2 = f2.str();
+        ROS_INFO_STREAM(info_str_1 + " " + info_str_2);
+        times.clear();
+        last_time = ros::Time::now();
     }
 
     if (msg->encoding.find("bayer") != std::string::npos) {
@@ -843,6 +876,11 @@ public:
 
   if ( blurry_mode ) cv::addWeighted(image_, 0.9, draw_, 1.0, 0.0, image_);
   if ( use_window ) {
+    if (show_info) {
+        cv::putText(image_, info_str_1.c_str(), cv::Point(10,image_.rows-34), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar::all(255), 2);
+        cv::putText(image_, info_str_2.c_str(), cv::Point(10,image_.rows-10), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar::all(255), 2);
+    }
+
     cv::imshow(window_name_.c_str(), image_);
   }
   cv_bridge::CvImage out_msg;
