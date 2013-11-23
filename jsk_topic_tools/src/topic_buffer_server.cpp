@@ -130,6 +130,8 @@ int main(int argc, char **argv)
     // New service
     ros::ServiceServer ss_list = nh.advertiseService(string("list"), list_topic_cb);
 
+    ros::ServiceServer ss_update = nh.advertiseService(string("update"), update_topic_cb);
+
     ros::spin();
 
     return 0;
