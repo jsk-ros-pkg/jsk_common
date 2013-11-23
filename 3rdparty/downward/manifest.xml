@@ -9,10 +9,12 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/downward</url>
 
+  <rosdep name="mercurial"/>
+  <rosdep name="python"/>
   <rosdep name="flex"/>
   <rosdep name="bison"/>
-  <!-- <rosdep name="gawk"/> -->
-  <!-- <rosdep name="g++-multilib"/> -->
+  <rosdep name="gawk"/>
+  <rosdep name="g++-multilib"/>
 
 </package>
 
