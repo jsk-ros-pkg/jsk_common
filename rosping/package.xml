@@ -1,0 +1,26 @@
+<package>
+  <name>rosping</name>
+  <version>0.0.1</version>
+  <description>rosping</description>
+  <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
+
+  <license>Boost Software License, Version 1.0</license>
+
+  <url type="website">http://ros.org/wiki/rosping</url>
+
+  <author email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <!-- <test_depend>roscpp</test_depend> -->
+  <!-- <test_depend>std_msgs</test_depend> -->
+
+  <export>
+
+  </export>
+</package>
