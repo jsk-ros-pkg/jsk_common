@@ -22,7 +22,6 @@ catkin_package(
 find_package(Boost REQUIRED COMPONENTS system)
 include_directories(${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 add_executable(rosping src/rosping.cpp src/ping.cpp)
-add_executable(rosping src/ping.cpp)
 target_link_libraries(rosping ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
 string(ASCII 27 ESCAPE)
