@@ -1,0 +1,18 @@
+<package>
+  <description brief="rosping">
+
+     rosping
+
+  </description>
+  <author>k-okada</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+
+  <url>http://ros.org/wiki/rosping</url>
+
+  <depend package="roscpp" />
+  <depend package="std_msgs" />
+
+</package>
+
+
