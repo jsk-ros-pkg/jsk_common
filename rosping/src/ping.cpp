@@ -67,12 +67,15 @@ private:
 
     void handle_timeout()
     {
-        if (num_replies_ == 0)
-            std::cout << "Request timed out" << std::endl;
+        if (num_replies_ == 0) {
+	  std::cout << "Request timed out" << std::endl;
+	  delay = -1;
+	}
 
         // Requests must be sent no less than one second apart.
         timer_.expires_at(time_sent_ + posix_time::seconds(1));
         timer_.async_wait(boost::bind(&pinger::start_send, this));
+
     }
 
     void start_receive()
@@ -110,7 +113,7 @@ private:
 
                 // Print out some information about the reply packet.
                 posix_time::ptime now = posix_time::microsec_clock::universal_time();
-                delay = (now - time_sent_).total_milliseconds(); // added
+                delay = (now - time_sent_).total_nanoseconds()/(1000.0*1000); // added
                 std::cout << length - ipv4_hdr.header_length()
                           << " bytes from " << ipv4_hdr.source_address()
                           << ": icmp_seq=" << icmp_hdr.sequence_number()
