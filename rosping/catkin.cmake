@@ -25,11 +25,10 @@ add_executable(rosping src/rosping.cpp src/ping.cpp)
 target_link_libraries(rosping ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
 string(ASCII 27 ESCAPE)
-message("${ESCAPE}[34m
-# type following command before execute rosping
-sudo chown root.root ./bin/rosping
-sudo chmod 4755 ./bin/rosping
-${ESCAPE}[0m")
-
+add_custom_command(
+  OUTPUT message
+  COMMAND echo "${ESCAPE}[34m#\ type\ following\ command\ before\ execute\ rosping\\nsudo\ chown\ root.root\ ./bin/rosping\;\ sudo\ chmod 4755\ ./bin/rosping${ESCAPE}[0m"
+  DEPENDS bin/rosping)
+add_custom_target(message_all ALL DEPENDS message)
 
 
