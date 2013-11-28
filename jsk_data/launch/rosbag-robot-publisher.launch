@@ -1,0 +1,11 @@
+<launch>
+  <param name="robot_description"
+         textfile="$(find hrp2_description)/urdf/HRP2V_80.urdf" />
+  <node pkg="robot_state_publisher"
+        name="robot_state_publisher"
+        type="state_publisher">
+    <remap from="joint_states"
+           to="/hrp2/joint_states" />
+    <param name="tf_prefix" type="string" value="" />
+  </node>
+</launch>

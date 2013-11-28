@@ -1,0 +1,20 @@
+<launch>
+  <!-- other file args -->
+  <arg name="bagfile_names" default="tmp.bag"/>
+  <arg name="launch_openni" default="true"/>
+  <arg name="launch_robot_model" default="true"/>
+
+  <!-- set params for rviz -->
+  <param name="use_sim_time" value="true" />
+  <param if="$(arg launch_robot_model)" name="robot_description" command="$(find xacro)/xacro.py '$(find pr2_description)/robots/pr2.urdf.xacro'" />
+
+  <!-- setup openni_launch -->
+  <include if="$(arg launch_openni)" file="$(find openni_launch)/launch/openni.launch">
+    <arg name="camera" value="openni"/>
+    <arg name="load_driver" value="false"/>
+    <arg name="depth_registration" value="true"/>
+  </include>
+  <node pkg="rosbag" type="play" name="rosbag_play"
+    args="--clock $(arg bagfile_names)" />
+
+1</launch>

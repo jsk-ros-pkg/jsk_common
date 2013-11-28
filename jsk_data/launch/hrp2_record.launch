@@ -1,0 +1,10 @@
+<launch>
+  <!-- for HRP2 -->
+  <node name="$(anon hrp2_sensor_record)"
+        pkg="rosbag"
+        type="rosbag"
+        args="record /tf 
+              -e '/hrp2/.*' 
+              -e '.*/(left|right)/(image_raw|image_rect|image_rect_color|camera_info)' 
+              -e '.*/color_pcloud2'" />
+</launch>

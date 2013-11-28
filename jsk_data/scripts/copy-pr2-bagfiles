@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rsync -avz --progress pr2admin@pr1012:/pr/2/bag .
+

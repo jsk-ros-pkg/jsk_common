@@ -1,0 +1,9 @@
+<launch>
+  <node name="objectdetection" pkg="posedetectiondb"
+        type="PointPoseExtraction.py"
+        args="--errorthresh=0.007 --neighthresh=0.8 --dminexpected=10
+              --ransaciters=200  
+	      --template=/home/jsk/ros/data/siftemplate/old_outside_down.pp"
+        output="screen">
+  </node>
+</launch>

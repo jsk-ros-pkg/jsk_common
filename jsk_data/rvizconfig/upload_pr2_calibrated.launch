@@ -1,0 +1,5 @@
+<launch>
+    <!-- Robot Description -->
+    <param name="robot_description"
+	   textfile="$(find jsk_data)/rvizconfig/robot_calibrated_2011_03_31_2_1.4.4.xml"/>
+</launch>
