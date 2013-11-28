@@ -18,7 +18,7 @@
   <arg unless="$(arg save_openni)"
        name="openni_topics" value="" />
   <arg if    ="$(arg save_openni)"
-       name="openni_topics" value="/$(arg camera_namespace)/depth_registered/image_raw /$(arg camera_namespace)/depth_registered/camera_info /$(arg camera_namespace)/rgb/image_raw /$(arg camera_namespace)/rgb/camera_info" />
+       name="openni_topics" value="/$(arg camera_namespace)/depth_registered/image_raw /$(arg camera_namespace)/depth_registered/camera_info /$(arg camera_namespace)/rgb/image_raw /$(arg camera_namespace)/rgb/camera_info /tf" />
 
   <arg unless="$(arg save_base_scan)"
        name="base_scan_topics" value="" />
