@@ -126,6 +126,7 @@ int main(int argc, char **argv)
     // New service
     ros::ServiceClient sc_list = n.serviceClient<jsk_topic_tools::List>(string("/list"), true);
     //ros::ServiceClient sc_update = n.serviceClient<jsk_topic_tools::Update>(string("update"), true);
+    ros::service::waitForService(string("/list"), -1);
     jsk_topic_tools::List::Request req;
     jsk_topic_tools::List::Response res;
 
