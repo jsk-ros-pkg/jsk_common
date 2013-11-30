@@ -32,4 +32,7 @@ rosbuild_gensrv()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 rosbuild_add_executable(topic_buffer_server src/topic_buffer_server.cpp)
 rosbuild_add_executable(topic_buffer_client src/topic_buffer_client.cpp)
+rosbuild_add_executable(specific_transform_publisher src/specific_transform_publisher.cpp)
+rosbuild_add_executable(specific_transform_subscriber src/specific_transform_subscriber.cpp)
+
 #target_link_libraries(example ${PROJECT_NAME})

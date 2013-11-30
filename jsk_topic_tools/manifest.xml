@@ -11,6 +11,8 @@
   <url>http://ros.org/wiki/jsk_topic_tools</url>
 
   <depend package="topic_tools"/>
+  <depend package="dynamic_tf_publisher"/>
+  <depend package="tf"/>
 
 </package>
 
