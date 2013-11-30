@@ -13,7 +13,7 @@ function rossetlocal() {
 }
 
 function rossetip_dev() {
-  local device=${1-"(wlan4|eth4)"}
+  local device=${1-"(eth0|eth1|eth2|eth3|eth4|wlan0|wlan1|wlan2|wlan3|wlan4)"}
   export ROS_IP=`LANGUAGE=en LANG=C ifconfig | egrep -A1 "${device}"| grep inet\  | grep -v 127.0.0.1 | sed 's/.*inet addr:\([0-9\.]*\).*/\1/' | head -1`
   export ROS_HOSTNAME=$ROS_IP
   echo -e "\e[1;31mset ROS_IP and ROS_HOSTNAME to $ROS_IP\e[m"
@@ -30,10 +30,10 @@ function rossetip_addr() {
 }
 
 function rossetip() {
-  local device=${1-"(wlan0|eth0)"}
+  local device=${1-"(eth0|eth1|eth2|eth3|eth4|wlan0|wlan1|wlan2|wlan3|wlan4)"}
   export ROS_IP=""
   local master_host=$(echo $ROS_MASTER_URI | cut -d\/ -f3 | cut -d\: -f1);
-  if [ "${master_host}" != "" ]; then rossetip_addr ${master_host} ; fi
+  if [ "${master_host}" != "localhost" ]; then rossetip_addr ${master_host} ; fi
   if [ "${ROS_IP}" == "" ]; then rossetip_dev ${device}; fi
   export ROS_HOSTNAME=$ROS_IP
   if [ "${ROS_IP}" == "" ]; then
