@@ -27,6 +27,7 @@ public:
     ros::Duration rate;
     ros::Time last_time_received;
     bool topic_with_header;
+    bool latched;
     uint32_t last_seq_received;
     uint32_t topic_received;
 
@@ -57,7 +58,7 @@ static list<pub_info_ref> g_pubs;
 
 static ros::NodeHandle *g_node = NULL;
 
-
+static bool fixed_rate;
 
 void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
            boost::shared_ptr<pub_info_t> s)
@@ -67,7 +68,7 @@ void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
     s->msg = boost::const_pointer_cast<ShapeShifter>(msg);
     s->topic_received = 0; // reset topic_received
     if ( s->advertised == false ) {
-        s->pub = msg->advertise(*g_node, s->topic_name+string("_buffered"), 10);
+        s->pub = msg->advertise(*g_node, s->topic_name+string("_buffered"), 10, s->latched);
         s->advertised = true;
     }
     ROS_INFO_STREAM("advertised as " << s->topic_name+string("_buffered") << " running at " << 1/(s->rate.toSec()) << "Hz");
@@ -90,6 +91,10 @@ void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
         }
     }
     //g_node->createTimer(ros::Duration(0.1), [](const ros::TimerEvent event) { std::cerr << "hoge" << std::endl; });
+    {// at first publish once
+      ros::TimerEvent ev;
+      s->publish (ev);
+    }
     s->timer = g_node->createTimer(s->rate, &pub_info_t::publish, s);
 }
 
@@ -101,6 +106,21 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
     ros::NodeHandle nh("~");
 
+    double rate = 0.1; // 10Hz
+    if (nh.hasParam("fixed_rate")) {
+      fixed_rate = true;
+      nh.param ("fixed_rate", rate, 0.1);
+      ROS_INFO("use fixed rate = %f", rate);
+    }
+
+    bool latched;
+    if (nh.hasParam("latched")) {
+      nh.param ("latched", latched, false);
+      if(latched) {
+        ROS_INFO("use latched");
+      }
+    }
+
     g_node = &n;
 
     // New service
@@ -108,11 +128,17 @@ int main(int argc, char **argv)
     //ros::ServiceClient sc_update = n.serviceClient<jsk_topic_tools::Update>(string("update"), true);
     jsk_topic_tools::List::Request req;
     jsk_topic_tools::List::Response res;
+
     bool ret = sc_list.call(req, res);
     for(vector<jsk_topic_tools::TopicInfo>::iterator it = res.info.begin(); it != res.info.end(); ++it) {
         boost::shared_ptr<pub_info_t> pub_info(new pub_info_t);
         pub_info->topic_name = it->topic_name;
-        pub_info->rate = ros::Duration(it->rate);
+        if (fixed_rate) {
+          pub_info->rate = ros::Duration(rate);
+        } else {
+          pub_info->rate = ros::Duration(it->rate);
+        }
+        pub_info->latched = latched;
         pub_info->advertised = false;
         pub_info->topic_with_header = false;
         ROS_INFO_STREAM("subscribe " << pub_info->topic_name+string("_update"));
