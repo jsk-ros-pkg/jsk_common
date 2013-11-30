@@ -33,8 +33,10 @@ class dynamic_tf_publisher:
         rospy.Service('/assoc_tf', AssocTF, self.assoc)
         rospy.Service('/dissoc_tf', DissocTF, self.dissoc)
         rospy.Service('/delete_tf', DeleteTF, self.delete)
+
+        self.use_cache = rospy.get_param('~use_cache', True)
         # check the cache
-        if rospy.has_param('dynamic_tf_publisher'+rospy.get_name()) :
+        if self.use_cache and rospy.has_param('dynamic_tf_publisher'+rospy.get_name()) :
             tfm = tf.msg.tfMessage()
             if os.getenv('ROS_DISTRO') != 'electric' :
                 genpy.message.fill_message_args(tfm,[yaml.load(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))])
@@ -52,7 +54,6 @@ class dynamic_tf_publisher:
             pose = self.cur_tf[frame_id]
             pose.header.stamp = time
             tfm.transforms.append(pose)
-        rospy.set_param('dynamic_tf_publisher'+rospy.get_name(),tfm.__str__())
         self.pub_tf.publish(tfm)
         self.pub_tf_mine.publish(tfm)
         self.lockobj.release()
@@ -112,6 +113,17 @@ class dynamic_tf_publisher:
             self.cur_tf[req.cur_tf.child_frame_id] = req.cur_tf
             print "Latch [%s]/[%shz]"%(req.cur_tf.child_frame_id,req.freq)
         self.lockobj.release()
+
+        # set parameter
+        if self.use_cache:
+            time = rospy.Time.now()
+            tfm = tf.msg.tfMessage()
+            for frame_id in self.cur_tf.keys():
+                pose = self.cur_tf[frame_id]
+                pose.header.stamp = time
+                tfm.transforms.append(pose)
+            rospy.set_param('dynamic_tf_publisher'+rospy.get_name(),tfm.__str__())
+
         self.publish_tf()
         return SetDynamicTFResponse()
 
