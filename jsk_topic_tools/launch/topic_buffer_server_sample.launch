@@ -1,0 +1,10 @@
+<launch>
+  <node pkg="roscpp_tutorials" type="talker" name="talker"
+	output="screen"/>
+
+  <node pkg="jsk_topic_tools" type="topic_buffer_server" name="sample_topic_buffer_server"
+	args="/chatter"	output="screen"/>
+
+  <node pkg="jsk_topic_tools" type="sample_topic_update_caller.sh" name="sample_topic_update_caller"/>
+
+</launch>
