@@ -33,7 +33,8 @@ int main(int argc, char** argv)
   ros::NodeHandle nh_;
   ros::NodeHandle pnh_("~");
 
-  ros::Subscriber sub_ =  pnh_.subscribe<geometry_msgs::TransformStamped> ("/specific_transform", 1, transformCallback);
+  ros::Subscriber sub_ =  pnh_.subscribe<geometry_msgs::TransformStamped>
+    ("/specific_transform", 100, transformCallback);
 
   dynamic_tf_publisher_client = nh_.serviceClient<dynamic_tf_publisher::SetDynamicTF>("set_dynamic_tf");
   ros::service::waitForService("set_dynamic_tf", -1);
