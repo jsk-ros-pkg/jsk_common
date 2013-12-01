@@ -891,6 +891,11 @@ public:
   old_time = ros::Time::now();
 }
 
+  void draw_image() {
+    if (image_.rows > 0 && image_.cols > 0) {
+      cv::imshow(window_name_.c_str(), image_);
+    }
+  }
   static void mouse_cb(int event, int x, int y, int flags, void* param)
   {
     ImageView2 *iv = (ImageView2*)param;
@@ -909,7 +914,7 @@ public:
       window_selection_.y = y;
       break;
     case CV_EVENT_LBUTTONUP:
-      if ( ( ros::Time::now().toSec() - left_buttondown_time.toSec() ) < 1.0 ) {
+      if ( ( ros::Time::now().toSec() - left_buttondown_time.toSec() ) < 0.5 ) {
         geometry_msgs::PointStamped screen_msg;
         screen_msg.point.x = window_selection_.x * resize_x_;
         screen_msg.point.y = window_selection_.y * resize_y_;
@@ -946,6 +951,7 @@ public:
       }
       break;
     }
+    iv->draw_image();
     return;
   }
 };
