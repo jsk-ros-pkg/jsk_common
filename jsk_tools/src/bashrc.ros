@@ -37,6 +37,8 @@ function rossetip() {
   if [ "${ROS_IP}" == "" ]; then rossetip_dev ${device}; fi
   export ROS_HOSTNAME=$ROS_IP
   if [ "${ROS_IP}" == "" ]; then
+      export -n ROS_IP
+      export -n ROS_HOSTNAME
       echo -e "\e[1;31munable to set ROS_IP and ROS_HOSTNAME\e[m"
   fi
 }
