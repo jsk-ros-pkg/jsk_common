@@ -91,10 +91,10 @@ bool update_topic_cb(jsk_topic_tools::Update::Request& req,
         {
             if ( (*it)->topic_name == req.topic && (*it)->advertised == true ) {
                 if (! (*it)->advertised ) {
-                    ROS_WARN_STREAM("service (update) : " << (*it)->topic_name << " is not running yet...");
+                    ROS_WARN_STREAM("service (update) " << (*it)->topic_name << " is not running yet...");
                     continue;
                 }
-                ROS_INFO_STREAM("service (update) : " << (*it)->topic_name << " running at " << 1.0/((*it)->rate).toSec() << " Hz");
+                ROS_INFO_STREAM("service (update) " << (*it)->topic_name << " running at " << 1.0/((*it)->rate).toSec() << " Hz");
                 (*it)->pub.publish((*it)->msg);
                 res.rate = (*it)->rate.toSec();
                 ROS_INFO_STREAM("service (update) is called, req.topic:" << req.topic << ", res.rate " << res.rate);
