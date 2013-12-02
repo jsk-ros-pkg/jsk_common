@@ -124,13 +124,17 @@ int main(int argc, char **argv)
     g_node = &n;
 
     // New service
-    ros::ServiceClient sc_list = n.serviceClient<jsk_topic_tools::List>(string("/list"), true);
-    //ros::ServiceClient sc_update = n.serviceClient<jsk_topic_tools::Update>(string("update"), true);
     ros::service::waitForService(string("/list"), -1);
+    ros::ServiceClient sc_list = n.serviceClient<jsk_topic_tools::List>(string("/list"), true);
+
     jsk_topic_tools::List::Request req;
     jsk_topic_tools::List::Response res;
 
-    bool ret = sc_list.call(req, res);
+    ROS_INFO_STREAM("calling /list");
+    while ( sc_list.call(req, res) == false) {
+        ROS_WARN_STREAM("calling /list fails, retry...");
+        ros::Duration(1).sleep();
+    }
     for(vector<jsk_topic_tools::TopicInfo>::iterator it = res.info.begin(); it != res.info.end(); ++it) {
         boost::shared_ptr<pub_info_t> pub_info(new pub_info_t);
         pub_info->topic_name = it->topic_name;
@@ -147,6 +151,7 @@ int main(int argc, char **argv)
 
         g_pubs.push_back(pub_info);
     }
+    ROS_INFO_STREAM("calling /list has done.. found " << res.info.size() << " topics to publish");
 
     ros::spin();
 
