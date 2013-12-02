@@ -7,6 +7,7 @@
 #include "ros/console.h"
 #include "std_msgs/Header.h"
 #include "jsk_topic_tools/List.h"
+#include "jsk_topic_tools/Update.h"
 #include "topic_tools/shape_shifter.h"
 #include "topic_tools/parse.h"
 
@@ -135,6 +136,7 @@ int main(int argc, char **argv)
         ROS_WARN_STREAM("calling /list fails, retry...");
         ros::Duration(1).sleep();
     }
+    ROS_WARN_STREAM("calling /list success!!!");
     for(vector<jsk_topic_tools::TopicInfo>::iterator it = res.info.begin(); it != res.info.end(); ++it) {
         boost::shared_ptr<pub_info_t> pub_info(new pub_info_t);
         pub_info->topic_name = it->topic_name;
@@ -153,7 +155,32 @@ int main(int argc, char **argv)
     }
     ROS_INFO_STREAM("calling /list has done.. found " << res.info.size() << " topics to publish");
 
-    ros::spin();
+    ros::Rate rate_loop(100);
+    ros::Time last_updated;
+
+    ros::ServiceClient sc_update = n.serviceClient<jsk_topic_tools::Update>(string("/update"), true);
+    while ( ros::ok() ) {
+
+        if ( ! fixed_rate && (ros::Time::now() - last_updated > ros::Duration(10)) ) {
+            for (list<pub_info_ref>::iterator it = g_pubs.begin();
+                 it != g_pubs.end();
+                 ++it) {
+                jsk_topic_tools::Update::Request req;
+                jsk_topic_tools::Update::Response res;
+                req.topic = (*it)->topic_name;
+                if ( sc_update.call(req, res) == false ) {
+                    ROS_ERROR_STREAM("calling /update (" << req.topic << ") fails, retry...");
+                    continue;
+                }
+                (*it)->rate = ros::Duration(res.rate);
+                ROS_INFO_STREAM("calling /update " << req.topic << " .. " << res.rate);
+            }
+            last_updated = ros::Time::now();
+        }
+
+        ros::spinOnce();
+        rate_loop.sleep();
+    }
 
     return 0;
 }

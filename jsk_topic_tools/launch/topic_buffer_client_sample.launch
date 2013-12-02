@@ -8,6 +8,7 @@
   <node pkg="jsk_topic_tools" type="topic_buffer_client" name="sample_topic_buffer_client"
 	output="screen">
     <remap from="/list" to="/sample_topic_buffer_server/list"/>
+    <remap from="/update" to="/sample_topic_buffer_server/update"/>
   </node>
 
 
