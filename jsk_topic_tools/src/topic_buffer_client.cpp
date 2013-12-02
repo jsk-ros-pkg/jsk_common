@@ -142,7 +142,7 @@ int main(int argc, char **argv)
         pub_info->latched = latched;
         pub_info->advertised = false;
         pub_info->topic_with_header = false;
-        ROS_INFO_STREAM("subscribe " << pub_info->topic_name+string("_update"));
+        ROS_INFO_STREAM("subscribe " << pub_info->topic_name+string("_update") << " at " << pub_info->rate);
         pub_info->sub = new ros::Subscriber(n.subscribe<ShapeShifter>(pub_info->topic_name+string("_update"), 10, boost::bind(in_cb, _1, pub_info)));
 
         g_pubs.push_back(pub_info);
