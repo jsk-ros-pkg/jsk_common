@@ -68,6 +68,7 @@ bool list_topic_cb(jsk_topic_tools::List::Request& req,
             info.topic_name = (*it)->topic_name;
             info.rate = (*it)->rate.toSec();
             res.info.push_back(info);
+            ROS_INFO_STREAM("service (list) is called, res.info.topic_name:" << info.topic_name << ", res.info.rate:" << info.rate);
         }
 
     return true;
@@ -85,6 +86,7 @@ bool update_topic_cb(jsk_topic_tools::Update::Request& req,
                 ROS_INFO_STREAM("update " << (*it)->topic_name << " running at " << 1.0/((*it)->rate).toSec() << " Hz");
                 (*it)->pub.publish((*it)->msg);
                 res.rate = (*it)->rate.toSec();
+                ROS_INFO_STREAM("service (update) is called, req.topic:" << req.topic << ", res.rate " << res.rate);
                 return true;
             }
         }
