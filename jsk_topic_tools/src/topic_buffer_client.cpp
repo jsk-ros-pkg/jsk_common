@@ -114,6 +114,12 @@ int main(int argc, char **argv)
       ROS_INFO("use fixed rate = %f", rate);
     }
 
+    double update_rate = 10; // 0.1Hz
+    if (nh.hasParam("update_rate")) {
+      nh.param ("update_rate", update_rate, 10.0);
+      ROS_INFO("use update rate = %f", update_rate);
+    }
+
     bool latched;
     if (nh.hasParam("latched")) {
       nh.param ("latched", latched, false);
@@ -161,7 +167,7 @@ int main(int argc, char **argv)
     ros::ServiceClient sc_update = n.serviceClient<jsk_topic_tools::Update>(string("/update"), true);
     while ( ros::ok() ) {
 
-        if ( ! fixed_rate && (ros::Time::now() - last_updated > ros::Duration(10)) ) {
+        if ( ! fixed_rate && (ros::Time::now() - last_updated > ros::Duration(update_rate)) ) {
             for (list<pub_info_ref>::iterator it = g_pubs.begin();
                  it != g_pubs.end();
                  ++it) {
