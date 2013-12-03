@@ -23,7 +23,6 @@ public:
     boost::shared_ptr<ShapeShifter const> msg;
     ros::Time last_time_received;
     ros::Duration rate;
-    int time_to_ready;
 };
 
 typedef boost::shared_ptr<sub_info_t> sub_info_ref;
@@ -31,7 +30,6 @@ typedef boost::shared_ptr<sub_info_t> sub_info_ref;
 static list<sub_info_ref> g_subs;
 
 static ros::NodeHandle *g_node = NULL;
-
 
 void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
            boost::shared_ptr<sub_info_t> s)
@@ -42,10 +40,9 @@ void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
     } else {
         double alpha = 0.1; //N = 19 alpha =  2 / ( N + 1 )
         s->rate = (ros::Duration(alpha * (ros::Time::now() - s->last_time_received).toSec() + (1 - alpha) * s->rate.toSec()));
-        if ( s->time_to_ready > 0 ) s->time_to_ready--; // count down until data becoms stable
     }
 
-    if ( s->time_to_ready <= 0 && s->advertised == false ) {
+    if ( s->advertised == false ) {
         s->pub = msg->advertise(*g_node, s->topic_name+string("_update"), 10);
         s->advertised = true;
         ROS_INFO_STREAM("advertised as " << s->topic_name+string("_update"));
@@ -70,11 +67,8 @@ bool list_topic_cb(jsk_topic_tools::List::Request& req,
                 ROS_WARN_STREAM("service (list) waiting.. " << (*it)->topic_name << " is not running yet...");
                 return false;
             }
-            jsk_topic_tools::TopicInfo info;
-            info.topic_name = (*it)->topic_name;
-            info.rate = (*it)->rate.toSec();
-            res.info.push_back(info);
-            ROS_INFO_STREAM("service (list) returns res.info.topic_name:" << info.topic_name << ", res.info.rate:" << info.rate);
+            res.topic_names.push_back((*it)->topic_name);
+            ROS_INFO_STREAM("service (list) returns res.topic_name:" << (*it)->topic_name );
         }
 
     return true;
@@ -89,7 +83,7 @@ bool update_topic_cb(jsk_topic_tools::Update::Request& req,
          it != g_subs.end();
          ++it)
         {
-            if ( (*it)->topic_name == req.topic && (*it)->advertised == true ) {
+            if ( (*it)->topic_name == req.topic_name && (*it)->advertised == true ) {
                 if (! (*it)->advertised ) {
                     ROS_WARN_STREAM("service (update) " << (*it)->topic_name << " is not running yet...");
                     continue;
@@ -97,11 +91,11 @@ bool update_topic_cb(jsk_topic_tools::Update::Request& req,
                 ROS_INFO_STREAM("service (update) " << (*it)->topic_name << " running at " << 1.0/((*it)->rate).toSec() << " Hz");
                 (*it)->pub.publish((*it)->msg);
                 res.rate = (*it)->rate.toSec();
-                ROS_INFO_STREAM("service (update) is called, req.topic:" << req.topic << ", res.rate " << res.rate);
+                ROS_INFO_STREAM("service (update) is called, req.topic:" << req.topic_name << ", res.rate " << res.rate);
                 return true;
             }
         }
-    ROS_ERROR_STREAM("could not find topic named " << req.topic );
+    ROS_ERROR_STREAM("could not find topic named " << req.topic_name );
     return false;
 }
 
@@ -135,7 +129,6 @@ int main(int argc, char **argv)
             sub_info->last_time_received = ros::Time(0);
             sub_info->rate = ros::Duration(0);
             sub_info->advertised = false;
-            sub_info->time_to_ready = 50;
             ROS_INFO_STREAM("subscribe " << sub_info->topic_name);
             sub_info->sub = new ros::Subscriber(n.subscribe<ShapeShifter>(sub_info->topic_name, 10, boost::bind(in_cb, _1, sub_info)));
 

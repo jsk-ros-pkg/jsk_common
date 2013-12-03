@@ -1,2 +1,2 @@
 ---
-jsk_topic_tools/TopicInfo[] info
+string[] topic_names

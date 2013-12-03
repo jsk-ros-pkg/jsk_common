@@ -59,7 +59,7 @@ static list<pub_info_ref> g_pubs;
 
 static ros::NodeHandle *g_node = NULL;
 
-static bool fixed_rate;
+static bool use_fixed_rate;
 
 void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
            boost::shared_ptr<pub_info_t> s)
@@ -107,11 +107,11 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
     ros::NodeHandle nh("~");
 
-    double rate = 0.1; // 10Hz
+    double fixed_rate = 0.1; // 10Hz
     if (nh.hasParam("fixed_rate")) {
-      fixed_rate = true;
-      nh.param ("fixed_rate", rate, 0.1);
-      ROS_INFO("use fixed rate = %f", rate);
+      use_fixed_rate = true;
+      nh.param ("fixed_rate", fixed_rate, 0.1);
+      ROS_INFO("use fixed rate = %f", fixed_rate);
     }
 
     double update_rate = 10; // 0.1Hz
@@ -143,23 +143,21 @@ int main(int argc, char **argv)
         ros::Duration(1).sleep();
     }
     ROS_WARN_STREAM("calling /list success!!!");
-    for(vector<jsk_topic_tools::TopicInfo>::iterator it = res.info.begin(); it != res.info.end(); ++it) {
+    for(vector<std::string>::iterator it = res.topic_names.begin(); it != res.topic_names.end(); ++it) {
         boost::shared_ptr<pub_info_t> pub_info(new pub_info_t);
-        pub_info->topic_name = it->topic_name;
-        if (fixed_rate) {
-          pub_info->rate = ros::Duration(rate);
-        } else {
-          pub_info->rate = ros::Duration(it->rate);
+        pub_info->topic_name = *it;
+        if (use_fixed_rate) {
+          pub_info->rate = ros::Duration(fixed_rate);
         }
         pub_info->latched = latched;
         pub_info->advertised = false;
         pub_info->topic_with_header = false;
-        ROS_INFO_STREAM("subscribe " << pub_info->topic_name+string("_update") << " at " << pub_info->rate);
+        ROS_INFO_STREAM("subscribe " << pub_info->topic_name+string("_update"));
         pub_info->sub = new ros::Subscriber(n.subscribe<ShapeShifter>(pub_info->topic_name+string("_update"), 10, boost::bind(in_cb, _1, pub_info)));
 
         g_pubs.push_back(pub_info);
     }
-    ROS_INFO_STREAM("calling /list has done.. found " << res.info.size() << " topics to publish");
+    ROS_INFO_STREAM("calling /list has done.. found " << res.topic_names.size() << " topics to publish");
 
     ros::Rate rate_loop(100);
     ros::Time last_updated;
@@ -167,19 +165,19 @@ int main(int argc, char **argv)
     ros::ServiceClient sc_update = n.serviceClient<jsk_topic_tools::Update>(string("/update"), true);
     while ( ros::ok() ) {
 
-        if ( ! fixed_rate && (ros::Time::now() - last_updated > ros::Duration(update_rate)) ) {
+        if ( ((ros::Time::now() - last_updated) > ros::Duration(update_rate)) ) {
             for (list<pub_info_ref>::iterator it = g_pubs.begin();
                  it != g_pubs.end();
                  ++it) {
                 jsk_topic_tools::Update::Request req;
                 jsk_topic_tools::Update::Response res;
-                req.topic = (*it)->topic_name;
+                req.topic_name = (*it)->topic_name;
                 if ( sc_update.call(req, res) == false ) {
-                    ROS_ERROR_STREAM("calling /update (" << req.topic << ") fails, retry...");
+                    ROS_ERROR_STREAM("calling /update (" << req.topic_name << ") fails, retry...");
                     continue;
                 }
                 (*it)->rate = ros::Duration(res.rate);
-                ROS_INFO_STREAM("calling /update " << req.topic << " .. " << res.rate);
+                ROS_INFO_STREAM("calling /update " << req.topic_name << " .. " << res.rate);
             }
             last_updated = ros::Time::now();
         }
