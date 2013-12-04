@@ -37,8 +37,9 @@ int main(int argc, char* argv[])
 
           while (ros::ok()) {
               ros::Time now = ros::Time::now();
+              io_service.run_one();              
               if ( now - last_time > ros::Duration(rate) ) {
-                  io_service.run_one();
+
                   msg.data = p.delay;
                   pub.publish(msg);
                   ros::spinOnce();
