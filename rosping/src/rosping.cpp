@@ -8,6 +8,7 @@ int main(int argc, char* argv[])
 {
   try
       {
+          ros::init(argc, argv, "ping");
           if (argc != 2)
               {
                   std::cerr << "Usage: " << argv[0] << " <host>" << std::endl;
@@ -20,7 +21,7 @@ int main(int argc, char* argv[])
           boost::asio::io_service io_service;
           pinger p(io_service, argv[1]);
 
-          ros::init(argc, argv, "ping");
+          
 
           ros::NodeHandle n;
           ros::NodeHandle pnh("~");
