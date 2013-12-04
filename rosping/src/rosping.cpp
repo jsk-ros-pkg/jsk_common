@@ -23,18 +23,21 @@ int main(int argc, char* argv[])
           ros::init(argc, argv, "ping");
 
           ros::NodeHandle n;
-
+          ros::NodeHandle pnh("~");
+          double rate;
+          if (!pnh.getParam("rate", rate)) {
+            rate = 10.0;         // 0.1Hz
+          }
           ros::Publisher pub = n.advertise<std_msgs::Float64>("ping/delay", 10);
 
           std_msgs::Float64 msg;
 
-          ros::Time last_time;
+          ros::Time last_time = ros::Time::now();
 
           while (ros::ok()) {
-              io_service.run_one();
-
               ros::Time now = ros::Time::now();
-              if ( now - last_time > ros::Duration(1) ) {
+              if ( now - last_time > ros::Duration(rate) ) {
+                  io_service.run_one();
                   msg.data = p.delay;
                   pub.publish(msg);
                   ros::spinOnce();
