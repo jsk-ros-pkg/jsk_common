@@ -35,6 +35,7 @@ function rossetip() {
   export ROS_IP=""
   local master_host=$(echo $ROS_MASTER_URI | cut -d\/ -f3 | cut -d\: -f1);
   if [ "${master_host}" != "localhost" ]; then rossetip_addr ${master_host} ; fi
+  if [ "${ROS_IP}" == "" ]; then rossetip_addr ${device}; fi
   if [ "${ROS_IP}" == "" ]; then rossetip_dev ${device}; fi
   export ROS_HOSTNAME=$ROS_IP
   if [ "${ROS_IP}" == "" ]; then
