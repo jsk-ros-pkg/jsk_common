@@ -74,6 +74,26 @@ bool list_topic_cb(jsk_topic_tools::List::Request& req,
     return true;
 }
 
+void update_topic_cb(const std_msgs::String::ConstPtr &msg) {
+  ROS_INFO_STREAM("topic (update) is called, searching from " << g_subs.size() << " topics");
+  for (list<sub_info_ref>::iterator it = g_subs.begin();
+         it != g_subs.end();
+         ++it)
+  {
+    if ( (*it)->topic_name == msg->data && (*it)->advertised == true ) {
+      if (! (*it)->advertised ) {
+        ROS_WARN_STREAM("service (update) " << (*it)->topic_name << " is not running yet...");
+        continue;
+      }
+      ROS_INFO_STREAM("service (update) " << (*it)->topic_name << " running at " << 1.0/((*it)->rate).toSec() << " Hz");
+      (*it)->pub.publish((*it)->msg);
+      ROS_INFO_STREAM("service (update) is called, req.topic:" << msg->data);
+      return;
+    }
+  }
+  ROS_ERROR_STREAM("could not find topic named " << msg->data );
+}
+
 bool update_topic_cb(jsk_topic_tools::Update::Request& req,
                      jsk_topic_tools::Update::Response& res)
 {
@@ -146,7 +166,7 @@ int main(int argc, char **argv)
     ros::ServiceServer ss_list = nh.advertiseService(string("list"), list_topic_cb);
 
     ros::ServiceServer ss_update = nh.advertiseService(string("update"), update_topic_cb);
-
+    ros::Subscriber ss_update_sub = nh.subscribe("update", 1, update_topic_cb);
     ros::spin();
 
     return 0;

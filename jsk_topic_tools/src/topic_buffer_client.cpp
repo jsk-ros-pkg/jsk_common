@@ -6,6 +6,7 @@
 #include "ros/header.h"
 #include "ros/console.h"
 #include "std_msgs/Header.h"
+#include "std_msgs/String.h"
 #include "jsk_topic_tools/List.h"
 #include "jsk_topic_tools/Update.h"
 #include "topic_tools/shape_shifter.h"
@@ -49,6 +50,7 @@ public:
             ((uint32_t *)buf)[2] = tmp.nsec;
             msg->read(istream);
         }
+        ROS_INFO_STREAM("publishing " << topic_name);
         pub.publish(msg);
     }
 };
@@ -129,23 +131,51 @@ int main(int argc, char **argv)
     }
 
     g_node = &n;
-
-    // New service
-    ros::service::waitForService(string("/list"), -1);
-    ros::ServiceClient sc_list = n.serviceClient<jsk_topic_tools::List>(string("/list"), true);
-
-    jsk_topic_tools::List::Request req;
-    jsk_topic_tools::List::Response res;
-
-    ROS_INFO_STREAM("calling /list");
-    while ( sc_list.call(req, res) == false) {
+    bool use_service_p = false;
+    std::vector<std::string> target_topics;
+    // use service or parameter
+    // check the parameter first
+    XmlRpc::XmlRpcValue topics;
+    if (!nh.getParam ("topics", topics)) {
+      ROS_WARN("no ~topics is available, use service interface");
+      use_service_p = true;
+    }
+    else {
+      switch (topics.getType ()) {
+      case XmlRpc::XmlRpcValue::TypeArray: {
+        for (int d = 0; d < topics.size(); ++d) {
+          target_topics.push_back((std::string)(topics[d]));
+        }
+        break;
+      }
+      default: {
+        ROS_WARN("~topics mismatches type, it should be a list, use service interface");
+        use_service_p = true;
+      }
+      }
+    }
+    
+    if (use_service_p) {
+      target_topics.clear();
+      // New service
+      ros::service::waitForService(string("/list"), -1);
+      ros::ServiceClient sc_list = n.serviceClient<jsk_topic_tools::List>(string("/list"), true);
+      jsk_topic_tools::List::Request req;
+      jsk_topic_tools::List::Response res;
+      ROS_INFO_STREAM("calling /list");
+      while ( sc_list.call(req, res) == false) {
         ROS_WARN_STREAM("calling /list fails, retry...");
         ros::Duration(1).sleep();
+      }
+      ROS_WARN_STREAM("calling /list success!!!");
+      for(vector<std::string>::iterator it = res.topic_names.begin(); it != res.topic_names.end(); ++it) {
+        target_topics.push_back(*it);
+      }
+      ROS_INFO_STREAM("calling /list has done.. found " << res.topic_names.size() << " topics to publish");
     }
-    ROS_WARN_STREAM("calling /list success!!!");
-    for(vector<std::string>::iterator it = res.topic_names.begin(); it != res.topic_names.end(); ++it) {
+    for(size_t i = 0; i < target_topics.size(); i++) {
         boost::shared_ptr<pub_info_t> pub_info(new pub_info_t);
-        pub_info->topic_name = *it;
+        pub_info->topic_name = target_topics[i];
         if (use_fixed_rate) {
           pub_info->rate = ros::Duration(fixed_rate);
         }
@@ -157,27 +187,39 @@ int main(int argc, char **argv)
 
         g_pubs.push_back(pub_info);
     }
-    ROS_INFO_STREAM("calling /list has done.. found " << res.topic_names.size() << " topics to publish");
 
     ros::Rate rate_loop(100);
     ros::Time last_updated;
 
+    bool use_service = true;
+    nh.param("use_service", use_service, true);
+    
     ros::ServiceClient sc_update = n.serviceClient<jsk_topic_tools::Update>(string("/update"), true);
+    ros::Publisher pub_update = n.advertise<std_msgs::String>("/update", 1);
     while ( ros::ok() ) {
 
         if ( ((ros::Time::now() - last_updated) > ros::Duration(update_rate)) ) {
             for (list<pub_info_ref>::iterator it = g_pubs.begin();
                  it != g_pubs.end();
                  ++it) {
-                jsk_topic_tools::Update::Request req;
-                jsk_topic_tools::Update::Response res;
-                req.topic_name = (*it)->topic_name;
-                if ( sc_update.call(req, res) == false ) {
+                
+                if (use_service) {
+                  jsk_topic_tools::Update::Request req;
+                  jsk_topic_tools::Update::Response res;
+                  req.topic_name = (*it)->topic_name;
+                  if ( sc_update.call(req, res) == false ) {
                     ROS_ERROR_STREAM("calling /update (" << req.topic_name << ") fails, retry...");
                     continue;
+                  }
+                  (*it)->rate = ros::Duration(res.rate);
+                  ROS_INFO_STREAM("calling /update " << req.topic_name << " .. " << res.rate);
                 }
-                (*it)->rate = ros::Duration(res.rate);
-                ROS_INFO_STREAM("calling /update " << req.topic_name << " .. " << res.rate);
+                else {
+                  std_msgs::String msg;
+                  msg.data = (*it)->topic_name;
+                  pub_update.publish(msg);
+                  ROS_INFO_STREAM("publishing /update " << msg.data);
+                }
             }
             last_updated = ros::Time::now();
         }
