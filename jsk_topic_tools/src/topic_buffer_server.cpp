@@ -82,12 +82,12 @@ void update_topic_cb(const std_msgs::String::ConstPtr &msg) {
   {
     if ( (*it)->topic_name == msg->data && (*it)->advertised == true ) {
       if (! (*it)->advertised ) {
-        ROS_WARN_STREAM("service (update) " << (*it)->topic_name << " is not running yet...");
+        ROS_WARN_STREAM("topic (update) " << (*it)->topic_name << " is not running yet...");
         continue;
       }
-      ROS_INFO_STREAM("service (update) " << (*it)->topic_name << " running at " << 1.0/((*it)->rate).toSec() << " Hz");
+      ROS_INFO_STREAM("topic (update) " << (*it)->topic_name << " running at " << 1.0/((*it)->rate).toSec() << " Hz");
       (*it)->pub.publish((*it)->msg);
-      ROS_INFO_STREAM("service (update) is called, req.topic:" << msg->data);
+      ROS_INFO_STREAM("topic (update) is called, req.topic:" << msg->data);
       return;
     }
   }
