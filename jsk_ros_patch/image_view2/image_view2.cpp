@@ -112,7 +112,7 @@ public:
   ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0)
   {
   }
-  ImageView2(ros::NodeHandle& nh, const std::string& transport)
+  ImageView2(ros::NodeHandle& nh)
     : marker_topic_("image_marker"), filename_format_(""), count_(0)
   {
     std::string camera = nh.resolveName("image");
@@ -120,6 +120,7 @@ public:
     ros::NodeHandle local_nh("~");
     bool autosize;
     std::string format_string;
+    std::string transport;
     image_transport::ImageTransport it(nh);
 
     point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/screenpoint",100);
@@ -128,7 +129,7 @@ public:
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
 
     local_nh.param("autosize", autosize, false);
-
+    local_nh.param("image_transport", transport, std::string("raw"));
     local_nh.param("blurry", blurry_mode, false);
 
     local_nh.param("filename_format", format_string, std::string("frame%04i.jpg"));
@@ -967,7 +968,7 @@ int main(int argc, char **argv)
              "\t$ ./image_view image:=<image topic> [transport]");
   }
 
-  ImageView2 view(n, "raw");
+  ImageView2 view(n);
 
   ros::spin();
 
