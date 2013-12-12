@@ -1,6 +1,9 @@
 <launch>
 
-  <include file="$(find jsk_topic_tools)/launch/topic_buffer_server_sample.launch" />
+  <node pkg="roscpp_tutorials" type="talker" name="talker"/>
+
+  <node pkg="jsk_topic_tools" type="topic_buffer_server" name="sample_topic_buffer_server"
+	args="/chatter"	output="screen" respawn="true" />
 
   <node pkg="roscpp_tutorials" type="listener" name="listener"
 	output="screen">
@@ -9,11 +12,13 @@
 
 
   <node pkg="jsk_topic_tools" type="topic_buffer_client" name="sample_topic_buffer_client"
-	output="screen">
+	output="screen" respawn="true" >
     <remap from="/list" to="/sample_topic_buffer_server/list"/>
     <remap from="/update" to="/sample_topic_buffer_server/update"/>
     <param name="update_rate" value="0.1" />
     <param name="fixed_rate" value="0.01" />
   </node>
+
+  <test test-name="kill_buffer_server" pkg="jsk_topic_tools" type="kill_server_and_check_close_wait.py" name="kill_server_and_check_close_wait" />
 
 </launch>
