@@ -34,7 +34,7 @@ class dynamic_tf_publisher:
         rospy.Service('/dissoc_tf', DissocTF, self.dissoc)
         rospy.Service('/delete_tf', DeleteTF, self.delete)
 
-        self.use_cache = rospy.get_param('~use_cache', False)
+        self.use_cache = rospy.get_param('~use_cache', True)
         # check the cache
         if self.use_cache and rospy.has_param('dynamic_tf_publisher'+rospy.get_name()) :
             tfm = tf.msg.tfMessage()
