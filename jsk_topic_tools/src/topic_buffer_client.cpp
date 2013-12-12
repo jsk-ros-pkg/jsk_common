@@ -195,7 +195,10 @@ int main(int argc, char **argv)
     nh.param("use_service", use_service, true);
     
     ros::ServiceClient sc_update = n.serviceClient<jsk_topic_tools::Update>(string("/update"), true);
-    ros::Publisher pub_update = n.advertise<std_msgs::String>("/update", 1);
+    ros::Publisher pub_update;
+    if (!use_service) {
+        pub_update = n.advertise<std_msgs::String>("/update", 1);
+    }
     while ( ros::ok() ) {
 
         if ( ((ros::Time::now() - last_updated) > ros::Duration(update_rate)) ) {
@@ -209,6 +212,7 @@ int main(int argc, char **argv)
                   req.topic_name = (*it)->topic_name;
                   if ( sc_update.call(req, res) == false ) {
                     ROS_ERROR_STREAM("calling /update (" << req.topic_name << ") fails, retry...");
+                    sc_update = n.serviceClient<jsk_topic_tools::Update>(string("/update"), true);
                     continue;
                   }
                   (*it)->rate = ros::Duration(res.rate);
