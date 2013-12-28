@@ -27,16 +27,26 @@
 - git:    
     uri: git://github.com/jihoonl/roswww.git
     local-name : roswww
-
 - git:    
     uri: https://github.com/tork-a/rwt_ros.git
     local-name : rwt_ros
-
 - git:
     uri: https://github.com/tork-a/visualization_rwt.git
     local-name: visualization_rwt
    
 # nao
-- svn:
-    uri: http://alufr-ros-pkg.googlecode.com/svn/trunk/humanoid_stacks
-    local-name: humanoid_stacks
+- git:
+    uri: http://github.com/ahornung/nao_robot
+    local-name: humanoid_stacks/nao_robot
+- git:
+    uri: http://github.com/ahornung/nao_common
+    local-name: humanoid_stacks/nao_common
+- git:
+    uri: http://github.com/ahornung/nao_viz
+    local-name: humanoid_stacks/nao_viz
+- git:
+    uri: http://github.com/ahornung/humanoid_msgs
+    local-name: humanoid_stacks/humanoid_msgs
+- git:
+    uri: http://github.com/ahornung/humanoid_navigation
+    local-name: humanoid_stacks/humanoid_navigation
