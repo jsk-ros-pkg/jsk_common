@@ -188,11 +188,10 @@ function test-pkg {
     do
         # catkin uses make tests, rosbuild uses make test
         if ( [ $DISTRIBUTION == "electric" ] || [ $DISTRIBUTION == "fuerte" ] || [ ! -e `rospack find $PACKAGE`/package.xml ] ); then
-            (cd `rospack find $PACKAGE`; make test  ) || TEST_FAIL=`echo "-- $PACKAGE failed"`
+            (rospack find $PACKAGE && (cd `rospack find $PACKAGE`; make test  ) ) || TEST_FAIL=`echo "-- $PACKAGE failed"`
         else
-            (cd `rospack find $PACKAGE`; make tests ) || test_FAIL=`echo "-- $PACKAGE failed"`
+            (rospack find $PACKAGE && (cd `rospack find $PACKAGE`; make tests ) ) || test_FAIL=`echo "-- $PACKAGE failed"`
         fi
-    if [ "$TEST_FAIL" != "0" ] ; then error; fi
     done
 }
 
