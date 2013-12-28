@@ -182,17 +182,14 @@ function test-pkg {
     if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
         source `rospack find gazebo`/scripts/setup.sh
         export ROS_PACKAGE_PATH=`rosstack find simulator_gazebo`:$ROS_PACKAGE_PATH
-    fi
 
-    for PACKAGE in $PACKAGES
-    do
-        # catkin uses make tests, rosbuild uses make test
-        if ( [ $DISTRIBUTION == "electric" ] || [ $DISTRIBUTION == "fuerte" ] || [ ! -e `rospack find $PACKAGE`/package.xml ] ); then
+        for PACKAGE in $PACKAGES
+        do
             (rospack find $PACKAGE && (cd `rospack find $PACKAGE`; make test  ) ) || TEST_FAIL=`echo "-- $PACKAGE failed"`
-        else
-            (rospack find $PACKAGE && (cd `rospack find $PACKAGE`; make tests ) ) || test_FAIL=`echo "-- $PACKAGE failed"`
-        fi
-    done
+        done
+    else
+        (cd $ROS_INSTALLDIR && LC_ALL=C catkin_make run_tests)
+    fi
 }
 
 function doc-pkg {
