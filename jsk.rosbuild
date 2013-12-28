@@ -178,6 +178,10 @@ function test-pkg {
     TEST_FAIL=0
     rm -fr $ROS_WORKSPACE/test_results
 
+    # for gazebo
+    source `rospack find gazebo`/scripts/setup.sh
+    export ROS_PACKAGE_PATH=`rosstack find simulator_gazebo`:$ROS_PACKAGE_PATH
+
     for PACKAGE in $PACKAGES
     do
         # catkin uses make tests, rosbuild uses make test
