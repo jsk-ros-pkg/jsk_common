@@ -34,6 +34,7 @@ rosbuild_add_executable(topic_buffer_server src/topic_buffer_server.cpp)
 rosbuild_add_executable(topic_buffer_client src/topic_buffer_client.cpp)
 rosbuild_add_executable(specific_transform_publisher src/specific_transform_publisher.cpp)
 rosbuild_add_executable(specific_transform_subscriber src/specific_transform_subscriber.cpp)
+rosbuild_add_executable(transform_merger src/transform_merger.cpp)
 
 #target_link_libraries(example ${PROJECT_NAME})
 rosbuild_add_rostest(test/test_topic_buffer.launch)
