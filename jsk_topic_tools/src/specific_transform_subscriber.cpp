@@ -17,13 +17,10 @@ void CallSetDynamicTf(std::string parent_frame_id, std::string frame_id, geometr
 }
 
 
-void transformCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
-  /*
-  static tf::TransformBroadcaster tfb_;
-  tf::StampedTransform stf;
-  tf::transformStampedMsgToTF(*msg, stf);
-  tfb_.sendTransform(stf);*/
-  CallSetDynamicTf(msg->header.frame_id, msg->child_frame_id, msg->transform);
+void transformCallback(const tf::tfMessage::ConstPtr& msg){
+  for(int i=0; i<msg->transforms.size(); i++){
+    CallSetDynamicTf(msg->transforms[i].header.frame_id, msg->transforms[i].child_frame_id, msg->transforms[i].transform);
+  }
 }
 
 int main(int argc, char** argv)
@@ -33,11 +30,11 @@ int main(int argc, char** argv)
   ros::NodeHandle nh_;
   ros::NodeHandle pnh_("~");
 
-  ros::Subscriber sub_ =  pnh_.subscribe<geometry_msgs::TransformStamped>
+  ros::Subscriber sub_ =  pnh_.subscribe<tf::tfMessage>
     ("/specific_transform", 100, transformCallback);
 
   dynamic_tf_publisher_client = nh_.serviceClient<dynamic_tf_publisher::SetDynamicTF>("set_dynamic_tf");
   ros::service::waitForService("set_dynamic_tf", -1);
-
+  
   ros::spin();
 }
