@@ -11,7 +11,7 @@ int main(int argc, char** argv)
   ros::NodeHandle pnh_("~");
   tf::TransformListener tfl_;
 
-  ros::Publisher pub_ =  pnh_.advertise<geometry_msgs::TransformStamped> ("/specific_transform", 1);
+  ros::Publisher pub_ =  pnh_.advertise<tf::tfMessage> ("/specific_transform", 1);
 
   std::vector<std::string> parent_frame;
   std::vector<std::string> child_frame;
@@ -59,17 +59,20 @@ int main(int argc, char** argv)
 
   while (ros::ok())
     {
+      tf::tfMessage tf_msg;
       for(int i = 0; i < parent_frame.size(); i++) {
-        geometry_msgs::TransformStamped tf_msg;
+        geometry_msgs::TransformStamped tfs_msg;
         tf::StampedTransform stf;
         try {
           tfl_.lookupTransform(parent_frame[i], child_frame[i], ros::Time(0), stf);
-          tf::transformStampedTFToMsg(stf, tf_msg);
-          pub_.publish(tf_msg);
+          tf::transformStampedTFToMsg(stf, tfs_msg);
+	  tf_msg.transforms.push_back(tfs_msg);
         } catch(tf::TransformException ex) {
           ROS_INFO_STREAM("missing transform: " << parent_frame[i] << " to " << child_frame[i]);
         }
       }
+      pub_.publish(tf_msg);
+
       ros::spinOnce();
       rate.sleep();
     }
