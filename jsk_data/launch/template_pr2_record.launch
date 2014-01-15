@@ -11,6 +11,7 @@
     <arg name="save_robot_model" value="true" />
     <arg name="save_all_image" value="true" />
     <arg name="save_pressure" value="true" />
+    <arg name="save_gripper_command" default="true" />
     <arg name="camera_namespace" value="openni"/>
     <arg name="save_dir" value="/removable/bagfile/"/>
   </include>
