@@ -9,6 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/jsk_footstep_msgs</url>
   <depend package="geometry_msgs" />
+  <depend package="actionlib_msgs" />
 </package>
 
 
