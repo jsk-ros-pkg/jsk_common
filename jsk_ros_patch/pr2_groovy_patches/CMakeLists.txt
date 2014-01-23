@@ -13,7 +13,7 @@ find_package(catkin REQUIRED)
 
 macro(patch package)
   set(PATCH_BATCH_FILE ${PROJECT_SOURCE_DIR}/${package}_patch.bat )
-  file(WRITE ${PATCH_BATCH_FILE} "set -x\npatch -p0 -i ${PROJECT_SOURCE_DIR}/patches/${package}.patch")
+  file(WRITE ${PATCH_BATCH_FILE} "set -x\npatch -p0 -N -i ${PROJECT_SOURCE_DIR}/patches/${package}.patch")
   execute_process(COMMAND rospack find ${package} OUTPUT_VARIABLE ${package}_PACKAGE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
   execute_process( COMMAND cmake -E chdir ${${package}_PACKAGE_PATH} sh ${PATCH_BATCH_FILE} RESULT_VARIABLE RESULT_PATCH )
   message( STATUS "Patch result: ${RESULT_PATCH}, SOURCE DIR: ${${package}_PACKAGE_PATH}" )
