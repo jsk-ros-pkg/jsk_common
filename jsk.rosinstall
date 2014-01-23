@@ -50,3 +50,21 @@
 - git:
     uri: http://github.com/ahornung/humanoid_navigation
     local-name: humanoid_stacks/humanoid_navigation
+
+# baxter
+- git:
+    uri: http://github.com/RethinkRobotics/baxter.git
+    local-name: RethinkRobotics/baxter
+- git:
+    uri: http://github.com/RethinkRobotics/baxter_interface.git
+    local-name: RethinkRobotics/baxter_interface
+- git:
+    uri: http://github.com/RethinkRobotics/baxter_tools.git
+    local-name: RethinkRobotics/baxter_tools
+- git:
+   uri: http://github.com/RethinkRobotics/baxter_common.git
+   local-name: RethinkRobotics/baxter_common
+- git:
+   uri: http://github.com/RethinkRobotics/baxter_examples.git
+   local-name: RethinkRobotics/baxter_examples
+
