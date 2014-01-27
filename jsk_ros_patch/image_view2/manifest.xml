@@ -16,4 +16,6 @@
   <depend package="tf"/>
   <depend package="image_geometry"/>
   <depend package="message_filters"/>
+  <depend package="pcl" />
+  <depend package="pcl_ros" />
 </package>

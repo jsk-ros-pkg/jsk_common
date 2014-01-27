@@ -53,7 +53,8 @@
 #include <boost/foreach.hpp>
 #include <boost/circular_buffer.hpp>
 #include <boost/lambda/lambda.hpp>
-
+#include <pcl/point_types.h>
+#include <pcl_ros/publisher.h>
 
 typedef std::vector<image_view2::ImageMarker2::ConstPtr> V_ImageMarkerMessage;
 
@@ -92,6 +93,7 @@ private:
   tf::TransformListener tf_listener_;
   image_geometry::PinholeCameraModel cam_model_;
   std::vector<std::string> frame_ids_;
+  std::vector<cv::Point2d> point_array_;
   boost::mutex info_mutex_;
 
   std::string window_name_;
@@ -106,14 +108,24 @@ private:
   bool show_info;
   double tf_timeout;
   ros::Publisher point_pub_;
+  ros::Publisher point_array_pub_;
   ros::Publisher rectangle_pub_;
-
 public:
-  ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0)
+  enum KEY_MODE {
+    MODE_RECTANGLE = 0,
+    MODE_SERIES = 1,
+  };
+  
+private:
+  KEY_MODE mode_;
+  
+public:
+  
+  ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE)
   {
   }
   ImageView2(ros::NodeHandle& nh)
-    : marker_topic_("image_marker"), filename_format_(""), count_(0)
+    : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE)
   {
     std::string camera = nh.resolveName("image");
     std::string camera_info = nh.resolveName("camera_info");
@@ -124,6 +136,7 @@ public:
     image_transport::ImageTransport it(nh);
 
     point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/screenpoint",100);
+    point_array_pub_ = nh.advertise<sensor_msgs::PointCloud2>(camera + "/screenpoint_array",100);
     rectangle_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/screenrectangle",100);
 
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
@@ -701,8 +714,8 @@ public:
             try {
               ros::Time tm;
               tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-              ros::Duration diff = ros::Time::now() - tm;
-              if ( diff > ros::Duration(1.0) ) { break; }
+              // ros::Duration diff = ros::Time::now() - tm;
+              // if ( diff > ros::Duration(1.0) ) { break; }
               tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
                                             acquisition_time, timeout);
               tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
@@ -870,10 +883,23 @@ public:
           }
       }
   }
-  cv::rectangle(draw_, cv::Point(window_selection_.x, window_selection_.y),
-                cv::Point(window_selection_.x + window_selection_.width,
-                          window_selection_.y + window_selection_.height),
-		USER_ROI_COLOR, 3, 8, 0);
+  if (mode_ == MODE_RECTANGLE) {
+    cv::rectangle(draw_, cv::Point(window_selection_.x, window_selection_.y),
+                  cv::Point(window_selection_.x + window_selection_.width,
+                            window_selection_.y + window_selection_.height),
+                  USER_ROI_COLOR, 3, 8, 0);
+  }
+  else if (mode_ == MODE_SERIES) {
+    if (point_array_.size() > 1) {
+      cv::Point2d from, to;
+      from = point_array_[0];
+      for (size_t i = 1; i < point_array_.size(); i++) {
+        to = point_array_[i];
+        cv::line(draw_, from, to, USER_ROI_COLOR, 2, 8, 0);
+        from = to;
+      }
+    }
+  }
 
   if ( blurry_mode ) cv::addWeighted(image_, 0.9, draw_, 1.0, 0.0, image_);
   if ( use_window ) {
@@ -897,6 +923,47 @@ public:
       cv::imshow(window_name_.c_str(), image_);
     }
   }
+
+  void addPoint(int x, int y)
+  {
+    cv::Point2d p;
+    p.x = x;
+    p.y = y;
+    point_array_.push_back(p);
+  }
+
+  void clearPointArray()
+  {
+    point_array_.clear();
+  }
+
+  void publishPointArray()
+  {
+    pcl::PointCloud<pcl::PointXY> pcl_cloud;
+    for (size_t i = 0; i < point_array_.size(); i++) {
+      pcl::PointXY p;
+      p.x = point_array_[i].x;
+      p.y = point_array_[i].y;
+      pcl_cloud.points.push_back(p);
+    }
+    sensor_msgs::PointCloud2::Ptr ros_cloud(new sensor_msgs::PointCloud2);
+    pcl::toROSMsg(pcl_cloud, *ros_cloud);
+    ros_cloud->header.stamp = ros::Time::now();
+    
+    point_array_pub_.publish(ros_cloud);
+  }
+    
+  
+  void setMode(KEY_MODE mode)
+  {
+    mode_ = mode;
+  }
+
+  KEY_MODE getMode()
+  {
+    return mode_;
+  }
+  
   static void mouse_cb(int event, int x, int y, int flags, void* param)
   {
     ImageView2 *iv = (ImageView2*)param;
@@ -905,8 +972,13 @@ public:
     case CV_EVENT_MOUSEMOVE:
       if ( ( left_buttondown_time.toSec() > 0 &&
              ros::Time::now().toSec() - left_buttondown_time.toSec() ) >= 1.0 ) {
-        window_selection_.width  = x - window_selection_.x;
-        window_selection_.height = y - window_selection_.y;
+        if (iv->getMode() == MODE_RECTANGLE) {
+          window_selection_.width  = x - window_selection_.x;
+          window_selection_.height = y - window_selection_.y;
+        }
+        else if (iv->getMode() == MODE_SERIES) {                  // todo
+          iv->addPoint(x, y);
+        }
       }
       break;
     case CV_EVENT_LBUTTONDOWN:
@@ -924,17 +996,23 @@ public:
         ROS_INFO("Publish screen point %s (%f %f)", iv->point_pub_.getTopic().c_str(), screen_msg.point.x, screen_msg.point.y);
         iv->point_pub_.publish(screen_msg);
       } else {
-        geometry_msgs::PolygonStamped screen_msg;
-        screen_msg.polygon.points.resize(2);
-        screen_msg.polygon.points[0].x = window_selection_.x * resize_x_;
-        screen_msg.polygon.points[0].y = window_selection_.y * resize_y_;
-        screen_msg.polygon.points[1].x = (window_selection_.x + window_selection_.width) * resize_x_;
-        screen_msg.polygon.points[1].y = (window_selection_.y + window_selection_.height) * resize_y_;
-        screen_msg.header.stamp = ros::Time::now();
-        ROS_INFO("Publish rectangle point %s (%f %f %f %f)", iv->rectangle_pub_.getTopic().c_str(),
-                 screen_msg.polygon.points[0].x, screen_msg.polygon.points[0].y,
-                 screen_msg.polygon.points[1].x, screen_msg.polygon.points[1].y);
-        iv->rectangle_pub_.publish(screen_msg);
+        if (iv->getMode() == MODE_RECTANGLE) {
+          geometry_msgs::PolygonStamped screen_msg;
+          screen_msg.polygon.points.resize(2);
+          screen_msg.polygon.points[0].x = window_selection_.x * resize_x_;
+          screen_msg.polygon.points[0].y = window_selection_.y * resize_y_;
+          screen_msg.polygon.points[1].x = (window_selection_.x + window_selection_.width) * resize_x_;
+          screen_msg.polygon.points[1].y = (window_selection_.y + window_selection_.height) * resize_y_;
+          screen_msg.header.stamp = ros::Time::now();
+          ROS_INFO("Publish rectangle point %s (%f %f %f %f)", iv->rectangle_pub_.getTopic().c_str(),
+                   screen_msg.polygon.points[0].x, screen_msg.polygon.points[0].y,
+                   screen_msg.polygon.points[1].x, screen_msg.polygon.points[1].y);
+          iv->rectangle_pub_.publish(screen_msg);
+        }
+        else if (iv->getMode() == MODE_SERIES) { // TODO
+          iv->publishPointArray();
+          iv->clearPointArray();
+        }
       }
       window_selection_.x = window_selection_.y =
         window_selection_.width = window_selection_.height = 0;
@@ -970,7 +1048,26 @@ int main(int argc, char **argv)
 
   ImageView2 view(n);
 
-  ros::spin();
+  //ros::spin();
+  ros::Rate r(60);              // 60 Hz
+  while (ros::ok()) {
+    ros::spinOnce();
+    int key = cvWaitKey(10);
+    if (key != -1) {
+      ROS_INFO_STREAM("key: " << key);
+      if (key == 65505) {
+        if (view.getMode() == ImageView2::MODE_RECTANGLE) {
+          ROS_INFO("series mode");
+          view.setMode(ImageView2::MODE_SERIES);
+        }
+        else {
+          ROS_INFO("rectangle mode");
+          view.setMode(ImageView2::MODE_RECTANGLE);
+        }
+      }
+    }
+    r.sleep();
+  }
 
   return 0;
 }
