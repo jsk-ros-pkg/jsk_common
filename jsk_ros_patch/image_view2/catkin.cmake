@@ -23,11 +23,13 @@ add_dependencies(image_view2 ${PROJECT_NAME}_gencpp)
 add_executable(points_rectangle_extractor points_rectangle_extractor.cpp)
 find_package(Boost REQUIRED COMPONENTS signals)
 include_directories(${Boost_INCLUDE_DIRS})
+find_package(PCL REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
 target_link_libraries(points_rectangle_extractor ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(points_rectangle_extractor ${PROJECT_NAME}_gencpp)
 
 catkin_package(
-    DEPENDS OpenCV
+    DEPENDS OpenCV PCL
     CATKIN-DEPENDS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
