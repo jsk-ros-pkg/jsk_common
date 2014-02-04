@@ -18,7 +18,7 @@ BUILDDIR=$(shell if [ $(DEBUG) ]; then echo builddebug; else echo build; fi)
 CMAKE_BUILD_TYPE=$(shell if [ $(DEBUG) ]; then echo Debug; else echo RelWithDebInfo; fi)
 
 assimp_devel: $(GIT_DIR) patched
-	cd $(GIT_DIR) && mkdir -p $(BUILDDIR) && cd $(BUILDDIR) && BOOST_INCLUDEDIR=$(BOOST_INCLUDE_DIRS) BOOST_LIBRARYDIR=$(BOOST_LIBRARY_DIRS) cmake -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DCMAKE_BUILD_TYPE=$(CMAKE_BUILD_TYPE) .. && make $(ROS_PARALLEL_JOBS) install
+	cd $(GIT_DIR) && mkdir -p $(BUILDDIR) && cd $(BUILDDIR) && BOOST_INCLUDEDIR=$(BOOST_INCLUDE_DIRS) BOOST_LIBRARYDIR=$(BOOST_LIBRARY_DIRS) cmake -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DCMAKE_BUILD_TYPE=$(CMAKE_BUILD_TYPE) .. && make -j`grep -c processor /proc/cpuinfo` install
 	if [ -e $(INSTALL_DIR)/include/assimp3 ]; then rm -rf $(INSTALL_DIR)/include/assimp3; fi
 	mv $(INSTALL_DIR)/include/assimp $(INSTALL_DIR)/include/assimp3
 	mv $(INSTALL_DIR)/bin/assimp $(INSTALL_DIR)/bin/assimp_cmd
