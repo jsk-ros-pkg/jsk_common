@@ -10,3 +10,10 @@ RESULT_VARIABLE _make_failed
 if (_make_failed)
   message(FATAL_ERROR "Compile assimp_devel failed: ${_make_failed}")
 endif(_make_failed)
+
+catkin_package(
+    DEPENDS 
+    CATKIN-DEPENDS 
+    INCLUDE_DIRS ${CATKIN_DEVEL_PREFIX}/include
+    LIBRARIES assimp3
+)
