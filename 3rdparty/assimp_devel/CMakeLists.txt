@@ -11,6 +11,13 @@ if (_make_failed)
   message(FATAL_ERROR "Compile assimp_devel failed: ${_make_failed}")
 endif(_make_failed)
 
+# fake catkin package
+add_library(assimp3  SHARED IMPORTED)
+set_target_properties(assimp3  PROPERTIES IMPORTED_IMPLIB ${CATKIN_DEVEL_PREFIX}/lib/libassimp3.so )
+
+file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/include)
+file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/include/assimp3)
+
 catkin_package(
     DEPENDS 
     CATKIN-DEPENDS 
