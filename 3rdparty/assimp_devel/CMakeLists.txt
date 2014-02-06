@@ -2,7 +2,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(assimp_devel)
 find_package(catkin REQUIRED)
-message("CMAKE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}")
 
 
 execute_process(
