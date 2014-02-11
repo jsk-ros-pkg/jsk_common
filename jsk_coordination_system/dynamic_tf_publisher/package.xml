@@ -1,0 +1,22 @@
+<package>
+  <name>
+     dynamic_tf_publisher
+  </name>
+  <description>
+    dynamically set the tf trensformation
+  </description>
+  <version>0.2.0</version>
+  <author email="saito@jsk.t.u-tokyo.ac.jp">Manabu Saito</author>
+  <maintainer email="garaemon@gmail.com">garaemon@gmail.com</maintainer>
+  <license>BSD</license>
+  <url>http://ros.org/wiki/dynamic_tf_publisher</url>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>message_generation</build_depend>
+  <run_depend>message_runtime</run_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+</package>
+
+
