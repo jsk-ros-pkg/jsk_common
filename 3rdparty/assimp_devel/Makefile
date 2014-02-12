@@ -16,9 +16,10 @@ BOOST_LIBRARY_DIRS=$(shell rosboost-cfg --lib_dirs)
 
 BUILDDIR=$(shell if [ $(DEBUG) ]; then echo builddebug; else echo build; fi)
 CMAKE_BUILD_TYPE=$(shell if [ $(DEBUG) ]; then echo Debug; else echo RelWithDebInfo; fi)
-
+CPU_NUM=$(shell grep -c processor /proc/cpuinfo)
+PARALLEL_JOB=$(shell if `expr $(CPU_NUM) \> 12 > /dev/null`;then echo 12; else echo ${CPU_NUM}; fi)
 assimp_devel: $(GIT_DIR) patched
-	cd $(GIT_DIR) && mkdir -p $(BUILDDIR) && cd $(BUILDDIR) && BOOST_INCLUDEDIR=$(BOOST_INCLUDE_DIRS) BOOST_LIBRARYDIR=$(BOOST_LIBRARY_DIRS) cmake -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DCMAKE_BUILD_TYPE=$(CMAKE_BUILD_TYPE) .. && make -j`grep -c processor /proc/cpuinfo` install
+	cd $(GIT_DIR) && mkdir -p $(BUILDDIR) && cd $(BUILDDIR) && BOOST_INCLUDEDIR=$(BOOST_INCLUDE_DIRS) BOOST_LIBRARYDIR=$(BOOST_LIBRARY_DIRS) cmake -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DCMAKE_BUILD_TYPE=$(CMAKE_BUILD_TYPE) .. && make -j$(PARALLEL_JOB) install
 	if [ -e $(INSTALL_DIR)/include/assimp3 ]; then rm -rf $(INSTALL_DIR)/include/assimp3; fi
 	mv $(INSTALL_DIR)/include/assimp $(INSTALL_DIR)/include/assimp3
 	mv $(INSTALL_DIR)/bin/assimp $(INSTALL_DIR)/bin/assimp_cmd
