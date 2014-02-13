@@ -4,7 +4,7 @@ project(jsk_footstep_msgs)
 
 # Load catkin and all dependencies required for this package
 # TODO: remove all from COMPONENTS that are not catkin packages.
-find_package(catkin REQUIRED COMPONENTS geometry_msgs actionlib_msgs)
+find_package(catkin REQUIRED COMPONENTS geometry_msgs actionlib_msgs message_generation)
 
 add_message_files(
   DIRECTORY msg
@@ -31,7 +31,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
     DEPENDS
-    CATKIN-DEPENDS  geometry_msgs actionlib_msgs
+    CATKIN-DEPENDS  geometry_msgs actionlib_msgs message_runtime
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
 )
+
