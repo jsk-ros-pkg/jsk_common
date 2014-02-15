@@ -23,5 +23,5 @@ clean:
 	cd $(INSTALL_DIR) && make -C $(SVN_DIR) clean
 
 wipe: clean
-	cd $(INSTALL_DIR) && rm -rf $(SVN_DIR) include lib share
+	cd $(INSTALL_DIR) && rm -rf $(SVN_DIR) include lib share patched
 
