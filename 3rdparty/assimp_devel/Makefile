@@ -2,8 +2,10 @@ all: assimp_devel
 
 INSTALL_DIR=`rospack find assimp_devel`
 GIT_DIR = assimp_git
+#GIT_URL = https://github.com/YoheiKakiuchi/assimp.git
+#GIT_REVISION = jsk-trunk ## fixed bug of Ply parse
 GIT_URL = git://github.com/assimp/assimp.git
-GIT_REVISION = master ## checked at ae031733c28d86146c685d2dd328d25b7a68a3fe
+GIT_REVISION = master
 GIT_PATCH = assimp_git.unit.patch assimp_git.technique.patch assimp_git.obj_export.patch
 include $(shell rospack find mk)/git_checkout.mk
 
