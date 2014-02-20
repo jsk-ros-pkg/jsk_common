@@ -1,4 +1,7 @@
 <launch>
+  <!-- If you want to update at the arbitrary point of the time, please type following command. Sample programs are in scripts folder.
+       rosservice call /sample_topic_buffer_server/update "/chatter"
+  -->
   <arg name="USE_FIXED_RATE" default="false" />
   <arg name="USE_UPDATE_RATE" default="false" />
 
