@@ -4,8 +4,8 @@
   <description>
      patlite
   </description>
-  <author email="tnakaoka@gmail.com">Takuya Nakaoka</author>
-  <maintainer email="tnakaoka@gmail.com">Takuya Nakaoka</maintainer>
+  <author email="nakaokat@gmail.com">Takuya Nakaoka</author>
+  <maintainer email="nakaokat@gmail.com">Takuya Nakaoka</maintainer>
   <license>BSD</license>
   <url>http://ros.org/wiki/patlite</url>
   <buildtool_depend>catkin</buildtool_depend>
