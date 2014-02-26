@@ -8,5 +8,5 @@
     <cpp lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lassimp3" cflags="-I${prefix}/include"/>
   </export>
   <versioncontrol type="svn" url="https://assimp.svn.sourceforge.net/svnroot/assimp/trunk"/>
-
+  <rosdep name="mk" />
 </package>
