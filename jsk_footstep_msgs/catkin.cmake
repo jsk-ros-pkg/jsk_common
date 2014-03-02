@@ -17,7 +17,7 @@ add_message_files(
 
 add_action_files(
   DIRECTORY action
-  FILES PlanFootsteps.action
+  FILES PlanFootsteps.action ExecFootsteps.action
 )
 
 ## Generate added messages and services with any dependencies listed here
