@@ -1,4 +1,4 @@
-if("$ENV{ROS_Distributions}" STREQUAL "electric" OR "$ENV{ROS_DISTRO}" STREQUAL "fuerte")
+if("$ENV{ROS_Distributions}" STREQUAL "electric" OR "$ENV{ROS_DISTRO}" STREQUAL "fuerte" OR "$ENV{ROS_DISTRO}" STREQUAL "hydro")
   message("-- pr2_groovy_patches package is for groovy")
   return()
 endif()
