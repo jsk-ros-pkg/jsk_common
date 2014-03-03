@@ -1,0 +1,298 @@
+#!/usr/bin/env bash
+
+function usage {
+    echo >&2 "usage: $0"
+    echo >&2 "          [-h|--help] print this message"
+    echo >&2 "          [-i|--show-install] show how to install "
+    echo >&2 "          [-p|--show-package] display packages to install"
+    echo >&2 "          [-e|--environment] display environment variables"
+    exit 0
+}
+
+function error {
+    echo "export ROS_HOME=$ROS_HOME"
+    echo "source $ROS_INSTALLDIR/setup.bash"
+    (which rosrun && rosrun rosunit clean_junit_xml.py; echo "done")
+    exit 1
+}
+trap error ERR
+
+# command line parse
+OPT=`getopt -o hipe -l help,show-install,show-package,show-environment -- $*`
+if [ $? != 0 ]; then
+    usage
+fi
+
+eval set -- $OPT
+while [ -n "$1" ] ; do
+    case $1 in
+	-h|--help) usage ;;
+	-i|--show-install) SHOW="install"; shift;;
+	-p|--show-package) SHOW="package"; shift;;
+	-e|--show-environment) SHOW="environment"; shift;;
+	--) shift; break;;
+	*) echo "Unknown option($1)"; usage;;
+    esac
+done
+
+# set environment variables
+# set distribution
+case $1 in
+    cturtle|diamondback|electric|fuerte|groovy|hydro) export DISTRIBUTION=$1; shift;;
+    *)      export DISTRIBUTION=groovy;;
+esac
+
+# check ros distribution and ubuntu distribution
+# http://ros.org/reps/rep-0003.html
+export LSB_RELEASE=`lsb_release -cs`
+if ( [ "$DISTRIBUTION" == "cturtle" ] && \
+    [[ $LSB_RELEASE =~ (lucid|maverick) ]] ) || \
+   ( [ "$DISTRIBUTION" == "diamondback" ] && \
+    [[ $LSB_RELEASE =~ (lucid|maverick|natty) ]] ) || \
+   ( [ "$DISTRIBUTION" == "diamondback" ] && \
+    [[ $LSB_RELEASE =~ (lucid|maverick|natty) ]] ) || \
+   ( [ "$DISTRIBUTION" == "electric" ] && \
+    [[ $LSB_RELEASE =~ (lucid|maverick|natty|oneiric) ]] ) || \
+   ( [ "$DISTRIBUTION" == "fuerte" ] && \
+    [[ $LSB_RELEASE =~ (lucid|oneiric|precise) ]] ) || \
+   ( [ "$DISTRIBUTION" == "groovy" ] && \
+    [[ $LSB_RELEASE =~ (oneiric|precise|quantal) ]] ) || \
+   ( [ "$DISTRIBUTION" == "hydro" ] && \
+    [[ $LSB_RELEASE =~ (precise|quantal|raring) ]] ) then
+    echo "Install $DISTRIBUTION to $LSB_RELEASE"
+else
+    echo "target distribution($DISTRIBUTION) does not support $LSB_RELEASE platform, exit install program"
+    exit -1
+fi
+
+
+
+# setup workspaceand buildspace
+if [ "$WORKSPACE" == "" ]; then # if not jenkins
+    export WORKSPACE=$HOME
+fi
+export ROS_INSTALLDIR=$WORKSPACE/ros/$DISTRIBUTION
+export PATH=$PATH:/usr/sbin:/usr/bin:/sbin:/bin
+
+# set environment variables
+if [ -f /proc/xen -o "`grep -c 'QEMU Virtual CPU' /proc/cpuinfo`" != "0" ]; then
+    export ROS_PARALLEL_JOBS=-j1
+else
+    export ROS_PARALLEL_JOBS=-j4
+fi
+export ROS_HOME=$WORKSPACE/.ros
+export PATH=$PATH:/usr/local/bin ## for ros tools
+export LC_ALL=en_US.UTF-8
+unset SVN_REVISION ## this jenkins environment valiables conflicts with mk/svn_checkout.mk
+
+# define functions
+# http://www.ros.org/wiki/electric/Installation/Ubuntu
+function setup-ros {
+    sudo dpkg --configure -a
+    sudo apt-get -y --force-yes install build-essential python-yaml cmake subversion wget python-setuptools git-core mercurial aptitude
+    sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list'
+    wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+    sudo apt-get update
+    sudo apt-get upgrade -y --force-yes
+    sudo apt-get -y --force-yes install python-rosdep python-rosinstall python-wstool || sudo apt-get -y --force-yes install python-rosdep
+    if [ -e /etc/ros/rosdep/sources.list.d/20-default.list ] ; then
+        sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list;  # rosdep init fails when arleady initialized
+    fi
+    while [ ! -e /etc/ros/rosdep/sources.list.d/20-default.list ]; do
+        sudo rosdep init
+    done
+    (rosdep update; true)
+}
+
+# jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
+function install-pkg {
+    (rosdep update; true)
+    if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
+        ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR
+        (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( rosws init; rosws merge /opt/ros/$DISTRIBUTION/.rosinstall ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL -r -y ; done  )
+    else ## hydro and up, use catkin
+        ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR/src;
+        (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC; catkin_init_workspace)
+        (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( wstool init ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" wstool merge $ROSINSTALL -r -y ; done  )
+    fi
+    
+    success=0
+    retry=0
+    while [ $success == 0 -a $retry -lt 10 ]; do
+        if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
+            (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" rosws update ) && success=1 || sleep 120
+        else
+            (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" wstool update ) && success=1 || sleep 120
+        fi
+        retry=`expr $retry + 1`
+    done
+# rosdep install
+    echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
+    rosdep install --from-paths $ROS_INSTALLDIR_SRC  --rosdistro $DISTRIBUTION -y -v -r
+    return 0
+}
+
+function rosdep_and_rosmake {
+    trap error ERR
+    local package=$1
+    rosdep install -y $package -v -r
+    rosmake --profile --status-rate=0 $package || rosmake --profile --status-rate=0 $package
+}
+
+function compile-pkg {
+    trap error ERR
+    local PACKAGES=$@
+
+    unset ROS_DISTRO
+    if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
+        # start rosdep_and_rosmake
+        . $ROS_INSTALLDIR/setup.sh
+        rospack profile
+
+        for PACKAGE in $PACKAGES
+        do
+	    rosdep_and_rosmake $PACKAGE
+            (cd `rospack find $PACKAGE`; [ ! -e ROS_NOBUILD ] && make ) || echo "ROS_NOBUILD found" # make sure to compile package
+        done
+    else ## hydro and up, use catkin
+        . /opt/ros/$DISTRIBUTION/setup.sh
+        (cd $ROS_INSTALLDIR && LC_ALL=C catkin_make && LC_ALL=C catkin_make install )
+        ## use rosbuild for rest of componentes
+        (cd $ROS_INSTALLDIR; rm -f .rosinstall; rosws init . $ROS_INSTALLDIR/install )
+        . $ROS_INSTALLDIR/setup.sh
+        rospack profile
+    fi
+}
+
+function test-pkg {
+    trap error ERR
+    local PACKAGES=$@
+    . $ROS_INSTALLDIR/setup.sh
+    # test
+    export DISPLAY=
+    export PATH=$PATH:`rospack find roseus`/bin
+    TEST_FAIL=0
+    rm -fr $ROS_WORKSPACE/test_results
+
+    # for gazebo
+    if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
+        source `rospack find gazebo`/scripts/setup.sh
+        export ROS_PACKAGE_PATH=`rosstack find simulator_gazebo`:$ROS_PACKAGE_PATH
+
+        for PACKAGE in $PACKAGES
+        do
+            (rospack find $PACKAGE && (cd `rospack find $PACKAGE`; make test  ) ) || TEST_FAIL=`echo "-- $PACKAGE failed"`
+        done
+    else
+        (cd $ROS_INSTALLDIR && LC_ALL=C catkin_make run_tests)
+    fi
+}
+
+function doc-pkg {
+    trap error ERR
+    local PACKAGES=$@
+    . $ROS_INSTALLDIR/setup.sh
+    # test
+    export DISPLAY=:0.0
+    export PATH=$PATH:`rospack find roseus`/bin
+    rm -fr $ROS_INSTALLDIR/../../.ros/test_results
+
+    for PACKAGE in $PACKAGES
+    do
+	(cd `rospack find $PACKAGE`; make test || make tests) # catkin uses make tests, rosbuild uses make test
+        # chnage to JENKINS_URL and commit for jenkins
+	if [ "$JENKINS_URL" != "" -a "$SVN_USERNAME" != "" -a "$SVN_PASSWORD" != "" -a -f `rospack find $PACKAGE`/build/index.rst ] ; then
+	    sed -i "s@^.. image:: build/@.. image:: $JENKINS_URL/job/$JOB_NAME/lastSuccessfulBuild/artifact/doc/$PACKAGE/html/_images/@" `rospack find $PACKAGE`/build/index.rst
+	    sed -i "s@^.. video:: build/@.. video:: $JENKINS_URL/job/$JOB_NAME/lastSuccessfulBuild/artifact/doc/$PACKAGE/html/_images/@" `rospack find $PACKAGE`/build/index.rst
+	    (cd `rospack find $PACKAGE`; cp build/index.rst ./; cp build/conf.py ./; svn add --non-interactive --username $SVN_USERNAME --password $SVN_PASSWORD index.rst conf.py; svn commit --non-interactive --username $SVN_USERNAME --password $SVN_PASSWORD -m "update index.rst,conf.py by Jenkins" index.rst conf.py)
+	fi
+    done
+
+    # if there are xdisplay, generate doc and index doc
+    if [ "`xdpyinfo > /dev/null || echo "fail"`" == "fail" ] ; then
+	echo "Could not connect to Xserver, so exit without running launchdoc"
+	return 0
+    fi
+
+    # doc
+    mkdir -p $ROS_INSTALLDIR/doc
+    SVN_REVISION=`LANGUAGE=en LANG=C svn info $ROS_INSTALLDIR/jsk-ros-pkg | grep Revision`
+    cat<<EOF > $ROS_INSTALLDIR/doc/index.rst
+========================================
+jsk-ros-pkg($SVN_REVISION) Test Results
+========================================
+EOF
+    for PACKAGE in $PACKAGES
+    do
+	if [ -f `rospack find $PACKAGE`/index.rst ]; then
+	    (cd $ROS_INSTALLDIR; rm -fr doc; rosdoc_lite `rospack find $PACKAGE`)
+	    (wkhtmltopdf $ROS_INSTALLDIR/doc/html/index.html $ROS_INSTALLDIR/doc/$PACKAGE.pdf; true)
+	    convert $ROS_INSTALLDIR/doc/$PACKAGE.pdf $ROS_INSTALLDIR/doc/$PACKAGE.png
+	    if [ -f $ROS_INSTALLDIR/doc/$PACKAGE.png ]; then
+		PACKAGEPNG=$PACKAGE.png
+	    else
+		PACKAGEPNG=$PACKAGE-0.png
+	    fi
+	    cat <<EOF >> $ROS_INSTALLDIR/doc/index.rst
+
+.. image:: $PACKAGEPNG
+   :width: 320
+   :target: $PACKAGE/html/index.html
+
+EOF
+	fi
+    done
+    for PACKAGE in $PACKAGES
+    do
+	if [ -f `rospack find $PACKAGE`/index.rst ]; then
+	    cat <<EOF >> $ROS_INSTALLDIR/doc/index.rst
+$PACKAGE
+
+  ros wiki page http://ros.org/wiki/$PACKAGE/
+
+  ros api page http://ros.org/doc/api/$PACKAGE/html/
+
+EOF
+	fi
+    done
+
+    rst2html $ROS_INSTALLDIR/doc/index.rst $ROS_INSTALLDIR/doc/index.html
+}
+
+function install-jsk-ros-pkg {
+    wget  'http://svn.code.sf.net/p/jsk-ros-pkg/code/trunk/jsk.rosinstall?format=raw' -O /tmp/jsk.rosinstall.$$
+    install-pkg /tmp/jsk.rosinstall.$$
+    rosdep install euslisp
+    if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
+        xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi || return 0
+    fi
+}
+function compile-jsk-ros-pkg {
+    compile-pkg pr2eus_openrave elevator_move_base_pr2 detect_cans_in_fridge_201202 jsk_2013_04_pr2_610
+}
+function test-jsk-ros-pkg {
+    test-pkg euslisp roseus pr2eus euscollada pr2eus_openrave jsk_pcl_ros kinect_near_mode_calibration elevator_move_base_pr2 detect_cans_in_fridge_201202 jsk_2013_04_pr2_610
+}
+
+# show-* option
+case "$SHOW" in
+    install) declare -f setup-ros | awk '/^\ /{print $0}' | sed -e 's/^[ ]*//'; exit 0;;
+    package) echo "sudo apt-get -y --force-yes install $INSTALL_ROS_PACKAGE" ; exit 0;;
+    environment) env; return 0;;
+esac
+
+# main program
+set -x
+
+if [ $# -gt 0 ]; then ## if we have arguments, check functions
+    $@
+else
+    setup-ros
+    install-jsk-ros-pkg
+    compile-jsk-ros-pkg
+    test-jsk-ros-pkg
+fi
+
+#
+(which rosrun && rosrun rosunit clean_junit_xml.py; echo "done")     # check error
+

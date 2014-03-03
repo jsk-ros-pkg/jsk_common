@@ -1,0 +1,12 @@
+<launch>
+  <node name="tf_publisher" pkg="dynamic_tf_publisher"
+	type="tf_publish.py"  output="screen"/>
+  <node name="tf_setter1" pkg="dynamic_tf_publisher" type="tf_set.py"
+	args="2 1 0 1.5706 0 0 map desk 1000" output="screen"/>
+  <node name="tf_setter2" pkg="dynamic_tf_publisher" type="tf_set.py"
+	args="0 0 1 0 0 0 desk cup 1000" output="screen"/>
+  <node name="tf_setter3" pkg="dynamic_tf_publisher" type="tf_set.py"
+	args="1 1 0 0 0 0 map robot 1000" output="screen"/>
+  <node name="tf_setter4" pkg="dynamic_tf_publisher" type="tf_set.py"
+	args="1 0 1 0 0 0 robot hand 1000" output="screen"/>
+</launch>

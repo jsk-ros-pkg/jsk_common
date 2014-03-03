@@ -1,0 +1,10 @@
+1023d1022
+<       break;
+1024a1024,1025
+>       p = i;
+>       i = i->next;
+1040,1043d1040
+<     if ( i->connective != NOT ) {
+<       p = i;
+<       i = i->next;
+<     }

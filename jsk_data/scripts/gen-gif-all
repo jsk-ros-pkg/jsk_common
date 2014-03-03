@@ -1,0 +1,85 @@
+#!/bin/sh
+# TODO : use motion detector to reduce images when bag files are too large
+
+base=${1} # small or large
+bagfiles=`ls \`rospack find jsk_data\`/${base}/*.bag`
+delay=1 # delay is the speed of gif animation. The smaller, the faster.
+imgtype=left
+roscore &
+for bagfile in ${bagfiles}
+ do
+    echo ${bagfile}
+    echo "creating image files"
+    imgdir=${bagfile}.${imgtype}
+
+    if [ -e ${bagfile}.${imgtype}_delay${delay}.gif ]; then
+        echo "GIF file already existed"
+    else
+        rm -rf ${imgdir}
+        check_camera=`rosbag info ${bagfile} /dev/null 2>&1 | egrep 'image_rect_color|image_raw' `
+        if [ "$check_camera" = "" ]; then
+            echo "find no camera data on this bag file"
+            continue
+        fi
+        camera=`rosbag info ${bagfile} | egrep 'image_rect_color|image_raw' | grep ${imgtype} | awk '{print $1}' | head -n 1 `
+	# if the camera topic is the first topic, $camera will be "topics".
+	if [ "$camera" = "topics:" ]; then
+        camera=`rosbag info ${bagfile} | egrep 'image_rect_color|image_raw' | grep ${imgtype} | awk '{print $2}' | head -n 1 `
+	fi
+
+        mkdir ${imgdir}
+        # rosrun bag_to_images bag_to_images --bag ${bagfile} --camera ${camera} --outdir ${imgdir} --extension jpg
+        # echo "rosbag play -d 2 --hz=${speed} ${bagfile}" > ${bagfile}.sh
+        echo "rosbag play -d 2 ${bagfile}" > ${bagfile}.sh
+        chmod 755 ${bagfile}.sh
+        screen -d -m kterm -geometry 80x10+0+0 -e "${bagfile}.sh"
+
+        cd ${imgdir}
+        echo "camera is ${camera}"
+        echo "rosrun image_view extract_images image:=${camera}" > extract.sh
+        chmod 755 extract.sh
+        screen -d -m kterm -geometry 80x10+0+195 -e "extract.sh"
+        cd ..
+        sleep 5
+        while :
+        do
+        sleep 2
+        check_rosbag=`ps aux | grep ${bagfile} | grep play `
+        echo "rosbag playing..."
+        if [ "$check_rosbag" = "" ]; then break; fi
+        done
+
+        # kill extract process
+        kill -INT `ps aux | grep extract.sh | grep kterm | awk '{print $2}' `
+
+        echo "renaming" 
+        # if image files are more than 100, cut down images to 100 files
+        file_count=`ls ${imgdir} | wc -w `
+        if [ ${file_count} -gt 100 ]; then
+            count_unit=`expr ${file_count} / 100`
+            else
+            count_unit=1
+        fi
+
+        count=0
+        count_buf=1
+        for img in ${imgdir}/*.jpg
+        do
+            if [ $count_buf -eq $count_unit ] ; then
+	        count=`expr ${count} + 1`
+	        mv ${img} `printf "%s/%04d.jpg" ${imgdir} ${count} `
+                count_buf=1
+            else
+                rm -rf ${img}
+                count_buf=`expr ${count_buf} + 1`
+            fi
+        done
+
+        echo "start converting"
+        convert -geometry 160x120! -delay ${delay} -loop 0 ${imgdir}/*.jpg ${bagfile}.${imgtype}_delay${delay}.gif
+
+    # clean up temporary files
+        rm -rf ${imgdir} ${bagfile}.sh #extract.sh
+    fi
+done
+kill $!

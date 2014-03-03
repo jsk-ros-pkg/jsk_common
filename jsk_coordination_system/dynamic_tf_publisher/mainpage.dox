@@ -1,0 +1,35 @@
+/**
+\mainpage
+\htmlinclude manifest.html
+
+\b dynamic_tf_publisher is a dynamic configuarable transform publisher
+
+\section To use this package
+Start tf publisher node
+$ rosrun dynamic_tf_publisher tf_publish.py
+
+Transform can be registerd by SetDynamicTF service
+Sample script is tf_set.py (arguments is same as tf/static_transform_publisher)
+
+         room                      room
+           |      assoc
+ turtle2   |      ---->    turtle2
+           |      <----          |
+       carrot    dissoc          carrot
+
+
+\section codeapi Code API
+
+<!--
+Provide links to specific auto-generated API documentation within your
+package that is of particular interest to a reader. Doxygen will
+document pretty much every part of your code, so do your best here to
+point the reader to the actual API.
+
+If your codebase is fairly large or has different sets of APIs, you
+should use the doxygen 'group' tag to keep these APIs together. For
+example, the roscpp documentation has 'libros' group.
+-->
+
+
+*/

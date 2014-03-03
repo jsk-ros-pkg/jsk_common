@@ -1,0 +1,92 @@
+diff -r 8a10a975cb92 manifest.xml
+--- a/manifest.xml	Mon Mar 12 15:56:49 2012 -0700
++++ b/manifest.xml	Wed May 02 03:02:22 2012 +0900
+@@ -14,8 +14,8 @@
+   <depend package="roscpp"/>
+   <depend package="roslib"/>
+   <depend package="tf"/>
+-
++<!--
+   <rosdep name="openni-dev"/>
+   <rosdep name="nite-dev"/>
+-  <rosdep name="ps-engine"/>
++  <rosdep name="ps-engine"/> -->
+ </package>
+diff -r 8a10a975cb92 src/openni_tracker.cpp
+--- a/src/openni_tracker.cpp	Mon Mar 12 15:56:49 2012 -0700
++++ b/src/openni_tracker.cpp	Wed May 02 03:02:22 2012 +0900
+@@ -17,14 +17,27 @@
+ 
+ XnBool g_bNeedPose   = FALSE;
+ XnChar g_strPose[20] = "";
++bool use_calib_file_ = false;
++std::string calib_fname_;
+ 
+ void XN_CALLBACK_TYPE User_NewUser(xn::UserGenerator& generator, XnUserID nId, void* pCookie) {
+ 	ROS_INFO("New User %d", nId);
+-
++        if ( !use_calib_file_ ) {
+ 	if (g_bNeedPose)
+ 		g_UserGenerator.GetPoseDetectionCap().StartPoseDetection(g_strPose, nId);
+ 	else
+ 		g_UserGenerator.GetSkeletonCap().RequestCalibration(nId, TRUE);
++        } else {
++          XnStatus rc = g_UserGenerator.GetSkeletonCap().LoadCalibrationDataFromFile(nId, calib_fname_.c_str());
++          if (rc == XN_STATUS_OK) {
++            ROS_INFO("Use Calib File OK : %s", calib_fname_.c_str());
++            // Make sure state is coherent
++            g_UserGenerator.GetPoseDetectionCap().StopPoseDetection(nId);
++            g_UserGenerator.GetSkeletonCap().StartTracking(nId);
++          } else {
++            ROS_WARN("Use Calib File Fail ! : %s", calib_fname_.c_str());
++          }
++        }
+ }
+ 
+ void XN_CALLBACK_TYPE User_LostUser(xn::UserGenerator& generator, XnUserID nId, void* pCookie) {
+@@ -136,7 +149,15 @@
+ int main(int argc, char **argv) {
+     ros::init(argc, argv, "openni_tracker");
+     ros::NodeHandle nh;
++    ros::NodeHandle pnh("~");
++    string frame_id("openni_depth_frame");
++    pnh.getParam("camera_frame_id", frame_id);
+ 
++    pnh.param("use_calibfile", calib_fname_, std::string(""));
++    if ( calib_fname_ != "" ) {
++      use_calib_file_ = true;
++      ROS_INFO("use caibfile: %s", calib_fname_.c_str());
++    }
+     string configFilename = ros::package::getPath("openni_tracker") + "/openni_tracker.xml";
+     XnStatus nRetVal = g_Context.InitFromXmlFile(configFilename.c_str());
+     CHECK_RC(nRetVal, "InitFromXml");
+@@ -157,7 +178,7 @@
+ 
+     XnCallbackHandle hUserCallbacks;
+ 	g_UserGenerator.RegisterUserCallbacks(User_NewUser, User_LostUser, NULL, hUserCallbacks);
+-
++    if ( !use_calib_file_ ) {
+ 	XnCallbackHandle hCalibrationCallbacks;
+ 	g_UserGenerator.GetSkeletonCap().RegisterCalibrationCallbacks(UserCalibration_CalibrationStart, UserCalibration_CalibrationEnd, NULL, hCalibrationCallbacks);
+ 
+@@ -173,7 +194,7 @@
+ 
+ 		g_UserGenerator.GetSkeletonCap().GetCalibrationPose(g_strPose);
+ 	}
+-
++    }
+ 	g_UserGenerator.GetSkeletonCap().SetSkeletonProfile(XN_SKEL_PROFILE_ALL);
+ 
+ 	nRetVal = g_Context.StartGeneratingAll();
+@@ -181,11 +202,6 @@
+ 
+ 	ros::Rate r(30);
+ 
+-        
+-        ros::NodeHandle pnh("~");
+-        string frame_id("openni_depth_frame");
+-        pnh.getParam("camera_frame_id", frame_id);
+-                
+ 	while (ros::ok()) {
+ 		g_Context.WaitAndUpdateAll();
+ 		publishTransforms(frame_id);

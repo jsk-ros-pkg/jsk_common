@@ -1,0 +1,397 @@
+Index: ee_cart_imped_control/manifest.xml
+===================================================================
+--- ee_cart_imped_control/manifest.xml	(revision 3811)
++++ ee_cart_imped_control/manifest.xml	(working copy)
+@@ -9,7 +9,6 @@
+   <review status="unreviewed" notes=""/>
+   <url>http://ros.org/wiki/ee_cart_imped_control</url>
+   <depend package="geometry_msgs" />
+-  <depend package="eigen" />
+   <depend package="kdl" />
+   <depend package="pr2_controller_manager"/>
+   <depend package="pr2_controller_interface"/>
+@@ -19,6 +18,7 @@
+   <depend package="actionlib_msgs"/>
+   <depend package="realtime_tools"/>
+   <depend package="ee_cart_imped_msgs"/>
++  <depend package="tf"/>
+ 
+   <export>
+     <pr2_controller_interface plugin="${prefix}/controller_plugins.xml" />
+Index: ee_cart_imped_control/src/ee_cart_imped_control.cpp
+===================================================================
+--- ee_cart_imped_control/src/ee_cart_imped_control.cpp	(revision 3811)
++++ ee_cart_imped_control/src/ee_cart_imped_control.cpp	(working copy)
+@@ -7,7 +7,52 @@
+ 
+ #include "ee_cart_imped_control/ee_cart_imped_control.hpp"
+ #include <pluginlib/class_list_macros.h>
++#include <tf/tf.h>
++#include <Eigen/SVD>
+ 
++template < class _Matrix_Type_ >
++bool pseudoInverse(const _Matrix_Type_ &a, _Matrix_Type_ &result,
++                   double epsilon = std::numeric_limits<typename _Matrix_Type_::Scalar>::epsilon())
++{
++  if(a.rows() < a.cols())
++    return false;
++
++  Eigen::JacobiSVD< _Matrix_Type_ > svd = a.jacobiSvd(Eigen::ComputeThinU |Eigen::ComputeThinV);
++
++  typename _Matrix_Type_::Scalar tolerance = epsilon * std::max(a.cols(),
++                                                                a.rows()) * svd.singularValues().array().abs().maxCoeff();
++
++  result =
++    svd.matrixV() *
++    _Matrix_Type_ ( (svd.singularValues().array().abs() > tolerance)
++                    .select(svd.singularValues().array().inverse(), 0) ).asDiagonal() *
++    svd.matrixU().adjoint();
++
++  return true;
++}
++
++//template bool pseudoInverse < typename Eigen::MatrixXf > ( );
++#if 0
++bool pseudoInverse(const Eigen::Matrix <double, Eigen::Dynamic, 6> &a, Eigen::Matrix <double, Eigen::Dynamic, 6> &result,
++                   double epsilon = std::numeric_limits<typename Eigen::Matrix <double, Eigen::Dynamic, 6>::Scalar>::epsilon())
++{
++  if(a.rows() < a.cols())
++    return false;
++
++  Eigen::JacobiSVD< Eigen::Matrix <double, Eigen::Dynamic, 6> > svd = a.jacobiSvd(Eigen::ComputeThinU |Eigen::ComputeThinV);
++
++  typename Eigen::Matrix <double, Eigen::Dynamic, 6>::Scalar tolerance = epsilon * std::max(a.cols(),
++                                                                a.rows()) * svd.singularValues().array().abs().maxCoeff();
++
++  result =
++    svd.matrixV() *
++    Eigen::Matrix <double, Eigen::Dynamic, 6> ( (svd.singularValues().array().abs() > tolerance)
++                                                .select(svd.singularValues().array().inverse(), 0) ).asDiagonal() *
++    svd.matrixU().adjoint();
++
++  return true;
++}
++#endif
+ using namespace ee_cart_imped_control_ns;
+ 
+ double EECartImpedControlClass::linearlyInterpolate(double time, 
+@@ -70,9 +115,15 @@
+   if (current_goal_index > 0 && last_point_.time_from_start.toSec() != 
+       desiredPoses[current_goal_index-1].time_from_start.toSec()) {
+     //this should be where we CURRENTLY ARE
+-    last_point_.pose.position.x = x_.p(0);
+-    last_point_.pose.position.y = x_.p(1);
+-    last_point_.pose.position.z = x_.p(2);
++    if(current_goal_index > 1){
++      last_point_.pose.position.x = desiredPoses[current_goal_index-1].pose.position.x;
++      last_point_.pose.position.y = desiredPoses[current_goal_index-1].pose.position.y;
++      last_point_.pose.position.z = desiredPoses[current_goal_index-1].pose.position.z;
++    }else{
++      last_point_.pose.position.x = x_.p(0);
++      last_point_.pose.position.y = x_.p(1);
++      last_point_.pose.position.z = x_.p(2);
++    }
+     x_.M.GetQuaternion(last_point_.pose.orientation.x,
+ 		       last_point_.pose.orientation.y,
+ 		       last_point_.pose.orientation.z,
+@@ -85,6 +136,7 @@
+     last_point_.isTorqueX = desiredPoses[current_goal_index-1].isTorqueX;
+     last_point_.isTorqueY = desiredPoses[current_goal_index-1].isTorqueY;
+     last_point_.isTorqueZ = desiredPoses[current_goal_index-1].isTorqueZ;
++    last_point_.forceDirection = desiredPoses[current_goal_index-1].forceDirection;
+     last_point_.time_from_start = 
+       desiredPoses[current_goal_index-1].time_from_start;
+   }
+@@ -117,6 +169,15 @@
+ 		       next_point.pose.orientation.z,
+ 		       next_point.pose.orientation.w);
+ 
++    next_point.forceDirection.x = 0;
++    next_point.forceDirection.y = 0;
++    next_point.forceDirection.z = 0;
++    next_point.forceDirection.w = 1;
++
++    // add for compatibility
++    next_point.wrench_or_stiffness =
++      desiredPoses[current_goal_index].wrench_or_stiffness;
++    next_point.forceDirection = desiredPoses[current_goal_index].forceDirection;
+   } else {
+     next_point.pose.position.x = linearlyInterpolate
+       (timeFromStart, segStartTime, segEndTime, 
+@@ -129,7 +190,7 @@
+     next_point.pose.position.z = linearlyInterpolate
+       (timeFromStart, segStartTime, segEndTime, 
+        start_point.pose.position.z, end_point.pose.position.z); 
+-
++#if 0 // quaternion shoud use slerp for interpolation.
+     next_point.pose.orientation.x = linearlyInterpolate
+       (timeFromStart, segStartTime, segEndTime, 
+        start_point.pose.orientation.x, end_point.pose.orientation.x); 
+@@ -145,7 +206,62 @@
+     next_point.pose.orientation.w = linearlyInterpolate
+       (timeFromStart, segStartTime, segEndTime, 
+        start_point.pose.orientation.w, end_point.pose.orientation.w); 
++#endif
++    // use slarp
++    double r = (timeFromStart - segStartTime) / (segEndTime - segStartTime);
++    {
++      tf::Quaternion qs (start_point.pose.orientation.x,
++                         start_point.pose.orientation.y,
++                         start_point.pose.orientation.z,
++                         start_point.pose.orientation.w);
++      tf::Quaternion qe (end_point.pose.orientation.x,
++                         end_point.pose.orientation.y,
++                         end_point.pose.orientation.z,
++                         end_point.pose.orientation.w);
++      tf::Quaternion qq = tf::slerp(qs, qe, r);
++      next_point.pose.orientation.x = qq.getX();
++      next_point.pose.orientation.y = qq.getY();
++      next_point.pose.orientation.z = qq.getZ();
++      next_point.pose.orientation.w = qq.getW();
++    }
++    //next_point.forceDirection = desiredPoses[current_goal_index].forceDirection;
++    {
++      tf::Quaternion qs (start_point.forceDirection.x,
++                         start_point.forceDirection.y,
++                         start_point.forceDirection.z,
++                         start_point.forceDirection.w);
++      tf::Quaternion qe (end_point.forceDirection.x,
++                         end_point.forceDirection.y,
++                         end_point.forceDirection.z,
++                         end_point.forceDirection.w);
++      tf::Quaternion qq = tf::slerp(qs, qe, r);
++      next_point.forceDirection.x = qq.getX();
++      next_point.forceDirection.x = qq.getY();
++      next_point.forceDirection.x = qq.getZ();
++      next_point.forceDirection.x = qq.getW();
++    }
++    //next_point.wrench_or_stiffness =
++    //desiredPoses[current_goal_index].wrench_or_stiffness;
++    next_point.wrench_or_stiffness.force.x = linearlyInterpolate
++      (timeFromStart, segStartTime, segEndTime,
++       start_point.wrench_or_stiffness.force.x, end_point.wrench_or_stiffness.force.x);
++    next_point.wrench_or_stiffness.force.y = linearlyInterpolate
++      (timeFromStart, segStartTime, segEndTime,
++       start_point.wrench_or_stiffness.force.y, end_point.wrench_or_stiffness.force.y);
++    next_point.wrench_or_stiffness.force.z = linearlyInterpolate
++      (timeFromStart, segStartTime, segEndTime,
++       start_point.wrench_or_stiffness.force.z, end_point.wrench_or_stiffness.force.z);
++    next_point.wrench_or_stiffness.torque.x = linearlyInterpolate
++      (timeFromStart, segStartTime, segEndTime,
++       start_point.wrench_or_stiffness.torque.x, end_point.wrench_or_stiffness.torque.x);
++    next_point.wrench_or_stiffness.torque.y = linearlyInterpolate
++      (timeFromStart, segStartTime, segEndTime,
++       start_point.wrench_or_stiffness.torque.y, end_point.wrench_or_stiffness.torque.y);
++    next_point.wrench_or_stiffness.torque.z = linearlyInterpolate
++      (timeFromStart, segStartTime, segEndTime,
++       start_point.wrench_or_stiffness.torque.z, end_point.wrench_or_stiffness.torque.z);
+   }
++#if 0
+   //we don't currently interpolate between wrench
+   //and stiffness as generally the user wants one
+   //wrench through a full trajectory point and then
+@@ -155,6 +271,8 @@
+   //as these can lead to bad behavior
+   next_point.wrench_or_stiffness = 
+     desiredPoses[current_goal_index].wrench_or_stiffness;
++  next_point.forceDirection = desiredPoses[current_goal_index].forceDirection;
++#endif
+   next_point.isForceX = desiredPoses[current_goal_index].isForceX;
+   next_point.isForceY = desiredPoses[current_goal_index].isForceY;
+   next_point.isForceZ = desiredPoses[current_goal_index].isForceZ;
+@@ -162,6 +280,7 @@
+   next_point.isTorqueY = desiredPoses[current_goal_index].isTorqueY;
+   next_point.isTorqueZ = desiredPoses[current_goal_index].isTorqueZ;
+   next_point.time_from_start = ros::Duration(timeFromStart);
++
+   return next_point;
+ }
+ 
+@@ -196,7 +315,16 @@
+   			   new_traj.initial_point.pose.orientation.y,
+   			   new_traj.initial_point.pose.orientation.z,
+   			   new_traj.initial_point.pose.orientation.w);
+- 		     
++
++  new_traj.initial_point.wrench_or_stiffness = msg->trajectory[0].wrench_or_stiffness;
++  new_traj.initial_point.isForceX = msg->trajectory[0].isForceX;
++  new_traj.initial_point.isForceY = msg->trajectory[0].isForceY;
++  new_traj.initial_point.isForceZ = msg->trajectory[0].isForceZ;
++  new_traj.initial_point.isTorqueX = msg->trajectory[0].isTorqueX;
++  new_traj.initial_point.isTorqueY = msg->trajectory[0].isTorqueY;
++  new_traj.initial_point.isTorqueZ = msg->trajectory[0].isTorqueZ;
++  new_traj.initial_point.forceDirection = msg->trajectory[0].forceDirection;
++
+   for (size_t i = 0; i < msg->trajectory.size(); i++) {
+     new_traj.traj.push_back(msg->trajectory[i]);
+   }
+@@ -329,6 +457,11 @@
+   hold_traj.traj[0].isTorqueX = false;
+   hold_traj.traj[0].isTorqueY = false;
+   hold_traj.traj[0].isTorqueZ = false;
++  hold_traj.traj[0].forceDirection.x = 0;
++  hold_traj.traj[0].forceDirection.y = 0;
++  hold_traj.traj[0].forceDirection.z = 0;
++  hold_traj.traj[0].forceDirection.w = 1;
++
+   hold_traj.traj[0].time_from_start = ros::Duration(0);
+   hold_traj.initial_point = hold_traj.traj[0];
+   hold_traj.starting_time = ros::Time::now();
+@@ -390,6 +523,12 @@
+             xd_.M.UnitY() * x_.M.UnitY() +
+             xd_.M.UnitZ() * x_.M.UnitZ());  // I have no idea what this is
+ 
++    KDL::Rotation forceRotation = 
++      KDL::Rotation::Quaternion(desiredPose.forceDirection.x, 
++				desiredPose.forceDirection.y, 
++				desiredPose.forceDirection.z, 
++				desiredPose.forceDirection.w);
++    xerr_ = forceRotation.Inverse(xerr_);
+ 
+     // F_ is a vector of forces/wrenches corresponding to x, y, z, tx,ty,tz,tw
+     if (desiredPose.isForceX) {
+@@ -427,6 +566,7 @@
+     } else {
+       F_(5) = -Kp_(5) * xerr_(5) - Kd_(5)*xdot_(5);
+     }
++    F_ = forceRotation* F_;
+ 
+     // Convert the force into a set of joint torques
+     // tau_ is a vector of joint torques q1...qn
+@@ -491,6 +631,59 @@
+ 	desired_poses_box_.get(desired_poses_ptr);
+ 	controller_state_publisher_->msg_.goal = desired_poses_ptr->traj;
+ 	controller_state_publisher_->msg_.initial_point = last_point_;
++                //add
++        Eigen::MatrixXd jac(J_.data.transpose());
++        Eigen::MatrixXd piv_jac;
++        pseudoInverse < Eigen::MatrixXd > (jac, piv_jac);
++#ifdef DEBUG
++        ROS_INFO("jac: %d x %d", jac.rows(), jac.cols()); // -> 6 x 7
++        ROS_INFO("0: #f(%f %f %f %f %f %f %f)",
++                 jac(0, 0), jac(0, 1), jac(0, 2), jac(0, 3), jac(0, 4), jac(0, 5));
++        ROS_INFO("1: #f(%f %f %f %f %f %f %f)",
++                 jac(1, 0), jac(1, 1), jac(1, 2), jac(1, 3), jac(1, 4), jac(1, 5));
++        ROS_INFO("2: #f(%f %f %f %f %f %f %f)",
++                 jac(2, 0), jac(2, 1), jac(2, 2), jac(2, 3), jac(2, 4), jac(2, 5));
++        ROS_INFO("3: #f(%f %f %f %f %f %f %f)",
++                 jac(3, 0), jac(3, 1), jac(3, 2), jac(3, 3), jac(3, 4), jac(3, 5));
++        ROS_INFO("4: #f(%f %f %f %f %f %f %f)",
++                 jac(4, 0), jac(4, 1), jac(4, 2), jac(4, 3), jac(4, 4), jac(4, 5));
++        ROS_INFO("5: #f(%f %f %f %f %f %f %f)",
++                 jac(5, 0), jac(5, 1), jac(5, 2), jac(5, 3), jac(5, 4), jac(5, 5));
++        ROS_INFO("6: #f(%f %f %f %f %f %f %f)",
++                 jac(6, 0), jac(6, 1), jac(6, 2), jac(6, 3), jac(6, 4), jac(6, 5));
++
++        ROS_INFO("piv_jac: %d x %d", piv_jac.rows(), piv_jac.cols()); // -> 6 x 7
++        ROS_INFO("0: %f %f %f %f %f %f %f",
++                 piv_jac(0, 0), piv_jac(0, 1), piv_jac(0, 2), piv_jac(0, 3), piv_jac(0, 4), piv_jac(0, 5), piv_jac(0, 6));
++        ROS_INFO("1: %f %f %f %f %f %f %f",
++                 piv_jac(1, 0), piv_jac(1, 1), piv_jac(1, 2), piv_jac(1, 3), piv_jac(1, 4), piv_jac(1, 5), piv_jac(1, 6));
++        ROS_INFO("2: %f %f %f %f %f %f %f",
++                 piv_jac(2, 0), piv_jac(2, 1), piv_jac(2, 2), piv_jac(2, 3), piv_jac(2, 4), piv_jac(2, 5), piv_jac(2, 6));
++        ROS_INFO("3: %f %f %f %f %f %f %f",
++                 piv_jac(3, 0), piv_jac(3, 1), piv_jac(3, 2), piv_jac(3, 3), piv_jac(3, 4), piv_jac(3, 5), piv_jac(3, 6));
++        ROS_INFO("4: %f %f %f %f %f %f %f",
++                 piv_jac(4, 0), piv_jac(4, 1), piv_jac(4, 2), piv_jac(4, 3), piv_jac(4, 4), piv_jac(4, 5), piv_jac(4, 6));
++        ROS_INFO("5: %f %f %f %f %f %f %f",
++                 piv_jac(5, 0), piv_jac(5, 1), piv_jac(5, 2), piv_jac(5, 3), piv_jac(5, 4), piv_jac(5, 5), piv_jac(5, 6));
++        ROS_INFO("eff: %f %f %f %f %f %f %f",
++                 tau_act_(0), tau_act_(1), tau_act_(2), tau_act_(3),
++                 tau_act_(4), tau_act_(5), tau_act_(6));
++#endif
++        Eigen::VectorXd tvec = Eigen::VectorXd(7);
++        tvec(0) = tau_act_(0); tvec(1) = tau_act_(1); tvec(2) = tau_act_(2);
++        tvec(3) = tau_act_(3); tvec(4) = tau_act_(4); tvec(5) = tau_act_(5); tvec(6) = tau_act_(6);
++        Eigen::VectorXd fvec = piv_jac * tvec;
++#ifdef DEBUG
++        ROS_INFO("act: %f %f %f %f %f %f",
++                 fvec(0), fvec(1), fvec(2), fvec(3), fvec(4), fvec(5));
++#endif
++        controller_state_publisher_->msg_.actual_force.force.x  = fvec(0);
++        controller_state_publisher_->msg_.actual_force.force.y  = fvec(1);
++        controller_state_publisher_->msg_.actual_force.force.z  = fvec(2);
++        controller_state_publisher_->msg_.actual_force.torque.x = fvec(3);
++        controller_state_publisher_->msg_.actual_force.torque.y = fvec(4);
++        controller_state_publisher_->msg_.actual_force.torque.z = fvec(5);
++        // /add
+ 	controller_state_publisher_->msg_.running_time =
+ 	  robot_state_->getTime() - desired_poses_ptr->starting_time;
+ 	controller_state_publisher_->unlockAndPublish();
+Index: stack.xml
+===================================================================
+--- stack.xml	(revision 3811)
++++ stack.xml	(working copy)
+@@ -6,7 +6,6 @@
+   <url>http://ros.org/wiki/ee_cart_imped</url>
+   <depend stack="common" /> <!-- actionlib -->
+   <depend stack="common_msgs" /> <!-- actionlib_msgs, geometry_msgs -->
+-  <depend stack="eigen" /> <!-- eigen -->
+   <depend stack="geometry" /> <!-- tf -->
+   <depend stack="orocos_kinematics_dynamics" /> <!-- kdl -->
+   <depend stack="pluginlib" /> <!-- pluginlib -->
+Index: ee_cart_imped_msgs/msg/StiffPoint.msg
+===================================================================
+--- ee_cart_imped_msgs/msg/StiffPoint.msg	(revision 3811)
++++ ee_cart_imped_msgs/msg/StiffPoint.msg	(working copy)
+@@ -11,6 +11,7 @@
+ bool isTorqueX
+ bool isTorqueY
+ bool isTorqueZ
++geometry_msgs/Quaternion forceDirection
+ #The time from the start of the trajectory that this
+ #point should be achieved.
+ duration time_from_start
+\ No newline at end of file
+Index: ee_cart_imped_msgs/msg/EECartImpedFeedback.msg
+===================================================================
+--- ee_cart_imped_msgs/msg/EECartImpedFeedback.msg	(revision 3811)
++++ ee_cart_imped_msgs/msg/EECartImpedFeedback.msg	(working copy)
+@@ -7,6 +7,7 @@
+ ee_cart_imped_msgs/StiffPoint initial_point
+ ee_cart_imped_msgs/StiffPoint desired
+ ee_cart_imped_msgs/StiffPoint actual_pose
++geometry_msgs/Wrench actual_force
+ float64 effort_sq_error
+ float64[] requested_joint_efforts
+ float64[] actual_joint_efforts
+Index: ee_cart_imped_msgs/action/EECartImped.action
+===================================================================
+--- ee_cart_imped_msgs/action/EECartImped.action	(revision 3811)
++++ ee_cart_imped_msgs/action/EECartImped.action	(working copy)
+@@ -19,6 +19,7 @@
+ ee_cart_imped_msgs/StiffPoint initial_point
+ ee_cart_imped_msgs/StiffPoint desired
+ ee_cart_imped_msgs/StiffPoint actual_pose
++geometry_msgs/Wrench actual_force
+ float64 effort_sq_error
+ float64[] requested_joint_efforts
+ float64[] actual_joint_efforts
+Index: ee_cart_imped_action/src/ee_cart_imped_action.py
+===================================================================
+--- ee_cart_imped_action/src/ee_cart_imped_action.py	(revision 3811)
++++ ee_cart_imped_action/src/ee_cart_imped_action.py	(working copy)
+@@ -171,6 +171,11 @@
+         self.goal.trajectory[new_point].isTorqueX = istx
+         self.goal.trajectory[new_point].isTorqueY = isty
+         self.goal.trajectory[new_point].isTorqueZ = istz
++        self.goal.trajectory[new_point].isTorqueZ = istz
++        self.goal.trajectory[new_point].forceDirection.x = 0
++        self.goal.trajectory[new_point].forceDirection.y = 0
++        self.goal.trajectory[new_point].forceDirection.z = 0
++        self.goal.trajectory[new_point].forceDirection.w = 1
+         self.goal.trajectory[new_point].time_from_start = rospy.Duration(time);
+ 
+     def trajectoryTime(self):
+Index: ee_cart_imped_action/src/ee_cart_imped_action.cpp
+===================================================================
+--- ee_cart_imped_action/src/ee_cart_imped_action.cpp	(revision 3811)
++++ ee_cart_imped_action/src/ee_cart_imped_action.cpp	(working copy)
+@@ -171,6 +171,7 @@
+       transpt.isTorqueX = currpt.isTorqueX;
+       transpt.isTorqueY = currpt.isTorqueY;
+       transpt.isTorqueZ = currpt.isTorqueZ;
++      transpt.forceDirection = currpt.forceDirection;
+       transpt.time_from_start = currpt.time_from_start;
+       transformed_traj.trajectory.push_back(transpt);
+     } else {

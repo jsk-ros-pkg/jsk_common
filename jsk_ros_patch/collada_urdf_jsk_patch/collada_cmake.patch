@@ -1,0 +1,12 @@
+diff -r 57cb2365cf54 collada_urdf/CMakeLists.txt
+--- a/collada_urdf/CMakeLists.txt	Sat Dec 22 15:41:12 2012 +0200
++++ b/collada_urdf/CMakeLists.txt	Wed Feb 20 17:23:14 2013 +0900
+@@ -38,7 +38,7 @@
+ 
+ find_library(tinyxml_library tinyxml)
+ 
+-find_package(COLLADA_DOM 2.3 COMPONENTS 1.5)
++find_package(COLLADA_DOM 2.4 COMPONENTS 1.5)
+ if( COLLADA_DOM_FOUND )
+   include_directories(${COLLADA_DOM_INCLUDE_DIRS})
+   link_directories(${COLLADA_DOM_LIBRARY_DIRS})

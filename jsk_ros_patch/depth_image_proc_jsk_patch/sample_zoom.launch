@@ -1,0 +1,7 @@
+<launch>
+  <include file="$(find openni_launch)/launch/openni.launch">
+    <arg name="depth_camera_info_url" value="file://$(find openni_launch_jsk_patch)/info/calibration_depth.yaml"/>
+    <arg name="rgb_camera_info_url" value="file://$(find openni_launch_jsk_patch)/info/calibration_rgb.yaml"/>
+  </include>
+  <rosparam command="load" file="$(find openni_launch_jsk_patch)/info/kinect_params.yaml"/>
+</launch>

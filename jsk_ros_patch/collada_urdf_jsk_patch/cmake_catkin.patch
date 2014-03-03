@@ -1,0 +1,8 @@
+diff --git a/collada_urdf/Makefile b/collada_urdf/Makefile
+new file mode 100644
+index 0000000..b75b928
+--- /dev/null
++++ b/collada_urdf/Makefile
+@@ -0,0 +1 @@
++include $(shell rospack find mk)/cmake.mk
+\ No newline at end of file

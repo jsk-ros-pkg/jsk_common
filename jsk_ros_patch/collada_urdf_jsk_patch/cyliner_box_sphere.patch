@@ -1,0 +1,424 @@
+diff -r a1bbfb9c4ac3 collada_urdf/src/collada_urdf.cpp
+--- a/collada_urdf/src/collada_urdf.cpp	Tue Nov 01 15:26:47 2011 -0700
++++ b/collada_urdf/src/collada_urdf.cpp	Sun Dec 04 09:56:21 2011 +0900
+@@ -64,6 +64,11 @@
+ #include <assimp/IOStream.h>
+ #include <assimp/IOSystem.h>
+ 
++extern "C" {
++#include <gtsconfig.h>
++#include <gts.h>
++}
++
+ #define FOREACH(it, v) for(typeof((v).begin())it = (v).begin(); it != (v).end(); (it)++)
+ #define FOREACHC FOREACH
+ 
+@@ -490,6 +495,229 @@
+     mutable resource_retriever::Retriever retriever_;
+ };
+ 
++static void buildMeshFromGTSSurface(GtsTriangle * t, aiScene *scene)
++{
++  GtsVertex * v1, * v2, * v3;
++  GtsVector n;
++
++  gts_triangle_vertices (t, &v1, &v2, &v3);
++  gts_triangle_normal (t, &n[0], &n[1], &n[2]);
++  gts_vector_normalize (n);
++
++
++  scene->mMeshes[0]->mFaces[scene->mMeshes[0]->mNumFaces].mNumIndices = 3;
++  scene->mMeshes[0]->mFaces[scene->mMeshes[0]->mNumFaces].mIndices = (unsigned int *)malloc(sizeof(unsigned int)*3);
++
++  scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].x = GTS_POINT (v1)->x;
++  scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].y = GTS_POINT (v1)->y;
++  scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].z = GTS_POINT (v1)->z;
++  scene->mMeshes[0]->mFaces[scene->mMeshes[0]->mNumFaces].mIndices[0] = scene->mMeshes[0]->mNumVertices;
++  scene->mMeshes[0]->mNumVertices++;
++
++  scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].x = GTS_POINT (v2)->x;
++  scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].y = GTS_POINT (v2)->y;
++  scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].z = GTS_POINT (v2)->z;
++  scene->mMeshes[0]->mFaces[scene->mMeshes[0]->mNumFaces].mIndices[1] = scene->mMeshes[0]->mNumVertices;
++  scene->mMeshes[0]->mNumVertices++;
++
++  scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].x = GTS_POINT (v3)->x;
++  scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].y = GTS_POINT (v3)->y;
++  scene->mMeshes[0]->mVertices[scene->mMeshes[0]->mNumVertices].z = GTS_POINT (v3)->z;
++  scene->mMeshes[0]->mFaces[scene->mMeshes[0]->mNumFaces].mIndices[2] = scene->mMeshes[0]->mNumVertices;
++  scene->mMeshes[0]->mNumVertices++;
++
++  scene->mMeshes[0]->mNumFaces++;
++}
++
++  /* Gerris - The GNU Flow Solver
++   * Copyright (C) 2001 National Institute of Water and Atmospheric Research
++   */
++static GtsSurface * triangulate (GSList * vertices,
++                                 GSList * constraints)
++{
++  GtsVertex * v1, * v2, * v3;
++  GtsSurface * s;
++  GSList * i;
++
++  v1 = gts_vertex_new (gts_vertex_class (), -1e10, -1e10, 0.);
++  v2 = gts_vertex_new (gts_vertex_class (), 1e10, -1e10, 0.);
++  v3 = gts_vertex_new (gts_vertex_class (), 0., 1e10, 0.);
++  s = gts_surface_new (gts_surface_class (),
++                       gts_face_class (),
++                       gts_edge_class (),
++                       gts_vertex_class ());
++  gts_surface_add_face (s, gts_face_new (gts_face_class (),
++                                         gts_edge_new (gts_edge_class (), v1, v2),
++                                         gts_edge_new (gts_edge_class (), v2, v3),
++                                         gts_edge_new (gts_edge_class (), v3, v1)));
++  i = vertices;
++  while (i) {
++    if (gts_delaunay_add_vertex (s, (GtsVertex *)i->data, NULL) != NULL) {
++      gts_object_destroy (GTS_OBJECT (s));
++      return NULL;
++    }
++    i = i->next;
++  }
++
++  i = constraints;
++  while (i) {
++    if (gts_delaunay_add_constraint (s, (GtsConstraint *)i->data) != NULL) {
++      gts_object_destroy (GTS_OBJECT (s));
++      return NULL;
++    }
++    i = i->next;
++  }
++
++  gts_delaunay_remove_hull (s);
++
++  return s;
++}
++
++static GSList * contour (GSList * i, GtsSurface * s,
++                         gdouble z, gboolean closed)
++{
++  GSList * edges = NULL;
++  GtsVertex * vold = NULL, * vin = NULL;
++
++  if (i == NULL || i->next == NULL)
++    return NULL;
++
++  while (i) {
++    GtsPoint * p = (GtsPoint *)i->data;
++    GtsVertex * v;
++
++    v = gts_vertex_new (s->vertex_class, p->x, p->y, z);
++    if (vold)
++      edges = g_slist_prepend (edges,
++                               gts_edge_new (GTS_EDGE_CLASS (gts_constraint_class ()), v, vold));
++    else
++      vin = v;
++    vold = v;
++    i = i->next;
++  }
++  if (closed)
++    edges = g_slist_prepend (edges,
++                             gts_edge_new (GTS_EDGE_CLASS (gts_constraint_class ()), vin, vold));
++  return edges;
++}
++
++static void surface_add_shape (GtsSurface * s,
++                               GSList * shape,
++                               gdouble z1,
++                               gdouble z2,
++                               guint nz,
++                               gboolean closed,
++                               gboolean ends)
++{
++  gdouble z, dz = (z2 - z1)/nz;
++  guint i;
++  GSList * bottom = NULL, * e1 = NULL, * e2 = NULL;
++
++  for (i = 0, z = z1; i <= nz; i++, z += dz) {
++    if (e1 == NULL)
++      bottom = e1 = contour (shape, s, z, closed);
++    else {
++      GSList * i, * j;
++      GtsEdge * eold = NULL, * ein = NULL;
++
++      e2 = contour (shape, s, z, closed);
++      i = e1; j = e2;
++      while (i && j) {
++        GtsEdge * e;
++        GtsEdge * ee = gts_edge_new (gts_edge_class (),
++                                     GTS_SEGMENT (i->data)->v2,
++                                     GTS_SEGMENT (j->data)->v1);
++
++        if (!closed || i->next != NULL)
++          e = gts_edge_new (gts_edge_class (),
++                            GTS_SEGMENT (i->data)->v2,
++                            GTS_SEGMENT (j->data)->v2);
++        else
++          e = ein;
++        if (eold == NULL)
++          eold = ein = gts_edge_new (gts_edge_class (),
++                                     GTS_SEGMENT (i->data)->v1,
++                                     GTS_SEGMENT (j->data)->v1);
++        gts_surface_add_face (s, gts_face_new (s->face_class,
++                                               (GtsEdge*)i->data, eold, ee));
++        gts_surface_add_face (s, gts_face_new (s->face_class,
++                                               e, ee, (GtsEdge*)j->data));
++        eold = e;
++        i = i->next;
++        j = j->next;
++      }
++      if (e1 != bottom) g_slist_free (e1);
++      e1 = e2;
++    }
++  }
++
++  if (ends) {
++    GSList * vertices1 = gts_vertices_from_segments (bottom);
++    GSList * vertices2 = gts_vertices_from_segments (e1);
++    GtsSurface * s1 = triangulate (vertices1, bottom);
++    GtsSurface * s2 = triangulate (vertices2, e1);
++
++    if (s1 == NULL || s2 == NULL) {
++      GSList * i = shape;
++
++      while (i) {
++        fprintf (stderr, "%g %g\n",
++                 GTS_POINT (i->data)->x,
++                 GTS_POINT (i->data)->y);
++        i = i->next;
++      }
++      fprintf (stderr, "\n");
++      if (s1) gts_object_destroy (GTS_OBJECT (s1));
++      if (s2) gts_object_destroy (GTS_OBJECT (s2));
++    }
++    else {
++      gts_surface_foreach_face (s2, (GtsFunc) gts_triangle_revert, NULL);
++
++      gts_surface_merge (s, s1);
++      gts_surface_merge (s, s2);
++
++      gts_object_destroy (GTS_OBJECT (s1));
++      gts_object_destroy (GTS_OBJECT (s2));
++    }
++    g_slist_free (vertices1);
++    g_slist_free (vertices2);
++  }
++
++  g_slist_free (bottom);
++  g_slist_free (e1);
++}
++
++static void surface_add_ellipse_shape (GtsSurface * s,
++                                       gdouble x, gdouble y,
++                                       gdouble radius,
++                                       gdouble theta,
++                                       gdouble thetamax,
++                                       gdouble e,
++                                       gdouble z1, gdouble z2,
++                                       guint np,
++                                       gboolean closed)
++{
++  GSList * shape = NULL;
++  guint i, npm = np;
++
++  g_return_if_fail (s != NULL);
++  g_return_if_fail (np >= 3);
++
++  if (thetamax < 2.*M_PI)
++    npm = np + 1;
++  for (i = 0; i < npm; i++) {
++    gdouble theta1 = theta + i*thetamax/(gdouble) np;
++    shape = g_slist_prepend (shape,
++                             gts_point_new (gts_point_class (),
++                                            x + radius*e*cos (theta1),
++                                            y + radius/e*sin (theta1),
++                                            0.));
++  }
++  surface_add_shape (s, shape, z1, z2, 10, TRUE, closed);
++  g_slist_free (shape);
++}
++
++
+ /// \brief Implements writing urdf::Model objects to a COLLADA DOM.
+ class ColladaWriter : public daeErrorHandler
+ {
+@@ -1192,6 +1420,56 @@
+         return out;
+     }
+ 
++  void _WriteGTSGeometry(GtsSurface * s, domGeometryRef pdomgeom, const urdf::Vector3& scale) {
++	aiScene* scene;
++	scene = (aiScene *)malloc(sizeof(aiScene));
++	scene->mRootNode = new aiNode();
++	scene->mRootNode->mNumMeshes = 1;
++	scene->mRootNode->mMeshes  = (unsigned int*)malloc(sizeof(unsigned int));
++	scene->mRootNode->mMeshes[0] = 0;
++	scene->mNumMeshes = 1;
++	scene->mMeshes = (aiMesh **)malloc(sizeof(aiMesh*));
++	scene->mMeshes[0] = new aiMesh();
++	scene->mMeshes[0]->mNumFaces = 0;
++	scene->mMeshes[0]->mFaces = (aiFace *)malloc(sizeof(aiFace)*gts_surface_face_number(s));
++	scene->mMeshes[0]->mNumVertices = 0;
++	scene->mMeshes[0]->mVertices = (aiVector3D *)malloc(sizeof(aiVector3D)*gts_surface_face_number(s)*3);
++
++	gts_surface_foreach_face (s, (GtsFunc) buildMeshFromGTSSurface, static_cast<void *>(scene));
++        domMeshRef pdommesh = daeSafeCast<domMesh>(pdomgeom->add(COLLADA_ELEMENT_MESH));
++        domSourceRef pvertsource = daeSafeCast<domSource>(pdommesh->add(COLLADA_ELEMENT_SOURCE));
++        domAccessorRef pacc;
++        domFloat_arrayRef parray;
++        {
++            pvertsource->setId(str(boost::format("%s_positions")%pdomgeom->getID()).c_str());
++
++            parray = daeSafeCast<domFloat_array>(pvertsource->add(COLLADA_ELEMENT_FLOAT_ARRAY));
++            parray->setId(str(boost::format("%s_positions-array")%pdomgeom->getID()).c_str());
++            parray->setDigits(6); // 6 decimal places
++
++            domSource::domTechnique_commonRef psourcetec = daeSafeCast<domSource::domTechnique_common>(pvertsource->add(COLLADA_ELEMENT_TECHNIQUE_COMMON));
++            pacc = daeSafeCast<domAccessor>(psourcetec->add(COLLADA_ELEMENT_ACCESSOR));
++            pacc->setSource(xsAnyURI(*parray, string("#")+string(parray->getID())));
++            pacc->setStride(3);
++
++            domParamRef px = daeSafeCast<domParam>(pacc->add(COLLADA_ELEMENT_PARAM));
++            px->setName("X"); px->setType("float");
++            domParamRef py = daeSafeCast<domParam>(pacc->add(COLLADA_ELEMENT_PARAM));
++            py->setName("Y"); py->setType("float");
++            domParamRef pz = daeSafeCast<domParam>(pacc->add(COLLADA_ELEMENT_PARAM));
++            pz->setName("Z"); pz->setType("float");
++        }
++        domVerticesRef pverts = daeSafeCast<domVertices>(pdommesh->add(COLLADA_ELEMENT_VERTICES));
++        {
++            pverts->setId("vertices");
++            domInput_localRef pvertinput = daeSafeCast<domInput_local>(pverts->add(COLLADA_ELEMENT_INPUT));
++            pvertinput->setSemantic("POSITION");
++            pvertinput->setSource(domUrifragment(*pvertsource, string("#")+string(pvertsource->getID())));
++        }
++        _buildAiMesh(scene,scene->mRootNode,pdommesh,parray, pdomgeom->getID(), scale);
++        pacc->setCount(parray->getCount());
++    }
++
+     domGeometryRef _WriteGeometry(boost::shared_ptr<urdf::Geometry> geometry, const std::string& geometry_id)
+     {
+         domGeometryRef cgeometry = daeSafeCast<domGeometry>(_geometriesLib->add(COLLADA_ELEMENT_GEOMETRY));
+@@ -1203,15 +1480,118 @@
+             break;
+         }
+         case urdf::Geometry::SPHERE: {
+-            ROS_WARN_STREAM(str(boost::format("cannot export sphere geometries yet! %s")%geometry_id));
++            urdf::Sphere* urdf_sphere = (urdf::Sphere*) geometry.get();
++            // <geometry id="g1.link0.geom0">
++            domGeometryRef cgeometry = daeSafeCast<domGeometry>(_geometriesLib->add(COLLADA_ELEMENT_GEOMETRY));
++            cgeometry->setId(geometry_id.c_str());
++            {
++              //Build the COLLADA mesh;
++              GtsSurface * s;
++              guint level=4;
++              //
++              /* generate triangulated sphere */
++              s = gts_surface_new (gts_surface_class (),
++                                   gts_face_class (),
++                                   gts_edge_class (),
++                                   gts_vertex_class ());
++              gts_surface_generate_sphere (s, level);
++
++	      _WriteGTSGeometry(s, cgeometry, urdf::Vector3(urdf_sphere->radius,urdf_sphere->radius,urdf_sphere->radius));
++            }
++            // </geometry>
+             break;
+         }
+         case urdf::Geometry::BOX: {
+-            ROS_WARN_STREAM(str(boost::format("cannot export box geometries yet! %s")%geometry_id));
++            urdf::Box* urdf_box = (urdf::Box*) geometry.get();
++            // <geometry id="g1.link0.geom0">
++            domGeometryRef cgeometry = daeSafeCast<domGeometry>(_geometriesLib->add(COLLADA_ELEMENT_GEOMETRY));
++            cgeometry->setId(geometry_id.c_str());
++            {
++              //Build the COLLADA mesh;
++              GtsSurface * s;
++              GtsVertex * v1, * v2, * v3, * v4, * v5, * v6, * v7, * v8;
++              GtsEdge * e1, * e2, * e3, * e4, * e5, * e6, * e7, * e8, * e9,
++                * e10, * e11, * e12, * e13, * e14, * e15, * e16, * e17, * e18;
++
++              //
++              /* generate triangulated box */
++              s = gts_surface_new (gts_surface_class (),
++                                   gts_face_class (),
++                                   gts_edge_class (),
++                                   gts_vertex_class ());
++
++              v1 = gts_vertex_new (s->vertex_class, -0.5, -0.5, -0.5);
++              v2 = gts_vertex_new (s->vertex_class,  0.5, -0.5, -0.5);
++              v3 = gts_vertex_new (s->vertex_class,  0.5,  0.5, -0.5);
++              v4 = gts_vertex_new (s->vertex_class, -0.5,  0.5, -0.5);
++              v5 = gts_vertex_new (s->vertex_class, -0.5, -0.5,  0.5);
++              v6 = gts_vertex_new (s->vertex_class,  0.5, -0.5,  0.5);
++              v7 = gts_vertex_new (s->vertex_class,  0.5,  0.5,  0.5);
++              v8 = gts_vertex_new (s->vertex_class, -0.5,  0.5,  0.5);
++
++              e1 = gts_edge_new (s->edge_class, v1, v2);
++              e2 = gts_edge_new (s->edge_class, v2, v3);
++              e3 = gts_edge_new (s->edge_class, v3, v4);
++              e4 = gts_edge_new (s->edge_class, v4, v1);
++              e5 = gts_edge_new (s->edge_class, v5, v6);
++              e6 = gts_edge_new (s->edge_class, v6, v7);
++              e7 = gts_edge_new (s->edge_class, v7, v8);
++              e8 = gts_edge_new (s->edge_class, v8, v5);
++              e9 = gts_edge_new (s->edge_class, v1, v5);
++              e10 = gts_edge_new (s->edge_class, v2, v6);
++              e11 = gts_edge_new (s->edge_class, v3, v7);
++              e12 = gts_edge_new (s->edge_class, v4, v8);
++              e13 = gts_edge_new (s->edge_class, v1, v6);
++              e14 = gts_edge_new (s->edge_class, v2, v7);
++              e15 = gts_edge_new (s->edge_class, v3, v8);
++              e16 = gts_edge_new (s->edge_class, v4, v5);
++              e17 = gts_edge_new (s->edge_class, v1, v3);
++              e18 = gts_edge_new (s->edge_class, v5, v7);
++
++              gts_surface_add_face (s, gts_face_new (s->face_class, e13, e1, e10));
++              gts_surface_add_face (s, gts_face_new (s->face_class, e13, e5,  e9));
++              gts_surface_add_face (s, gts_face_new (s->face_class, e14, e2, e11));
++              gts_surface_add_face (s, gts_face_new (s->face_class, e14, e6, e10));
++              gts_surface_add_face (s, gts_face_new (s->face_class, e15, e3, e12));
++              gts_surface_add_face (s, gts_face_new (s->face_class, e15, e7, e11));
++              gts_surface_add_face (s, gts_face_new (s->face_class, e16, e4,  e9));
++              gts_surface_add_face (s, gts_face_new (s->face_class, e16, e8, e12));
++              gts_surface_add_face (s, gts_face_new (s->face_class, e17, e2,  e1));
++              gts_surface_add_face (s, gts_face_new (s->face_class, e17, e4,  e3));
++              gts_surface_add_face (s, gts_face_new (s->face_class, e18, e5,  e6));
++              gts_surface_add_face (s, gts_face_new (s->face_class, e18, e7,  e8));
++
++	      std::cerr <<"vec" << urdf_box->dim.x << " / " <<
++		urdf_box->dim.y << " / " <<
++		urdf_box->dim.z << " / " << std::endl;
++	      _WriteGTSGeometry(s, cgeometry, urdf_box->dim);
++	    }
++            // </geometry>
+             break;
+         }
+         case urdf::Geometry::CYLINDER: {
+-            ROS_WARN_STREAM(str(boost::format("cannot export cylinder geometries yet! %s")%geometry_id));
++            urdf::Cylinder* urdf_cylinder = (urdf::Cylinder*) geometry.get();
++            // <geometry id="g1.link0.geom0">
++	    domGeometryRef cgeometry = daeSafeCast<domGeometry>(_geometriesLib->add(COLLADA_ELEMENT_GEOMETRY));
++            cgeometry->setId(geometry_id.c_str());
++            {
++              //Build the COLLADA mesh;
++              GtsSurface * s;
++              guint number = 100;
++              gboolean closed = TRUE;
++              //
++              /* generate triangulated cylinder */
++              s = gts_surface_new (gts_surface_class (),
++                                   gts_face_class (),
++                                   gts_edge_class (),
++                                   gts_vertex_class ());
++              surface_add_ellipse_shape (s, 0., 0., urdf_cylinder->radius,
++                                         0.001, 2*M_PI, 1., -0.5*urdf_cylinder->length, 0.5*urdf_cylinder->length, // @OK????
++                                         number, closed);
++
++	      _WriteGTSGeometry(s, cgeometry, urdf::Vector3(1,1,1));
++	    }
++            // </geometry>
+             break;
+         }
+         default: {

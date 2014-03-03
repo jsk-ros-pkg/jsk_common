@@ -1,0 +1,24 @@
+PKGNAME		= hts_voice_nitech_jp_atr503_m001
+
+all: installed.$(PKGNAME)
+
+VER = 1.00
+TARBALL		= build/$(PKGNAME)-$(VER).tar.gz
+TARBALL_URL	= http://downloads.sourceforge.net/open-jtalk/$(PKGNAME)-$(VER).tar.gz
+UNPACK_CMD	= tar xzf
+SOURCE_DIR	= build/$(PKGNAME)-$(VER)
+MD5SUM_FILE	= $(PKGNAME)-$(VER).tar.gz.md5sum
+
+include $(shell rospack find mk)/download_unpack_build.mk
+
+installed.$(PKGNAME): $(SOURCE_DIR)/unpacked
+	cp -r $(SOURCE_DIR) $(PKGNAME)-$(VER)
+	touch installed.$(PKGNAME)
+
+clean:
+	rm -rf $(PKGNAME)-$(VER)
+
+wipe: clean
+	rm -rf build installed.$(PKGNAME)
+
+.PHONY : clean wipe

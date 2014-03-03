@@ -1,0 +1,19 @@
+<package>
+  <description brief="aques_talk">
+
+     aques_talk
+     r829 for old version
+
+  </description>
+  <author>AQUEST Corp, ROS package maintained by Kei Okada</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/aques_talk</url>
+
+  <rosdep name="kakasi" />
+  <rosdep name="nkf" />
+  <depend package="sound_play" />
+
+</package>
+
+

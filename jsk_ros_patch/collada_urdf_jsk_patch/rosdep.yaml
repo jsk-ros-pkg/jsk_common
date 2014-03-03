@@ -1,0 +1,3 @@
+libgts:
+  ubuntu: libgts-dev
+  debian: libgts-dev
