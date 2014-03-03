@@ -68,3 +68,10 @@
    uri: http://github.com/RethinkRobotics/baxter_examples.git
    local-name: RethinkRobotics/baxter_examples
 
+# rviz stuff
+- git:
+    local-name: view_controller_msgs
+    uri: 'https://github.com/ros-visualization/view_controller_msgs'
+    version: hydro-devel
+
+    
