@@ -31,7 +31,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
     DEPENDS
-    CATKIN-DEPENDS  geometry_msgs actionlib_msgs message_runtime
+    CATKIN_DEPENDS  geometry_msgs actionlib_msgs message_runtime
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
 )
