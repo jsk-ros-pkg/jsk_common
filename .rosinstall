@@ -1,0 +1,3 @@
+- git:
+    uri: https://github.com/ros-visualization/view_controller_msgs.git
+    local-name: ros-visualization/view_controller_msgs
