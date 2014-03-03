@@ -260,7 +260,7 @@ EOF
 }
 
 function install-jsk-ros-pkg {
-    wget  'http://svn.code.sf.net/p/jsk-ros-pkg/code/trunk/jsk.rosinstall?format=raw' -O /tmp/jsk.rosinstall.$$
+    wget 'https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosinstall' -O /tmp/jsk.rosinstall.$$
     install-pkg /tmp/jsk.rosinstall.$$
     rosdep install euslisp
     if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
