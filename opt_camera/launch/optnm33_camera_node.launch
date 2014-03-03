@@ -1,0 +1,12 @@
+<launch>
+  <node pkg="opt_camera" name="nm33_cam" type="nm33_node" output="screen">
+    <param name="camera_index" value="1" />
+  </node>
+  <node pkg="dynamic_reconfigure" name="reconfigure_gui"
+	type="reconfigure_gui" />
+  <node pkg="dynamic_reconfigure" name="dynaparam"
+	type="dynparam" args="load /nm33_cam $(find opt_camera)/launch/optnm33_camera.yaml" />
+</launch>
+
+
+

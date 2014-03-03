@@ -1,0 +1,55 @@
+(defun gp-write (3dp1 3dp2 fname &key (step nil))
+  (with-open-file
+   (f fname :direction :output)
+   (let ((err 0))
+     (dotimes (i (send 3dp1 :size))
+       (let ((d1 (elt (c-matrix-row (send 3dp1 :points) i) 2))
+             (d2 (elt (c-matrix-row (send 3dp2 :points) i) 2)))
+         (when (and step (= (mod i step) 0))
+           (format f "~A ~A~%" d1 d2))
+         (incf err (abs (- d1 d2)))))
+     (format t "err = ~A~%" (/ err (send 3dp1 :size))))))
+
+(defun gp-write-3d (3dp1 3dp2 fname &key (step nil))
+  (with-open-file
+   (f fname :direction :output)
+   (let ((err 0))
+     (dotimes (i (send 3dp1 :size))
+       (let* ((p1 (c-matrix-row (send 3dp1 :points) i))
+              (p2 (c-matrix-row (send 3dp2 :points) i))
+              (xx (elt p1 0))
+              (yy (elt p1 1))
+              ;; (d1 (elt (c-matrix-row (send 3dp1 :points) i) 2))
+              ;; (d2 (elt (c-matrix-row (send 3dp2 :points) i) 2))
+              ;; (dd (abs (- d1 d2)))
+              (dd (distance p1 p2)))
+         (when (and step (= (mod i step) 0))
+           (format f "~A ~A ~A~%" xx yy dd))
+         (incf err dd)))
+     (format t "err = ~A~%" (/ err (send 3dp1 :size))))))
+
+(defun calc-error (chess-pcd-fname depth-pcd-fname fname)
+  (let* ((chess-3dp (read-pcd-file chess-pcd-fname))
+         (depth-3dp (send (read-pcd-file depth-pcd-fname)
+                          :nfilter :key
+                          #'(lambda (p) (< 0.001 (norm p)))))
+         (plane-defined-points (subseq (send chess-3dp :point-list) 0 2))
+         (l (apply #'make-line plane-defined-points))
+         nrml pl
+         (plane-projected-pmat (make-matrix (send depth-3dp :size) 3))
+         plane-3dp)
+    ;;
+    (dolist (p (subseq (send chess-3dp :point-list) 2))
+      (unless (send l :colinear-point p)
+        (push p plane-defined-points)
+        (return)))
+    (setq nrml (normalize-vector
+                (v* (v- (elt plane-defined-points 1) (elt plane-defined-points 0))
+                    (v- (elt plane-defined-points 2) (elt plane-defined-points 0)))))
+    (setq pl (make-plane :normal nrml :point (elt plane-defined-points 0)))
+    ;;
+    (dotimes (i (send depth-3dp :size))
+      (c-matrix-row plane-projected-pmat i
+                    (send pl :foot (c-matrix-row (send depth-3dp :points) i)) t))
+    (setq plane-3dp (instance pointcloud :init :points plane-projected-pmat))
+    (gp-write-3d depth-3dp plane-3dp fname :step 8)))

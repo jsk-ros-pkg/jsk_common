@@ -1,0 +1,19 @@
+<package>
+  <description brief="openni_pointer">
+
+openni_pointer broadcasts the OpenNI hand position using tf.
+
+  </description>
+  <author></author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/openni_pointer</url>
+
+  <depend package="roscpp"/>
+  <depend package="roslib"/>
+  <depend package="geometry_msgs"/>
+  <depend package="openni"/>
+  <depend package="nite"/>
+  <depend package="tf"/>
+
+</package>

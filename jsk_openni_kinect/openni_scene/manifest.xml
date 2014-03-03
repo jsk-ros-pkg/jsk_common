@@ -1,0 +1,17 @@
+<package>
+  <description brief="openni_scene">
+
+openni_scene broadcasts the OpenNI scene segmented point clouds.
+
+  </description>
+  <author>Kei Okada, Youhei Kakiuchi, Tim Field</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/openni_scene</url>
+
+  <depend package="roscpp"/>
+  <depend package="roslib"/>
+  <depend package="sensor_msgs"/>
+  <depend package="pcl_ros"/>
+  <depend package="openni"/>
+</package>

@@ -1,0 +1,32 @@
+<package>
+  <name>jsk_joy</name>
+  <description>
+     jsk_joy
+  </description>
+  <author email="ueda@jsk.t.u-tokyo.ac.jp">Ryohei Ueda</author>
+  <maintainer email="ueda@jsk.t.u-tokyo.ac.jp">Ryohei Ueda</maintainer>
+  <version>0.1.0</version>
+  <license>BSD</license>
+  <url>http://ros.org/wiki/jsk_joy</url>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>ps3joy</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>view_controller_msgs</build_depend>
+  <build_depend>interactive_markers</build_depend>
+  <build_depend>visualization_msgs</build_depend>
+  <build_depend>jsk_footstep_msgs</build_depend>
+
+  <run_depend>ps3joy</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>view_controller_msgs</run_depend>
+  <run_depend>interactive_markers</run_depend>
+  <run_depend>visualization_msgs</run_depend>
+  <run_depend>jsk_footstep_msgs</run_depend>
+  
+  <export>
+    <jsk_joy plugin="${prefix}/plugin.xml"/>
+  </export>
+    
+</package>
+
+

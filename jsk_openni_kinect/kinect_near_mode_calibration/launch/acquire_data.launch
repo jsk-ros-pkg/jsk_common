@@ -1,0 +1,68 @@
+<launch>
+  <arg name="dir_name"/>
+  <arg name="grid_x" default="8"/>
+  <arg name="grid_y" default="6"/>
+  
+  <node name="ir_rgb_image_switcher" type="mux" pkg="topic_tools" ns="image"
+        args="/camera/ir_rgb/image_mono /camera/rgb/image_mono"/>
+
+  <node name="ir_rgb_caminfo_switcher" type="mux" pkg="topic_tools" ns="caminfo"
+        args="/camera/ir_rgb/camera_info /camera/rgb/camera_info"/>
+
+  <node name="ir_rgb_ir_image_relay" type="relay" pkg="topic_tools" ns="image"
+	args="/camera/ir_rgb/image_mono /camera/ir_rgb_ir/image_mono" />
+  <node name="ir_rgb_rgb_image_relay" type="relay" pkg="topic_tools" ns="image"
+	args="/camera/ir_rgb/image_mono /camera/ir_rgb_rgb/image_mono" />
+  <node name="ir_rgb_ir_caminfo_relay" type="relay" pkg="topic_tools" ns="image"
+	args="/camera/ir_rgb/camera_info /camera/ir_rgb_ir/camera_info" />
+  <node name="ir_rgb_rgb_caminfo_relay" type="relay" pkg="topic_tools" ns="image"
+	args="/camera/ir_rgb/camera_info /camera/ir_rgb_rgb/camera_info" />
+
+  <node name="depth_image_saver" pkg="image_view_jsk_patch" type="image_saver" output="screen">
+    <remap from="image" to="/camera/depth/image_raw"/>
+    <param name="filename_format" value="img_depth_%02i.png"/>
+    <param name="encoding" value="mono16"/>
+    <param name="save_all_image" value="false"/>
+  </node>
+
+  <node name="ir_image_saver" pkg="image_view_jsk_patch" type="image_saver" output="screen">
+    <remap from="image" to="/camera/ir_rgb_ir/image_mono"/>
+    <param name="filename_format" value="img_ir_%02i.png"/>
+    <param name="encoding" value="mono8"/>
+    <param name="save_all_image" value="false"/>
+  </node>
+
+  <node name="rgb_image_saver" pkg="image_view_jsk_patch" type="image_saver" output="screen">
+    <remap from="image" to="/camera/ir_rgb_rgb/image_mono"/>
+    <param name="filename_format" value="img_rgb_%02i.png"/>
+    <param name="save_all_image" value="false"/>
+  </node>
+
+  <param name="directory_name" value="$(arg dir_name)"/>
+  <node name="acquire_data_command" pkg="kinect_near_mode_calibration" type="acquire_data_command" output="screen"/>
+
+  <!-- for visualize -->
+  <node name="depth_image_view" pkg="image_view"
+        type="image_view" output="log">
+    <remap from="camera_info" to="/camera/depth/camera_info"/>
+    <remap from="image" to="/camera/depth/image_raw"/>
+    <param name="autosize" value="true"/>
+  </node>
+
+  <group ns="checkerdetector" clear_params="true">
+    <param name="display" type="int" value="1"/>
+    <param name="frame_id" type="string" value="/camera_link"/>
+    <param name="rect0_size_x" type="double" value="0.1"/>
+    <param name="rect0_size_y" type="double" value="0.1"/>
+    <param name="grid0_size_x" type="int" value="$(arg grid_x)"/>
+    <param name="grid0_size_y" type="int" value="$(arg grid_y)"/>
+    <param name="type0" type="string" value="data/ricebox.kinbody.xml"/>
+
+    <node name="ir_rgb_chess_detector" pkg="checkerboard_detector"
+          type="checkerboard_detector" respawn="false" output="log">
+      <remap from="camera_info" to="/camera/ir_rgb/camera_info"/>
+      <remap from="image" to="/camera/ir_rgb/image_mono"/>
+    </node>
+  </group>
+
+</launch>

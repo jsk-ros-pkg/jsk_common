@@ -1,0 +1,10 @@
+<launch>
+  <include file="$(find jsk_joy)/launch/xbox.launch">
+    <arg name="POSE_REMAP" value="/marker_6dof/move_marker" />
+    <arg name="CONTROLLER_TYPE" default="ps3wired" />
+  </include>
+  <node pkg="jsk_interactive_marker"
+        type="marker_6dof"
+        name="marker_6dof" />
+    
+</launch>

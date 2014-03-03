@@ -1,0 +1,25 @@
+<package>
+  <description brief="jsk_joy">
+
+     jsk_joy
+
+  </description>
+  <author>Ryohei Ueda</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/jsk_joy</url>
+  <rosdep name="python-pygame" />
+  <rosdep name="ps3joy" />
+  <rosdep name="tf" />
+  <rosdep name="view_controller_msgs" />
+  <rosdep name="interactive_markers" />
+  <rosdep name="visualization_msgs" />
+  <depend package="jsk_footstep_msgs" />
+  <depend package="jsk_footstep_planner" />
+  <export>
+    <jsk_joy plugin="${prefix}/plugin.xml"/>
+  </export>
+    
+</package>
+
+

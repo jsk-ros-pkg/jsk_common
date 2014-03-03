@@ -1,0 +1,22 @@
+<OpenNI>
+        <Licenses>
+        </Licenses>
+        <Log writeToConsole="false" writeToFile="false">
+                <!-- 0 - Verbose, 1 - Info, 2 - Warning, 3 - Error (default) -->
+                <LogLevel value="3"/>
+                <Masks>
+                        <Mask name="ALL" on="true"/>
+                </Masks>
+                <Dumps>
+                </Dumps>
+        </Log>
+        <ProductionNodes>
+                <Node type="Depth">
+                        <Configuration>
+                                <MapOutputMode xRes="640" yRes="480" FPS="30"/>
+                        </Configuration>
+                </Node>
+                <Node type="Gesture" />
+                <Node type="Hands" />
+        </ProductionNodes>
+</OpenNI>

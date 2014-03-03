@@ -1,0 +1,32 @@
+<package>
+  <name>kinect_near_mode_calibration</name>
+  <version>0.1.0</version>
+  <description>kinect_near_mode_calibration</description>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/kinect_near_mode_calibration</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author email="tsuda@jsk.t.u-tokyo.ac.jp">Atushi Tsuda</author>
+  <author email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</author>
+  <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>roslib</build_depend>
+  <build_depend>openni_camera</build_depend>
+  <build_depend>image_geometry</build_depend>
+  <build_depend>std_srvs</build_depend>
+  <build_depend>eigen</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>roslib</run_depend>
+  <run_depend>openni_camera</run_depend>
+  <run_depend>image_geometry</run_depend>
+  <run_depend>std_srvs</run_depend>
+  <run_depend>opencv2</run_depend>
+  <run_depend>eigen</run_depend>
+
+</package>

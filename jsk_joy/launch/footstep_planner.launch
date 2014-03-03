@@ -1,0 +1,24 @@
+<launch>
+  <arg name="POSE_REMAP" default="move_marker" />
+  <arg name="CONTROLLER_TYPE" default="auto" />
+  <arg name="DEV" default="/dev/input/js0" />
+  <node pkg="joy" type="joy_node" name="ps3_joy0" output="screen" >
+    <param name="dev" type="string" value="$(arg DEV)" />
+    <param name="deadzone" value="0.2" />
+    <param name="autorepeat_rate" value="40" />
+    <param name="coalesce_interval" value="0.025" />
+  </node>
+  <node pkg="jsk_joy" type="joy_main.py" name="joy" output="screen">
+    <remap from="pose" to="$(arg POSE_REMAP)" />
+    <param name="controller_type" value="$(arg CONTROLLER_TYPE)" />
+    <param name="follow_view" value="true" />
+    <param name="frame_id" value="/odom" />
+    <rosparam>
+      plugins: ['JoyFootstepPlannerDemo']
+    </rosparam>
+  </node>
+
+  <include file="$(find jsk_interactive_marker)/launch/footstep_planner_sample.launch">
+  </include>
+  
+</launch>

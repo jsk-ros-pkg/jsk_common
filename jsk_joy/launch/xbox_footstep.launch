@@ -1,0 +1,19 @@
+<launch>
+  <arg name="POSE_REMAP" default="pose" />
+  <node pkg="joy" type="joy_node" name="ps3_joy0" output="screen" >
+    <param name="dev" type="string" value="/dev/input/js0" />
+    <param name="deadzone" value="0.2" />
+    <param name="autorepeat_rate" value="40" />
+    <param name="coalesce_interval" value="0.025" />
+  </node>
+  <node pkg="jsk_joy" type="joy.py" name="joy" output="screen">
+    <remap from="pose" to="$(arg POSE_REMAP)" />
+    <param name="controller_type" value="xbox" />
+    <param name="follow_view" value="true" />
+    <param name="frame_id" value="/camera_depth_optical_frame" />
+    <rosparam>
+#      plugins: ['JoyPose6D', 'JoyFootstep']
+       plugins: ['JoyFootstep']
+    </rosparam>
+  </node>
+</launch>

@@ -1,0 +1,20 @@
+<launch>
+  <group ns="camera">
+    <node pkg="image_view" name="nm30_omni_view"  type="image_view">
+      <remap from="image" to="omni/image_raw" />
+      <param name="autosize" value="true" />
+    </node>
+    <node pkg="image_view" name="nm30_wide_view"  type="image_view">
+      <remap from="image" to="wide/image_raw" />
+      <param name="autosize" value="true" />
+    </node>
+    <node pkg="image_view" name="nm30_middle_view"  type="image_view">
+      <remap from="image" to="middle/image_raw" />
+      <param name="autosize" value="true" />
+    </node>
+    <node pkg="image_view" name="nm30_narrow_view"  type="image_view">
+      <remap from="image" to="narrow/image_raw" />
+      <param name="autosize" value="true" />
+    </node>
+  </group>
+</launch>

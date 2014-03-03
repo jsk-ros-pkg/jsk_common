@@ -1,0 +1,16 @@
+<library path="src">
+  <class name="VerboseStatus" type="jsk_joy.plugin.verbose.VerboseStatus">
+  </class>
+  <class name="JoyPose6D" type="jsk_joy.plugin.joy_pose_6d.JoyPose6D">
+  </class>
+  <class name="JoyFootstep" type="jsk_joy.plugin.joy_footstep.JoyFootstep">
+  </class>
+  <class name="JoyFootstepPlanner" type="jsk_joy.plugin.joy_footstep_planner.JoyFootstepPlanner">
+  </class>
+  <class name="JoyFootstepPlannerDemo" type="jsk_joy.plugin.joy_footstep_planner_demo.JoyFootstepPlannerDemo">
+  </class>
+  <class name="JoyMoveIt" type="jsk_joy.plugin.moveit.JoyMoveIt">
+  </class>
+  <class name="JoyGoPos" type="jsk_joy.plugin.gopos.JoyGoPos">
+  </class>
+</library>

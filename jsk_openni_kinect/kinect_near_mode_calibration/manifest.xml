@@ -1,0 +1,28 @@
+<package>
+  <description brief="kinect_near_mode_calibration">
+
+     kinect_near_mode_calibration
+
+  </description>
+  <author>Atushi Tsuda (tsuda@jsk.t.u-tokyo.ac.jp), Kei Okada(k-okada@jsk.t.u-tokyo.ac.jp)</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/kinect_near_mode_calibration</url>
+
+  <depend package="opencv2"/>
+  <depend package="std_srvs"/>
+  <depend package="image_view_jsk_patch"/>
+  <depend package="checkerboard_detector"/>
+  <depend package="openni_camera"/>
+  <depend package="jsk_tools"/>
+  <depend package="std_srvs"/>
+  <depend package="image_geometry"/>
+  <depend package="depth_image_proc_jsk_patch"/>
+
+  <export>
+    <rosdoc config="rosdoc.yaml"/>
+  </export>
+
+</package>
+
+

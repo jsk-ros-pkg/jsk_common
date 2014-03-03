@@ -1,0 +1,20 @@
+<package>
+  <description brief="openni_swipe">
+
+     openni_swipe
+
+  </description>
+  <author>tsuda</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/openni_swipe</url>
+  <depend package="roscpp"/>
+  <depend package="roslib"/>
+  <depend package="openni"/>
+  <depend package="nite"/>
+  <depend package="std_msgs"/>
+  <!-- <cpp lflags="-lglut -lOpenNI -lXnVNite_1_5_0"/> -->
+
+</package>
+
+

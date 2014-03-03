@@ -1,0 +1,10 @@
+<stack>
+  <description brief="jsk_openni_kinect">jsk_openni_kinect</description>
+  <author>Maintained by tsuda</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/jsk_openni_kinect</url>
+
+  <depend stack="openni_kinect" />
+
+</stack>
