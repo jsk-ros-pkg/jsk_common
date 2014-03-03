@@ -109,20 +109,26 @@ function install-pkg {
     (rosdep update; true)
     if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
         ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR
+        (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( rosws init; rosws merge /opt/ros/$DISTRIBUTION/.rosinstall ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL -r -y ; done  )
     else ## hydro and up, use catkin
         ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR/src;
         (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC; catkin_init_workspace)
+        (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( wstool init ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" wstool merge $ROSINSTALL -r -y ; done  )
     fi
-    (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( rosws init; rosws merge /opt/ros/$DISTRIBUTION/.rosinstall ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" rosws merge $ROSINSTALL -r -y ; done  )
+    
     success=0
     retry=0
     while [ $success == 0 -a $retry -lt 10 ]; do
-        (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" rosws update ) && success=1 || sleep 120
+        if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
+            (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" rosws update ) && success=1 || sleep 120
+        else
+            (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" wstool update ) && success=1 || sleep 120
+        fi
         retry=`expr $retry + 1`
     done
 # rosdep install
     echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
-    rosdep install --from-paths $ROS_INSTALLDIR_SRC  --rosdistro $DISTRIBUTION -y
+    rosdep install --from-paths $ROS_INSTALLDIR_SRC  --rosdistro $DISTRIBUTION -y -v -r
     return 0
 }
 
@@ -258,7 +264,7 @@ function install-jsk-ros-pkg {
     install-pkg /tmp/jsk.rosinstall.$$
     rosdep install euslisp
     if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
-        xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi
+        xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi || return 0
     fi
 }
 function compile-jsk-ros-pkg {
