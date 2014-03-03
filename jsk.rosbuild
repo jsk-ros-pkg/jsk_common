@@ -135,7 +135,7 @@ function install-pkg {
 function rosdep_and_rosmake {
     trap error ERR
     local package=$1
-    rosdep install -y $package
+    rosdep install -y $package -v -r
     rosmake --profile --status-rate=0 $package || rosmake --profile --status-rate=0 $package
 }
 
