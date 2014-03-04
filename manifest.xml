@@ -1,13 +1,13 @@
 <package>
-  <description brief="patlite">
+  <description brief="ros_patlite">
 
-     patlite
+     ros_patlite
 
   </description>
   <author>Takuya Nakaoka</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/patlite</url>
+  <url>http://ros.org/wiki/ros_patlite</url>
   <depend package="std_msgs"/>
   <depend package="rospy"/>
 

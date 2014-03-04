@@ -1,5 +1,5 @@
-patlite
-=======
+ros_patlite
+===========
 
 This is a ROS driver for patlite.
 
