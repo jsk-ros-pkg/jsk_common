@@ -1,0 +1,19 @@
+<package>
+  <name>ros_patlite</name>
+  <version>0.0.1</version>
+  <description>
+     ros_patlite
+  </description>
+  <author email="nakaokat@gmail.com">Takuya Nakaoka</author>
+  <maintainer email="nakaokat@gmail.com">Takuya Nakaoka</maintainer>
+  <license>BSD</license>
+  <url>http://ros.org/wiki/ros_patlite</url>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>rospy</build_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>rospy</run_depend>
+
+</package>
+
+
