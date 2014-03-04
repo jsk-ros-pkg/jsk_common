@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(patlite)
+project(rospatlite)
 
 catkin_package(
   DEPENDS

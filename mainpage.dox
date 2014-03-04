@@ -2,9 +2,9 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b patlite 
+\b rospatlite
 
-<!-- 
+<!--
 Provide an overview of your package.
 -->
 
