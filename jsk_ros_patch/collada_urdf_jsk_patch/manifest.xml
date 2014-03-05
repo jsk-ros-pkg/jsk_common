@@ -10,8 +10,7 @@
   <url>http://ros.org/wiki/collada_urdf_jsk_patch</url>
 
   <rosdep name="libgts" />
-
-  <depend package="collada_urdf"/>
+  <rosdep name="collada_urdf"/>
 
 </package>
 
