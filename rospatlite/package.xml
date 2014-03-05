@@ -1,0 +1,19 @@
+<package>
+  <name>rospatlite</name>
+  <version>0.0.1</version>
+  <description>
+     rospatlite
+  </description>
+  <author email="nakaokat@gmail.com">Takuya Nakaoka</author>
+  <maintainer email="nakaokat@gmail.com">Takuya Nakaoka</maintainer>
+  <license>BSD</license>
+  <url>http://ros.org/wiki/rospatlite</url>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>rospy</build_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>rospy</run_depend>
+
+</package>
+
+
