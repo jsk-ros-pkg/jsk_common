@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package>
+  <name>jsk_common</name>
+  <version>1.0.0</version>
+  <description>
+   <p>Metapackage that contains commonly used toolset for jsk-ros-pkg</p>
+  </description>
+
+  <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
+  <author email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</author>
+
+  <license>BSD</license>
+  <url type="website">http://ros.org/wiki/jsk_common</url>
+  <url type="repository">https://github.com/jsk-ros-pkg/jsk_common</url>
+  <url type="bugtracker">https://github.com/jsk-ros-pkg/jsk_common/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>dynamic_tf_publisher</run_depend>
+  <run_depend>image_view2</run_depend>
+  <run_depend>jsk_topic_tools</run_depend>
+  <run_depend>posedetection_msgs</run_depend>
+  <run_depend>jsk_footstep_msgs</run_depend>
+  <run_depend>jsk_gui_msgs</run_depend>
+  <run_depend>jsk_hark_msgs</run_depend>
+  <run_depend>rosping</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>
