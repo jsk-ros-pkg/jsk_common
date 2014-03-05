@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(jsk_topic_tools)
 
-find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp)
+find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp rostest)
 
 add_message_files(
   FILES TopicInfo.msg
@@ -28,4 +28,10 @@ add_dependencies(topic_buffer_server ${PROJECT_NAME}_gencpp)
 add_dependencies(topic_buffer_client ${PROJECT_NAME}_gencpp)
 target_link_libraries(topic_buffer_server ${catkin_LIBRARIES})
 target_link_libraries(topic_buffer_client ${catkin_LIBRARIES})
+
+add_rostest(test/test_topic_buffer.test)
+add_rostest(test/test_topic_buffer_close_wait.test)
+add_rostest(test/test_topic_buffer_fixed_rate.test)
+add_rostest(test/test_topic_buffer_fixed_rate_and_update_rate.test)
+add_rostest(test/test_topic_buffer_update_rate.test)
 
