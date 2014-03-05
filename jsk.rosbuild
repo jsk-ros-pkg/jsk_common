@@ -94,7 +94,7 @@ function setup-ros {
     wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
     sudo apt-get update
     sudo apt-get upgrade -y --force-yes
-    sudo apt-get -y --force-yes install python-rosdep python-rosinstall python-wstool || sudo apt-get -y --force-yes install python-rosdep
+    sudo apt-get -y --force-yes install ros-${DISTRIBUTION}-rosbash python-rosdep python-rosinstall python-wstool || sudo apt-get -y --force-yes install python-rosdep
     if [ -e /etc/ros/rosdep/sources.list.d/20-default.list ] ; then
         sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list;  # rosdep init fails when arleady initialized
     fi
