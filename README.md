@@ -1,4 +1,4 @@
-jsk-ros-pkg/jsk_common
+jsk_common [![Build Status](https://travis-ci.org/jsk-ros-pkg/jsk_common.png?branch=master)](https://travis-ci.org/jsk-ros-pkg/jsk_common)
 ===
 
 Install
