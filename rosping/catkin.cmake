@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rosping)
 
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs rostest)
 
 # Set the build type.  Options are:
 #  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
@@ -37,3 +37,4 @@ install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+add_rostest(test/test-rosping.test)
