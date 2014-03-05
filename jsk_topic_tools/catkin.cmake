@@ -16,7 +16,7 @@ generate_messages()
 
 catkin_package(
     DEPENDS
-    CATKIN-DEPENDS topic_tools message_runtime
+    CATKIN_DEPENDS topic_tools message_runtime
     INCLUDE_DIRS
     LIBRARIES
 )
