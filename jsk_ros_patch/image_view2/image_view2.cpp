@@ -313,7 +313,8 @@ public:
 		marker->type == image_view2::ImageMarker2::LINE_LIST3D ||
 		marker->type == image_view2::ImageMarker2::POLYGON3D ||
 		marker->type == image_view2::ImageMarker2::POINTS3D ||
-		marker->type == image_view2::ImageMarker2::TEXT3D) {
+		marker->type == image_view2::ImageMarker2::TEXT3D ||
+		marker->type == image_view2::ImageMarker2::CIRCLE3D) {
               {
                 boost::mutex::scoped_lock lock(info_mutex_);
                 if (!info_msg_) {
@@ -874,6 +875,62 @@ public:
             cv::Point origin = cv::Point(uv.x - text_size.width/2,
                                          uv.y - baseline-3);
             cv::putText(draw_, marker->text.c_str(), origin, font_, scale, CV_RGB(0,255,0),3);
+            break;
+          }
+          case image_view2::ImageMarker2::CIRCLE3D: {
+            static std::map<std::string, int> tf_fail;
+            std::string frame_id = marker->pose.header.frame_id;
+            geometry_msgs::PoseStamped pose;
+            ros::Time acquisition_time = msg->header.stamp;
+            ros::Duration timeout(tf_timeout); // wait 0.5 sec
+            try {
+              ros::Time tm;
+              tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+              ros::Duration diff = ros::Time::now() - tm;
+              if ( diff > ros::Duration(1.0) ) { break; }
+              tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+                                            acquisition_time, timeout);
+              tf_listener_.transformPose(cam_model_.tfFrame(), acquisition_time, marker->pose, frame_id, pose);
+              tf_fail[frame_id]=0;
+            }
+            catch (tf::TransformException& ex) {
+              tf_fail[frame_id]++;
+              if ( tf_fail[frame_id] < 5 ) {
+                ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+              } else {
+                ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+              }
+              break;
+            }
+
+            tf::Quaternion q;
+            tf::quaternionMsgToTF(pose.pose.orientation, q);
+            tf::Matrix3x3 rot = tf::Matrix3x3(q);
+            double angle = (marker->arc == 0 ? 360.0 :marker->angle);
+            double scale = (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale);
+            int N = 100;
+            std::vector< std::vector<cv::Point2i> > ptss;
+            std::vector<cv::Point2i> pts;
+
+            for (int i=0; i<N; ++i) {
+              double th = angle * i / N * TFSIMD_RADS_PER_DEG;
+              tf::Vector3 v = rot * tf::Vector3(scale * tfCos(th), scale * tfSin(th),0);
+              cv::Point2d pt = cam_model_.project3dToPixel(cv::Point3d(pose.pose.position.x + v.getX(), pose.pose.position.y + v.getY(), pose.pose.position.z + v.getZ()));
+              pts.push_back(cv::Point2i((int)pt.x, (int)pt.y));
+            }
+            ptss.push_back(pts);
+
+            cv::polylines(draw_, ptss, (marker->arc == 0 ? true : false), MsgToRGB(marker->outline_color), (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+
+            if (marker->filled) {
+              if(marker->arc != 0){
+                cv::Point2d pt = cam_model_.project3dToPixel(cv::Point3d(pose.pose.position.x, pose.pose.position.y, pose.pose.position.z));
+                pts.push_back(cv::Point2i((int)pt.x, (int)pt.y));
+                ptss.clear();
+                ptss.push_back(pts);
+              }
+              cv::fillPoly(draw_, ptss, MsgToRGB(marker->fill_color));
+            }
             break;
           }
           default: {
