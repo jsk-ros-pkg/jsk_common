@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rosping)
 
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs rostest)
 
 # Set the build type.  Options are:
 #  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
@@ -27,9 +27,14 @@ target_link_libraries(rosping ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 string(ASCII 27 ESCAPE)
 add_custom_command(
   OUTPUT message
-  COMMAND echo "${ESCAPE}[34m#\ type\ following\ command\ before\ execute\ rosping"
-  COMMAND echo "sudo\ chown\ root.root\ ./bin/rosping\;\ sudo\ chmod 4755\ ./bin/rosping${ESCAPE}[0m"
+  COMMAND sudo -n sh -c 'cd ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION}\; chown root.root rosping\; chmod 4755 rosping' || (echo "${ESCAPE}[34m#\ type\ following\ command\ before\ execute\ rosping...\ sudo\ chown\ root.root\ ./bin/rosping\;\ sudo\ chmod 4755\ ./bin/rosping${ESCAPE}[0m")
   DEPENDS bin/rosping)
 add_custom_target(message_all ALL DEPENDS message)
 
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
+add_rostest(test/test-rosping.test)
