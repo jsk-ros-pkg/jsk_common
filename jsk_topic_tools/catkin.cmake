@@ -35,3 +35,17 @@ add_rostest(test/test_topic_buffer_fixed_rate.test)
 add_rostest(test/test_topic_buffer_fixed_rate_and_update_rate.test)
 add_rostest(test/test_topic_buffer_update_rate.test)
 
+install(TARGETS topic_buffer_server topic_buffer_client
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  )
+
+install(DIRECTORY scripts launch test DESTINATION
+  ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  USE_SOURCE_PERMISSIONS
+  )
