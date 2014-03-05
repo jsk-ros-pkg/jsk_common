@@ -16,6 +16,5 @@
   <rosdep name="tf"/>
   <rosdep name="image_geometry"/>
   <rosdep name="message_filters"/>
-  <rosdep name="pcl" />
   <rosdep name="pcl_ros" />
 </package>

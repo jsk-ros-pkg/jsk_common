@@ -1,0 +1,24 @@
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package rosping
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1.0.0 (2014-03-05)
+------------------
+* Merge pull request `#283 <https://github.com/jsk-ros-pkg/jsk_common/issues/283>`_ from k-okada/release
+  add meta package and set all package.xml to 1.0.0
+* set all package to 1.0.0
+* add rostest to rosping
+* (rosping/catkin.cmake) try sudo see if it works
+  add -n option, not to ask password
+* install rosping
+* fixing ping timing
+* chack the arguments after ros::init
+* adding ~rate parameter
+* fix: display how to setuid at the end of cmake
+* display how to setuid at the end of cmkae
+* fix : make catkin to work rosping
+* fix catkin make
+* publish -1 when connection timed out
+* catkinize rosping
+* add rosping
+* Contributors: Kei Okada, furuta, k-okada, ueda

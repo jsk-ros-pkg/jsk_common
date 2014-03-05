@@ -19,7 +19,7 @@
   <run_depend>dynamic_tf_publisher</run_depend>
   <run_depend>image_view2</run_depend>
   <run_depend>jsk_topic_tools</run_depend>
-  <run_depend>posedetection_msg</run_depend>
+  <run_depend>posedetection_msgs</run_depend>
   <run_depend>jsk_footstep_msgs</run_depend>
   <run_depend>jsk_gui_msgs</run_depend>
   <run_depend>jsk_hark_msgs</run_depend>
