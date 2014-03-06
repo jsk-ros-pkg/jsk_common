@@ -23,7 +23,7 @@ rosrun tf static_transform_publisher 0 0 1 0 0 0 /camera /target 10
 (ros::rate 10)
 (while (ros::ok)
   (let ((mrk (instance image_view2::ImageMarker2 :init)))
-    (case (mod (/ i 10) 14)
+    (case (mod (/ i 10) 15)
           (0
            (send mrk :type image_view2::ImageMarker2::*CIRCLE*)
            (send mrk :id 5)
@@ -127,6 +127,19 @@ rosrun tf static_transform_publisher 0 0 1 0 0 0 /camera /target 10
            (send mrk :position3D :point (instance geometry_msgs::Point :init :x 1.0 :y 0.0 :z 1.5))
            (send mrk :scale 1.0)
            (send mrk :text "Hello World!")
+           )
+          (14
+           (send mrk :header :stamp (ros::time-now))
+           (send mrk :type image_view2::ImageMarker2::*CIRCLE3D*)
+           (send mrk :pose :header :frame_id "base_link")
+           (send mrk :pose :pose :position (instance geometry_msgs::Point :init :x 1.0 :y 0.0 :z 1.5))
+           (send mrk :pose :pose :orientation (instance geometry_msgs::Quaternion :init :x 0.0 :y 0.0 :z 0.0 :w 1.0))
+           (send mrk :outline_color (instance std_msgs::ColorRGBA :init :r 1.0 :g 0.0 :b 0.0 :a 1.0))
+           (send mrk :fill_color (instance std_msgs::ColorRGBA :init :r 0.0 :g 0.0 :b 1.0 :a 1.0))
+           (send mrk :filled 1)
+           (send mrk :arc 1)
+           (send mrk :angle 30.0)
+           (send mrk :scale 0.5)
            )
           (t
            (warn "unknwon case")))
