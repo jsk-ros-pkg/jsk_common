@@ -14,6 +14,10 @@
   <depend package="std_msgs" />
   <depend package="rostest" />
 
+  <rosdep name="roscpp" />
+  <rosdep name="std_msgs" />
+  <rosdep name="rostest" />
+
 </package>
 
 
