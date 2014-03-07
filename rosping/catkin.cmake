@@ -31,10 +31,17 @@ add_custom_command(
   DEPENDS bin/rosping)
 add_custom_target(message_all ALL DEPENDS message)
 
-install(TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+install(
+  PROGRAMS ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION}/rosping
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+install(CODE
+  "execute_process(COMMAND sudo -n sh -c \"cd ${CMAKE_INSTALL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION} ; chown root.root rosping; ls -al rosping; chmod 4755 rosping\")
+")
+
+install(DIRECTORY test
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  USE_SOURCE_PERMISSIONS
+  )
 
 add_rostest(test/test-rosping.test)
