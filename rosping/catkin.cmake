@@ -14,7 +14,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp std_msgs rostest)
 
 catkin_package(
     DEPENDS
-    CATKIN-DEPENDS roscpp std_msgs
+    CATKIN_DEPENDS roscpp std_msgs
     INCLUDE_DIRS
     LIBRARIES
 )
