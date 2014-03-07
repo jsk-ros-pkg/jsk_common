@@ -7,7 +7,7 @@
   </description>
   <version>1.0.0</version>
   <author email="saito@jsk.t.u-tokyo.ac.jp">Manabu Saito</author>
-  <maintainer email="garaemon@gmail.com">garaemon@gmail.com</maintainer>
+  <maintainer email="garaemon@gmail.com">Ryohei Ueda</maintainer>
   <license>BSD</license>
   <url>http://ros.org/wiki/dynamic_tf_publisher</url>
   <buildtool_depend>catkin</buildtool_depend>

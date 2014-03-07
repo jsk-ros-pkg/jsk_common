@@ -24,6 +24,7 @@
   <run_depend>jsk_gui_msgs</run_depend>
   <run_depend>jsk_hark_msgs</run_depend>
   <run_depend>rosping</run_depend>
+  <run_depend>rospatlite</run_depend>
 
   <export>
     <metapackage/>
