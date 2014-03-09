@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-import roslib; roslib.load_manifest('patlite')
+try: # catkin does not requires load_manifest
+    import rospatlite
+except:
+    import roslib; roslib.load_manifest('rospatlite')
 
 import rospy
 from std_msgs.msg import Int8
