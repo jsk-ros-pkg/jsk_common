@@ -11,6 +11,7 @@ byte LINE_LIST3D=8
 byte POLYGON3D=9
 byte POINTS3D=10
 byte TEXT3D=11
+byte CIRCLE3D=12
 
 byte ADD=0
 byte REMOVE=1
@@ -22,12 +23,15 @@ int32 type        	# CIRCLE/LINE_STRIP/etc.
 int32 action      	# ADD/REMOVE
 geometry_msgs/Point position # used for CIRCLE/TEXT, 2D in pixel-coords
 geometry_msgs/PointStamped position3D # used for 3DTEXT
+geometry_msgs/PoseStamped pose # used for CIRCLE3D
 float32 scale	 	# the diameter for a circle, etc.
 float32 width	 	# the width for a line, etc.
 std_msgs/ColorRGBA outline_color
 byte filled		# whether to fill in the shape with color
 std_msgs/ColorRGBA fill_color # color [0.0-1.0]
 duration lifetime       # How long the object should last before being automatically deleted.  0 means forever
+byte arc # used for CIRCLE3D
+float32 angle # used for CIRCLE3D
 
 
 geometry_msgs/Point[] points # used for LINE_STRIP/LINE_LIST/POLYGON/POINTS., 2D in pixel coords

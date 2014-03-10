@@ -2,6 +2,13 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.1 (2014-03-07)
+------------------
+* added CIRCLE3D type marker sample
+* add CIRCLE3D type marker
+* set all package to 1.0.0
+* Contributors: HiroyukiMikita, Kei Okada
+
 1.0.0 (2014-03-05)
 ------------------
 * set all package to 1.0.0
