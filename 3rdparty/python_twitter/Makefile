@@ -7,6 +7,7 @@ include $(shell rospack find mk)/git_checkout.mk
 
 installed: $(GIT_DIR) patched
 	mkdir -p src; mkdir -p bin
+	mkdir -p $(TOP_DIR)/build/lib/python2.7/site-packages/
 	cd $(GIT_DIR) && python setup.py build
 	cd $(GIT_DIR) && PYTHONPATH=$(TOP_DIR)/build/lib/python2.7/site-packages python setup.py install --prefix=$(TOP_DIR)/build #--install-purelib=$(TOP_DIR)/src
 	-cp $(TOP_DIR)/build/lib/python2.7/site-packages/*.egg/* ./src/
