@@ -10,7 +10,7 @@
   <url>http://ros.org/wiki/opt_camera</url>
   <depend package="sensor_msgs"/>
   <depend package="driver_base"/>
-  <depend package="image_proc"/>
+  <!-- <depend package="image_proc"/> -->
   <depend package="dynamic_reconfigure"/>
   <depend package="camera_calibration_parsers" />
   <depend package="compressed_image_transport"/>
