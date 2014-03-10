@@ -14,6 +14,7 @@
   <depend package="dynamic_reconfigure"/>
   <depend package="camera_calibration_parsers" />
   <depend package="compressed_image_transport"/>
+  <rosdep name="image_proc" />
 </package>
 
 
