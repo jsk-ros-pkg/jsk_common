@@ -37,8 +37,8 @@ rosbuild_add_executable(specific_transform_subscriber src/specific_transform_sub
 rosbuild_add_executable(transform_merger src/transform_merger.cpp)
 
 #target_link_libraries(example ${PROJECT_NAME})
-rosbuild_add_rostest(test/test_topic_buffer.launch)
-rosbuild_add_rostest(test/test_topic_buffer_fixed_rate.launch)
-rosbuild_add_rostest(test/test_topic_buffer_update_rate.launch)
-rosbuild_add_rostest(test/test_topic_buffer_fixed_rate_and_update_rate.launch)
-rosbuild_add_rostest(test/test_topic_buffer_close_wait.launch)
+rosbuild_add_rostest(test/test_topic_buffer.test)
+rosbuild_add_rostest(test/test_topic_buffer_fixed_rate.test)
+rosbuild_add_rostest(test/test_topic_buffer_update_rate.test)
+rosbuild_add_rostest(test/test_topic_buffer_fixed_rate_and_update_rate.test)
+rosbuild_add_rostest(test/test_topic_buffer_close_wait.test)
