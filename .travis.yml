@@ -7,7 +7,7 @@ python:
 compiler:
   - gcc
 env:
-  - ROS_DISTRO=groovy ROSWS=rosws BUILDER=rosbuild BUILD_PACKAGES="libsiftfast julius crlibm ffha voice_text python_twitter downward nlopt python_twoauth ff jtalk aques_talk dynamic_tf_publisher parallel_util rosping jsk_footstep_msgs jsk_tools jsk_topic_tools posedetection_msgs stereo_synchronizer jsk_hark_msgs collada_urdf_jsk_patch image_view_jsk_patch pr2_teleop_general_jsk_patch pr2_groovy_patches multi_map_server image_view2 move_arm_jsk_patch depth_image_proc_jsk_patch laser_filters_jsk_patch openni_tracker_jsk_patch ee_cart_imped_jsk_patch jsk_gui_msgs opt_camera rospatlite"
+  - ROS_DISTRO=groovy ROSWS=rosws BUILDER=rosbuild BUILD_PACKAGES="libsiftfast julius crlibm ffha voice_text python_twitter downward nlopt python_twoauth ff jtalk aques_talk dynamic_tf_publisher parallel_util rosping jsk_footstep_msgs jsk_tools jsk_topic_tools posedetection_msgs stereo_synchronizer jsk_hark_msgs collada_urdf_jsk_patch image_view_jsk_patch pr2_teleop_general_jsk_patch pr2_groovy_patches multi_map_server image_view2 depth_image_proc_jsk_patch laser_filters_jsk_patch ee_cart_imped_jsk_patch jsk_gui_msgs opt_camera rospatlite"
   - ROS_DISTRO=hydro ROSWS=wstool BUILDER=catkin
   - ROS_DISTRO=groovy ROSWS=wstool BUILDER=catkin
 #notifications:
