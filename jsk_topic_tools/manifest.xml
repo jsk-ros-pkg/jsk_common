@@ -15,6 +15,11 @@
   <rosdep name="tf"/>
   <rosdep name="rostest"/>
   <rosdep name="roscpp_tutorials"/>
+  <dependp package="topic_tools"/>
+  <dependp package="dynamic_tf_publisher"/>
+  <dependp package="tf"/>
+  <dependp package="rostest"/>
+  <dependp package="roscpp_tutorials"/>
 
 </package>
 
