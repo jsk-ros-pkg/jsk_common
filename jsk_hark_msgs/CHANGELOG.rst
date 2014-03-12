@@ -2,6 +2,9 @@
 Changelog for package jsk_hark_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.1 (2014-03-07)
+------------------
+
 1.0.0 (2014-03-05)
 ------------------
 * enable catkin_package for jsk_hark_msgs

@@ -2,6 +2,23 @@
 Changelog for package rosping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.1 (2014-03-07)
+------------------
+* Merge pull request `#293 <https://github.com/jsk-ros-pkg/jsk_common/issues/293>`_ from k-okada/sudo_rosping
+  rosping :  add install and test
+* keep persmissions during installation
+* fix typo CATKIN-DEPENDS -> CATKIN_DEPENDS
+* add rosdep name
+* rosping: install test directory
+* fix typo CATKIN-DEPENDS -> CATKIN_DEPENDS
+* add rosdep name
+* keep persmissions during installation
+* rosping: install test directory
+* Merge pull request `#283 <https://github.com/jsk-ros-pkg/jsk_common/issues/283>`_ from k-okada/release
+  add meta package and set all package.xml to 1.0.0
+* set all package to 1.0.0
+* Contributors: Kei Okada
+
 1.0.0 (2014-03-05)
 ------------------
 * Merge pull request `#283 <https://github.com/jsk-ros-pkg/jsk_common/issues/283>`_ from k-okada/release

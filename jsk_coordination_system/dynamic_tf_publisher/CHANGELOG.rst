@@ -2,6 +2,13 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.1 (2014-03-07)
+------------------
+* fix maintainer name
+* fix maintainer name
+* set all package to 1.0.0
+* Contributors: Kei Okada
+
 1.0.0 (2014-03-05)
 ------------------
 * set all package to 1.0.0

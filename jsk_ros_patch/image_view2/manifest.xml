@@ -6,6 +6,18 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/image_view2</url>
+  <depend package="roscpp"/>
+  <depend package="opencv2"/>
+  <depend package="cv_bridge"/>
+  <depend package="std_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="image_transport"/>
+  <depend package="tf"/>
+  <depend package="image_geometry"/>
+  <depend package="message_filters"/>
+  <depend package="pcl_ros" />
+  <depend package="image_view" />
   <rosdep name="roscpp"/>
   <rosdep name="opencv2"/>
   <rosdep name="cv_bridge"/>
@@ -15,6 +27,7 @@
   <rosdep name="image_transport"/>
   <rosdep name="tf"/>
   <rosdep name="image_geometry"/>
+  <rosdep name="image_view" />
   <rosdep name="message_filters"/>
   <rosdep name="pcl_ros" />
 </package>

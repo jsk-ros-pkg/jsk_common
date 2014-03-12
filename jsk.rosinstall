@@ -1,4 +1,4 @@
-# rosinstall file for http://jskeus.sourceforge.net
+# rosinstall file for https://github.com/jsk-ros-pkg
 # use #@# for special comment out, due to jsk.rosbuild specification
 #
 
@@ -70,42 +70,42 @@
    
 # nao
 - git:
-    uri: http://github.com/ahornung/nao_robot
+    uri: https://github.com/ahornung/nao_robot.git
     local-name: humanoid_stacks/nao_robot
 - git:
-    uri: http://github.com/ahornung/nao_common
+    uri: https://github.com/ahornung/nao_common.git
     local-name: humanoid_stacks/nao_common
 - git:
-    uri: http://github.com/ahornung/nao_viz
+    uri: https://github.com/ahornung/nao_viz.git
     local-name: humanoid_stacks/nao_viz
 - git:
-    uri: http://github.com/ahornung/humanoid_msgs
+    uri: https://github.com/ahornung/humanoid_msgs.git
     local-name: humanoid_stacks/humanoid_msgs
 - git:
-    uri: http://github.com/ahornung/humanoid_navigation
+    uri: https://github.com/ahornung/humanoid_navigation.git
     local-name: humanoid_stacks/humanoid_navigation
 
 # baxter
 - git:
-    uri: http://github.com/RethinkRobotics/baxter.git
+    uri: https://github.com/RethinkRobotics/baxter.git
     local-name: RethinkRobotics/baxter
 - git:
-    uri: http://github.com/RethinkRobotics/baxter_interface.git
+    uri: https://github.com/RethinkRobotics/baxter_interface.git
     local-name: RethinkRobotics/baxter_interface
 - git:
-    uri: http://github.com/RethinkRobotics/baxter_tools.git
+    uri: https://github.com/RethinkRobotics/baxter_tools.git
     local-name: RethinkRobotics/baxter_tools
 - git:
-   uri: http://github.com/RethinkRobotics/baxter_common.git
+   uri: https://github.com/RethinkRobotics/baxter_common.git
    local-name: RethinkRobotics/baxter_common
 - git:
-   uri: http://github.com/RethinkRobotics/baxter_examples.git
+   uri: https://github.com/RethinkRobotics/baxter_examples.git
    local-name: RethinkRobotics/baxter_examples
 
 # rviz stuff
 - git:
     local-name: view_controller_msgs
-    uri: 'https://github.com/ros-visualization/view_controller_msgs'
+    uri: https://github.com/ros-visualization/view_controller_msgs.git
     version: hydro-devel
 
     
