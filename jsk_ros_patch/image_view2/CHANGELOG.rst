@@ -2,6 +2,12 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.2 (2014-03-12)
+------------------
+* `#299 <https://github.com/jsk-ros-pkg/jsk_common/issues/299>`_: add dependency image_view2 to image_view
+* fix image_view2 dependency for rosbuild environment
+* Contributors: Ryohei Ueda, nozawa
+
 1.0.1 (2014-03-07)
 ------------------
 * added CIRCLE3D type marker sample
