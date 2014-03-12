@@ -50,12 +50,12 @@
     local-name: tum-ros-pkg/perception
 # for safe_teleop_pr2
 - svn:
-    uri: http://svn.code.sf.net/p/bosch-ros-pkg/code/trunk/stacks/bosch_shared_autonomy
-    local-name: bosch-ros-pkg/stacks/bosch_shared_autonomy
+    uri: http://svn.code.sf.net/p/bosch-ros-pkg/code/trunk
+    local-name: bosch-ros-pkg
 # for ee_cart_imped
 - svn:
-    uri: https://svn.csail.mit.edu/mit-ros-pkg/trunk/ee_cart_imped
-    local-name: mit-ros-pkg/trunk/ee_cart_imped
+    uri: https://svn.csail.mit.edu/mit-ros-pkg/trunk
+    local-name: mit-ros-pkg/trunk
 
 # rwt
 - git:    
