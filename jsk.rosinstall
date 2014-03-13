@@ -39,6 +39,9 @@
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_common.git
     local-name: jsk-ros-pkg/jsk_common
+- git:
+    uri: https://github.com/jsk-ros-pkg/jsk_openni_kinect.git
+    local-name: jsk-ros-pkg/jsk_openni_kinect
 
 # for snap map icp
 - svn:
