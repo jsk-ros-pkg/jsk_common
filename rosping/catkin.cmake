@@ -36,7 +36,7 @@ install(
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 install(CODE
-  "execute_process(COMMAND sudo -n sh -c \"cd ${CMAKE_INSTALL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION} ; chown root.root rosping; ls -al rosping; chmod 4755 rosping\")
+  "execute_process(COMMAND sudo -n sh -c \"cd \$ENV{DISTDIR}/${CMAKE_INSTALL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION} ; chown root.root rosping; ls -al rosping; chmod 4755 rosping\")
 ")
 
 install(DIRECTORY test
