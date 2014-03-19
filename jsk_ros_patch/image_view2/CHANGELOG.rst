@@ -2,6 +2,9 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.3 (2014-03-19)
+------------------
+
 1.0.2 (2014-03-12)
 ------------------
 * `#299 <https://github.com/jsk-ros-pkg/jsk_common/issues/299>`_: add dependency image_view2 to image_view
