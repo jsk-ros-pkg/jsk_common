@@ -8,7 +8,7 @@ Setup
 1. connect the patlite with your computer directly
 2. set IP address of your computer to 192.168.10.x (patlite has 192.168.10.1)
 3. open http://192.168.10.1/index.htm with your web broswser and setup network stuff.
-Please see the manual for details.
+Please see [the manual](http://www.patlite.jp/product/nh-spl.html) for details.
 4. `roslaunch rospatlite patlite.launch IP:=IP_ADDRES`
 5. enjoy patlite
 
