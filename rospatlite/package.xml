@@ -6,6 +6,7 @@
   </description>
   <author email="nakaokat@gmail.com">Takuya Nakaoka</author>
   <maintainer email="nakaokat@gmail.com">Takuya Nakaoka</maintainer>
+  <maintainer email="garaemon@gmail.com">Ryohei Ueda</maintainer>
   <license>BSD</license>
   <url>http://ros.org/wiki/rospatlite</url>
   <buildtool_depend>catkin</buildtool_depend>
