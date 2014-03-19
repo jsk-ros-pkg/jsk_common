@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
               {
                   std::cerr << "Usage: " << argv[0] << " <host>" << std::endl;
 #if !defined(BOOST_WINDOWS)
-                  std::cerr << "(You may need to run this program as root.)" << std::endl;
+                  std::cerr << "(You may need to set permission to run this program as root.)\n$ chown root.root rosping; ls -al rosping; chmod 4755 rosping\n" << std::endl;
 #endif
                   return 1;
               }
