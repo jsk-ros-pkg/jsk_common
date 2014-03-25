@@ -1,8 +1,9 @@
 <package>
   <name>jsk_topic_tools</name>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <description>jsk_topic_tools</description>
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
+  <maintainer email="furuta@jsk.t.u-tokyo.ac.jp">Yusuke Furuta</maintainer>
 
   <license>BSD</license>
 
@@ -10,6 +11,7 @@
   <!-- <url type="bugtracker"></url> -->
 
   <author email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</author>
+  <author email="furuta@jsk.t.u-tokyo.ac.jp">Yusuke Furuta</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
