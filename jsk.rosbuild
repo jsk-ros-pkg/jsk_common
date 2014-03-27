@@ -126,8 +126,11 @@ function install-pkg {
         fi
         retry=`expr $retry + 1`
     done
-# rosdep install
+    # rosdep install
     echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
+    find -L $ROS_INSTALLDIR_SRC -name package.xml -exec dirname {} \; | xargs -n 1 -i find {} -name manifest.xml | xargs -n 1 -i mv {} {}.deprecated
+    rosdep install --from-paths $ROS_INSTALLDIR_SRC  --rosdistro $DISTRIBUTION -y -v -r
+    find -L $ROS_INSTALLDIR_SRC -name manifest.xml.deprecated | xargs -n 1 -i dirname {} | xargs -n 1 -i ln -sf `pwd`/{}/manifest.xml.deprecated `pwd`/{}/manifest.xml
     rosdep install --from-paths $ROS_INSTALLDIR_SRC  --rosdistro $DISTRIBUTION -y -v -r
     return 0
 }
