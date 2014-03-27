@@ -129,16 +129,16 @@ function install-pkg {
     # rosdep install
     echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
     find -L $ROS_INSTALLDIR_SRC -name package.xml -exec dirname {} \; | xargs -n 1 -i find {} -name manifest.xml | xargs -n 1 -i mv {} {}.deprecated
-    rosdep install --from-paths $ROS_INSTALLDIR_SRC  --rosdistro $DISTRIBUTION -y -v -r
+    rosdep install --from-paths $ROS_INSTALLDIR_SRC  --rosdistro $DISTRIBUTION -y -v -r -i
     find -L $ROS_INSTALLDIR_SRC -name manifest.xml.deprecated | xargs -n 1 -i dirname {} | xargs -n 1 -i mv `pwd`/{}/manifest.xml.deprecated `pwd`/{}/manifest.xml
-    rosdep install --from-paths $ROS_INSTALLDIR_SRC  --rosdistro $DISTRIBUTION -y -v -r
+    rosdep install --from-paths $ROS_INSTALLDIR_SRC  --rosdistro $DISTRIBUTION -y -v -r -i
     return 0
 }
 
 function rosdep_and_rosmake {
     trap error ERR
     local package=$1
-    rosdep install -y $package -v -r
+    rosdep install -y $package -v -r -i
     rosmake --profile --status-rate=0 $package || rosmake --profile --status-rate=0 $package
 }
 
