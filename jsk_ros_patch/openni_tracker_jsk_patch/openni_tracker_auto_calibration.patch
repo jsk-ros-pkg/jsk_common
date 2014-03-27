@@ -9,10 +9,16 @@ diff -r 8a10a975cb92 CMakeLists.txt
 +include_directories(/usr/include/openni /usr/include/ni /usr/include/nite)
  rosbuild_add_executable(openni_tracker src/openni_tracker.cpp)
  target_link_libraries(openni_tracker OpenNI)
-diff -r 8a10a975cb92 manifest.xml
---- a/manifest.xml	Mon Mar 12 15:56:49 2012 -0700
-+++ b/manifest.xml	Wed Dec 12 01:19:01 2012 +0900
-@@ -14,8 +14,8 @@
+diff --git a/manifest.xml b/manifest.xml
+index 1bb6fc1..d6e07f0 100644
+--- a/manifest.xml
++++ b/manifest.xml
+@@ -10,12 +10,12 @@
+   <url>http://ros.org/wiki/openni_tracker</url>
+ 
+   <depend package="geometry_msgs"/>
+-  <depend package="kdl"/>
++  <depend package="orocos_kdl"/>
    <depend package="roscpp"/>
    <depend package="roslib"/>
    <depend package="tf"/>
