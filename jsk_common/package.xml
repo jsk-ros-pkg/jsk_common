@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>jsk_common</name>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
   <description>
    <p>Metapackage that contains commonly used toolset for jsk-ros-pkg</p>
   </description>
@@ -20,9 +20,12 @@
   <run_depend>image_view2</run_depend>
   <run_depend>jsk_topic_tools</run_depend>
   <run_depend>posedetection_msgs</run_depend>
+  <run_depend>jsk_tools</run_depend>
   <run_depend>jsk_footstep_msgs</run_depend>
   <run_depend>jsk_gui_msgs</run_depend>
   <run_depend>jsk_hark_msgs</run_depend>
+  <run_depend>multi_map_server</run_depend>
+  <run_depend>opt_camera</run_depend>
   <run_depend>rosping</run_depend>
   <run_depend>rospatlite</run_depend>
 

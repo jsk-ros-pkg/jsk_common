@@ -1,6 +1,6 @@
 <package>
   <name>opt_camera</name>
-  <version>0.0.1</version>
+  <version>1.0.4</version>
   <description>opt_camera</description>
 
   <license>BSD</license>
@@ -22,6 +22,8 @@
   <build_depend>camera_calibration_parsers</build_depend>
   <build_depend>compressed_image_transport</build_depend>
   <build_depend>cv_bridge</build_depend>
+  <build_depend>rospack</build_depend>
+  <build_depend>roslang</build_depend>
 
   <run_depend>sensor_msgs</run_depend>
   <run_depend>driver_base</run_depend>
@@ -30,4 +32,5 @@
   <run_depend>camera_calibration_parsers</run_depend>
   <run_depend>compressed_image_transport</run_depend>
   <run_depend>cv_bridge</run_depend>
+  <run_depend>rospack</run_depend>
 </package>

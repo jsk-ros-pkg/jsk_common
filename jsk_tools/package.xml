@@ -1,0 +1,23 @@
+<package>
+  <name>jsk_tools</name>
+  <version>1.0.4</version>
+  <description>Includes emacs scripts, ros tool alias generator, and launch doc generator.</description>
+
+  <maintainer email="ueda@jsk.t.u-tokyo.ac.jp">Ryohei Ueda</maintainer>
+
+  <license>Apache License 2.0</license>
+
+  <url type="website">http://ros.org/wiki/jsk_tools</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Ryohei Ueda (ueda@jsk.t.u-tokyo.ac.jp)</author>
+  <author>Rosen Diankov (rosen.diankov@gmail.com)</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>git</build_depend>
+  <!-- <build_depend>mjpeg_server</build_depend> -->
+  <!-- <run_depend>mjpeg_server</run_depend> -->
+  <!-- <test_depend>mjpeg_server</test_depend> -->
+
+</package>

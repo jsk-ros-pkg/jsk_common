@@ -1,0 +1,26 @@
+<package>
+  <name>laser_filters_jsk_patch</name>
+  <version>1.0.4</version>
+  <description>laser_filters_jsk_patch</description>
+
+  <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/laser_filters_jsk_patch</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>k-okada</author>
+
+  <build_depend>laser_geometry</build_depend>
+
+  <!-- <build_depend>filters</build_depend> -->
+  <!-- <run_depend>laser_filters</run_depend> -->
+  <!-- <run_depend>filters</run_depend> -->
+  <!-- <test_depend>laser_filters</test_depend> -->
+  <!-- <test_depend>filters</test_depend> -->
+
+  <export>
+    <filters plugin="${prefix}/laser_filters_plugins.xml"/>
+  </export>
+</package>

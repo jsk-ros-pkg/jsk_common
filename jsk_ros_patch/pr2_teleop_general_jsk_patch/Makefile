@@ -10,7 +10,7 @@ SVN_REVISION= -r 53700
 include $(shell rospack find mk)/svn_checkout.mk
 
 installed: $(SVN_DIR) patched
-	cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH rosmake
+	[ `rospack find pr2_msgs` ] && (cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH rosmake ) || echo "sudo apt-get install ros-$ROS_DISTRO-pr2-msgs"
 	touch installed
 
 clean:
