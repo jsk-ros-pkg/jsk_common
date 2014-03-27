@@ -126,12 +126,12 @@ function install-pkg {
         fi
         retry=`expr $retry + 1`
     done
-    # rosdep install
+    
     echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
-    find -L $ROS_INSTALLDIR_SRC -name package.xml -exec dirname {} \; | xargs -n 1 -i find {} -name manifest.xml | xargs -n 1 -i mv {} {}.deprecated
-    rosdep install --from-paths $ROS_INSTALLDIR_SRC  --rosdistro $DISTRIBUTION -y -v -r -i
-    find -L $ROS_INSTALLDIR_SRC -name manifest.xml.deprecated | xargs -n 1 -i dirname {} | xargs -n 1 -i mv `pwd`/{}/manifest.xml.deprecated `pwd`/{}/manifest.xml
-    rosdep install --from-paths $ROS_INSTALLDIR_SRC  --rosdistro $DISTRIBUTION -y -v -r -i
+    # rosdep install
+    (cd $ROS_INSTALLDIR_SRC &&
+     wget https://raw.github.com/garaemon/jsk_common/fix-jsk-rosbuild-id-310/rosdep-update.sh -O - | bash)
+        #wget https://raw.github.com/jsk-ros-pkg/jsk_common/master/rosdep-update.sh -O - | bash)
     return 0
 }
 
