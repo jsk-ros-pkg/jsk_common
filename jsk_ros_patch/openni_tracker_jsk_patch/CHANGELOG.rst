@@ -2,8 +2,8 @@
 Changelog for package openni_tracker_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.4 (2014-03-27)
+------------------
 * jsk_common: update revision number to 1.0.3
 * openni_tracker_jsk_patch: use upstream repository on github
 * Contributors: Kei Okada

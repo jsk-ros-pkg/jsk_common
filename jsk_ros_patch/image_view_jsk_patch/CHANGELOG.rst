@@ -2,8 +2,8 @@
 Changelog for package image_view_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.4 (2014-03-27)
+------------------
 * jsk_common: update revision number to 1.0.3
 * image_view_jsk_patch: catkinize (dummy)
 * Contributors: Kei Okada

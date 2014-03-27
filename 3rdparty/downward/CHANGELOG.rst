@@ -2,8 +2,8 @@
 Changelog for package downward
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.4 (2014-03-27)
+------------------
 * jsk_common: update revision number to 1.0.3
 * downward: catkinize
 * Contributors: Kei Okada

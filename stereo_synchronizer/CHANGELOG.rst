@@ -2,8 +2,8 @@
 Changelog for package stereo_synchronizer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.4 (2014-03-27)
+------------------
 * stereo_synchronizer, jsk_tools: update to revision 1.0.3
 * stereo_synchronizer: catkinize
 * Contributors: Kei Okada
