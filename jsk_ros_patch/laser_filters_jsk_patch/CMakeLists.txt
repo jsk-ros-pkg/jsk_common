@@ -1,3 +1,6 @@
+if(NOT USE_ROSBUILD)
+  return()
+endif()
 cmake_minimum_required(VERSION 2.4.6)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
@@ -8,6 +11,11 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #  RelWithDebInfo : w/ debug symbols, w/ optimization
 #  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
 #set(ROS_BUILD_TYPE RelWithDebInfo)
+
+rosbuild_find_ros_package(jsk_tools)
+include(${jsk_tools_PACKAGE_PATH}/cmake/download_package.cmake)
+download_package_for_groovy(filters       http://github.com/ros/filters                  groovy-devel)
+download_package_for_groovy(laser_filters http://github.com/ros-perception/laser_filters groovy_released)
 
 rosbuild_init()
 
