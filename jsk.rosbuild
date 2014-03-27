@@ -130,8 +130,7 @@ function install-pkg {
     echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
     # rosdep install
     (cd $ROS_INSTALLDIR_SRC &&
-     wget https://raw.github.com/garaemon/jsk_common/fix-jsk-rosbuild-id-310/rosdep-update.sh -O - | bash)
-        #wget https://raw.github.com/jsk-ros-pkg/jsk_common/master/rosdep-update.sh -O - | bash)
+        wget https://raw.github.com/jsk-ros-pkg/jsk_common/master/rosdep-update.sh -O - | bash)
     return 0
 }
 
