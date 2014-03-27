@@ -10,11 +10,6 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/jsk_topic_tools</url>
 
-  <rosdep name="topic_tools"/>
-  <rosdep name="dynamic_tf_publisher"/>
-  <rosdep name="tf"/>
-  <rosdep name="rostest"/>
-  <rosdep name="roscpp_tutorials"/>
   <depend package="topic_tools"/>
   <depend package="dynamic_tf_publisher"/>
   <depend package="tf"/>
