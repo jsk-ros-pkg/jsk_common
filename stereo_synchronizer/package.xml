@@ -1,6 +1,6 @@
 <package>
   <name>stereo_synchronizer</name>
-  <version>1.0.0</version>
+  <version>1.0.3</version>
   <description>stereo_synchronizer</description>
   <maintainer email="youhei@jsk.t.u-tokyo.ac.jp">Yohei Kakiuchi</maintainer>
 
