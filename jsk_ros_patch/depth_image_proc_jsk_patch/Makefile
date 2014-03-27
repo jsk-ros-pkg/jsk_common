@@ -1,6 +1,7 @@
 #
 # https://kforge.ros.org/openni/trac/ticket/74
 #
+EXTRA_CMAKE_FLAGS = -DUSE_ROSBUILD:BOOL=1
 include $(shell rospack find mk)/cmake.mk
 
 all: installed
@@ -8,7 +9,7 @@ all: installed
 GIT_DIR = build/image_pipeline
 GIT_URL = https://github.com/ros-perception/image_pipeline/
 GIT_REVISION = image_pipeline-1.8.4
-GIT_PATCH = openni_zoom.patch
+GIT_PATCH = openni_zoom.patch manifest.xml.patch # to avoid common_rosdeps
 include $(shell rospack find mk)/git_checkout.mk
 
 installed: $(SVN_DIR) patched

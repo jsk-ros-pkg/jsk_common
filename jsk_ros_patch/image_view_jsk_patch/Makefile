@@ -1,6 +1,7 @@
 #
 # https://code.ros.org/trac/ros-pkg/ticket/5529
 #
+EXTRA_CMAKE_FLAGS = -DUSE_ROSBUILD:BOOL=1
 include $(shell rospack find mk)/cmake.mk
 
 all: installed

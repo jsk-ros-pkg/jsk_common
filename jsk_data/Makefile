@@ -5,9 +5,9 @@ DATA_DIR=$(shell if [ -e /home/jsk/ros/data ] ; then echo "/home/jsk/ros/data"; 
 .PHONY : small large
 
 large:
-	rsync -avz --progress --bwlimit=100000 ${DATA_DIR}/large .
-	sh `rospack find jsk_data`/scripts/gen-gif-all large
+	rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" --bwlimit=100000 ${DATA_DIR}/large . || exit 0
+	sh `rospack find jsk_data`/scripts/gen-gif-all large || exit 0
 
 small:
-	rsync -avz --progress --bwlimit=100000 ${DATA_DIR}/small .
-	sh `rospack find jsk_data`/scripts/gen-gif-all small
+	rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" --bwlimit=100000 ${DATA_DIR}/small . || exit 0
+	sh `rospack find jsk_data`/scripts/gen-gif-all small || exit 0

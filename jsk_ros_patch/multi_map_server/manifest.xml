@@ -8,6 +8,12 @@
   <license>BSD</license>
   <review status="Doc reviewed" notes=""/>
   <url>http://ros.org/wiki/map_server</url>
-  <depend package="map_server"/>
+
+  <!-- depend package="map_server"/ -->
+  <depend package="rosconsole"/>
+  <depend package="roscpp"/>
+  <depend package="rospy" />
+  <depend package="nav_msgs"/>
+  <depend package="tf"/>
 
 </package>

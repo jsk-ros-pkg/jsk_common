@@ -10,13 +10,14 @@
 
   <url>http://ros.org/wiki/rosping</url>
 
+  <rosdep name="mk" />
+  <rosdep name="rosbuild" />
+  <rosdep name="rostest" />
+  <rosdep name="rosboost_cfg" />
+
   <depend package="roscpp" />
   <depend package="std_msgs" />
-  <depend package="rostest" />
 
-  <rosdep name="roscpp" />
-  <rosdep name="std_msgs" />
-  <rosdep name="rostest" />
 
 </package>
 
