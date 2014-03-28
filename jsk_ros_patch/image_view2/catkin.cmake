@@ -30,7 +30,7 @@ add_dependencies(points_rectangle_extractor ${PROJECT_NAME}_gencpp)
 
 catkin_package(
     DEPENDS OpenCV PCL
-    CATKIN-DEPENDS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters
+    CATKIN_DEPENDS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
 )
