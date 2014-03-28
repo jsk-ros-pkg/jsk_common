@@ -60,7 +60,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
      DEPENDS  # TODO
-     CATKIN-DEPENDS std_msgs # TODO
+     CATKIN_DEPENDS std_msgs # TODO
      INCLUDE_DIRS # TODO include
      LIBRARIES # TODO
 )
