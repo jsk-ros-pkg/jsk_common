@@ -11,6 +11,7 @@
 //
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <unistd.h>
 #define CLEAR(x) memset (&(x), 0, sizeof (x))
 
 /* convert from mjpeg to rgb24 */

@@ -19,7 +19,7 @@ target_link_libraries(cr_synchronizer ${catkin_LIBRARIES})
 
 catkin_package(
     DEPENDS sensor_msgs image_transport
-    CATKIN-DEPENDS # TODO
+    CATKIN_DEPENDS # TODO
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
 )
