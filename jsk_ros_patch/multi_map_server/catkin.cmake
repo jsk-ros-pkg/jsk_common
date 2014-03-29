@@ -25,7 +25,7 @@ target_link_libraries(map_server ${catkin_LIBRARIES} image_loader SDL SDL_image 
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
     DEPENDS rosconsole roscpp rospy nav_msgs tf
-    CATKIN-DEPENDS # TODO
+    CATKIN_DEPENDS # TODO
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
 )

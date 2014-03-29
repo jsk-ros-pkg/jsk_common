@@ -8,9 +8,8 @@ add_message_files(
   FILES ImageMarker2.msg PointArrayStamped.msg
 )
 
-generate_messages(DEPENDENCIES geometry_msgs std_msgs)
 
-## 
+
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 # Image viewers
@@ -28,9 +27,11 @@ include_directories(${PCL_INCLUDE_DIRS})
 target_link_libraries(points_rectangle_extractor ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(points_rectangle_extractor ${PROJECT_NAME}_gencpp)
 
+generate_messages(DEPENDENCIES geometry_msgs std_msgs)
+
 catkin_package(
     DEPENDS OpenCV PCL
-    CATKIN-DEPENDS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters
+    CATKIN_DEPENDS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
 )

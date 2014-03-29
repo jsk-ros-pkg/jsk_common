@@ -115,7 +115,7 @@ function install-pkg {
         (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC; catkin_init_workspace)
         (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( wstool init ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" wstool merge $ROSINSTALL -r -y ; done  )
     fi
-    
+
     success=0
     retry=0
     while [ $success == 0 -a $retry -lt 10 ]; do
@@ -126,16 +126,18 @@ function install-pkg {
         fi
         retry=`expr $retry + 1`
     done
-# rosdep install
+
     echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
-    rosdep install --from-paths $ROS_INSTALLDIR_SRC  --rosdistro $DISTRIBUTION -y -v -r
+    # rosdep install
+    (cd $ROS_INSTALLDIR_SRC &&
+        wget https://raw.github.com/jsk-ros-pkg/jsk_common/master/rosdep-update.sh -O - | ROS_DISTRO=$DISTRIBUTION bash)
     return 0
 }
 
 function rosdep_and_rosmake {
     trap error ERR
     local package=$1
-    rosdep install -y $package -v -r
+    rosdep install -y $package -v -r -i
     rosmake --profile --status-rate=0 $package || rosmake --profile --status-rate=0 $package
 }
 
