@@ -4,12 +4,14 @@ Changelog for package multi_map_server
 
 1.0.4 (2014-03-27)
 ------------------
-* jsk_common: update revision number to 1.0.3
+* multi_map_server: disable map_server for default in build_depend, run_depend
+* fix typo CATKIN-DEPENDS -> CATKIN_DEPENDS
 * multi_map_server: catkinize
-* Contributors: Kei Okada
+* Contributors: Kei Okada, Ryohei Ueda
 
 1.0.3 (2014-03-19)
 ------------------
+* update revision number to 1.0.3
 
 1.0.2 (2014-03-12)
 ------------------

@@ -10,8 +10,6 @@ Changelog for package pr2_groovy_patches
 
 1.0.1 (2014-03-07)
 ------------------
-* set all package to 1.0.0
-* Contributors: Kei Okada
 
 1.0.0 (2014-03-05)
 ------------------
