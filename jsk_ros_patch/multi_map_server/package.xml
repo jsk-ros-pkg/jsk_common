@@ -13,7 +13,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>map_server</build_depend>
+  <!-- build_depend>map_server</build_depend -->
   <build_depend>nav_msgs</build_depend>
 
 
