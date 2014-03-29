@@ -3,19 +3,19 @@
 #
 all: installed
 
-SVN_DIR = pr2_teleop_general
-SVN_URL = https://code.ros.org/svn/wg-ros-pkg/stacks/pr2_apps/trunk/pr2_teleop_general
-SVN_PATCH = pr2_teleop_general.patch
-SVN_REVISION= -r 53700
-include $(shell rospack find mk)/svn_checkout.mk
+GIT_DIR = pr2_apps
+GIT_URL = https://github.com/PR2/pr2_apps.git
+GIT_PATCH = pr2_teleop_yaw.patch
+GIT_REVISION = hydro-devel
+include $(shell rospack find mk)/git_checkout.mk
 
-installed: $(SVN_DIR) patched
-	[ `rospack find pr2_msgs` ] && (cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH rosmake ) || echo "sudo apt-get install ros-$ROS_DISTRO-pr2-msgs"
+installed: $(GIT_DIR) patched
+	[ `rospack find pr2_msgs` ] && (cd $(GIT_DIR)/pr2_teleop_general && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH rosmake ) || echo "sudo apt-get install ros-$ROS_DISTRO-pr2-msgs"
 	touch installed
 
 clean:
-	-cd $(SVN_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make clean
+	-cd $(GIT_DIR) && ROS_PACKAGE_PATH=`pwd`:$$ROS_PACKAGE_PATH make clean
 	rm -rf installed patched
 
 wipe: clean
-	rm -rf $(SVN_DIR)
+	rm -rf $(GIT_DIR)
