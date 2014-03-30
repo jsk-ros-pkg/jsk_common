@@ -2,6 +2,11 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.5 (2014-03-31)
+------------------
+* check if map_server exists under /opt/ros/{ROS_DISTRO}/stacks/navigation/map_server for groovy
+* Contributors: Kei Okada
+
 1.0.4 (2014-03-27)
 ------------------
 * multi_map_server: disable map_server for default in build_depend, run_depend

@@ -2,6 +2,11 @@
 Changelog for package downward
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.5 (2014-03-31)
+------------------
+* Added missing find_package to downward
+* Contributors: Scott K Logan
+
 1.0.4 (2014-03-27)
 ------------------
 * Added missing build_depends on rospack, roslib and mk
