@@ -6,7 +6,7 @@ all: installed
 GIT_DIR = pr2_apps
 GIT_URL = https://github.com/PR2/pr2_apps.git
 GIT_PATCH = pr2_teleop_yaw.patch
-GIT_REVISION = hydro-devel
+GIT_REVISION = e2ad822918e7b6e2913446a661518fe15e54cbab
 include $(shell rospack find mk)/git_checkout.mk
 
 installed: $(GIT_DIR) patched
