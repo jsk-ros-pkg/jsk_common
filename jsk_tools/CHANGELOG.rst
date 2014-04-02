@@ -4,12 +4,13 @@ Changelog for package jsk_tools
 
 1.0.4 (2014-03-27)
 ------------------
-* stereo_synchronizer, jsk_tools: update to revision 1.0.3
-* jsk_tools: catkinize, add cmake/download_package.cmake
-* Contributors: Kei Okada
+* Added missing cmake_minimum_version to CMakeLists
+* Contributors: Scott K Logan
 
 1.0.3 (2014-03-19)
 ------------------
+* jsk_tools: update to revision 1.0.3
+* jsk_tools: catkinize, add cmake/download_package.cmake
 
 1.0.2 (2014-03-12)
 ------------------

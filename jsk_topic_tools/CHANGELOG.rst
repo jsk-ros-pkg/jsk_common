@@ -2,6 +2,12 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.4 (2014-03-27)
+------------------
+* move the location of generate_messages and catkin_package to avoid emtpy
+  catkin variables problem caused by roseus. it's a hack.
+* Contributors: Ryohei Ueda
+
 1.0.3 (2014-03-19)
 ------------------
 
