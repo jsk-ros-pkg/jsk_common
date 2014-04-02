@@ -2,6 +2,13 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.4 (2014-03-27)
+------------------
+* image_View2:add message_generation, message_runtime to package.xml
+* in order to avoid empty catkin_LIBRARIES problem, call generate_messaegs after target_link_libraries
+* fix typo CATKIN-DEPENDS -> CATKIN_DEPENDS
+* Contributors: Kei Okada, Ryohei Ueda
+
 1.0.3 (2014-03-19)
 ------------------
 
@@ -15,7 +22,6 @@ Changelog for package image_view2
 ------------------
 * added CIRCLE3D type marker sample
 * add CIRCLE3D type marker
-* set all package to 1.0.0
 * Contributors: HiroyukiMikita, Kei Okada
 
 1.0.0 (2014-03-05)

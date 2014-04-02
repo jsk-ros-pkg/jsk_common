@@ -24,9 +24,6 @@ Changelog for package rosping
 * keep persmissions during installation
 * rosping: install test directory
 * Merge pull request `#283 <https://github.com/jsk-ros-pkg/jsk_common/issues/283>`_ from k-okada/release
-  add meta package and set all package.xml to 1.0.0
-* set all package to 1.0.0
-* Contributors: Kei Okada
 
 1.0.0 (2014-03-05)
 ------------------

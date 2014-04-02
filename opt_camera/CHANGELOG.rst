@@ -4,12 +4,14 @@ Changelog for package opt_camera
 
 1.0.4 (2014-03-27)
 ------------------
-* jsk_common: update revision number to 1.0.3
-* opt_camera: catkinize
-* Contributors: Kei Okada
+* opt_camera: include unistd.h on the top
+* Added missing unistd.h includes
+* Contributors: Kei Okada, Scott K Logan
 
 1.0.3 (2014-03-19)
 ------------------
+* jsk_common: update revision number to 1.0.3
+* opt_camera: catkinize
 
 1.0.2 (2014-03-12)
 ------------------
