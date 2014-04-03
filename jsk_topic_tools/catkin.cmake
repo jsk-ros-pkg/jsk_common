@@ -2,7 +2,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(jsk_topic_tools)
 
-find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp rostest)
+find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp rostest
+  topic_tools)
 
 add_message_files(
   FILES TopicInfo.msg

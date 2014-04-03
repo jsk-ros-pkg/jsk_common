@@ -35,12 +35,24 @@
 #ifndef LIGHTWEIGHT_THROTTLE_NODELET_H_
 #define LIGHTWEIGHT_THROTTLE_NODELET_H_
 #include <nodelet/nodelet.h>
+#include <topic_tools/shape_shifter.h>
+
 namespace jsk_topic_tools
 {
   class LightweightThrottle : public nodelet::Nodelet
   {
   public:
+    typedef ros::MessageEvent<topic_tools::ShapeShifter> ShapeShifterEvent;
     virtual void onInit();
+    virtual void inCallback(const ShapeShifterEvent& msg_event);
+
+  protected:
+    typedef boost::shared_ptr<ros::Subscriber> SubscriberPtr;
+    SubscriberPtr sub_;
+    ros::Publisher pub_;
+    ros::TransportHints th_;
+    bool advertised_;
+    double update_rate_;
   };
 }
 

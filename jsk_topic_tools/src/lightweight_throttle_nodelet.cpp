@@ -37,10 +37,38 @@
 
 namespace jsk_topic_tools
 {
-void LightweightThrottle::onInit()
-{
+  void LightweightThrottle::onInit()
+  {
+    ros::NodeHandle nh = this->getPrivateNodeHandle();
+    advertised_ = false;
+    update_rate_ = 1.0;         // 1Hz
+    sub_ = SubscriberPtr(new ros::Subscriber(
+                           nh.subscribe("input", 1,
+                                        &LightweightThrottle::inCallback,
+                                        this,
+                                        th_)));
+  }
+
+  void LightweightThrottle::inCallback(const ShapeShifterEvent& msg_event)
+  {
+    boost::shared_ptr<topic_tools::ShapeShifter const> const &msg
+      = msg_event.getConstMessage();
+    boost::shared_ptr<const ros::M_string> const& connection_header
+      = msg_event.getConnectionHeaderPtr();
+
+    // advertise if not
+    if (!advertised_) {
+      pub_ = msg->advertise(this->getPrivateNodeHandle(),
+                            "output", 1);
+      advertised_ = true;
+    }
+    // publish the message to output topic
+    pub_.publish(msg);
+    // sleep to block callback
+    ros::Duration(1 / update_rate_).sleep();
+  }
   
-}
+  
 }
 
 PLUGINLIB_DECLARE_CLASS(jsk_topic_tools, LightweightThrottle,
