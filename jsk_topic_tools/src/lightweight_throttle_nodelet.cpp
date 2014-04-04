@@ -41,7 +41,7 @@ namespace jsk_topic_tools
   {
     ros::NodeHandle nh = this->getPrivateNodeHandle();
     advertised_ = false;
-    update_rate_ = 1.0;         // 1Hz
+    nh.param("update_rate", update_rate_, 1.0); // default 1.0
     sub_ = SubscriberPtr(new ros::Subscriber(
                            nh.subscribe("input", 1,
                                         &LightweightThrottle::inCallback,
@@ -70,6 +70,6 @@ namespace jsk_topic_tools
   
   
 }
-
+typedef jsk_topic_tools::LightweightThrottle LightweightThrottle;
 PLUGINLIB_DECLARE_CLASS(jsk_topic_tools, LightweightThrottle,
-                        jsk_topic_tools::LightweightThrottle, nodelet::Nodelet)
+                        LightweightThrottle, nodelet::Nodelet)
