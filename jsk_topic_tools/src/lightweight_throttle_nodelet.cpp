@@ -62,8 +62,11 @@ namespace jsk_topic_tools
                             "output", 1);
       advertised_ = true;
     }
-    // publish the message to output topic
-    pub_.publish(msg);
+    // publish the message to output topic only if any
+    // subscriber is
+    if (pub_.getNumSubscribers()) {
+      pub_.publish(msg);
+    }
     // sleep to block callback
     ros::Duration(1 / update_rate_).sleep();
   }
