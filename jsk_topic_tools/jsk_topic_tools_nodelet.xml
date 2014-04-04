@@ -1,0 +1,10 @@
+<library path="lib/libjsk_topic_tools">
+  <class name="jsk_topic_tools/LightweightThrottle" type="LightweightThrottle"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      lightweight throttle nodelet.
+      Publish ~output from ~input with the fixed rate specified by
+      ~update_rate parameter.
+    </description>
+  </class>
+</library>
