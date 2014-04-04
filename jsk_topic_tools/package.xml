@@ -19,11 +19,12 @@
   <build_depend>message_generation</build_depend>
   <build_depend>rostest</build_depend>
   <build_depend>roscpp_tutorials</build_depend>
-
+  <build_depend>nodelet</build_depend>
   <run_depend>topic_tools</run_depend>
   <run_depend>message_runtime</run_depend>
-
+  <run_depend>nodelet</run_depend>
+  
   <export>
-
+    <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>
   </export>
 </package>
