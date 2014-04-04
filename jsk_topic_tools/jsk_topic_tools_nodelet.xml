@@ -1,0 +1,8 @@
+<library path="lib/libjsk_topic_tools">
+  <class name="jsk_topic_tools/LightweightThrottle" type="LightweightThrottle"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      lightweight throttle nodelet.
+    </description>
+  </class>
+</library>
