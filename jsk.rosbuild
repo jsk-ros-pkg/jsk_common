@@ -264,7 +264,7 @@ EOF
 function install-jsk-ros-pkg {
     wget  'https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosinstall' -O /tmp/jsk.rosinstall.$$
     install-pkg /tmp/jsk.rosinstall.$$
-    rosdep install -y $package -v -r -i # y: default-yes, v: verbose, r: continue despite errors, i: ignore packages
+    rosdep install -y euslisp -v -r -i # y: default-yes, v: verbose, r: continue despite errors, i: ignore packages
     if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
         xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi || return 0
     fi
