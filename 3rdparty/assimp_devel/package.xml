@@ -1,12 +1,12 @@
 <package>
   <name>assimp_devel</name>
   <version>0.0.0</version>
-  <description>hello</description>
+  <description>assimp library</description>
   <license>LGPL</license>
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>mk</build_depend>
-  <export>
+  <!--export>
     <cpp lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lassimp3" cflags="-I${prefix}/include"/>
-  </export>
+  </export-->
 </package>
