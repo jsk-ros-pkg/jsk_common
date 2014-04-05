@@ -6,7 +6,4 @@
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>mk</build_depend>
-  <!--export>
-    <cpp lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lassimp3" cflags="-I${prefix}/include"/>
-  </export-->
 </package>
