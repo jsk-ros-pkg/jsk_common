@@ -38,7 +38,7 @@ done
 # set environment variables
 # set distribution
 case $1 in
-    cturtle|diamondback|electric|fuerte|groovy|hydro) export DISTRIBUTION=$1; shift;;
+    cturtle|diamondback|electric|fuerte|groovy|hydro|indogo) export DISTRIBUTION=$1; shift;;
     *)      export DISTRIBUTION=groovy;;
 esac
 
@@ -58,7 +58,9 @@ if ( [ "$DISTRIBUTION" == "cturtle" ] && \
    ( [ "$DISTRIBUTION" == "groovy" ] && \
     [[ $LSB_RELEASE =~ (oneiric|precise|quantal) ]] ) || \
    ( [ "$DISTRIBUTION" == "hydro" ] && \
-    [[ $LSB_RELEASE =~ (precise|quantal|raring) ]] ) then
+    [[ $LSB_RELEASE =~ (precise|quantal|raring) ]] ) || \
+   ( [ "$DISTRIBUTION" == "indigo" ] && \
+    [[ $LSB_RELEASE =~ (saucy|trusty) ]] ) then
     echo "Install $DISTRIBUTION to $LSB_RELEASE"
 else
     echo "target distribution($DISTRIBUTION) does not support $LSB_RELEASE platform, exit install program"
