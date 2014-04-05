@@ -273,7 +273,7 @@ function install-jsk-ros-pkg {
 }
 function compile-jsk-ros-pkg {
     if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
-        sudo apt-get -y --force-yes  install ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-navigation ros-$DISTRIBUTION-audio-common
+        sudo apt-get -y --force-yes  install ros-$DISTRIBUTION-pr2-apps ros-$DISTRIBUTION-navigation ros-$DISTRIBUTION-audio-common ros-$DISTRIBUTION-pr2-navigation
     fi
     compile-pkg pr2eus_openrave elevator_move_base_pr2 detect_cans_in_fridge_201202 jsk_2013_04_pr2_610
 }
