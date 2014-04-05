@@ -22,16 +22,13 @@ CPU_NUM=$(shell grep -c processor /proc/cpuinfo)
 PARALLEL_JOB=$(shell if `expr $(CPU_NUM) \> 12 > /dev/null`;then echo 12; else echo ${CPU_NUM}; fi)
 assimp_devel: $(GIT_DIR) patched
 	cd $(GIT_DIR) && mkdir -p $(BUILDDIR) && cd $(BUILDDIR) && BOOST_INCLUDEDIR=$(BOOST_INCLUDE_DIRS) BOOST_LIBRARYDIR=$(BOOST_LIBRARY_DIRS) cmake -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DCMAKE_BUILD_TYPE=$(CMAKE_BUILD_TYPE) .. && make -j$(PARALLEL_JOB) install
-	if [ -e $(INSTALL_DIR)/include/assimp3 ]; then rm -rf $(INSTALL_DIR)/include/assimp3; fi
-	mv $(INSTALL_DIR)/include/assimp $(INSTALL_DIR)/include/assimp3
-	mv $(INSTALL_DIR)/bin/assimp $(INSTALL_DIR)/bin/assimp_cmd
-	ln -sf $(INSTALL_DIR)/lib/libassimp.so $(INSTALL_DIR)/lib/libassimp3.so
-
-install_lib:
-	gksu -- ln -sf $(INSTALL_DIR)/lib/libassimp.so.3 /usr/local/lib/libassimp.so.3
+#	if [ -e $(INSTALL_DIR)/include/assimp3 ]; then rm -rf $(INSTALL_DIR)/include/assimp3; fi
+#	mv $(INSTALL_DIR)/include/assimp $(INSTALL_DIR)/include/assimp3
+#	mv $(INSTALL_DIR)/bin/assimp $(INSTALL_DIR)/bin/assimp_cmd
+#	ln -sf $(INSTALL_DIR)/lib/libassimp.so $(INSTALL_DIR)/lib/libassimp3.so
 
 clean:
-	ls .
+	rm -rf patched
 
 wipe: clean
 	cd $(INSTALL_DIR) && rm -rf $(GIT_DIR) include lib share patched
