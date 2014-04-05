@@ -12,13 +12,15 @@ find_package(catkin REQUIRED)
 # if (_make_failed)
 #   message(FATAL_ERROR "Compile assimp_devel failed: ${_make_failed}")
 # endif(_make_failed)
+
 add_custom_target(libassimp ALL
   DEPENDS Makefile
   COMMAND cmake -E chdir ${CMAKE_CURRENT_BINARY_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile INSTALL_DIR=${CATKIN_DEVEL_PREFIX} GIT_PATCH=${PROJECT_SOURCE_DIR}/assimp_git.unit.patch\ ${PROJECT_SOURCE_DIR}/assimp_git.technique.patch\ ${PROJECT_SOURCE_DIR}/assimp_git.obj_export.patch )
 
 # fake catkin package
-add_library(assimp  SHARED IMPORTED)
+add_library(assimp SHARED IMPORTED)
 set_target_properties(assimp PROPERTIES IMPORTED_IMPLIB ${CATKIN_DEVEL_PREFIX}/lib/libassimp.so )
+
 # fake install directory for catkin_package
 file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/include)
 if($ENV{ROS_DISTRO} STREQUAL "groovy")
