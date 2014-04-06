@@ -4,7 +4,7 @@
 all: urdf_to_collada
 
 
-ifeq ($(shell rosversion -d),groovy)
+ifneq ($(shell rosversion -d),fuerte)
 #HG_REVISION = `rosversion collada_urdf`
 ## robot_model moved to github, 1.9.32 was last version in kforge
 GIT_DIR = build/robot_model
@@ -25,7 +25,7 @@ SRC_DIR = $(GIT_DIR)
 endif
 
 urdf_to_collada:$(SRC_DIR) patched
-ifeq ($(shell rosversion -d),groovy)
+ifneq ($(shell rosversion -d),fuerte)
 	ROS_PACKAGE_PATH=`pwd`/$(SRC_DIR)/collada_urdf:$$ROS_PACKAGE_PATH make -C `pwd`/$(SRC_DIR)/collada_urdf
 	HG_ROS_PACKAGE_PATH=
 else
