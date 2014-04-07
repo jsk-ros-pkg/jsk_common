@@ -44,23 +44,22 @@ namespace jsk_topic_tools
   {
     advertised_ = false;
     ros::NodeHandle pnh = getPrivateNodeHandle();
-    mux_nh_ = ros::NodeHandle("mux");
     topics_ = readStringArray("topics", pnh);
     if (topics_.size() < 1) {
       NODELET_FATAL("need to specify at least one topic in ~topics");
       return;
     }
-    pub_selected_ = mux_nh_.advertise<std_msgs::String>("selected", 1, true);
+    pub_selected_ = pnh.advertise<std_msgs::String>("selected", 1, true);
     selected_topic_ = topics_[0];
     subscribeSelectedTopic();
     // in original mux node, it subscribes all the topics first, however
     // in our version, we never subscribe topic which are not selected.
 
     // service advertise: _select, select, add, list, delete
-    ss_select_ = mux_nh_.advertiseService("select", &MUX::selectTopicCallback, this);
-    ss_add_ = mux_nh_.advertiseService("add", &MUX::addTopicCallback, this);
-    ss_list_ = mux_nh_.advertiseService("list", &MUX::listTopicCallback, this);
-    ss_del_ = mux_nh_.advertiseService("delete", &MUX::deleteTopicCallback, this);
+    ss_select_ = pnh.advertiseService("select", &MUX::selectTopicCallback, this);
+    ss_add_ = pnh.advertiseService("add", &MUX::addTopicCallback, this);
+    ss_list_ = pnh.advertiseService("list", &MUX::listTopicCallback, this);
+    ss_del_ = pnh.advertiseService("delete", &MUX::deleteTopicCallback, this);
   }
 
   bool MUX::selectTopicCallback(topic_tools::MuxSelect::Request  &req,
@@ -186,7 +185,7 @@ namespace jsk_topic_tools
       = msg_event.getConnectionHeaderPtr();
 
     if (!advertised_) {
-      pub_ = msg->advertise(this->getPrivateNodeHandle(),
+      pub_ = msg->advertise(getPrivateNodeHandle(),
                             "output", 1);
       advertised_ = true;
     }

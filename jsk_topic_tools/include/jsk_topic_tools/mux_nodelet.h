@@ -67,7 +67,6 @@ namespace jsk_topic_tools
     std::vector<std::string> topics_;
     std::string selected_topic_;
     ros::Subscriber sub_;
-    ros::NodeHandle mux_nh_;
     ros::Publisher pub_selected_;
     ros::Publisher pub_;
     ros::TransportHints th_;
