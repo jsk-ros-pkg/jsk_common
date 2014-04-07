@@ -6,16 +6,6 @@ Changelog for package image_view_jsk_patch
 ------------------
 * image_view_jsk_patch: catkinize (dummy)
 
-1.0.3 (2014-03-19)
-------------------
-* update revision number to 1.0.3
-
-1.0.2 (2014-03-12)
-------------------
-
-1.0.1 (2014-03-07)
-------------------
-
 1.0.0 (2014-03-05)
 ------------------
 * added code to check and make sure there is image data when the user inputs command to save image

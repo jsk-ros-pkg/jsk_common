@@ -38,6 +38,7 @@ rosbuild_add_executable(transform_merger src/transform_merger.cpp)
 
 rosbuild_add_library (jsk_topic_tools
   src/lightweight_throttle_nodelet.cpp
+  src/mux_nodelet.cpp
   )
 
 #target_link_libraries(example ${PROJECT_NAME})

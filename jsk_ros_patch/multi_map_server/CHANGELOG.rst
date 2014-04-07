@@ -2,6 +2,15 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.6 (2014-04-07)
+------------------
+* Added support for YAML-CPP 0.5+.
+  The new yaml-cpp API removes the "node >> outputvar;" operator, and
+  it has a new way of loading documents. There's no version hint in the
+  library's headers, so I'm getting the version number from pkg-config.
+  This is a port of @ktossell's patch for map_server.
+* Contributors: Scott K Logan
+
 1.0.5 (2014-03-31)
 ------------------
 * check if map_server exists under /opt/ros/{ROS_DISTRO}/stacks/navigation/map_server for groovy

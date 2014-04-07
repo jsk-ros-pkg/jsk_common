@@ -1,6 +1,6 @@
 <package>
   <name>jsk_topic_tools</name>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   <description>jsk_topic_tools</description>
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
   <maintainer email="furuta@jsk.t.u-tokyo.ac.jp">Yusuke Furuta</maintainer>
@@ -21,7 +21,8 @@
   <build_depend>roscpp_tutorials</build_depend>
   <build_depend>nodelet</build_depend>
   <build_depend>rostopic</build_depend>
-
+  <build_depend>std_msgs</build_depend>
+  <run_depend>std_msgs</run_depend>
   <run_depend>topic_tools</run_depend>
   <run_depend>message_runtime</run_depend>
   <run_depend>nodelet</run_depend>

@@ -2,6 +2,30 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.6 (2014-04-07)
+------------------
+* add a sample for mux nodelet and does not use mux nodehandle.
+  not using mux NodeHandle is different from original mux in topic_tools.
+  now private nodehandle, which is the name of nodelet instance,
+  behaves as 'mux' name of mux/topic_tools.
+  If you want to use mux_** tools, you just specify nodelet name as mux name.
+* implement nodelet version of mux with the same api to topic_tools and no need to specify the
+  message type as well as topic_tools/mux
+* add rostopic dependency to run test for LightweightThrottle
+* update documentation of nodelet xml
+* add test code for LightwehgitThrottle
+* add a sample launch file for LightwehgitThrottle
+* publish data only if any subscriber is
+* compile nodelet on rosbuild too
+* fixing dependency for nodelet usage
+  depends to nodelet on manifest.xml, package.xml and catkin.cmake
+* add xml declaration for nodlet plugin
+* read update_rate from the parameter ~update_rate
+* implement lightweight nodelet throttle
+* add lightweight nodelet throttle skelton cpp/header file
+* change arg name and node name
+* Contributors: Ryohei Ueda, Yusuke Furuta
+
 1.0.4 (2014-03-27)
 ------------------
 * move the location of generate_messages and catkin_package to avoid emtpy

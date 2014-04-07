@@ -7,4 +7,9 @@
       ~update_rate parameter.
     </description>
   </class>
+  <class name="jsk_topic_tools/MUX" type="MUX"
+         base_class_type="nodelet::Nodelet">
+    <description>
+    </description>
+  </class>
 </library>

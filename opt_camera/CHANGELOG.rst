@@ -21,9 +21,6 @@ Changelog for package opt_camera
 * `#299 <https://github.com/jsk-ros-pkg/jsk_common/issues/299>`_: add image_proc to opt_camera rosdep
 * Contributors: Ryohei Ueda
 
-1.0.1 (2014-03-07)
-------------------
-
 1.0.0 (2014-03-05)
 ------------------
 * mv package.xml bak.package.xml to avoid documentation error
