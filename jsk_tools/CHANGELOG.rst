@@ -2,6 +2,11 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.6 (2014-04-07)
+------------------
+* remove depend to mjpeg_server since this is not installed via package.xml
+* Contributors: Kei Okada
+
 1.0.4 (2014-03-27)
 ------------------
 * Added missing cmake_minimum_version to CMakeLists
@@ -11,12 +16,6 @@ Changelog for package jsk_tools
 ------------------
 * jsk_tools: update to revision 1.0.3
 * jsk_tools: catkinize, add cmake/download_package.cmake
-
-1.0.2 (2014-03-12)
-------------------
-
-1.0.1 (2014-03-07)
-------------------
 
 1.0.0 (2014-03-05)
 ------------------
