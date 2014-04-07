@@ -6,15 +6,6 @@ Changelog for package jsk_hark_msgs
 ------------------
 * fix typo CATKIN-DEPENDS -> CATKIN_DEPENDS
 
-1.0.3 (2014-03-19)
-------------------
-
-1.0.2 (2014-03-12)
-------------------
-
-1.0.1 (2014-03-07)
-------------------
-
 1.0.0 (2014-03-05)
 ------------------
 * enable catkin_package for jsk_hark_msgs

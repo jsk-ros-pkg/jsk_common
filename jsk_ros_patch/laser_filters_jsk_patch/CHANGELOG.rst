@@ -7,16 +7,6 @@ Changelog for package laser_filters_jsk_patch
 * laser_filters_jsk_patch: add git to build_depend
 * laser_filters_jsk_patch: download laser_filters, filters
 
-1.0.3 (2014-03-19)
-------------------
-* update revision number to 1.0.3
-
-1.0.2 (2014-03-12)
-------------------
-
-1.0.1 (2014-03-07)
-------------------
-
 1.0.0 (2014-03-05)
 ------------------
 * output to ROS_DEBUG_STREAM

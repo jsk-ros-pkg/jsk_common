@@ -8,9 +8,6 @@ Changelog for package rosping
 * use DISDIR in install(CODE) to make rosping work
 * Contributors: Kei Okada
 
-1.0.2 (2014-03-12)
-------------------
-
 1.0.1 (2014-03-07)
 ------------------
 * Merge pull request `#293 <https://github.com/jsk-ros-pkg/jsk_common/issues/293>`_ from k-okada/sudo_rosping
