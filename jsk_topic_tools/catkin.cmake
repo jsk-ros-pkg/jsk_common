@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(jsk_topic_tools)
 
-find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp rostest
+find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp rostest std_msgs
   nodelet
   topic_tools)
 
@@ -24,14 +24,14 @@ target_link_libraries(topic_buffer_client ${catkin_LIBRARIES})
 
 # nodelet shared object
 include_directories(${catkin_INCLUDE_DIRS} include)
-add_library(jsk_topic_tools SHARED src/lightweight_throttle_nodelet.cpp)
+add_library(jsk_topic_tools SHARED src/lightweight_throttle_nodelet.cpp src/mux_nodelet.cpp)
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 
 generate_messages()
 
 catkin_package(
     DEPENDS
-    CATKIN_DEPENDS topic_tools message_runtime nodelet
+    CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs
     INCLUDE_DIRS
     LIBRARIES
 )
