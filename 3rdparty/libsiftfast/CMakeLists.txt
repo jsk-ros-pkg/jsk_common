@@ -12,7 +12,7 @@ add_library(siftfast  SHARED IMPORTED)
 set_target_properties(siftfast  PROPERTIES IMPORTED_IMPLIB ${CATKIN_DEVEL_PREFIX}/lib/libsiftfast.so )
 # face install directory for catkin_package
 file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/include)
-if($ENV{ROS_DISTRO} STREQUAL "groovy")
+if("$ENV{ROS_DISTRO}" STREQUAL "groovy")
   catkin_package(
     INCLUDE_DIRS ${CATKIN_DEVEL_PREFIX}/include
     LIBRARIES    siftfast
