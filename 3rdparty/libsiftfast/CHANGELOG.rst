@@ -2,6 +2,12 @@
 Changelog for package libsiftfast
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.7 (2014-04-10)
+------------------
+* Added missing build_depend on rospack and roslib
+* Handle case where ROS_DISTRO is not set
+* Contributors: Scott K Logan
+
 1.0.6 (2014-04-07)
 ------------------
 * catkinize libsiftfast, add fake add_library, set_target_properties for catkin, groovy does not suport EXPORTED_TARGETS

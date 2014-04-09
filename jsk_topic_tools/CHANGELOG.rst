@@ -2,6 +2,11 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.7 (2014-04-10)
+------------------
+* add documentation on nodelet xml
+* Contributors: Ryohei Ueda
+
 1.0.6 (2014-04-07)
 ------------------
 * add a sample for mux nodelet and does not use mux nodehandle.
