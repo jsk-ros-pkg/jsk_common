@@ -44,8 +44,8 @@
     local-name: jsk-ros-pkg/jsk_openni_kinect
 
 # for snap map icp
-- svn:
-    uri: https://svn.code.sf.net/p/tum-ros-pkg/code/highlevel/SnapMapICP
+- git:
+    uri: https://github.com/code-iai/SnapMapICP.git
     local-name: tum-ros-pkg/highlevel/SnapMapICP
 # for face_detector_mono
 - svn:
