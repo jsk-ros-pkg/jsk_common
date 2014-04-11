@@ -4,6 +4,8 @@ project(libsiftfast)
 find_package(catkin)
 
 add_custom_target(libsiftfast ALL
+  DEPENDS ${CATKIN_DEVEL_PREFIX}/lib/libsiftfast.so)
+add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/lib/libsiftfast.so
   DEPENDS Makefile
   COMMAND  make -f ${PROJECT_SOURCE_DIR}/Makefile INSTALL_DIR=${CATKIN_DEVEL_PREFIX})
 
