@@ -42,20 +42,15 @@ namespace jsk_topic_tools
     ros::NodeHandle nh = this->getPrivateNodeHandle();
     advertised_ = false;
     nh.param("update_rate", update_rate_, 1.0); // default 1.0
-    sub_ = SubscriberPtr(new ros::Subscriber(
-                           nh.subscribe("input", 1,
-                                        &LightweightThrottle::inCallback,
-                                        this,
-                                        th_)));
+    sub_.reset(new ros::Subscriber(
+                 nh.subscribe<topic_tools::ShapeShifter>("input", 1,
+                                                         &LightweightThrottle::inCallback,
+                                                         this,
+                                                         th_)));
   }
 
-  void LightweightThrottle::inCallback(const ShapeShifterEvent& msg_event)
+  void LightweightThrottle::inCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
   {
-    boost::shared_ptr<topic_tools::ShapeShifter const> const &msg
-      = msg_event.getConstMessage();
-    boost::shared_ptr<const ros::M_string> const& connection_header
-      = msg_event.getConnectionHeaderPtr();
-
     // advertise if not
     if (!advertised_) {
       pub_ = msg->advertise(this->getPrivateNodeHandle(),
