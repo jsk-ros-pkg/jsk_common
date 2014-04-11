@@ -2,6 +2,9 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.6 (2014-04-07)
 ------------------
 * remove depend to mjpeg_server since this is not installed via package.xml

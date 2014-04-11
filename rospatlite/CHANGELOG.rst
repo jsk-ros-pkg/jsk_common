@@ -2,6 +2,9 @@
 Changelog for package rospatlite
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.2 (2014-03-12)
 ------------------
 * modify to pass catkin_make, change remained old package name to new one

@@ -2,6 +2,9 @@
 Changelog for package depth_image_proc_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.4 (2014-03-27)
 ------------------
 * depth_image_proc_jsk_patch: catkinize (dummy)

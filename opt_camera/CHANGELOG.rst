@@ -2,6 +2,9 @@
 Changelog for package opt_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.4 (2014-03-27)
 ------------------
 * opt_camera: include unistd.h on the top

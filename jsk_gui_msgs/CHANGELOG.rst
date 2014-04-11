@@ -2,6 +2,9 @@
 Changelog for package jsk_gui_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.0 (2014-03-05)
 ------------------
 * set all package to 1.0.0

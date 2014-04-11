@@ -2,6 +2,9 @@
 Changelog for package posedetection_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.4 (2014-03-27)
 ------------------
 * posedetection_msgs: add message_generation to package.xml

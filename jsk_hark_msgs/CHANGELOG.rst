@@ -2,6 +2,9 @@
 Changelog for package jsk_hark_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.4 (2014-03-27)
 ------------------
 * fix typo CATKIN-DEPENDS -> CATKIN_DEPENDS

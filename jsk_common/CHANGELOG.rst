@@ -2,6 +2,9 @@
 Changelog for package jsk_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.1 (2014-03-07)
 ------------------
 * add rospatlite

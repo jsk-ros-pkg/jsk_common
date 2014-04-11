@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.7 (2014-04-10)
 ------------------
 * add documentation on nodelet xml

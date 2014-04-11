@@ -2,6 +2,9 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.6 (2014-04-07)
 ------------------
 * fix to work with hydro (which uses same setup with groovy)
