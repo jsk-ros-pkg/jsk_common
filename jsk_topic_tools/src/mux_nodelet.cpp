@@ -43,23 +43,23 @@ namespace jsk_topic_tools
   void MUX::onInit()
   {
     advertised_ = false;
-    ros::NodeHandle pnh = getPrivateNodeHandle();
-    topics_ = readStringArray("topics", pnh);
+    pnh_ = getPrivateNodeHandle();
+    topics_ = readStringArray("topics", pnh_);
     if (topics_.size() < 1) {
       NODELET_FATAL("need to specify at least one topic in ~topics");
       return;
     }
-    pub_selected_ = pnh.advertise<std_msgs::String>("selected", 1, true);
+    pub_selected_ = pnh_.advertise<std_msgs::String>("selected", 1, true);
     selected_topic_ = topics_[0];
     subscribeSelectedTopic();
     // in original mux node, it subscribes all the topics first, however
     // in our version, we never subscribe topic which are not selected.
 
     // service advertise: _select, select, add, list, delete
-    ss_select_ = pnh.advertiseService("select", &MUX::selectTopicCallback, this);
-    ss_add_ = pnh.advertiseService("add", &MUX::addTopicCallback, this);
-    ss_list_ = pnh.advertiseService("list", &MUX::listTopicCallback, this);
-    ss_del_ = pnh.advertiseService("delete", &MUX::deleteTopicCallback, this);
+    ss_select_ = pnh_.advertiseService("select", &MUX::selectTopicCallback, this);
+    ss_add_ = pnh_.advertiseService("add", &MUX::addTopicCallback, this);
+    ss_list_ = pnh_.advertiseService("list", &MUX::listTopicCallback, this);
+    ss_del_ = pnh_.advertiseService("delete", &MUX::deleteTopicCallback, this);
   }
 
   bool MUX::selectTopicCallback(topic_tools::MuxSelect::Request  &req,
@@ -67,16 +67,15 @@ namespace jsk_topic_tools
   {
     res.prev_topic = selected_topic_;
     if (selected_topic_ != g_none_topic) {
-      sub_.shutdown();            // unsubscribe first
+      sub_->shutdown();            // unsubscribe first
     }
 
     if (req.topic == g_none_topic) {
       selected_topic_ = g_none_topic;
       return true;
     }
-    ros::NodeHandle pnh = getPrivateNodeHandle();
     for (size_t i = 0; i < topics_.size(); i++) {
-      if (pnh.resolveName(topics_[i]) == pnh.resolveName(req.topic)) {
+      if (pnh_.resolveName(topics_[i]) == pnh_.resolveName(req.topic)) {
         // subscribe the topic
         selected_topic_ = topics_[i];
         subscribeSelectedTopic();
@@ -98,9 +97,8 @@ namespace jsk_topic_tools
       return false;
     }
     
-    ros::NodeHandle pnh = getPrivateNodeHandle();
     for (size_t i = 0; i < topics_.size(); i++) {
-      if (pnh.resolveName(topics_[i]) == pnh.resolveName(req.topic)) {
+      if (pnh_.resolveName(topics_[i]) == pnh_.resolveName(req.topic)) {
         NODELET_WARN("tried to add a topic that mux was already listening to: [%s]", 
                      topics_[i].c_str());
         return false;
@@ -118,10 +116,9 @@ namespace jsk_topic_tools
                                 topic_tools::MuxDelete::Response& res)
   {
     // cannot delete the topic now selected
-    ros::NodeHandle nh = getPrivateNodeHandle();
     for (size_t i = 0; i < topics_.size(); i++) {
-      if (nh.resolveName(topics_[i]) == nh.resolveName(req.topic)) {
-        if (nh.resolveName(req.topic) == nh.resolveName(selected_topic_)) {
+      if (pnh_.resolveName(topics_[i]) == pnh_.resolveName(req.topic)) {
+        if (pnh_.resolveName(req.topic) == pnh_.resolveName(selected_topic_)) {
           NODELET_WARN("tried to delete currently selected topic %s from mux",
                        req.topic.c_str());
           return false;
@@ -138,9 +135,8 @@ namespace jsk_topic_tools
   bool MUX::listTopicCallback(topic_tools::MuxList::Request& req,
                               topic_tools::MuxList::Response& res)
   {
-    ros::NodeHandle pnh = getPrivateNodeHandle();
     for (size_t i = 0; i < topics_.size(); i++) {
-      res.topics.push_back(pnh.resolveName(topics_[i]));
+      res.topics.push_back(pnh_.resolveName(topics_[i]));
     }
     return true;
   }
@@ -168,25 +164,19 @@ namespace jsk_topic_tools
       NODELET_WARN("none topic is selected");
       return;
     }
-    ros::NodeHandle pnh = getPrivateNodeHandle();
-    sub_ = pnh.subscribe(selected_topic_, 10,
-                         &MUX::inputCallback, this, th_);
+    sub_.reset(new ros::Subscriber(
+                 pnh_.subscribe<topic_tools::ShapeShifter>(selected_topic_, 10,
+                                                           &MUX::inputCallback, this, th_)));
     std_msgs::String msg;
     msg.data = selected_topic_;
     pub_selected_.publish(msg);
 
   }
 
-  void MUX::inputCallback(const ShapeShifterEvent& msg_event)
+  void MUX::inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
   {
-    boost::shared_ptr<topic_tools::ShapeShifter const> const &msg
-      = msg_event.getConstMessage();
-    boost::shared_ptr<const ros::M_string> const& connection_header
-      = msg_event.getConnectionHeaderPtr();
-
     if (!advertised_) {
-      pub_ = msg->advertise(getPrivateNodeHandle(),
-                            "output", 1);
+      pub_ = msg->advertise(pnh_, "output", 1);
       advertised_ = true;
     }
     pub_.publish(msg);

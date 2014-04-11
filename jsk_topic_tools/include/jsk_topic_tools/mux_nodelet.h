@@ -58,7 +58,7 @@ namespace jsk_topic_tools
                                      topic_tools::MuxDelete::Response& res);
     virtual bool listTopicCallback(topic_tools::MuxList::Request& req,
                                    topic_tools::MuxList::Response& res);
-    virtual void inputCallback(const ShapeShifterEvent& msg_event);
+    virtual void inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
   protected:
     virtual std::vector<std::string> readStringArray(std::string param_name,
                                                      ros::NodeHandle& handle);
@@ -66,9 +66,10 @@ namespace jsk_topic_tools
     bool advertised_;
     std::vector<std::string> topics_;
     std::string selected_topic_;
-    ros::Subscriber sub_;
+    boost::shared_ptr<ros::Subscriber> sub_;
     ros::Publisher pub_selected_;
     ros::Publisher pub_;
+    ros::NodeHandle pnh_;
     ros::TransportHints th_;
     ros::ServiceServer ss_select_, ss_add_, ss_list_, ss_del_;
   };
