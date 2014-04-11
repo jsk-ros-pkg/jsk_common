@@ -2,6 +2,9 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.8 (2014-04-11)
+------------------
+
 1.0.4 (2014-03-27)
 ------------------
 * dynamic_tf_publisher: add rospy to depends

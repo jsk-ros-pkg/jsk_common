@@ -2,6 +2,9 @@
 Changelog for package laser_filters_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.8 (2014-04-11)
+------------------
+
 1.0.4 (2014-03-27)
 ------------------
 * laser_filters_jsk_patch: add git to build_depend

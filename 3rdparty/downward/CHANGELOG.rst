@@ -2,6 +2,9 @@
 Changelog for package downward
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.8 (2014-04-11)
+------------------
+
 1.0.5 (2014-03-31)
 ------------------
 * Added missing find_package to downward

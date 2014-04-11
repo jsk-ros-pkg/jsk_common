@@ -2,6 +2,9 @@
 Changelog for package rosping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.8 (2014-04-11)
+------------------
+
 1.0.3 (2014-03-19)
 ------------------
 * display how to set uid for rosping

@@ -2,6 +2,9 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.8 (2014-04-11)
+------------------
+
 1.0.4 (2014-03-27)
 ------------------
 * image_View2:add message_generation, message_runtime to package.xml
