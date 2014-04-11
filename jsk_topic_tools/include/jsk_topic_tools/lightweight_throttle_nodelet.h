@@ -42,9 +42,8 @@ namespace jsk_topic_tools
   class LightweightThrottle : public nodelet::Nodelet
   {
   public:
-    typedef ros::MessageEvent<topic_tools::ShapeShifter> ShapeShifterEvent;
     virtual void onInit();
-    virtual void inCallback(const ShapeShifterEvent& msg_event);
+    virtual void inCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
 
   protected:
     typedef boost::shared_ptr<ros::Subscriber> SubscriberPtr;
