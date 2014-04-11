@@ -2,8 +2,8 @@
 Changelog for package pr2_groovy_patches
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.8 (2014-04-11)
+------------------
 * use github repository and delete SnapMapICP patch
 * Contributors: Yuto Inagaki
 

@@ -2,8 +2,8 @@
 Changelog for package libsiftfast
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.8 (2014-04-11)
+------------------
 * Merge pull request #376 from k-okada/catkinize_lib_siftfast
 * fix for buildpakcage: use install(CODE for libraries, since library file is generated during compile phase; remove devel directory when dhbuild; install share/siftfast -> share/libsiftfast
 * Contributors: Kei Okada
