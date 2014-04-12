@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.9 (2014-04-12)
+------------------
 * use ShapeShifter rather than ShapeShifterEvent
 * fix for goovy SEGV
   * use ros::Subscriber's pointer

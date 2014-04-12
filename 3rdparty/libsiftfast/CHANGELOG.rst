@@ -2,8 +2,8 @@
 Changelog for package libsiftfast
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.9 (2014-04-12)
+------------------
 * change libsiftfast to non-catkin package by add SKIP_CMAKE_CONFIG_GENERATION
 * Contributors: Kei Okada
 
