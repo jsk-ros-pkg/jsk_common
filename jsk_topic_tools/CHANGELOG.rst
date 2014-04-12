@@ -2,6 +2,15 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* use ShapeShifter rather than ShapeShifterEvent
+* fix for goovy SEGV
+  * use ros::Subscriber's pointer
+  * use topic_tools::ShapeShiter rather than ShapeShifterEvent
+  * not call getPrivateNodeHandle so many times
+* Contributors: Ryohei Ueda
+
 1.0.8 (2014-04-11)
 ------------------
 
