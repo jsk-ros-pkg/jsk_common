@@ -9,15 +9,13 @@ add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/lib/libsiftfast.so
   DEPENDS Makefile
   COMMAND  make -f ${PROJECT_SOURCE_DIR}/Makefile INSTALL_DIR=${CATKIN_DEVEL_PREFIX})
 
-# fake add_library for catkin_package
-add_library(siftfast  SHARED IMPORTED)
-set_target_properties(siftfast  PROPERTIES IMPORTED_IMPLIB ${CATKIN_DEVEL_PREFIX}/lib/libsiftfast.so )
-# face install directory for catkin_package
+# force install directory for catkin_package
 file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/include)
 if("$ENV{ROS_DISTRO}" STREQUAL "groovy")
   catkin_package(
     INCLUDE_DIRS ${CATKIN_DEVEL_PREFIX}/include
     LIBRARIES    siftfast
+    SKIP_CMAKE_CONFIG_GENERATION
     )
   set(${PROJECT_NAME}_EXPORTED_TARGETS libsiftfast)
 else()
@@ -25,6 +23,7 @@ else()
     INCLUDE_DIRS ${CATKIN_DEVEL_PREFIX}/include
     LIBRARIES    siftfast
     EXPORTED_TARGETS libsiftfast
+    SKIP_CMAKE_CONFIG_GENERATION
     )
 endif()
 
