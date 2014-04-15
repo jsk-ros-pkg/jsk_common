@@ -42,6 +42,7 @@ add_rostest(test/test_topic_buffer_fixed_rate.test)
 add_rostest(test/test_topic_buffer_fixed_rate_and_update_rate.test)
 add_rostest(test/test_topic_buffer_update_rate.test)
 add_rostest(test/test_lightweight_throttle.test)
+add_rostest(test/test_topic_compare.test)
 
 install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
