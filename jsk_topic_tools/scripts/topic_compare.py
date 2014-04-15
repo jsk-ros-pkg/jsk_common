@@ -62,8 +62,10 @@ class ROSTopicCompare(object):
         return self.topicTimesArray[i][0]
     def printBandWidth(self):
         current_time = time.time()
+        row_format = "{:>15}" + "{:>10}" * 5
         print ""
-        print "No.\tavg/sec\t\tavg/msg\t\tmin/msg\t\tmax/msg\t\tquant."
+        print row_format.format("Name", "avg/sec", "avg/msg",
+                                "min/msg", "max/msg", "quant")
         for i in range(len(self.subscriberArray)):
             try:
                 n = self.getMessageNum(i)
@@ -84,8 +86,7 @@ class ROSTopicCompare(object):
                 else:
                     raise "error: invalid scale type"
                     quit()
-
-                print "%d\t%s\t%s\t%s\t%s\t%d" % (i, bps, bpm, ms, Ms, n)
+                print row_format.format(self.subscriberArray[i].name, bps, bpm, ms, Ms, n)
             except:
                 pass
 
