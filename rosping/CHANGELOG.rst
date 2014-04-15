@@ -2,14 +2,17 @@
 Changelog for package rosping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.9 (2014-04-12)
+------------------
+
+1.0.8 (2014-04-11)
+------------------
+
 1.0.3 (2014-03-19)
 ------------------
 * display how to set uid for rosping
 * use DISDIR in install(CODE) to make rosping work
 * Contributors: Kei Okada
-
-1.0.2 (2014-03-12)
-------------------
 
 1.0.1 (2014-03-07)
 ------------------

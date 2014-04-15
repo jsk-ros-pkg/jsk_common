@@ -38,7 +38,7 @@ done
 # set environment variables
 # set distribution
 case $1 in
-    cturtle|diamondback|electric|fuerte|groovy|hydro) export DISTRIBUTION=$1; shift;;
+    cturtle|diamondback|electric|fuerte|groovy|hydro|indigo) export DISTRIBUTION=$1; shift;;
     *)      export DISTRIBUTION=groovy;;
 esac
 
@@ -58,7 +58,9 @@ if ( [ "$DISTRIBUTION" == "cturtle" ] && \
    ( [ "$DISTRIBUTION" == "groovy" ] && \
     [[ $LSB_RELEASE =~ (oneiric|precise|quantal) ]] ) || \
    ( [ "$DISTRIBUTION" == "hydro" ] && \
-    [[ $LSB_RELEASE =~ (precise|quantal|raring) ]] ) then
+    [[ $LSB_RELEASE =~ (precise|quantal|raring) ]] ) || \
+   ( [ "$DISTRIBUTION" == "indigo" ] && \
+    [[ $LSB_RELEASE =~ (saucy|trusty) ]] ) then
     echo "Install $DISTRIBUTION to $LSB_RELEASE"
 else
     echo "target distribution($DISTRIBUTION) does not support $LSB_RELEASE platform, exit install program"
@@ -137,7 +139,7 @@ function install-pkg {
 function rosdep_and_rosmake {
     trap error ERR
     local package=$1
-    rosdep install -y $package -v -r -i
+    rosdep install -y $package -v -r -i || echo "error on rosdep, but continues"
     rosmake --profile --status-rate=0 $package || rosmake --profile --status-rate=0 $package
 }
 
@@ -264,12 +266,15 @@ EOF
 function install-jsk-ros-pkg {
     wget  'https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosinstall' -O /tmp/jsk.rosinstall.$$
     install-pkg /tmp/jsk.rosinstall.$$
-    rosdep install euslisp
+    rosdep install -y euslisp -v -r -i || echo "error on rosdep, but continues" # y: default-yes, v: verbose, r: continue despite errors, i: ignore packages
     if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
         xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi || return 0
     fi
 }
 function compile-jsk-ros-pkg {
+    if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
+        sudo apt-get -y --force-yes  install ros-$DISTRIBUTION-pr2-applications
+    fi
     compile-pkg pr2eus_openrave elevator_move_base_pr2 detect_cans_in_fridge_201202 jsk_2013_04_pr2_610
 }
 function test-jsk-ros-pkg {

@@ -2,15 +2,18 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.9 (2014-04-12)
+------------------
+
+1.0.8 (2014-04-11)
+------------------
+
 1.0.4 (2014-03-27)
 ------------------
 * image_View2:add message_generation, message_runtime to package.xml
 * in order to avoid empty catkin_LIBRARIES problem, call generate_messaegs after target_link_libraries
 * fix typo CATKIN-DEPENDS -> CATKIN_DEPENDS
 * Contributors: Kei Okada, Ryohei Ueda
-
-1.0.3 (2014-03-19)
-------------------
 
 1.0.2 (2014-03-12)
 ------------------

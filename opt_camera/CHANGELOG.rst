@@ -2,6 +2,12 @@
 Changelog for package opt_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.9 (2014-04-12)
+------------------
+
+1.0.8 (2014-04-11)
+------------------
+
 1.0.4 (2014-03-27)
 ------------------
 * opt_camera: include unistd.h on the top
@@ -20,9 +26,6 @@ Changelog for package opt_camera
 * `#299 <https://github.com/jsk-ros-pkg/jsk_common/issues/299>`_: remove opt_camra's depend tag to image_proc, because it is a runtime dependency
 * `#299 <https://github.com/jsk-ros-pkg/jsk_common/issues/299>`_: add image_proc to opt_camera rosdep
 * Contributors: Ryohei Ueda
-
-1.0.1 (2014-03-07)
-------------------
 
 1.0.0 (2014-03-05)
 ------------------

@@ -1,0 +1,19 @@
+<library path="lib/libjsk_topic_tools">
+  <class name="jsk_topic_tools/LightweightThrottle" type="LightweightThrottle"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      lightweight throttle nodelet.
+      Publish ~output from ~input with the fixed rate specified by
+      ~update_rate parameter.
+    </description>
+  </class>
+  <class name="jsk_topic_tools/MUX" type="MUX"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      mux nodelet.
+      Publish ~output from the list of the topics listed on ~topics parameters.
+      It supports all the API of topic_tools/mux, so you can use mux_select, mux_add,
+      mux_delete, mux_list of topic_tools.
+    </description>
+  </class>
+</library>

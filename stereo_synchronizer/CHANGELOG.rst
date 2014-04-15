@@ -2,6 +2,12 @@
 Changelog for package stereo_synchronizer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.9 (2014-04-12)
+------------------
+
+1.0.8 (2014-04-11)
+------------------
+
 1.0.4 (2014-03-27)
 ------------------
 * fix typo CATKIN-DEPENDS -> CATKIN_DEPENDS
@@ -11,12 +17,6 @@ Changelog for package stereo_synchronizer
 ------------------
 * stereo_synchronizer, jsk_tools: update to revision 1.0.3
 * stereo_synchronizer: catkinize
-
-1.0.2 (2014-03-12)
-------------------
-
-1.0.1 (2014-03-07)
-------------------
 
 1.0.0 (2014-03-05)
 ------------------

@@ -36,9 +36,15 @@ rosbuild_add_executable(specific_transform_publisher src/specific_transform_publ
 rosbuild_add_executable(specific_transform_subscriber src/specific_transform_subscriber.cpp)
 rosbuild_add_executable(transform_merger src/transform_merger.cpp)
 
+rosbuild_add_library (jsk_topic_tools
+  src/lightweight_throttle_nodelet.cpp
+  src/mux_nodelet.cpp
+  )
+
 #target_link_libraries(example ${PROJECT_NAME})
 rosbuild_add_rostest(test/test_topic_buffer.test)
 rosbuild_add_rostest(test/test_topic_buffer_fixed_rate.test)
 rosbuild_add_rostest(test/test_topic_buffer_update_rate.test)
 rosbuild_add_rostest(test/test_topic_buffer_fixed_rate_and_update_rate.test)
 rosbuild_add_rostest(test/test_topic_buffer_close_wait.test)
+rosbuild_add_rostest(test/test_lightweight_throttle.test)

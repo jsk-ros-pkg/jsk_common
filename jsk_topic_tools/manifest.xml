@@ -15,7 +15,12 @@
   <depend package="tf"/>
   <depend package="rostest"/>
   <depend package="roscpp_tutorials"/>
-
+  <depend package="nodelet"/>
+  <depend package="rostopic"/>
+  <depend package="std_msgs"/>
+  <export>
+    <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>
+  </export>
 </package>
 
 
