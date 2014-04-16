@@ -21,7 +21,6 @@ macro(patch package)
 endmacro(patch package)
 
 patch(face_detector_mono) 
-patch(SnapMapICP)
 patch(safe_teleop_base) # https://sourceforge.net/p/bosch-ros-pkg/tickets/9/
 
 ## System dependencies are found with CMake's conventions

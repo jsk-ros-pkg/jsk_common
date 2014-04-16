@@ -1,6 +1,6 @@
 <package>
   <name>libsiftfast</name>
-  <version>1.0.6</version>
+  <version>1.0.9</version>
   <description>
     Library to compute SIFT features
   </description>
@@ -15,6 +15,8 @@
   <build_depend>mk</build_depend>
   <build_depend>boost</build_depend>
   <build_depend>rosboost_cfg</build_depend>
+  <build_depend>rospack</build_depend>
+  <build_depend>roslib</build_depend>
 
   <run_depend>python-numpy</run_depend>
   <run_depend>boost</run_depend>

@@ -2,6 +2,23 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.9 (2014-04-12)
+------------------
+* use ShapeShifter rather than ShapeShifterEvent
+* fix for goovy SEGV
+  * use ros::Subscriber's pointer
+  * use topic_tools::ShapeShiter rather than ShapeShifterEvent
+  * not call getPrivateNodeHandle so many times
+* Contributors: Ryohei Ueda
+
+1.0.8 (2014-04-11)
+------------------
+
+1.0.7 (2014-04-10)
+------------------
+* add documentation on nodelet xml
+* Contributors: Ryohei Ueda
+
 1.0.6 (2014-04-07)
 ------------------
 * add a sample for mux nodelet and does not use mux nodehandle.
