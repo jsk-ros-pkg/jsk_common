@@ -62,7 +62,13 @@ class ROSTopicCompare(object):
         return self.topicTimesArray[i][0]
     def printBandWidth(self):
         current_time = time.time()
-        row_format = "{:>15}" + "{:>10}" * 5
+
+        # first lookup the longest topic name
+        longest_topic_len = 0
+        for i in range(len(self.subscriberArray)):
+            if len(self.subscriberArray[i].name) > longest_topic_len:
+                longest_topic_len = len(self.subscriberArray[i].name)
+        row_format = "{:>" + str(longest_topic_len + 1) + "}" + "{:>11}" * 5
         print ""
         print row_format.format("Name", "avg/sec", "avg/msg",
                                 "min/msg", "max/msg", "quant")
