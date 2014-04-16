@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import roslib; roslib.load_manifest("jsk_topic_tools")
+import imp
+import roslib
 import roslib.message
 import rospy
 import os, sys
@@ -49,19 +50,29 @@ class ROSTopicCompare(object):
         self.subscriberArray.append(sub)
         print "subscribed as %d: %s" % (len(self.subscriberArray)-1, topic_name)
 
+    def getTotalBytes(self, i):
+        return sum(self.topicSizesArray[i])
+    def getMaxByte(self, i):
+        return max(self.topicSizesArray[i])
+    def getMinByte(self, i):
+        return min(self.topicSizesArray[i])
+    def getMessageNum(self, i):
+        return len(self.topicTimesArray[i])
+    def getStartTime(self, i):
+        return self.topicTimesArray[i][0]
     def printBandWidth(self):
         current_time = time.time()
         print ""
         print "No.\tavg/sec\t\tavg/msg\t\tmin/msg\t\tmax/msg\t\tquant."
         for i in range(len(self.subscriberArray)):
             try:
-                n = len(self.topicTimesArray[i])
-                start_time = self.topicTimesArray[i][0]
-                total_bytes = sum(self.topicSizesArray[i])
+                n = self.getMessageNum(i)
+                start_time = self.getStartTime(i)
+                total_bytes = self.getTotalBytes(i)
                 bytes_per_sec = 1.0 * total_bytes / (current_time - start_time)
                 bytes_per_msg = total_bytes / n
-                max_size = max(self.topicSizesArray[i])
-                min_size = min(self.topicSizesArray[i])
+                max_size = self.getMaxByte(i)
+                min_size = self.getMinByte(i)
                 res = [bytes_per_sec, bytes_per_msg, min_size, max_size]
 
                 if self.scaleType == 1: # B
