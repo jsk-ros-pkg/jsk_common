@@ -2,6 +2,11 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* update collada_urdf to use assimp_devel on hydro-devel
+* Contributors: Kei Okada
+
 1.0.9 (2014-04-12)
 ------------------
 
