@@ -1,13 +1,11 @@
 #
-# https://github.com/ros/robot_model/pull/68
-#
 all: urdf_to_collada
 
 GIT_DIR = build/robot_model/src
 GIT_URL = https://github.com/ros/robot_model.git
 GIT_REVISION = hydro-devel
 PATCH_DIR = $(CURDIR)
-GIT_PATCH = ${PATCH_DIR}/set_url_name_groovy.patch ${PATCH_DIR}/use_assimp_devel.patch
+GIT_PATCH = ${PATCH_DIR}/use_assimp_devel.patch
 BUILD_BIN_DIR  = build/robot_model/devel/lib/collada_urdf
 include $(shell rospack find mk)/git_checkout.mk
 
