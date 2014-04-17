@@ -1,5 +1,5 @@
 #
-# https://code.ros.org/trac/ros-pkg/ticket/4276
+# https://github.com/ros/robot_model/pull/68
 #
 all: urdf_to_collada
 
