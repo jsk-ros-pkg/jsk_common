@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.10 (2014-04-17)
+-------------------
 * change the length of the name field according to the topic now the script subscribes
 * print topic name rather than topic index and prettier format
 * add test launch file for topic_compare and run it on catkin and rosbuild

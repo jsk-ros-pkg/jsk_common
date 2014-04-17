@@ -2,8 +2,8 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.10 (2014-04-17)
+-------------------
 * moved assim_devel from jsk-ros-pkg/jsk_model_tools
 * https://github.com/jsk-ros-pkg/jsk_common/pull/387 was wrong, we should not SKIP_PKG_CONFIG
 * fix max cpu to 4 for travis
