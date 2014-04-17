@@ -5,8 +5,13 @@ find_package(catkin REQUIRED COMPONENTS mk)
 
 add_custom_target(libassimp_devel ALL
   DEPENDS ${CATKIN_DEVEL_PREFIX}/lib/libassimp_devel.so)
+#add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/lib/libassimp_devel.so
+#  DEPENDS Makefile
+#  COMMAND cmake -E chdir ${CMAKE_CURRENT_BINARY_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile MK_DIR=${mk_PREFIX}/share/mk INSTALL_DIR=${CATKIN_DEVEL_PREFIX} PATCH_DIR=${PROJECT_SOURCE_DIR})
+## fake code
 add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/lib/libassimp_devel.so
-  DEPENDS Makefile
+  COMMAND touch ${CATKIN_DEVEL_PREFIX}/lib/libassimp_devel.so)
+execute_process(
   COMMAND cmake -E chdir ${CMAKE_CURRENT_BINARY_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile MK_DIR=${mk_PREFIX}/share/mk INSTALL_DIR=${CATKIN_DEVEL_PREFIX} PATCH_DIR=${PROJECT_SOURCE_DIR})
 
 # fake install directory for catkin_package
