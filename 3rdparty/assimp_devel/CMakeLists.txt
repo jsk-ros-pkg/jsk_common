@@ -9,17 +9,21 @@ add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/lib/libassimp_devel.so
   DEPENDS Makefile
   COMMAND cmake -E chdir ${CMAKE_CURRENT_BINARY_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile MK_DIR=${mk_PREFIX}/share/mk INSTALL_DIR=${CATKIN_DEVEL_PREFIX} PATCH_DIR=${PROJECT_SOURCE_DIR})
 
-# # fake install directory for catkin_package
+# fake install directory for catkin_package
+file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/include/assimp_devel)
 if($ENV{ROS_DISTRO} STREQUAL "groovy")
   catkin_package(
+    INCLUDE_DIRS ${CATKIN_DEVEL_PREFIX}/include/assimp_devel
+    LIBRARIES    assimp_devel
     SKIP_CMAKE_CONFIG_GENERATION
-    SKIP_PKG_CONFIG_GENERATION)
+    )
   set(${PROJECT_NAME}_EXPORTED_TARGETS libassimp_devel)
 else()
   catkin_package(
+    INCLUDE_DIRS ${CATKIN_DEVEL_PREFIX}/include/assimp_devel
+    LIBRARIES    assimp_devel
     EXPORTED_TARGETS libassimp_devel
     SKIP_CMAKE_CONFIG_GENERATION
-    SKIP_PKG_CONFIG_GENERATION
     )
 endif()
 
