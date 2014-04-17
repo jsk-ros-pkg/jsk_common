@@ -2,6 +2,11 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix for problem when we compile collada_urdf_jsk_patch twice (https://github.com/jsk-ros-pkg/jsk_common/pull/394#issuecomment-40704637)
+* Contributors: Kei Okada
+
 1.0.10 (2014-04-17)
 -------------------
 * moved assim_devel from jsk-ros-pkg/jsk_model_tools

@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.10 (2014-04-17)
 -------------------
 * change the length of the name field according to the topic now the script subscribes
