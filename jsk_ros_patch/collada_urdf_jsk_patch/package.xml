@@ -1,6 +1,6 @@
 <package>
   <name>collada_urdf_jsk_patch</name>
-  <version>1.0.8</version>
+  <version>1.0.10</version>
   <description>unaccepted patch for collada_urdf</description>
 
   <maintainer email="youhei@jsk.t.u-tokyo.ac.jp">Yohei Kakiuchi</maintainer>
@@ -17,7 +17,20 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>angles</build_depend>
+  <build_depend>assimp_devel</build_depend>
+  <build_depend>resource_retriever</build_depend>
+  <build_depend>collada-dom</build_depend>
+  <build_depend>collada_parser</build_depend>
   <build_depend>collada_urdf</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>urdf</build_depend>
+  <build_depend>urdfdom</build_depend>
+  <build_depend>urdfdom_headers</build_depend>
+  <build_depend>geometric_shapes</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>cmake_modules</build_depend>
+
   <run_depend>collada_urdf</run_depend>
   <!-- <test_depend>collada_urdf</test_depend> -->
 

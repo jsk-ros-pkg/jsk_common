@@ -2,6 +2,24 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.10 (2014-04-17)
+-------------------
+* change the length of the name field according to the topic now the script subscribes
+* print topic name rather than topic index and prettier format
+* add test launch file for topic_compare and run it on catkin and rosbuild
+* add test script and do not run load_manifest, it's not required
+* add topic_compare.py
+* Contributors: Ryohei Ueda, Yuki Furuta
+
+1.0.9 (2014-04-12)
+------------------
+* use ShapeShifter rather than ShapeShifterEvent
+* fix for goovy SEGV
+  * use ros::Subscriber's pointer
+  * use topic_tools::ShapeShiter rather than ShapeShifterEvent
+  * not call getPrivateNodeHandle so many times
+* Contributors: Ryohei Ueda
+
 1.0.8 (2014-04-11)
 ------------------
 
