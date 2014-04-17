@@ -128,3 +128,20 @@ index 899a8e0..b4ccd1d 100644
  
  INSTALL( TARGETS assimp_cmd
 
+diff --git a/assimp.pc.in b/assimp.pc.in
+index 1d3d995..cf06364 100644
+--- a/assimp.pc.in
++++ b/assimp.pc.in
+@@ -1,10 +1,10 @@
+ prefix=@CMAKE_INSTALL_PREFIX@
+ exec_prefix=@CMAKE_INSTALL_PREFIX@/@ASSIMP_BIN_INSTALL_DIR@
+ libdir=@CMAKE_INSTALL_PREFIX@/@ASSIMP_LIB_INSTALL_DIR@
+-includedir=@CMAKE_INSTALL_PREFIX@/@ASSIMP_INCLUDE_INSTALL_DIR@/assimp
++includedir=@CMAKE_INSTALL_PREFIX@/@ASSIMP_INCLUDE_INSTALL_DIR@/assimp_devel
+ 
+ Name: @CMAKE_PROJECT_NAME@
+ Description: Import various well-known 3D model formats in an uniform manner.
+ Version: @PROJECT_VERSION@
+-Libs: -L${libdir} -lassimp@ASSIMP_LIBRARY_SUFFIX@
++Libs: -L${libdir} -lassimp_devel@ASSIMP_LIBRARY_SUFFIX@
+ Cflags: -I${includedir}

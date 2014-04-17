@@ -26,6 +26,7 @@ else()
     SKIP_CMAKE_CONFIG_GENERATION
     )
 endif()
+execute_process(COMMAND sed -i s@${${PROJECT_NAME}_VERSION}@3.0.1@ ${CATKIN_DEVEL_PREFIX}/lib/pkgconfig/assimp_devel.pc)
 
 install(PROGRAMS ${CATKIN_DEVEL_PREFIX}/bin/assimp_devel
         DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
