@@ -2,6 +2,11 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* assimp_devel: fix for buildfirm
+* Contributors: Kei Okada
+
 1.0.11 (2014-04-18)
 -------------------
 * fix for problem when we compile collada_urdf_jsk_patch twice (https://github.com/jsk-ros-pkg/jsk_common/pull/394#issuecomment-40704637)
