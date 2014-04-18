@@ -2,8 +2,8 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.12 (2014-04-18)
+-------------------
 * assimp_devel: fix for buildfirm
 * Contributors: Kei Okada
 
