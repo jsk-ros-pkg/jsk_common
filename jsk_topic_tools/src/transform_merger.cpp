@@ -41,13 +41,15 @@ int main(int argc, char** argv)
   // set ignore tf
   std::vector< std::string > ignore_tf_vec;
 
+
   XmlRpc::XmlRpcValue v;
   pnh_.param("transform_config", v, v);
   if(v.hasMember("ignore_tf")){
     XmlRpc::XmlRpcValue ignore_v = v["ignore_tf"];
+    ROS_INFO_STREAM("ignore following transform");
     for(int i=0; i< ignore_v.size(); i++){
       ignore_tf_vec.push_back(ignore_v[i]);
-      std::cout << ignore_v[i] << std::endl;
+      ROS_INFO_STREAM("ignore: " << ignore_v[i]);
     }
   }
 
