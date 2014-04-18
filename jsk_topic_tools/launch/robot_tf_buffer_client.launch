@@ -15,6 +15,7 @@
   </node>
   <node pkg="robot_state_publisher" type="robot_state_publisher"
 	name="robot_state_publisher_for_remote">
+    <remap from="/joint_states" to="/joint_states_pruned_update"/>
     <remap from="/tf" to="$(arg REMOTE_TF)"/>
   </node>
 </launch>
