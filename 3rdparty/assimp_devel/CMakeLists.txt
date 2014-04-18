@@ -11,7 +11,7 @@ add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/lib/libassimp_devel.so
 
 # fake install directory for catkin_package
 file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/include/assimp_devel)
-if($ENV{ROS_DISTRO} STREQUAL "groovy")
+if("$ENV{ROS_DISTRO}" STREQUAL "groovy")
   catkin_package(
     INCLUDE_DIRS ${CATKIN_DEVEL_PREFIX}/include/assimp_devel
     LIBRARIES    assimp_devel
