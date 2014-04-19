@@ -2,6 +2,11 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* (ros.bashrc) change PS1 to show current MASTER_URI
+* Contributors: Kei Okada
+
 1.0.12 (2014-04-18)
 -------------------
 

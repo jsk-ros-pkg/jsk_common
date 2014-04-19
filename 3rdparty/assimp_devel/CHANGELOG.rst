@@ -2,6 +2,11 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add missing build_depend packages
+* Contributors: Kei Okada
+
 1.0.12 (2014-04-18)
 -------------------
 * assimp_devel: fix for buildfirm
