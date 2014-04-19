@@ -2,6 +2,11 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove export for rosbuild at assimp_devel
+* Contributors: YoheiKakiuchi
+
 1.0.14 (2014-04-19)
 -------------------
 
