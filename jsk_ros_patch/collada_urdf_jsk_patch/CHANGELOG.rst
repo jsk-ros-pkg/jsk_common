@@ -2,8 +2,8 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.15 (2014-04-19)
+-------------------
 * add depend to class_loader, pluginlib, rostest
 * Contributors: Kei Okada
 
