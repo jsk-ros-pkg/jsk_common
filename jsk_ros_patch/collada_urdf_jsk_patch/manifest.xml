@@ -11,6 +11,8 @@
 
   <depend package="assimp_devel" />
 
+  <rosdep name="mk" />
+  <rosdep name="git" />
   <rosdep name="libgts" />
   <rosdep name="collada_urdf"/>
 
