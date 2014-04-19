@@ -10,7 +10,6 @@
   <url>http://ros.org/wiki/collada_urdf_jsk_patch</url>
 
   <depend package="assimp_devel" />
-  <depend package="assimp_devel" />
   <depend package="collada_urdf"/>
   <depend package="class_loader"/>
   <depend package="pluginlib"/>
