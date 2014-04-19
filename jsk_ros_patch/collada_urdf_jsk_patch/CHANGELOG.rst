@@ -2,6 +2,11 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add depends to collada_parser, collada_urdf, urdf and kdl_parser
+* Contributors: Kei Okada
+
 1.0.15 (2014-04-19)
 -------------------
 * add depend to class_loader, pluginlib, rostest

@@ -2,6 +2,9 @@
 Changelog for package depth_image_proc_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.15 (2014-04-19)
 -------------------
 
