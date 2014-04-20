@@ -2,6 +2,11 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* disable ssl setting for download robot_model
+* Contributors: Kei Okada
+
 1.0.16 (2014-04-19)
 -------------------
 * add depends to collada_parser, collada_urdf, urdf and kdl_parser
