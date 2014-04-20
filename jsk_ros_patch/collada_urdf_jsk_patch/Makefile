@@ -2,14 +2,17 @@
 all: urdf_to_collada
 
 GIT_DIR = build/robot_model/src
-GIT_URL = https://github.com/ros/robot_model.git
+GIT_URL = git://github.com/ros/robot_model.git
 GIT_REVISION = hydro-devel
 PATCH_DIR = $(CURDIR)
 GIT_PATCH = ${PATCH_DIR}/use_assimp_devel.patch
 BUILD_BIN_DIR  = build/robot_model/devel/lib/collada_urdf
 include $(shell rospack find mk)/git_checkout.mk
 
-urdf_to_collada:$(GIT_DIR) patched
+disable_ssl:
+	git config --global http.sslVerify false
+
+urdf_to_collada: disable_ssl $(GIT_DIR) patched
 	(cd build/robot_model; PKG_CONFIG_PATH=`rospack find assimp_devel`/lib/pkgconfig:${PKG_CONFIG_PATH} catkin_make --pkg collada_urdf --force-cmake)
 	cp $(BUILD_BIN_DIR)/urdf_to_collada .
 
