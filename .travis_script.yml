@@ -1,0 +1,27 @@
+###
+### script: # All commands must exit with code 0 on success. Anything else is considered failure.
+###
+
+## for catkin
+
+# catkin_make
+if [ $BUILDER == catkin ]; then catkin_make -j8 -l8            ; fi
+
+# catkin_make test
+if [ $BUILDER == catkin ]; then export TARGET_PKG=`find build/$REPOSITORY_NAME -name Makefile -print |  sed s@.*/\\\\\([^\/]*\\\\\)/Makefile@\\\1@g` ; fi
+if [ $BUILDER == catkin ]; then catkin_make test --pkg $TARGET_PKG -j8 -l8  ; fi
+if [ $BUILDER == catkin ]; then find build -name LastTest.log -exec echo "==== {} ====" \; -exec cat {} \;  ; fi
+
+# catkin_make install
+if [ $BUILDER == catkin ]; then catkin_make -j8 -l8 install            ; fi
+
+# test for installed package
+if [ $BUILDER == catkin ]; then rm -fr devel src build                 ; fi
+if [ $BUILDER == catkin ]; then source install/setup.bash              ; fi
+if [ $BUILDER == catkin ]; then export EXIT_STATUS=0; for pkg in $TARGET_PKG; do [ "`find install/share/$pkg -iname '*.test'`" == "" ] && echo "[$pkg] No tests ware found!!!"  || find install/share/$pkg -iname "*.test" -print0 | xargs -0 -n1 rostest || export EXIT_STATUS=$?; done; [ $EXIT_STATUS == 0 ] ; fi
+
+## for rosbuild
+if [ $BUILDER == rosbuild ]; then rosmake -a --profile --pjobs=8       ; fi
+if [ $BUILDER == rosbuild ]; then export TARGET_PKG=`find -L src | grep $REPOSITORY_NAME | grep /build/Makefile$ | sed s@.*/\\\\\([^\/]*\\\\\)/build/Makefile@\\\1@g` ; fi
+if [ $BUILDER == rosbuild ]; then rosmake --test-only $TARGET_PKG --pjobs=8 ; fi
+
