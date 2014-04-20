@@ -1,6 +1,6 @@
 <package>
   <name>rosping</name>
-  <version>1.0.16</version>
+  <version>1.0.17</version>
   <description>rosping</description>
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
 

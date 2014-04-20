@@ -1,6 +1,6 @@
 <package>
   <name>libsiftfast</name>
-  <version>1.0.16</version>
+  <version>1.0.17</version>
   <description>
     Library to compute SIFT features
   </description>
