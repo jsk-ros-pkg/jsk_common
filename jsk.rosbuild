@@ -6,6 +6,7 @@ function usage {
     echo >&2 "          [-i|--show-install] show how to install "
     echo >&2 "          [-p|--show-package] display packages to install"
     echo >&2 "          [-e|--environment] display environment variables"
+    echo >&2 "          [-d|--use-deb] use debian package if they are already released"
     exit 0
 }
 
@@ -18,7 +19,7 @@ function error {
 trap error ERR
 
 # command line parse
-OPT=`getopt -o hipe -l help,show-install,show-package,show-environment -- $*`
+OPT=`getopt -o hiped -l help,show-install,show-package,show-environment,use-deb -- $*`
 if [ $? != 0 ]; then
     usage
 fi
@@ -30,6 +31,7 @@ while [ -n "$1" ] ; do
 	-i|--show-install) SHOW="install"; shift;;
 	-p|--show-package) SHOW="package"; shift;;
 	-e|--show-environment) SHOW="environment"; shift;;
+	-d|--use-deb) USE_DEB=true; shift;;
 	--) shift; break;;
 	*) echo "Unknown option($1)"; usage;;
     esac
@@ -108,6 +110,7 @@ function setup-ros {
 
 # jsk ros install (copy from http://code.google.com/p/rtm-ros-robotics/wiki/ROS_English)
 function install-pkg {
+
     (rosdep update; true)
     if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
         ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR
@@ -118,6 +121,20 @@ function install-pkg {
         (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( wstool init ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" wstool merge $ROSINSTALL -r -y ; done  )
     fi
 
+    # for use deb package mode
+    if [ "$USE_DEB" == true ]; then
+        for pkg in `find $ROS_INSTALLDIR/jsk-ros-pkg/ -maxdepth 2 -name .rosinstall -exec dirname {} \; | xargs -n 1 -i basename {} `; do
+            ROS_DISTRO=hydro
+            pkg2=$(echo $pkg | sed s@_@-@g)
+            aptitude show ros-$ROS_DISTRO-$pkg2
+            if [ $? == 0 ]; then
+                echo "install ros-$ROS_DISTRO-$pkg2 and rmeove $pkg from .rosinstall"
+                apt-tget -y install ros-$ROS_DISTRO-$pkg2
+                (cd $ROS_INSTALLDIR_SRC; wstool rm jsk-ros-pkg/$pkg)
+            fi
+        done
+    fi
+    #
     success=0
     retry=0
     while [ $success == 0 -a $retry -lt 10 ]; do

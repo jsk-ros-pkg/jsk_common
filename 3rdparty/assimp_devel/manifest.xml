@@ -1,0 +1,14 @@
+<package>
+  <description brief="assimp_devel">
+    Compiling assimp library (development version)
+  </description>
+  <license>LGPL</license>
+  <author> Maintained by YoheiKakiuchi (youhei@jsk.t.u-tokoy.ac.jp) </author>
+  <versioncontrol type="svn" url="https://assimp.svn.sourceforge.net/svnroot/assimp/trunk"/>
+  <rosdep name="mk" />
+  <rosdep name="git" />
+  <rosdep name="rosboost_cfg" />
+  <rosdep name="boost" />
+  <rosdep name="zlib" />
+  <rosdep name="unzip" />
+</package>

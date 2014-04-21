@@ -1,6 +1,6 @@
 <package>
   <name>collada_urdf_jsk_patch</name>
-  <version>1.0.9</version>
+  <version>1.0.17</version>
   <description>unaccepted patch for collada_urdf</description>
 
   <maintainer email="youhei@jsk.t.u-tokyo.ac.jp">Yohei Kakiuchi</maintainer>
@@ -17,7 +17,48 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>collada_parser</build_depend>
   <build_depend>collada_urdf</build_depend>
+  <build_depend>urdf</build_depend>
+  <build_depend>kdl_parser</build_depend>
+
+  <build_depend>angles</build_depend>
+  <build_depend>assimp_devel</build_depend>
+  <build_depend>resource_retriever</build_depend>
+  <build_depend>collada-dom</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>urdfdom</build_depend>
+  <build_depend>urdfdom_headers</build_depend>
+  <build_depend>geometric_shapes</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>class_loader</build_depend>
+  <build_depend>pluginlib</build_depend>
+
+  <build_depend>rostest</build_depend>
+  <build_depend>cmake_modules</build_depend>
+  <build_depend>mk</build_depend>
+
+  <build_depend>libgts</build_depend>
+  <build_depend>git</build_depend>
+
+  <run_depend>collada_parser</run_depend>
+  <run_depend>collada_urdf</run_depend>
+  <run_depend>urdf</run_depend>
+  <run_depend>kdl_parser</run_depend>
+
+  <run_depend>angles</run_depend>
+  <run_depend>assimp_devel</run_depend>
+  <run_depend>resource_retriever</run_depend>
+  <run_depend>collada-dom</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>urdfdom</run_depend>
+  <run_depend>urdfdom_headers</run_depend>
+  <run_depend>geometric_shapes</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>class_loader</run_depend>
+  <run_depend>pluginlib</run_depend>
+
+  <run_depend>libgts</run_depend>
   <run_depend>collada_urdf</run_depend>
   <!-- <test_depend>collada_urdf</test_depend> -->
 
