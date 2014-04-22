@@ -61,58 +61,6 @@ index afe0cea..00c4b9e 100644
    set(CPACK_DEBIAN_CHANGELOG)
 diff --git a/code/CMakeLists.txt b/code/CMakeLists.txt
 index 9d4f39c..cb9fbb1 100644
---- a/code/CMakeLists.txt
-+++ b/code/CMakeLists.txt
-@@ -682,38 +682,38 @@ SET( assimp_src
- ADD_MSVC_PRECOMPILED_HEADER("AssimpPCH.h" "AssimpPCH.cpp" assimp_src)
- 
- IF ( ASSIMP_BUILD_STATIC_LIB )
--	ADD_LIBRARY( assimp STATIC
-+	ADD_LIBRARY( assimp_devel STATIC
- 		${assimp_src}
- 	)
- ELSE ( ASSIMP_BUILD_STATIC_LIB )
--	ADD_LIBRARY( assimp SHARED
-+	ADD_LIBRARY( assimp_devel SHARED
- 		${assimp_src}
- 	)
- ENDIF ( ASSIMP_BUILD_STATIC_LIB )
- 
--SET_PROPERTY(TARGET assimp PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX})
-+SET_PROPERTY(TARGET assimp_devel PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX})
- 
--TARGET_LINK_LIBRARIES(assimp ${ZLIB_LIBRARIES})
--SET_TARGET_PROPERTIES( assimp PROPERTIES
-+TARGET_LINK_LIBRARIES(assimp_devel ${ZLIB_LIBRARIES})
-+SET_TARGET_PROPERTIES( assimp_devel PROPERTIES
- 	VERSION ${ASSIMP_VERSION}
- 	SOVERSION ${ASSIMP_SOVERSION} # use full version 
--    OUTPUT_NAME assimp${ASSIMP_LIBRARY_SUFFIX}
-+    OUTPUT_NAME assimp_devel${ASSIMP_LIBRARY_SUFFIX}
- )
- 
- if (APPLE)
--    SET_TARGET_PROPERTIES( assimp PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
-+    SET_TARGET_PROPERTIES( assimp_devel PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
- endif()
- 
- # Build against external unzip, or add ../contrib/unzip so
- # assimp can #include "unzip.h"
- if (UNZIP_FOUND)
- 	INCLUDE_DIRECTORIES(${UNZIP_INCLUDE_DIRS})
--	TARGET_LINK_LIBRARIES(assimp ${UNZIP_LIBRARIES})
-+	TARGET_LINK_LIBRARIES(assimp_devel ${UNZIP_LIBRARIES})
- else (UNZIP_FOUND)
- 	INCLUDE_DIRECTORIES("../contrib/unzip")
- endif (UNZIP_FOUND)
- 
--INSTALL( TARGETS assimp DESTINATION ${ASSIMP_LIB_INSTALL_DIR} COMPONENT ${LIBASSIMP_COMPONENT})
-+INSTALL( TARGETS assimp_devel DESTINATION ${ASSIMP_LIB_INSTALL_DIR} COMPONENT ${LIBASSIMP_COMPONENT})
- INSTALL( FILES ${PUBLIC_HEADERS} DESTINATION ${ASSIMP_INCLUDE_INSTALL_DIR}/assimp COMPONENT assimp-dev)
- INSTALL( FILES ${COMPILER_HEADERS} DESTINATION ${ASSIMP_INCLUDE_INSTALL_DIR}/assimp/Compiler COMPONENT assimp-dev)
- 
-diff --git a/tools/assimp_cmd/CMakeLists.txt b/tools/assimp_cmd/CMakeLists.txt
-index 899a8e0..b4ccd1d 100644
 --- a/tools/assimp_cmd/CMakeLists.txt
 +++ b/tools/assimp_cmd/CMakeLists.txt
 @@ -26,9 +26,9 @@ IF( WIN32 )
@@ -145,3 +93,47 @@ index 1d3d995..cf06364 100644
 -Libs: -L${libdir} -lassimp@ASSIMP_LIBRARY_SUFFIX@
 +Libs: -L${libdir} -lassimp_devel@ASSIMP_LIBRARY_SUFFIX@
  Cflags: -I${includedir}
+diff --git a/code/CMakeLists.txt b/code/CMakeLists.txt
+index 29ed3cc..9a887a4 100644
+--- a/code/CMakeLists.txt
++++ b/code/CMakeLists.txt
+@@ -681,31 +681,31 @@ SET( assimp_src
+ 
+ ADD_MSVC_PRECOMPILED_HEADER("AssimpPCH.h" "AssimpPCH.cpp" assimp_src)
+ 
+-ADD_LIBRARY( assimp ${assimp_src} )
++ADD_LIBRARY( assimp_devel ${assimp_src} )
+ 
+-SET_PROPERTY(TARGET assimp PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX})
++SET_PROPERTY(TARGET assimp_devel PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX})
+ 
+-TARGET_LINK_LIBRARIES(assimp ${ZLIB_LIBRARIES})
+-SET_TARGET_PROPERTIES( assimp PROPERTIES
++TARGET_LINK_LIBRARIES(assimp_devel ${ZLIB_LIBRARIES})
++SET_TARGET_PROPERTIES( assimp_devel PROPERTIES
+ 	VERSION ${ASSIMP_VERSION}
+ 	SOVERSION ${ASSIMP_SOVERSION} # use full version 
+-    OUTPUT_NAME assimp${ASSIMP_LIBRARY_SUFFIX}
++    OUTPUT_NAME assimp_devel${ASSIMP_LIBRARY_SUFFIX}
+ )
+ 
+ if (APPLE)
+-    SET_TARGET_PROPERTIES( assimp PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
++    SET_TARGET_PROPERTIES( assimp_devel PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
+ endif()
+ 
+ # Build against external unzip, or add ../contrib/unzip so
+ # assimp can #include "unzip.h"
+ if (UNZIP_FOUND)
+ 	INCLUDE_DIRECTORIES(${UNZIP_INCLUDE_DIRS})
+-	TARGET_LINK_LIBRARIES(assimp ${UNZIP_LIBRARIES})
++	TARGET_LINK_LIBRARIES(assimp_devel ${UNZIP_LIBRARIES})
+ else (UNZIP_FOUND)
+ 	INCLUDE_DIRECTORIES("../contrib/unzip")
+ endif (UNZIP_FOUND)
+ 
+-INSTALL( TARGETS assimp
++INSTALL( TARGETS assimp_devel
+          LIBRARY DESTINATION ${ASSIMP_LIB_INSTALL_DIR}
+          ARCHIVE DESTINATION ${ASSIMP_LIB_INSTALL_DIR}
+          RUNTIME DESTINATION ${ASSIMP_BIN_INSTALL_DIR}
