@@ -2,6 +2,40 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.17 (2014-04-20)
+-------------------
+* disable ssl setting for download robot_model
+* Contributors: Kei Okada
+
+1.0.16 (2014-04-19)
+-------------------
+* add depends to collada_parser, collada_urdf, urdf and kdl_parser
+* Contributors: Kei Okada
+
+1.0.15 (2014-04-19)
+-------------------
+* add depend to class_loader, pluginlib, rostest
+* Contributors: Kei Okada
+
+1.0.14 (2014-04-19)
+-------------------
+* add missing deps(mk,git,..) to collada_urdf_jsk_patch
+* Contributors: Kei Okada
+
+1.0.13 (2014-04-19)
+-------------------
+
+1.0.12 (2014-04-18)
+-------------------
+
+1.0.11 (2014-04-18)
+-------------------
+
+1.0.10 (2014-04-17)
+-------------------
+* update collada_urdf to use assimp_devel on hydro-devel
+* Contributors: Kei Okada
+
 1.0.9 (2014-04-12)
 ------------------
 

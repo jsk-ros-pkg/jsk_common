@@ -14,7 +14,7 @@ include $(shell rospack find mk)/download_unpack_build.mk
 INSTALL_DIR = `rospack find julius`
 
 installed.julius: $(SOURCE_DIR)/unpacked
-	(cd $(SOURCE_DIR); configure --prefix=$(INSTALL_DIR); make; make install)
+	(cd $(SOURCE_DIR); ./configure --prefix=$(INSTALL_DIR); make; make install)
 	touch installed.julius
 
 clean:

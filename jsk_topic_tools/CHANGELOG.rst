@@ -2,6 +2,36 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.17 (2014-04-20)
+-------------------
+
+1.0.16 (2014-04-19)
+-------------------
+
+1.0.15 (2014-04-19)
+-------------------
+
+1.0.14 (2014-04-19)
+-------------------
+
+1.0.13 (2014-04-19)
+-------------------
+
+1.0.12 (2014-04-18)
+-------------------
+
+1.0.11 (2014-04-18)
+-------------------
+
+1.0.10 (2014-04-17)
+-------------------
+* change the length of the name field according to the topic now the script subscribes
+* print topic name rather than topic index and prettier format
+* add test launch file for topic_compare and run it on catkin and rosbuild
+* add test script and do not run load_manifest, it's not required
+* add topic_compare.py
+* Contributors: Ryohei Ueda, Yuki Furuta
+
 1.0.9 (2014-04-12)
 ------------------
 * use ShapeShifter rather than ShapeShifterEvent
