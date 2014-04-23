@@ -1,0 +1,8 @@
+###
+### before_script: # Use this to prepare your build for testing e.g. copy database configurations, environment variables, etc.
+###
+
+source /opt/ros/$ROS_DISTRO/setup.bash
+if [ $BUILDER == rosbuild ]; then source src/setup.bash        ; fi
+if [ $BUILDER == rosbuild ]; then rospack profile              ; fi
+

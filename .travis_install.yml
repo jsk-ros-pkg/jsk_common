@@ -1,0 +1,20 @@
+###
+### install: # Use this to install any prerequisites or dependencies necessary to run your build
+###
+
+# Create workspace
+mkdir -p ~/ros/ws_$REPOSITORY_NAME/src
+cd ~/ros/ws_$REPOSITORY_NAME/src
+if [ $USE_DEB == false -o $BUILDER == rosbuild ]; then $ROSWS init .   ; fi
+if [ $USE_DEB == false ]; then $ROSWS merge http://raw.github.com/$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/.rosinstall ; fi
+if [ $USE_DEB == false -o $BUILDER == rosbuild ]; then if [ $ROSWS == rosws ]; then $ROSWS merge /opt/ros/$ROS_DISTRO/.rosinstall; fi  ; fi
+if [ $USE_DEB == false ]; then sed -i "s@^\(.*github.com/$TRAVIS_REPO_SLUG.*\)@#\1@" .rosinstall               ; fi # comment out current repo
+if [ $USE_DEB == false ]; then $ROSWS update   ; fi
+if [ $USE_DEB == false -o $BUILDER == rosbuild ]; then $ROSWS set $REPOSITORY_NAME http://github.com/$TRAVIS_REPO_SLUG --git -y        ; fi
+ln -s $CI_SOURCE_PATH . # Link the repo we are testing to the new workspace
+cd ../
+
+# Install dependencies for source repos
+find -L src -name package.xml -exec dirname {} \; | xargs -n 1 -i find {} -name manifest.xml | xargs -n 1 -i mv {} {}.deprecated # rename manifest.xml for rosdep install
+rosdep install -r -n --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
+find -L src -name manifest.xml.deprecated | xargs -n 1 -i dirname {} | xargs -n 1 -i ln -sf `pwd`/{}/manifest.xml.deprecated `pwd`/{}/manifest.xml # rename manifest.xml for rosdep install
