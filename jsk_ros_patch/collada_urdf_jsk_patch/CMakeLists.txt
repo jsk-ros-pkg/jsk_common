@@ -6,9 +6,20 @@ find_package(catkin REQUIRED COMPONENTS collada_urdf)
 
 catkin_package(CATKIN_DEPENDS collada_urdf)
 
-execute_process(COMMAND make -C ${PROJECT_SOURCE_DIR})
-execute_process(COMMAND cmake -E make_directory ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION})
-execute_process(COMMAND cmake -E copy ${PROJECT_SOURCE_DIR}/urdf_to_collada ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION})
+
+set(ENV{PKG_CONFIG_PATH} ${CATKIN_DEVEL_PREFIX}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH})
+add_custom_target(urdf_to_collada ALL DEPENDS ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION}/urdf_to_collada)
+add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION}/urdf_to_collada
+  DEPENDS Makefile
+  COMMAND cmake -E chdir ${CMAKE_CURRENT_BINARY_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile PKG_CONFIG_PATH=${CATKIN_DEVEL_PREFIX}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH} PATCH_DIR=${PROJECT_SOURCE_DIR}
+  COMMAND cmake -E make_directory ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION}
+  COMMAND cmake -E copy ${CMAKE_CURRENT_BINARY_DIR}/urdf_to_collada ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION})
+
+add_dependencies(urdf_to_collada libassimp_devel)
+
+install(PROGRAMS ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION}/urdf_to_collada
+        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 
 
 

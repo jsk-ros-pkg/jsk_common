@@ -1,0 +1,14 @@
+diff --git a/code/ColladaExporter.cpp b/code/ColladaExporter.cpp
+index 7634806..a961c92 100644
+--- a/code/ColladaExporter.cpp
++++ b/code/ColladaExporter.cpp
+@@ -292,7 +293,8 @@ void ColladaExporter::WriteMaterials()
+       WriteTextureParamEntry( mat.specular, "specular", mat.name);
+       WriteTextureParamEntry( mat.reflective, "reflective", mat.name);
+ 
+-      mOutput << startstr << "<technique sid=\"standard\">" << endstr;
++      //mOutput << startstr << "<technique sid=\"standard\">" << endstr;
++      mOutput << startstr << "<technique sid=\"common\">" << endstr;
+       PushTag();
+       mOutput << startstr << "<phong>" << endstr;
+       PushTag();
