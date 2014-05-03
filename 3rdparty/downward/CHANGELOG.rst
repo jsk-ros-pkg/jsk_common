@@ -2,6 +2,11 @@
 Changelog for package downward
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* install downward
+* Contributors: Kei Okada
+
 1.0.17 (2014-04-20)
 -------------------
 
