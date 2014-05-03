@@ -2,8 +2,8 @@
 Changelog for package rosping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.18 (2014-05-04)
+-------------------
 * (rosping) Add pkg description, clarify difference with simular tool.
 * Contributors: Isaac IY Saito
 
