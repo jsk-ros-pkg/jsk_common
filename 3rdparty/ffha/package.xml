@@ -19,5 +19,6 @@
   <build_depend>rospack</build_depend>
   <build_depend>roslib</build_depend>
   <build_depend>mk</build_depend>
+  <build_depend>rosbuild</build_depend>
 
 </package>
