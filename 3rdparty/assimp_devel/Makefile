@@ -2,8 +2,8 @@ all: assimp_devel
 
 INSTALL_DIR=`rospack find assimp_devel`
 GIT_DIR = assimp_git
-GIT_URL = git://github.com/assimp/assimp.git --depth=1
-GIT_REVISION = master
+GIT_URL = git://github.com/assimp/assimp.git --depth=50 -b master
+GIT_REVISION = f63cf6b5c835033cc3c3875f442e99c9763c40f1
 PATCH_DIR = $(CURDIR)
 GIT_PATCH = ${PATCH_DIR}/assimp_git.unit.patch ${PATCH_DIR}/assimp_git.technique.patch ${PATCH_DIR}/assimp_git.obj_export.patch ${PATCH_DIR}/assimp_devel.patch
 MK_DIR    = $(shell rospack find mk)

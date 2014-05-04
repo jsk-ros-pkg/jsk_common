@@ -2,6 +2,13 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.18 (2014-05-04)
+-------------------
+* (#408) fix revision of assimp_git
+* fix patch for cmake
+* catch up with update of assimp
+* Contributors: Kei Okada, Yohei Kakiuchi
+
 1.0.17 (2014-04-20)
 -------------------
 
