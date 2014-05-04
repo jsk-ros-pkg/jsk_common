@@ -7,6 +7,7 @@ function usage {
     echo >&2 "          [-p|--show-package] display packages to install"
     echo >&2 "          [-e|--environment] display environment variables"
     echo >&2 "          [-d|--use-deb] use debian package if they are already released"
+    echo >&2 "          [--rtm|--start-jsk|--rtm-ros-robotics] merge .rosinstall for rtm-ros stuff"
     exit 0
 }
 
@@ -19,7 +20,7 @@ function error {
 trap error ERR
 
 # command line parse
-OPT=`getopt -o hiped -l help,show-install,show-package,show-environment,use-deb -- $*`
+OPT=`getopt -o hiped -l help,show-install,show-package,show-environment,use-deb,rtm,start-jsk,rtm-ros-robotics -- $*`
 if [ $? != 0 ]; then
     usage
 fi
@@ -32,6 +33,7 @@ while [ -n "$1" ] ; do
 	-p|--show-package) SHOW="package"; shift;;
 	-e|--show-environment) SHOW="environment"; shift;;
 	-d|--use-deb) USE_DEB=true; shift;;
+  --rtm|--start-jsk|--rtm-ros-robotics) RTM_ROS_ROBOTICS=true; shift;;
 	--) shift; break;;
 	*) echo "Unknown option($1)"; usage;;
     esac
@@ -282,7 +284,12 @@ EOF
 
 function install-jsk-ros-pkg {
     wget  'https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosinstall' -O /tmp/jsk.rosinstall.$$
-    install-pkg /tmp/jsk.rosinstall.$$
+    if [ "$RTM_ROS_ROBOTICS" = "true" ]; then
+        wget  'http://rtm-ros-robotics.googlecode.com/svn/trunk/agentsystem_ros_tutorials/rtm-ros-robotics.rosinstall' -O /tmp/rtm-ros-robotics.rosinstall.$$
+        install-pkg /tmp/jsk.rosinstall.$$ /tmp/rtm-ros-robotics.rosinstall.$$
+    else
+        install-pkg /tmp/jsk.rosinstall.$$
+    fi
     rosdep install -y euslisp -v -r -i || echo "error on rosdep, but continues" # y: default-yes, v: verbose, r: continue despite errors, i: ignore packages
     if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
         xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi || return 0
