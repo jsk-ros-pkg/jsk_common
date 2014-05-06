@@ -2,6 +2,9 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.18 (2014-05-04)
 -------------------
 * (#408) fix revision of assimp_git
