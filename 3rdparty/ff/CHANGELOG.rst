@@ -2,8 +2,8 @@
 Changelog for package ff
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.19 (2014-05-06)
+-------------------
 * add find_package(catkin)
 * Add several missing build deps
 * ff, ffha: add CHANGELOG.rst
