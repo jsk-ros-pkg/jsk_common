@@ -1,6 +1,6 @@
 <package>
   <name>ff</name>
-  <version>1.0.19</version>
+  <version>1.0.20</version>
   <description>ff: pddl planner. see http://www.loria.fr/~hoffmanj/ff.html</description>
 
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
