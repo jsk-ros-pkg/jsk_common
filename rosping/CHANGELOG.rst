@@ -2,6 +2,11 @@
 Changelog for package rosping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* rosping: setuid via install()
+* Contributors: Kei Okada
+
 1.0.19 (2014-05-06)
 -------------------
 
