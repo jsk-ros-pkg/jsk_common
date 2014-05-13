@@ -15,6 +15,7 @@ disable_ssl:
 urdf_to_collada: disable_ssl $(GIT_DIR) patched
 	(cd build/robot_model; PKG_CONFIG_PATH=`rospack find assimp_devel`/lib/pkgconfig:${PKG_CONFIG_PATH} catkin_make --pkg collada_urdf --force-cmake)
 	cp $(BUILD_BIN_DIR)/urdf_to_collada .
+	cp $(BUILD_BIN_DIR)/collada_to_urdf .
 
 clean:
 	if [ -f build/robot_model/build ] ; then catkin_make clean; fi

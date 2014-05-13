@@ -2,6 +2,14 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.20 (2014-05-09)
+-------------------
+* copy collada_to_urdf binary to devel directory
+* Contributors: Masaki Murooka
+
+1.0.19 (2014-05-06)
+-------------------
+
 1.0.18 (2014-05-04)
 -------------------
 

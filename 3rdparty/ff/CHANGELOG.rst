@@ -2,6 +2,16 @@
 Changelog for package ff
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.20 (2014-05-09)
+-------------------
+
+1.0.19 (2014-05-06)
+-------------------
+* add find_package(catkin)
+* Add several missing build deps
+* ff, ffha: add CHANGELOG.rst
+* Contributors: Kei Okada, Scott K Logan
+
 1.0.18 (2014-05-04)
 -------------------
 * catkinize ff
