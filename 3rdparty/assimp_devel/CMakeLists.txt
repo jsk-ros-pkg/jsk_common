@@ -11,7 +11,7 @@ add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/lib/libassimp_devel.so
 
 # fake install directory for catkin_package
 file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/include/assimp_devel)
-if($ENV{ROS_DISTRO} STREQUAL "groovy")
+if("$ENV{ROS_DISTRO}" STREQUAL "groovy")
   catkin_package(
     INCLUDE_DIRS ${CATKIN_DEVEL_PREFIX}/include/assimp_devel
     LIBRARIES    assimp_devel
@@ -26,6 +26,7 @@ else()
     SKIP_CMAKE_CONFIG_GENERATION
     )
 endif()
+execute_process(COMMAND sed -i s@${${PROJECT_NAME}_VERSION}@3.0.1@ ${CATKIN_DEVEL_PREFIX}/lib/pkgconfig/assimp_devel.pc)
 
 install(PROGRAMS ${CATKIN_DEVEL_PREFIX}/bin/assimp_devel
         DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})

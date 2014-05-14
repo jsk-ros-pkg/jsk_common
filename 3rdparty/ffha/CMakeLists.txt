@@ -1,0 +1,24 @@
+cmake_minimum_required(VERSION 2.8.3)
+project(ffha)
+
+find_package(catkin REQUIRED)
+
+catkin_package()
+
+add_custom_command(
+  OUTPUT installed
+  COMMAND make -f ${PROJECT_SOURCE_DIR}/Makefile MD5SUM_DIR=${PROJECT_SOURCE_DIR} PATCH_DIR=${PROJECT_SOURCE_DIR}
+)
+add_custom_command(
+  OUTPUT ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/bin/ffha
+  COMMAND cmake -E copy_directory bin/ ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/bin/
+  DEPENDS installed
+)
+
+add_custom_target(ffha_install ALL DEPENDS ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/bin/ffha)
+
+
+install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/bin
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  USE_SOURCE_PERMISSIONS)
+

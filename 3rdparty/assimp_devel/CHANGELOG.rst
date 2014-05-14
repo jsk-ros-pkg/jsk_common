@@ -2,6 +2,48 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.20 (2014-05-09)
+-------------------
+
+1.0.19 (2014-05-06)
+-------------------
+
+1.0.18 (2014-05-04)
+-------------------
+* (#408) fix revision of assimp_git
+* fix patch for cmake
+* catch up with update of assimp
+* Contributors: Kei Okada, Yohei Kakiuchi
+
+1.0.17 (2014-04-20)
+-------------------
+
+1.0.16 (2014-04-19)
+-------------------
+
+1.0.15 (2014-04-19)
+-------------------
+* remove export for rosbuild at assimp_devel
+* Contributors: YoheiKakiuchi
+
+1.0.14 (2014-04-19)
+-------------------
+
+1.0.13 (2014-04-19)
+-------------------
+* add missing build_depend packages
+* Contributors: Kei Okada
+
+1.0.12 (2014-04-18)
+-------------------
+* assimp_devel: fix for buildfirm
+* Contributors: Kei Okada
+
+1.0.11 (2014-04-18)
+-------------------
+* fix for problem when we compile collada_urdf_jsk_patch twice (https://github.com/jsk-ros-pkg/jsk_common/pull/394#issuecomment-40704637)
+* Contributors: Kei Okada
+
 1.0.10 (2014-04-17)
 -------------------
 * moved assim_devel from jsk-ros-pkg/jsk_model_tools
