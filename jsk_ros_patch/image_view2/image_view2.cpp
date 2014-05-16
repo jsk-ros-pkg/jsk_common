@@ -1106,12 +1106,10 @@ int main(int argc, char **argv)
   ImageView2 view(n);
 
   //ros::spin();
-  ros::Rate r(60);              // 60 Hz
   while (ros::ok()) {
     ros::spinOnce();
-    int key = cvWaitKey(10);
+    int key = cvWaitKey(33);
     if (key != -1) {
-      ROS_INFO_STREAM("key: " << key);
       if (key == 65505) {
         if (view.getMode() == ImageView2::MODE_RECTANGLE) {
           ROS_INFO("series mode");
@@ -1123,7 +1121,6 @@ int main(int argc, char **argv)
         }
       }
     }
-    r.sleep();
   }
 
   return 0;
