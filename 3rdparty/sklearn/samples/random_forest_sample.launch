@@ -5,4 +5,6 @@
     <param name="random_forest_train_file" value="$(find sklearn)/samples/data/data_x" />
     <param name="random_forest_train_class_file" value="$(find sklearn)/samples/data/data_y" />
   </node>
+
+  <node pkg="sklearn" name="random_client" type="random_forest_client_sample.py" launch-prefix="xterm -e"/>
 </launch>
