@@ -1,0 +1,19 @@
+#!/bin/sh
+
+base=${1} # small or large
+bagfiles=`ls \`rospack find jsk_data\`/${base}/*.bag`
+
+for bagfile in ${bagfiles}
+ do
+   echo -e "\e[0;32mcheck Compression state\e[0m"
+   state=`rosbag info -y -k compression ${bagfile}`
+   echo -e "\e[1;32m    State : ${state}\e[0m"
+
+   if [ ${state} != "none" ]; then
+       echo -e "\e[1;31m    Decompress $bagfile"
+       rosbag decompress ${bagfile}
+       echo -e "\e[0m"
+   else
+       echo -e "\e[1;34m    Pass Decompression\e[0m"
+   fi
+done
