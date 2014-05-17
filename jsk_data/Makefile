@@ -15,8 +15,10 @@ large:
 	@ssh $$USER@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/large
 	@echo "---"
 	rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" --bwlimit=100000 ${DATA_DIR}/large/${KEYWORD} large/ || exit 0
+	bash `rospack find jsk_data`/scripts/decompress large || exit 0
 	sh `rospack find jsk_data`/scripts/gen-gif-all large || exit 0
 
 small:
 	rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" --bwlimit=100000 ${DATA_DIR}/small/${KEYWORD} small/ || exit 0
+	bash `rospack find jsk_data`/scripts/decompress small || exit 0
 	sh `rospack find jsk_data`/scripts/gen-gif-all small || exit 0
