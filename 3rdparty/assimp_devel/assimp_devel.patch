@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index afe0cea..00c4b9e 100644
+index 7a760d2..6aa3b40 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -13,8 +13,8 @@ set(ASSIMP_PACKAGE_VERSION "0" CACHE STRING "the package-specific version used f
@@ -13,14 +13,19 @@ index afe0cea..00c4b9e 100644
  set(CPACK_COMPONENTS_ALL assimp-bin ${LIBASSIMP_COMPONENT} ${LIBASSIMP-DEV_COMPONENT} assimp-dev)
  set(ASSIMP_LIBRARY_SUFFIX "" CACHE STRING "Suffix to append to library names")
  
-@@ -58,13 +58,13 @@ SET ( ASSIMP_BUILD_STATIC_LIB OFF CACHE BOOL
- )
+@@ -56,8 +56,8 @@ SET(ASSIMP_DEBUG_POSTFIX "d" CACHE STRING "Debug Postfitx for lib, samples and t
+ option ( BUILD_SHARED_LIBS "Build a shared version of the library" ON )
  
  # Generate a pkg-config .pc for the Assimp library.
 -CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/assimp.pc.in" "${PROJECT_BINARY_DIR}/assimp.pc" @ONLY )
 -INSTALL( FILES "${PROJECT_BINARY_DIR}/assimp.pc" DESTINATION ${ASSIMP_LIB_INSTALL_DIR}/pkgconfig/ COMPONENT ${LIBASSIMP-DEV_COMPONENT})
 +CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/assimp.pc.in" "${PROJECT_BINARY_DIR}/assimp_devel.pc" @ONLY )
 +INSTALL( FILES "${PROJECT_BINARY_DIR}/assimp_devel.pc" DESTINATION ${ASSIMP_LIB_INSTALL_DIR}/pkgconfig/ COMPONENT ${LIBASSIMP-DEV_COMPONENT})
+ 
+ # Only generate this target if no higher-level project already has
+ IF (NOT TARGET uninstall)
+@@ -91,9 +91,9 @@ ELSE ( ASSIMP_ENABLE_BOOST_WORKAROUND )
+ ENDIF ( ASSIMP_ENABLE_BOOST_WORKAROUND )
  
  # cmake configuration files
 -configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assimp-config.cmake.in"         "${CMAKE_CURRENT_BINARY_DIR}/assimp-config.cmake" @ONLY IMMEDIATE)
@@ -30,9 +35,9 @@ index afe0cea..00c4b9e 100644
 +configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assimp-config-version.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/assimp_devel-config-version.cmake" @ONLY IMMEDIATE)
 +install(FILES "${CMAKE_CURRENT_BINARY_DIR}/assimp_devel-config.cmake"             "${CMAKE_CURRENT_BINARY_DIR}/assimp_devel-config-version.cmake" DESTINATION "${ASSIMP_LIB_INSTALL_DIR}/cmake/assimp_devel-${ASSIMP_VERSION_MAJOR}.${ASSIMP_VERSION_MINOR}" COMPONENT ${LIBASSIMP-DEV_COMPONENT})
  
- # Only generate this target if no higher-level project already has
- IF (NOT TARGET uninstall)
-@@ -194,7 +194,7 @@ ENDIF(MSVC)
+ SET ( ASSIMP_NO_EXPORT OFF CACHE BOOL
+ 	"Disable Assimp's export functionality." 
+@@ -191,7 +191,7 @@ ENDIF(MSVC)
  
  if(CMAKE_CPACK_COMMAND AND UNIX AND ASSIMP_OPT_BUILD_PACKAGES)
    # Packing information
@@ -41,7 +46,7 @@ index afe0cea..00c4b9e 100644
    set(CPACK_PACKAGE_CONTACT "" CACHE STRING "Package maintainer and PGP signer.")
    set(CPACK_PACKAGE_VENDOR                  "http://assimp.sourceforge.net/")
    set(CPACK_PACKAGE_DISPLAY_NAME            "Assimp ${ASSIMP_VERSION}")
-@@ -203,7 +203,7 @@ if(CMAKE_CPACK_COMMAND AND UNIX AND ASSIMP_OPT_BUILD_PACKAGES)
+@@ -200,7 +200,7 @@ if(CMAKE_CPACK_COMMAND AND UNIX AND ASSIMP_OPT_BUILD_PACKAGES)
    set(CPACK_PACKAGE_VERSION_MAJOR           "${ASSIMP_VERSION_MAJOR}")
    set(CPACK_PACKAGE_VERSION_MINOR           "${ASSIMP_VERSION_MINOR}")
    set(CPACK_PACKAGE_VERSION_PATCH           "${ASSIMP_VERSION_PATCH}")
@@ -50,7 +55,7 @@ index afe0cea..00c4b9e 100644
    #set(CPACK_PACKAGE_DESCRIPTION_FILE       "${CMAKE_CURRENT_SOURCE_DIR}/description")
    set(CPACK_RESOURCE_FILE_LICENSE           "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
  
-@@ -225,7 +225,7 @@ if(CMAKE_CPACK_COMMAND AND UNIX AND ASSIMP_OPT_BUILD_PACKAGES)
+@@ -222,7 +222,7 @@ if(CMAKE_CPACK_COMMAND AND UNIX AND ASSIMP_OPT_BUILD_PACKAGES)
    set(CPACK_DEBIAN_PACKAGE_SECTION  "libs" )
    set(CPACK_DEBIAN_PACKAGE_DEPENDS  "${CPACK_COMPONENTS_ALL}")
    set(CPACK_DEBIAN_PACKAGE_SUGGESTS)
@@ -60,23 +65,15 @@ index afe0cea..00c4b9e 100644
    set(CPACK_DEBIAN_PACKAGE_SOURCE_COPY svn export --force)
    set(CPACK_DEBIAN_CHANGELOG)
 diff --git a/code/CMakeLists.txt b/code/CMakeLists.txt
-index 9d4f39c..cb9fbb1 100644
+index 29ed3cc..9a887a4 100644
 --- a/code/CMakeLists.txt
 +++ b/code/CMakeLists.txt
-@@ -682,38 +682,38 @@ SET( assimp_src
+@@ -681,31 +681,31 @@ SET( assimp_src
+ 
  ADD_MSVC_PRECOMPILED_HEADER("AssimpPCH.h" "AssimpPCH.cpp" assimp_src)
  
- IF ( ASSIMP_BUILD_STATIC_LIB )
--	ADD_LIBRARY( assimp STATIC
-+	ADD_LIBRARY( assimp_devel STATIC
- 		${assimp_src}
- 	)
- ELSE ( ASSIMP_BUILD_STATIC_LIB )
--	ADD_LIBRARY( assimp SHARED
-+	ADD_LIBRARY( assimp_devel SHARED
- 		${assimp_src}
- 	)
- ENDIF ( ASSIMP_BUILD_STATIC_LIB )
+-ADD_LIBRARY( assimp ${assimp_src} )
++ADD_LIBRARY( assimp_devel ${assimp_src} )
  
 -SET_PROPERTY(TARGET assimp PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX})
 +SET_PROPERTY(TARGET assimp_devel PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX})
@@ -106,13 +103,13 @@ index 9d4f39c..cb9fbb1 100644
  	INCLUDE_DIRECTORIES("../contrib/unzip")
  endif (UNZIP_FOUND)
  
--INSTALL( TARGETS assimp DESTINATION ${ASSIMP_LIB_INSTALL_DIR} COMPONENT ${LIBASSIMP_COMPONENT})
-+INSTALL( TARGETS assimp_devel DESTINATION ${ASSIMP_LIB_INSTALL_DIR} COMPONENT ${LIBASSIMP_COMPONENT})
- INSTALL( FILES ${PUBLIC_HEADERS} DESTINATION ${ASSIMP_INCLUDE_INSTALL_DIR}/assimp COMPONENT assimp-dev)
- INSTALL( FILES ${COMPILER_HEADERS} DESTINATION ${ASSIMP_INCLUDE_INSTALL_DIR}/assimp/Compiler COMPONENT assimp-dev)
- 
+-INSTALL( TARGETS assimp
++INSTALL( TARGETS assimp_devel
+          LIBRARY DESTINATION ${ASSIMP_LIB_INSTALL_DIR}
+          ARCHIVE DESTINATION ${ASSIMP_LIB_INSTALL_DIR}
+          RUNTIME DESTINATION ${ASSIMP_BIN_INSTALL_DIR}
 diff --git a/tools/assimp_cmd/CMakeLists.txt b/tools/assimp_cmd/CMakeLists.txt
-index 899a8e0..b4ccd1d 100644
+index 899a8e0..d474e01 100644
 --- a/tools/assimp_cmd/CMakeLists.txt
 +++ b/tools/assimp_cmd/CMakeLists.txt
 @@ -26,9 +26,9 @@ IF( WIN32 )
@@ -127,7 +124,6 @@ index 899a8e0..b4ccd1d 100644
  )
  
  INSTALL( TARGETS assimp_cmd
-
 diff --git a/assimp.pc.in b/assimp.pc.in
 index 1d3d995..cf06364 100644
 --- a/assimp.pc.in

@@ -2,6 +2,19 @@
 Changelog for package rosping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.20 (2014-05-09)
+-------------------
+* rosping: setuid via install()
+* Contributors: Kei Okada
+
+1.0.19 (2014-05-06)
+-------------------
+
+1.0.18 (2014-05-04)
+-------------------
+* (rosping) Add pkg description, clarify difference with simular tool.
+* Contributors: Isaac IY Saito
+
 1.0.17 (2014-04-20)
 -------------------
 

@@ -1,0 +1,24 @@
+<package>
+  <name>ffha</name>
+  <version>1.0.20</version>
+  <description>ffha: PDDL Planner (http://ipc.informatik.uni-freiburg.de)</description>
+  <maintainer email="youhei@jsk.t.u-tokyo.ac.jp">Yohei Kakiuchi</maintainer>
+
+  <license>GPL</license>
+
+  <url type="website">http://ros.org/wiki/downward</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author></author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>flex</build_depend>
+  <build_depend>bison</build_depend>
+  <build_depend>gawk</build_depend>
+  <build_depend>rospack</build_depend>
+  <build_depend>roslib</build_depend>
+  <build_depend>mk</build_depend>
+  <build_depend>rosbuild</build_depend>
+
+</package>
