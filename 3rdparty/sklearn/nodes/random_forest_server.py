@@ -1,16 +1,22 @@
 #!/usr/bin/env python
+
+try:
+    from ml_classifiers.srv import *
+except:
+    import roslib;roslib.load_manifest("ml_classifiers")
+    from ml_classifiers.srv import *
+
 import rospy
 import numpy as np
 from sklearn.cross_validation import cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.externals import joblib
-from ml_classfier.srv import *
 
 class RandomForestServer:
     def __init__(self, clf):
         self.clf = clf
-        s = rospy.Service('predict', ClassfiData, self.ClassfyData)
+        s = rospy.Service('predict', ClassifyData, self.classifyData)
 
     @classmethod
     def initWithData(cls, data_x, data_y):
@@ -18,7 +24,7 @@ class RandomForestServer:
             rospy.logerr("Lenght of datas are different")
             exit()
         rospy.loginfo("InitWithData please wait..")
-        clf = RandomForestClassifier(n_estimators=250, max_features=7, max_depth=29, min_samples_split=1, random_state=0)
+        clf = RandomForestClassifier(n_estimators=250, max_features=2, max_depth=29, min_samples_split=1, random_state=0)
         clf.fit(data_x, data_y)
         return cls(clf)
 
@@ -29,10 +35,13 @@ class RandomForestServer:
         return cls(clf)
 
     #Return predict result
-    def calssifyData(self, req):
-        ret = string(self.clf.predict(req.data.point))
-        rospy.loginfo("Get service Return Index %s!", ret)
-        return PredictDataResponse(ret)
+    def classifyData(self, req):
+        ret = []
+        for data in req.data:
+            print data
+            ret.append(str(self.clf.predict(data.point)))
+            rospy.loginfo("req : " + str(data.point) +  "-> answer : " + str(ret))
+        return ClassifyDataResponse(ret)
 
     #Run random forest
     def run(self):
