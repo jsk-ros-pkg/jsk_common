@@ -24,7 +24,10 @@ target_link_libraries(topic_buffer_client ${catkin_LIBRARIES})
 
 # nodelet shared object
 include_directories(${catkin_INCLUDE_DIRS} include)
-add_library(jsk_topic_tools SHARED src/lightweight_throttle_nodelet.cpp src/mux_nodelet.cpp)
+add_library(jsk_topic_tools SHARED
+  src/lightweight_throttle_nodelet.cpp
+  src/mux_nodelet.cpp
+  src/hz_measure_nodelet.cpp)
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 
 generate_messages()
@@ -43,6 +46,7 @@ add_rostest(test/test_topic_buffer_fixed_rate_and_update_rate.test)
 add_rostest(test/test_topic_buffer_update_rate.test)
 add_rostest(test/test_lightweight_throttle.test)
 add_rostest(test/test_topic_compare.test)
+add_rostest(test/test_hz_measure.test)
 
 install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
