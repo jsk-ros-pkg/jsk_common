@@ -12,7 +12,7 @@
 
   <author>Yohei Kakiuchi</author>
 
-  <build_depend>orocos_kdl</build_depend>
+  <build_depend>geometry</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>roslib</build_depend>
