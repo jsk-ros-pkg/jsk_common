@@ -1,0 +1,29 @@
+<package>
+  <name>ff</name>
+  <version>1.0.20</version>
+  <description>ff: pddl planner. see http://www.loria.fr/~hoffmanj/ff.html</description>
+
+  <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
+
+  <license>GPL</license>
+
+  <url type="website"></url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>J.Hoffmann</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>flex</build_depend>
+  <build_depend>bison</build_depend>
+  <build_depend>unzip</build_depend>
+  <build_depend>mk</build_depend>
+  <build_depend>rosbuild</build_depend>
+  <build_depend>rosbash</build_depend>
+  <build_depend>rospack</build_depend>
+  <build_depend>roslib</build_depend>
+ 
+  <export>
+
+  </export>
+</package>

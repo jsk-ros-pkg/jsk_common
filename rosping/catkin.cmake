@@ -34,9 +34,10 @@ add_custom_target(message_all ALL DEPENDS message)
 install(
   PROGRAMS ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION}/rosping
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID
 )
 install(CODE
-  "execute_process(COMMAND sudo -n sh -c \"cd \$ENV{DISTDIR}/${CMAKE_INSTALL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION} ; chown root.root rosping; ls -al rosping; chmod 4755 rosping\")
+  "execute_process(COMMAND sudo -n sh -c \"cd \$ENV{DESTDIR}/${CMAKE_INSTALL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION} ; chown root.root rosping; ls -al rosping; chmod 4755 rosping\")
 ")
 
 install(DIRECTORY test

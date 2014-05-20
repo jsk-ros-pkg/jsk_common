@@ -4,6 +4,10 @@ function rossetrobot() { # 自分のよく使うロボットのhostnameを入れ
     local hostname=${1-"pr1040"}
     local ros_port=${2-"11311"}
     export ROS_MASTER_URI=http://$hostname:$ros_port
+    if [[ "${PS1}" =~ \[http://.*:.*\]\ (.*)$ ]] ; then
+        export PS1="${BASH_REMATCH[1]}"
+    fi
+    export PS1="\[\033[00;31m\][$ROS_MASTER_URI]\[\033[00m\] ${PS1}"
     echo -e "\e[1;31mset ROS_MASTER_URI to $ROS_MASTER_URI\e[m"
 }
 
