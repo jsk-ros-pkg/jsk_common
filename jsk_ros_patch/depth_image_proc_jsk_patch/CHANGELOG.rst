@@ -2,8 +2,8 @@
 Changelog for package depth_image_proc_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.21 (2014-05-20)
+-------------------
 * forget to add manifest.xml.patch
 * Contributors: Kei Okada
 

@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.21 (2014-05-20)
+-------------------
 * does not check 0.5sec test if the image_view2 is in series mode.
 * not use ros::Rate's sleep, use cvWaitKey to captuere
   keys to be pressed

@@ -2,8 +2,8 @@
 Changelog for package sklearn
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.21 (2014-05-20)
+-------------------
 * launch prefix
 * remove unneeded files
 * modify bags and add sample
