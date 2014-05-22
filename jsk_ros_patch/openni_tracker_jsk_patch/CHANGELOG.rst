@@ -2,6 +2,9 @@
 Changelog for package openni_tracker_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.21 (2014-05-20)
 -------------------
 * use geometry package to install orocos_kdl, since orocos_kdl is not installed via rosdep https://github.com/ros/rosdistro/pull/4336
