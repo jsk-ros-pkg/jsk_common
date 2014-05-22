@@ -16,6 +16,7 @@ using std::string;
 using std::vector;
 using std::list;
 using namespace topic_tools;
+static bool debug;
 
 class pub_info_t
 {
@@ -50,7 +51,9 @@ public:
             ((uint32_t *)buf)[2] = tmp.nsec;
             msg->read(istream);
         }
-        ROS_INFO_STREAM("publishing " << topic_name);
+	if(debug){
+	  ROS_INFO_STREAM("publishing " << topic_name);
+	}
         pub.publish(msg);
     }
 };
@@ -63,6 +66,8 @@ static ros::NodeHandle *g_node = NULL;
 
 static bool use_fixed_rate;
 
+
+
 void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
            boost::shared_ptr<pub_info_t> s)
 {
@@ -74,7 +79,9 @@ void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
         s->pub = msg->advertise(*g_node, s->topic_name+string("_buffered"), 10, s->latched);
         s->advertised = true;
     }
-    ROS_INFO_STREAM("advertised as " << s->topic_name+string("_buffered") << " running at " << 1/(s->rate.toSec()) << "Hz");
+    if(debug){
+      ROS_INFO_STREAM("advertised as " << s->topic_name+string("_buffered") << " running at " << 1/(s->rate.toSec()) << "Hz");
+    }
 
     // check if msg has header
     {
@@ -87,7 +94,9 @@ void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
         header.stamp.nsec = ((uint32_t *)buf)[2];
 
         if ( abs((header.stamp - ros::Time::now()).toSec()) < 5.0 ) {
-            ROS_INFO_STREAM(" this message contains headers.. seq =" <<  header.seq << " stamp = " << header.stamp);
+	  if(debug){
+	    ROS_INFO_STREAM(" this message contains headers.. seq =" <<  header.seq << " stamp = " << header.stamp);
+	  }
             s->topic_with_header = true;
             s->last_seq_received = header.seq;
             s->last_time_received = header.stamp;
@@ -193,6 +202,8 @@ int main(int argc, char **argv)
 
     bool use_service = true;
     nh.param("use_service", use_service, true);
+
+    nh.param("debug", debug, false);
     
     ros::ServiceClient sc_update = n.serviceClient<jsk_topic_tools::Update>(string("/update"), true);
     ros::Publisher pub_update;
@@ -216,13 +227,17 @@ int main(int argc, char **argv)
                     continue;
                   }
                   (*it)->rate = ros::Duration(res.rate);
-                  ROS_INFO_STREAM("calling /update " << req.topic_name << " .. " << res.rate);
+                  if(debug){
+		    ROS_INFO_STREAM("calling /update " << req.topic_name << " .. " << res.rate);
+		  }
                 }
                 else {
                   std_msgs::String msg;
                   msg.data = (*it)->topic_name;
                   pub_update.publish(msg);
-                  ROS_INFO_STREAM("publishing /update " << msg.data);
+		  if(debug){
+		    ROS_INFO_STREAM("publishing /update " << msg.data);
+		  }
                 }
             }
             last_updated = ros::Time::now();
