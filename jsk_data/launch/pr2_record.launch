@@ -56,7 +56,7 @@
   <arg unless="$(arg save_prosilica)"
        name="prosilica_topics" value="" />
   <arg if    ="$(arg save_prosilica)"
-       name="prosilica_topics" value="/prosilica/rgb/image_raw /prosilica/rgb/camera_info" />
+       name="prosilica_topics" value="/prosilica/image_raw /prosilica/camera_info" />
 
 
   <!-- execute -->
@@ -73,7 +73,7 @@
           -o $(arg save_dir) 
           $(arg other_options)
           "/>
-  <node if   ="$(arg save_prosilica)"
-	name="pros_call" pkg="jsk_data" type="pros_service.py"
-    />
+   <node if  ="$(arg save_prosilica)" 
+         name="set_prosilica_mode" pkg="dynamic_reconfigure" type="dynparam"
+         args="set /prosilica_driver trigger_mode 'streaming'" />
 </launch>
