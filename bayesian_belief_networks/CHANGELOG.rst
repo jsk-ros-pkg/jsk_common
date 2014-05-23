@@ -2,8 +2,8 @@
 Changelog for package bayesian_belief_networks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.23 (2014-05-23)
+-------------------
 * add eBay/bayesian-belief-networks
 * Contributors: Kei Okada
 

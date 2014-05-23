@@ -2,8 +2,8 @@
 Changelog for package rostwitter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.23 (2014-05-23)
+-------------------
 * add rostwitter
 * Contributors: Kei Okada
 
