@@ -10,7 +10,7 @@
   <arg name="save_all_image" default="true" />
   <arg name="save_pressure" default="true" />
   <arg name="save_gripper_command" default="true" />
-
+  <arg name="save_prosilica" default="false" />
   <arg name="camera_namespace" default="openni"/>
   <arg name="save_dir" default="/removable/bagfile/"/>
   <!--                          -->
@@ -53,6 +53,12 @@
        name="gripper_command_topics"
        value="/l_gripper_controller/command /r_gripper_controller/command" />
 
+  <arg unless="$(arg save_prosilica)"
+       name="prosilica_topics" value="" />
+  <arg if    ="$(arg save_prosilica)"
+       name="prosilica_topics" value="/prosilica/image_raw /prosilica/camera_info" />
+
+
   <!-- execute -->
   <node name="default_rosbag_record" pkg="rosbag" type="record"
 	args="$(arg openni_topics) 
@@ -62,8 +68,12 @@
           $(arg all_image_topics) 
           $(arg pressure_topics) 
           $(arg gripper_command_topics) 
-          $(arg other_topics) 
+	  $(arg prosilica_topics)
+          $(arg other_topics)
           -o $(arg save_dir) 
           $(arg other_options)
           "/>
+   <node if  ="$(arg save_prosilica)" 
+         name="set_prosilica_mode" pkg="dynamic_reconfigure" type="dynparam"
+         args="set /prosilica_driver trigger_mode 'streaming'" />
 </launch>
