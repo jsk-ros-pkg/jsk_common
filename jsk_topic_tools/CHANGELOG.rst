@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.22 (2014-05-22)
 -------------------
 * add new nodelet: HzMeasure to measure message rate

@@ -1,9 +1,11 @@
-^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package ff
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package rostwitter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Forthcoming
 -----------
+* add rostwitter
+* Contributors: Kei Okada
 
 1.0.22 (2014-05-22)
 -------------------
@@ -16,15 +18,9 @@ Forthcoming
 
 1.0.19 (2014-05-06)
 -------------------
-* add find_package(catkin)
-* Add several missing build deps
-* ff, ffha: add CHANGELOG.rst
-* Contributors: Kei Okada, Scott K Logan
 
 1.0.18 (2014-05-04)
 -------------------
-* catkinize ff
-* Contributors: Kei Okada
 
 1.0.17 (2014-04-20)
 -------------------
@@ -79,7 +75,3 @@ Forthcoming
 
 1.0.0 (2014-03-05)
 ------------------
-* added rosdeps : flex and bison
-* udpate ff url
-* put jsk tools in jsk_common stack
-* Contributors: k-okada, mikita, rosen

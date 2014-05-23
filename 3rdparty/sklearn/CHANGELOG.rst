@@ -2,6 +2,9 @@
 Changelog for package sklearn
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.22 (2014-05-22)
 -------------------
 * remove duplicated change log
