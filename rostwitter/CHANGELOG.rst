@@ -2,6 +2,10 @@
 Changelog for package rostwitter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* rostwitter/rbayesian_belief_networks : add disable_ssl
+
 1.0.23 (2014-05-23)
 -------------------
 * add rostwitter
