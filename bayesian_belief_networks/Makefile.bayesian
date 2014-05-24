@@ -14,7 +14,10 @@ MK_DIR      = $(shell rospack find mk)
 
 include $(MK_DIR)/git_checkout.mk
 
-installed: $(DIST_DIR) # examples
+disable_ssl:
+	git config --global http.sslVerify false
+
+installed: disable_ssl $(DIST_DIR) # examples
 	touch installed
 
 # examples: $(DIST_DIR)
