@@ -14,7 +14,10 @@ MK_DIR      = $(shell rospack find mk)
 
 include $(MK_DIR)/git_checkout.mk
 
-installed: $(GIT_DIR)
+disable_ssl:
+	git config --global http.sslVerify false
+
+installed: disable_ssl $(GIT_DIR)
 	mkdir -p $(DIST_DIR)
 	cd $(GIT_DIR) && pip install --user -r requirements.txt
 	cd $(GIT_DIR) && $(PYTHONBIN) ./setup.py build
