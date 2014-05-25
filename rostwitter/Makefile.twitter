@@ -19,7 +19,7 @@ disable_ssl:
 
 installed: disable_ssl $(GIT_DIR)
 	mkdir -p $(DIST_DIR)
-	cd $(GIT_DIR) && pip install --user -r requirements.txt
+	cd $(GIT_DIR) && pip install --user -r requirements.txt || echo ";; apt-get install python-pip"
 	cd $(GIT_DIR) && $(PYTHONBIN) ./setup.py build
 	cd $(GIT_DIR) && PYTHONPATH=$(DIST_DIR) $(PYTHONBIN) ./setup.py install --prefix=$(INSTALL_DIR) $(SETUPTOOLS_ARG_EXTRA) --record installed_files.txt
 	mkdir -p ${INSTALL_DIR}/bin
