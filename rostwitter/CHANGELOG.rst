@@ -2,8 +2,8 @@
 Changelog for package rostwitter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.25 (2014-05-26)
+-------------------
 * do not error if pip is not installed
 
 1.0.24 (2014-05-24)
