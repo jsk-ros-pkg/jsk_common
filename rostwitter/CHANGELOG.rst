@@ -2,6 +2,10 @@
 Changelog for package rostwitter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* do not error if pip is not installed
+
 1.0.24 (2014-05-24)
 -------------------
 * rostwitter/rbayesian_belief_networks : add disable_ssl
