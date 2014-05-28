@@ -2,7 +2,7 @@
 <package>
   <name>jsk_gui_msgs</name>
   <author>chen</author>
-  <version>1.0.21</version>
+  <version>1.0.25</version>
   <description>jsk_gui_msgs</description>
   <maintainer email="murase@jsk.imi.i.u-tokyo.ac.jp">KazutoMurase</maintainer>
   <license>Apache 2.0</license>

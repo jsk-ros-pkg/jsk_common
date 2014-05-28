@@ -2,6 +2,30 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.25 (2014-05-26)
+-------------------
+
+1.0.24 (2014-05-24)
+-------------------
+
+1.0.23 (2014-05-23)
+-------------------
+
+1.0.22 (2014-05-22)
+-------------------
+* add new nodelet: HzMeasure to measure message rate
+* display info in debug mode
+* print ignoring tf
+* Merge remote-tracking branch 'tarukosu/ignore-specific-transform' into ignore-specific-transform
+* add output='screen'
+* use joint_states_pruned_buffered instead of _update
+* remap /joint_states to /joint_states_pruned_update
+* add ignoreing tf config
+* add launch file for send joint state and other tf
+* prune velocity and effort in joint state
+* ignoring tf designated in yaml
+* Contributors: Ryohei Ueda, Yusuke Furuta
+
 1.0.21 (2014-05-20)
 -------------------
 

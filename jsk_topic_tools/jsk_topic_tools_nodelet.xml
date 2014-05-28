@@ -1,4 +1,11 @@
 <library path="lib/libjsk_topic_tools">
+  <class name="jsk_topic_tools/HzMeasure" type="HzMeasure"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      subscribe ~input topic and publish the rate of the messages to ~output
+      as std_msgs/Float32.
+    </description>
+  </class>
   <class name="jsk_topic_tools/LightweightThrottle" type="LightweightThrottle"
          base_class_type="nodelet::Nodelet">
     <description>
