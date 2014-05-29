@@ -2,6 +2,9 @@
 Changelog for package image_view_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.25 (2014-05-26)
 -------------------
 
