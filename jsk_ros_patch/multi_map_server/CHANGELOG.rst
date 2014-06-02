@@ -2,6 +2,11 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.26 (2014-05-30)
+-------------------
+* enable depend to map_server for default
+* Contributors: Kei Okada
+
 1.0.25 (2014-05-26)
 -------------------
 
