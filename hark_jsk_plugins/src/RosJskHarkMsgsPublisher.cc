@@ -208,27 +208,27 @@ DECLARE_NODE(RosJskHarkMsgsPublisher)
                 out[count] = src_power_ptr;
             }
 
-            jsk_hark_msgs::HarkPower HarkPowerMsg;
+            jsk_hark_msgs::HarkPower harkpowermsg;
 
-            HarkPowerMsg.count = count;
+            harkpowermsg.count = count;
 
             if(TimeStampID == -1){
                 if (timestamp_type == "ROS_TIME_NOW") {      
                     ros::Time oHarkTime = ros::Time::now();
-                    HarkPowerMsg.header.stamp = oHarkTime;
+                    harkpowermsg.header.stamp = oHarkTime;
                 } else if (timestamp_type == "CONSTANT_INCREMENT"){
                     if(count == 0) oHarkTimeBase = ros::Time::now();
                     ros::Time oHarkTime = oHarkTimeBase + ros::Duration(const_in_sec * (float)count);
-                    HarkPowerMsg.header.stamp = oHarkTime;
+                    harkpowermsg.header.stamp = oHarkTime;
                 }      
             }else{
                 ObjectRef oBaseTimeStamp = getInput(TimeStampID,count);
                 const TimeStamp& BaseTime = object_cast<TimeStamp> (oBaseTimeStamp);
-                HarkPowerMsg.header.stamp.sec         = BaseTime.time.tv_sec;
-                HarkPowerMsg.header.stamp.nsec         = BaseTime.time.tv_usec * 1000;
+                harkpowermsg.header.stamp.sec         = BaseTime.time.tv_sec;
+                harkpowermsg.header.stamp.nsec         = BaseTime.time.tv_usec * 1000;
             }
 
-            HarkPowerMsg.header.frame_id = ros_frame_id;
+            harkpowermsg.header.frame_id = ros_frame_id;
 
             ros::Rate loop_rate(ros_loop_rate);
 
@@ -247,11 +247,11 @@ DECLARE_NODE(RosJskHarkMsgsPublisher)
                 if (enable_debug == true) printf("SRC_POWER: %d\n", directions);
                 bytes = directions * sizeof(float);
 
-                HarkPowerMsg.directions = directions;
-                HarkPowerMsg.data_bytes = bytes;
-                HarkPowerMsg.powers.resize(directions);
+                harkpowermsg.directions = directions;
+                harkpowermsg.data_bytes = bytes;
+                harkpowermsg.powers.resize(directions);
                 for (int c = 0; c < directions; c++) {
-                    HarkPowerMsg.powers[c] = (float)(*src_power_ptr)[c];
+                    harkpowermsg.powers[c] = (float)(*src_power_ptr)[c];
                 }
                 bool _allzero = true;
                 for (int c = 0; c < directions; c++) {
@@ -261,7 +261,7 @@ DECLARE_NODE(RosJskHarkMsgsPublisher)
                     }
                 }
                 if (!_allzero) {
-                    _pub_harkpower.publish(HarkPowerMsg);
+                    _pub_harkpower.publish(harkpowermsg);
                 }
             }
 
