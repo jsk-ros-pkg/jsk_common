@@ -110,6 +110,8 @@ private:
   ros::Publisher point_pub_;
   ros::Publisher point_array_pub_;
   ros::Publisher rectangle_pub_;
+  ros::Publisher move_point_pub_;
+  
 public:
   enum KEY_MODE {
     MODE_RECTANGLE = 0,
@@ -138,7 +140,7 @@ public:
     point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/screenpoint",100);
     point_array_pub_ = nh.advertise<sensor_msgs::PointCloud2>(camera + "/screenpoint_array",100);
     rectangle_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/screenrectangle",100);
-
+    move_point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/movepoint", 100);
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
 
     local_nh.param("autosize", autosize, false);
@@ -1036,6 +1038,15 @@ public:
         else if (iv->getMode() == MODE_SERIES) {                  // todo
           iv->addPoint(x, y);
         }
+      }
+      {
+        // publish the points
+        geometry_msgs::PointStamped move_point;
+        move_point.header.stamp = ros::Time::now();
+        move_point.point.x = x;
+        move_point.point.y = y;
+        move_point.point.z = 0;
+        iv->move_point_pub_.publish(move_point);
       }
       break;
     case CV_EVENT_LBUTTONDOWN:
