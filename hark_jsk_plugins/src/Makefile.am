@@ -24,9 +24,11 @@ libhark_jsk_la_CXXFLAGS = -O3 -march=core2 -mtune=core2 -mmmx -msse -msse2 -msse
 
 libhark_jsk_la_LDFLAGS = -release $(LT_RELEASE) \
 	`flowdesigner-config --libs config libflow audio_blocks` \
-	`pkg-config libharkio --libs`
+	`pkg-config libharkio --libs` \
+	`pkg-config --libs FlowDesigner`
 
 INCLUDES = `flowdesigner-config --cflags config libflow audio_blocks` \
-	-I ../include
+	-I ../include \
+	`pkg-config --cflags FlowDesigner`
 
 libhark_jsk_la_LIBADD = -lboost_thread-mt
