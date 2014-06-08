@@ -27,6 +27,7 @@ include_directories(${catkin_INCLUDE_DIRS} include)
 add_library(jsk_topic_tools SHARED
   src/lightweight_throttle_nodelet.cpp
   src/mux_nodelet.cpp
+  src/relay_nodelet.cpp
   src/hz_measure_nodelet.cpp)
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 
