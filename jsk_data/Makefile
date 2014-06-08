@@ -22,3 +22,6 @@ small:
 	rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" --bwlimit=100000 ${DATA_DIR}/small/${KEYWORD} small/ || exit 0
 	bash `rospack find jsk_data`/scripts/decompress small || exit 0
 	sh `rospack find jsk_data`/scripts/gen-gif-all small || exit 0
+
+pkls:
+	rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" --bwlimit=100000 ${DATA_DIR}/pkls . || exit 0
