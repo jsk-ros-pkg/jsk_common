@@ -29,4 +29,10 @@
       relay a topic message from ~input to ~output.
     </description>
   </class>
+  <class name="jsk_topic_tools/Block" type="Block"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      block topic
+    </description>
+  </class>
 </library>

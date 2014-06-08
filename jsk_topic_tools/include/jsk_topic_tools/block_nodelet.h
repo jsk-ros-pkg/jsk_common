@@ -33,26 +33,46 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#ifndef RELAY_NODELET_H_
-#define RELAY_NODELET_H_
+#ifndef BLOCK_NODELET_H_
+#define BLOCK_NODELET_H_
 
 #include <nodelet/nodelet.h>
 #include <topic_tools/shape_shifter.h>
 
 namespace jsk_topic_tools
 {
-  class Relay : public nodelet::Nodelet
+
+  /***************************************
+   *
+   *
+   *  [input] -- |  | -- [input_original] -- |process| -- [output_original] -- |  | -- [output]
+   *
+   * * a subscriber to subscribe input := sub_input_
+   * * a subscriber to subscribe output_original := sub_output_original_
+   * * a publisher to publish input_original := pub_input_original_
+   * * a publisher to publish output := pub_output_
+   */
+  
+  class Block : public nodelet::Nodelet
   {
   public:
     typedef ros::MessageEvent<topic_tools::ShapeShifter> ShapeShifterEvent;
-    virtual void onInit();
-    virtual void inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
   protected:
-    ros::Publisher pub_;
-    ros::Subscriber sub_;
-    bool advertised_;
+    virtual void onInit();
+
+    
     ros::NodeHandle pnh_;
-    ros::TransportHints th_;
+    bool pub_input_original_advertised_, pub_output_advertised_;
+    bool sub_input_subscribing_, sub_output_original_subscribing_;
+    ros::Subscriber sub_input_, sub_output_original_;
+    ros::Publisher pub_input_original_, pub_output_;
+    double check_rate_;        // in Hz
+    virtual void inputCallback(
+      const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
+    virtual void outputOriginalCallback(
+      const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
+    virtual void timerCallback(const ros::TimerEvent& event);
+    ros::Timer timer_;
   };
 }
 
