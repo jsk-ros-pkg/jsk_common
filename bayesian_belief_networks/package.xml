@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package>
+  <name>bayesian_belief_networks</name>
+  <version>1.0.26</version>
+  <description>The bayesian_belief_networks package form https://github.com/eBay/bayesian-belief-networks, Authored by Neville Newey, Anzar Afaq, Copyright 2013 eBay Software Foundation</description>
+
+  <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
+
+
+  <license>Apache License, Version 2.0</license>
+
+
+  <url type="website">https://github.com/eBay/bayesian-belief-networks</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>mk</build_depend>
+  <build_depend>git</build_depend>
+  <build_depend>message_generation</build_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>message_runtime</run_depend>
+
+  <export>
+  </export>
+
+</package>

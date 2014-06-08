@@ -1,0 +1,34 @@
+all: installed
+
+INSTALL_DIR = ${CURDIR}
+GIT_DIR = build/bayesian-belief-networks
+GIT_URL = https://github.com/eBay/bayesian-belief-networks.git
+GIT_REVISION = 6dd976443610732a5a8ddf08af5fdffbe34dfaec
+
+PYTHONBIN   = python2
+PYTHONDIR   = $(shell $(PYTHONBIN) -c 'import sys; print "python%s"%sys.version[:3]')
+SETUPTOOLS_ARG_EXTRA = "--install-layout=deb"
+DIST_DIR    = $(INSTALL_DIR)/lib/$(PYTHONDIR)/dist-packages
+
+MK_DIR      = $(shell rospack find mk)
+
+include $(MK_DIR)/git_checkout.mk
+
+disable_ssl:
+	git config --global http.sslVerify false
+
+installed: disable_ssl $(DIST_DIR) # examples
+	touch installed
+
+# examples: $(DIST_DIR)
+# 	mkdir -p ${INSTALL_DIR}/examples
+# 	cp -r $(GIT_DIR)/bayesian/examples/* ${INSTALL_DIR}/examples/
+
+$(DIST_DIR): $(GIT_DIR)
+	mkdir -p $(DIST_DIR)
+	cd $(GIT_DIR) && $(PYTHONBIN) ./setup.py build && PYTHONPATH=$(DIST_DIR) $(PYTHONBIN) ./setup.py install --prefix=$(INSTALL_DIR) $(SETUPTOOLS_ARG_EXTRA) --record installed_files.txt
+
+
+clean:
+	(cd $(GIT_DIR) && cat installed_files.txt | xargs rm -rvf )
+	rm -fr $(DIST_DIR)
