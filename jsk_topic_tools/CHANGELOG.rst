@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.27 (2014-06-10)
+-------------------
 * add nodelet to relay topic
 * Contributors: Ryohei Ueda
 

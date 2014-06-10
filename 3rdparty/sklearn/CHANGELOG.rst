@@ -2,8 +2,8 @@
 Changelog for package sklearn
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.27 (2014-06-10)
+-------------------
 * refactor return type
 * Contributors: Yuto Inagaki
 
