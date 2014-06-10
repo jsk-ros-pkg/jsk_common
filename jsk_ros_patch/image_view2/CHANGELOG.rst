@@ -2,6 +2,11 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* publish the mouse position to movepoint topic during mouse move event
+* Contributors: Ryohei Ueda
+
 1.0.26 (2014-05-30)
 -------------------
 
