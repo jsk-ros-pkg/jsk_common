@@ -1,0 +1,15 @@
+<package>
+  <description>
+The bayesian_belief_networks package form https://github.com/eBay/bayesian-belief-networks, Authored by Neville Newey, Anzar Afaq, Copyright 2013 eBay Software Foundation
+  </description>
+  <license>Apache License, Version 2.0</license>
+
+  <depend package="rospy"/>
+  <depend package="std_msgs"/>
+  <depend package="mk"/>
+  <rosdep name="git"/>
+
+  <export>
+    <python path="${prefix}/lib/python2.7/dist-packages:${prefix}/src" />
+  </export>
+</package>

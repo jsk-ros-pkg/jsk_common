@@ -1,0 +1,16 @@
+<package>
+  <description>
+     ros-python client
+  </description>
+  <license>Apache</license>
+
+  <depend package="rospy"/>
+  <depend package="std_msgs"/>
+  <depend package="mk"/>
+  <rosdep name="python-simplejson"/>
+  <rosdep name="git"/>
+
+  <export>
+    <python path="${prefix}/lib/python2.7/dist-packages/oauthlib-0.6.1-py2.7.egg:${prefix}/lib/python2.7/dist-packages/requests_oauthlib-0.4.0-py2.7.egg:${prefix}/lib/python2.7/dist-packages/requests-2.3.0-py2.7.egg:${prefix}/lib/python2.7/dist-packages/python_twitter-2.0-py2.7.egg" />
+  </export>
+</package>

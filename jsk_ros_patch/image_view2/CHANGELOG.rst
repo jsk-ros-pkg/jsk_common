@@ -2,6 +2,33 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.27 (2014-06-10)
+-------------------
+* publish the mouse position to movepoint topic during mouse move event
+* Contributors: Ryohei Ueda
+
+1.0.26 (2014-05-30)
+-------------------
+
+1.0.25 (2014-05-26)
+-------------------
+
+1.0.24 (2014-05-24)
+-------------------
+
+1.0.23 (2014-05-23)
+-------------------
+
+1.0.22 (2014-05-22)
+-------------------
+
+1.0.21 (2014-05-20)
+-------------------
+* does not check 0.5sec test if the image_view2 is in series mode.
+* not use ros::Rate's sleep, use cvWaitKey to captuere
+  keys to be pressed
+* Contributors: Ryohei Ueda
+
 1.0.20 (2014-05-09)
 -------------------
 
