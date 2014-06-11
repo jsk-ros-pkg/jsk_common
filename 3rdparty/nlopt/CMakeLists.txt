@@ -1,4 +1,4 @@
-project(eus_qp)
+project(nlopt)
 
 cmake_minimum_required(VERSION 2.4.6)
 
