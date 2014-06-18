@@ -23,4 +23,10 @@
       mux_delete, mux_list of topic_tools.
     </description>
   </class>
+  <class name="jsk_topic_tools/Relay" type="Relay"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      relay a topic message from ~input to ~output.
+    </description>
+  </class>
 </library>
