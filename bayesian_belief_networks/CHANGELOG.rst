@@ -2,9 +2,12 @@
 Changelog for package bayesian_belief_networks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.27 (2014-06-10)
+-------------------
+
 1.0.26 (2014-05-30)
 -------------------
-* (#445) add  and fix setup.py
+* (#445) fix setup.py
 * Contributors: Kei Okada
 
 1.0.25 (2014-05-26)

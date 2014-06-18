@@ -39,7 +39,7 @@ class RandomForestServer:
         ret = []
         for data in req.data:
             print data
-            ret.append(str(self.clf.predict(data.point)))
+            ret.append(" ".join([str(predict_data) for predict_data in self.clf.predict(data.point)]))
             rospy.loginfo("req : " + str(data.point) +  "-> answer : " + str(ret))
         return ClassifyDataResponse(ret)
 

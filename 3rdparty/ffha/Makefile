@@ -15,10 +15,13 @@ INSTALL_DIR = `rospack find ffha`
 MAKE = make
 #MAKE_ARGS = ADDONS=-DYY_SKIP_YYWRAP
 
-installed:$(SOURCE_DIR)/unpacked
+$(SOURCE_DIR)/patched:$(SOURCE_DIR)/unpacked
 	rm -f $(SOURCE_DIR)/ffha
-	patch -p0 $(SOURCE_DIR)/inst_pre.c < ${PATCH_DIR}/inst_pre.c.patch
-	patch -p0 $(SOURCE_DIR)/parse.c < ${PATCH_DIR}/parse.c.patch
+	patch --forward -p0 $(SOURCE_DIR)/inst_pre.c < ${PATCH_DIR}/inst_pre.c.patch
+	patch --forward -p0 $(SOURCE_DIR)/parse.c < ${PATCH_DIR}/parse.c.patch
+	touch $(SOURCE_DIR)/patched
+
+installed:$(SOURCE_DIR)/patched
 	(cd $(SOURCE_DIR) && $(MAKE) clean && $(MAKE) $(MAKE_ARGS))
 	mkdir -p bin
 	cp $(SOURCE_DIR)/ffha bin/

@@ -2,6 +2,9 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.27 (2014-06-10)
+-------------------
+
 1.0.26 (2014-05-30)
 -------------------
 * enable depend to map_server for default
