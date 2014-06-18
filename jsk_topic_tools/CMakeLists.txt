@@ -40,6 +40,7 @@ rosbuild_add_library (jsk_topic_tools
   src/lightweight_throttle_nodelet.cpp
   src/mux_nodelet.cpp
   src/relay_nodelet.cpp
+  src/block_nodelet.cpp
   src/hz_measure_nodelet.cpp)
 
 #target_link_libraries(example ${PROJECT_NAME})
