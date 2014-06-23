@@ -40,6 +40,7 @@ namespace jsk_topic_tools
   void Relay::onInit()
   {
     advertised_ = false;
+    subscribing_ = false;
     pnh_ = getPrivateNodeHandle();
     sub_ = pnh_.subscribe<topic_tools::ShapeShifter>("input", 1,
                                                      &Relay::inputCallback, this, th_);
