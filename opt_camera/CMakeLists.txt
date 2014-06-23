@@ -31,6 +31,7 @@ rosbuild_find_ros_package(dynamic_reconfigure)
 include(${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake)
 gencfg()
 
+find_package(OpenCV REQUIRED)
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
@@ -38,12 +39,12 @@ gencfg()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 rosbuild_add_executable(nm33_node src/nm33_node.cpp src/opt_nm33_uvc/opt_nm33_camera.cpp src/opt_nm33_uvc/opt_nm33_uvc.cpp)
 rosbuild_add_executable(init_xu_register src/opt_nm33_uvc/init_xu_register.cpp src/opt_nm33_uvc/opt_nm33_uvc.cpp)
-target_link_libraries(nm33_node rospack)
+target_link_libraries(nm33_node rospack ${OpenCV_LIBRARIES})
 
 #target_link_libraries(example ${PROJECT_NAME})
 
 rosbuild_add_executable(nm33_node_non_std_uvc src/nm33_node.cpp src/opt_nm33_uvc/opt_nm33_camera.cpp src/opt_nm33_uvc/opt_nm33_uvc.cpp)
-target_link_libraries(nm33_node_non_std_uvc rospack)
+target_link_libraries(nm33_node_non_std_uvc rospack ${OpenCV_LIBRARIES})
 rosbuild_add_executable(init_xu_register_non_std_uvc src/opt_nm33_uvc/init_xu_register.cpp src/opt_nm33_uvc/opt_nm33_uvc.cpp)
 rosbuild_add_compile_flags(nm33_node_non_std_uvc -DNON_STD_UVC=1)
 rosbuild_add_compile_flags(init_xu_register_non_std_uvc -DNON_STD_UVC=1)
