@@ -40,6 +40,7 @@ namespace jsk_topic_tools
   void Relay::onInit()
   {
     advertised_ = false;
+    subscribing_ = false;
     pnh_ = getPrivateNodeHandle();
     sub_ = pnh_.subscribe<topic_tools::ShapeShifter>("input", 1,
                                                      &Relay::inputCallback, this, th_);
@@ -47,12 +48,61 @@ namespace jsk_topic_tools
   
   void Relay::inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
   {
+    boost::mutex::scoped_lock(mutex_);
     if (!advertised_) {
-      pub_ = msg->advertise(pnh_, "output", 1);
+      // this block is called only once
+      // in order to advertise topic.
+      // we need to subscribe at least one message
+      // in order to detect message definition.
+      ros::SubscriberStatusCallback connect_cb
+        = boost::bind( &Relay::connectCb, this);
+      ros::SubscriberStatusCallback disconnect_cb
+        = boost::bind( &Relay::disconnectCb, this);
+      ros::AdvertiseOptions opts("output", 1,
+                                 msg->getMD5Sum(),
+                                 msg->getDataType(),
+                                 msg->getMessageDefinition(),
+                                 connect_cb,
+                                 disconnect_cb);
+      opts.latch = false;
+      pub_ = pnh_.advertise(opts);
       advertised_ = true;
+      // shutdown subscriber
+      sub_.shutdown();
     }
-    if (pub_.getNumSubscribers() > 0) {
+    else if (pub_.getNumSubscribers() > 0) {
       pub_.publish(msg);
+    }
+  }
+
+  void Relay::connectCb()
+  {
+    boost::mutex::scoped_lock(mutex_);
+    NODELET_DEBUG("connectCB");
+    if (advertised_) {
+      if (pub_.getNumSubscribers() > 0) {
+        if (!subscribing_) {
+          NODELET_DEBUG("suscribe");
+          sub_ = pnh_.subscribe<topic_tools::ShapeShifter>("input", 1,
+                                                           &Relay::inputCallback, this, th_);
+          subscribing_ = true;
+        }
+      }
+    }
+  }
+
+  void Relay::disconnectCb()
+  {
+    boost::mutex::scoped_lock(mutex_);
+    NODELET_DEBUG("disconnectCb");
+    if (advertised_) {
+      if (pub_.getNumSubscribers() == 0) {
+        if (subscribing_) {
+          NODELET_DEBUG("disconnect");
+          sub_.shutdown();
+          subscribing_ = false;
+        }
+      }
     }
   }
   
