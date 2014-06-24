@@ -2,8 +2,8 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.28 (2014-06-24)
+-------------------
 * add catkin.cmake and catkin_package declearation for generating config.cmake
 * use PROJECT_SOURCE_DIR value in CMakeLists.txt for Makefile DESTDIR value instead of /home/s-noda/ros/hydro/src/jsk-ros-pkg/jsk_common/3rdparty/nlopt
 * fix minor change for amenda

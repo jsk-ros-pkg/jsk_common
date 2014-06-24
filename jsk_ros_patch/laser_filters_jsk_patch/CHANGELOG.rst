@@ -2,8 +2,8 @@
 Changelog for package laser_filters_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.28 (2014-06-24)
+-------------------
 * add cmake_modules and mk to build_depend
 * Contributors: Kei Okada
 

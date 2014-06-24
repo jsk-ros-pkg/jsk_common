@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.28 (2014-06-24)
+-------------------
 * initialize variable in relay_nodelet
 * shutdown subscriber if no need to publish message in relay nodelet
 * Merge pull request #466 from garaemon/add-single-executable-for-nodelet

@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.28 (2014-06-24)
+-------------------
 * add script to doctor workspace
 * Contributors: Ryohei Ueda
 
