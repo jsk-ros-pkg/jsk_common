@@ -4,12 +4,17 @@
   <description>
     nlopt
   </description>
-  <version>0.0.0</version>
+  <version>1.0.27</version>
   <maintainer email="s-noda@jsk.t.u-tokyo.ac.jp">Noda Shintaro</maintainer>
   <license>BSD</license>
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lnlopt"/>
   </export>
   <buildtool_depend>catkin</buildtool_depend>
+
   <build_depend>cmake_modules</build_depend>
+
+  <build_depend>mk</build_depend>
+  <build_depend>rosbuild</build_depend>
+
 </package>

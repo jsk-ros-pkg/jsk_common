@@ -1,11 +1,12 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package ffha
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package speech_recognition_msgs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Forthcoming
 -----------
-* (ffha) use -n (--forward) to ignore patches that seem to be already applied
-* Contributors: Kei Okada
+* catkinize speech_recognition_msgs, see #470
+* add speech_recognition_msgs
+* Contributors: Yuki Furuta, Kei Okada
 
 1.0.27 (2014-06-10)
 -------------------
@@ -33,15 +34,9 @@ Forthcoming
 
 1.0.19 (2014-05-06)
 -------------------
-* add find_package(catkin)
-* Add several missing build deps
-* ff, ffha: add CHANGELOG.rst
-* Contributors: Kei Okada, Scott K Logan
 
 1.0.18 (2014-05-04)
 -------------------
-* catkinize ffha
-* Contributors: Kei Okada
 
 1.0.17 (2014-04-20)
 -------------------
@@ -96,8 +91,3 @@ Forthcoming
 
 1.0.0 (2014-03-05)
 ------------------
-* add dependencies of ffha
-* add patch for parse.c, segv if last condition of inititial state is 'not-condition' in problem
-* remove strange exit(-1) for use non DNF preconditions
-* put jsk tools in jsk_common stack
-* Contributors: furushchev, manabu, rosen
