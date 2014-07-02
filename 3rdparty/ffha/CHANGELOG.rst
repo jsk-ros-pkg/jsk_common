@@ -2,6 +2,9 @@
 Changelog for package ffha
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.28 (2014-06-24)
 -------------------
 * (ffha) use -n (--forward) to ignore patches that seem to be already applied

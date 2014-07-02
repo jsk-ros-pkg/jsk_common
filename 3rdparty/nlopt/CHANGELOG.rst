@@ -2,6 +2,9 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.28 (2014-06-24)
 -------------------
 * add catkin.cmake and catkin_package declearation for generating config.cmake
