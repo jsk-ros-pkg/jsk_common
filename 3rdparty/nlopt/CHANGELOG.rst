@@ -1,12 +1,20 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package rostwitter
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package nlopt
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1.0.29 (2014-07-02)
 -------------------
 
 1.0.28 (2014-06-24)
 -------------------
+* add catkin.cmake and catkin_package declearation for generating config.cmake
+* use PROJECT_SOURCE_DIR value in CMakeLists.txt for Makefile DESTDIR value instead of /home/s-noda/ros/hydro/src/jsk-ros-pkg/jsk_common/3rdparty/nlopt
+* fix minor change for amenda
+* change output dir from catkin_home -> nlopt dir
+* remove rosmake function from CMakeLists.txt
+* miss project name fix, nlopt
+* add CMakeList and package.xml for catkinize
+* Contributors: Shintaro Noda
 
 1.0.27 (2014-06-10)
 -------------------
@@ -16,16 +24,12 @@ Changelog for package rostwitter
 
 1.0.25 (2014-05-26)
 -------------------
-* do not error if pip is not installed
 
 1.0.24 (2014-05-24)
 -------------------
-* rostwitter/rbayesian_belief_networks : add disable_ssl
 
 1.0.23 (2014-05-23)
 -------------------
-* add rostwitter
-* Contributors: Kei Okada
 
 1.0.22 (2014-05-22)
 -------------------
@@ -95,3 +99,5 @@ Changelog for package rostwitter
 
 1.0.0 (2014-03-05)
 ------------------
+* initial commit, nlopt add
+* Contributors: s-noda
