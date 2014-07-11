@@ -13,7 +13,7 @@
   <arg name="save_prosilica" default="false" />
   <arg name="camera_namespace" default="openni"/>
   <arg name="save_dir" default="/removable/bagfile/"/>
-  <arg name="remove_c2" default="true"/>
+  <arg name="remove_c2" default="true" />
   <!--                          -->
   <!--       Conditions         -->
   <!--                          -->
