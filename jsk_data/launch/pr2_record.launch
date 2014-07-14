@@ -13,6 +13,7 @@
   <arg name="save_prosilica" default="false" />
   <arg name="camera_namespace" default="openni"/>
   <arg name="save_dir" default="/removable/bagfile/"/>
+  <arg name="remove_c2" default="true" />
   <!--                          -->
   <!--       Conditions         -->
   <!--                          -->
@@ -42,6 +43,11 @@
   <arg if    ="$(arg save_all_image)"
        name="all_image_topics" value="-e .*/(image_raw|camera_info)" />
 
+  <arg unless="$(arg remove_c2)"
+       name="r_c2" value="" />
+  <arg if    ="$(arg remove_c2)"
+       name="r_c2" value="-x .*(_c2|_c3).*" />
+
   <arg unless="$(arg save_pressure)"
        name="pressure_topics" value="" />
   <arg if    ="$(arg save_pressure)"
@@ -65,7 +71,8 @@
           $(arg base_scan_topics) 
           $(arg tilt_scan_topics) 
           $(arg robot_model_topics) 
-          $(arg all_image_topics) 
+          $(arg all_image_topics)
+	  $(arg r_c2) 
           $(arg pressure_topics) 
           $(arg gripper_command_topics) 
 	  $(arg prosilica_topics)
