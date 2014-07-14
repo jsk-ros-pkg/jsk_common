@@ -38,6 +38,8 @@
 
 #include <nodelet/nodelet.h>
 #include <topic_tools/shape_shifter.h>
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
 
 namespace jsk_topic_tools
 {
@@ -48,9 +50,13 @@ namespace jsk_topic_tools
     virtual void onInit();
     virtual void inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
   protected:
+    virtual void connectCb();
+    virtual void disconnectCb();
+    boost::mutex mutex_;
     ros::Publisher pub_;
     ros::Subscriber sub_;
     bool advertised_;
+    bool subscribing_;
     ros::NodeHandle pnh_;
     ros::TransportHints th_;
   };

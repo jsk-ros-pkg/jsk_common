@@ -36,11 +36,29 @@ rosbuild_add_executable(specific_transform_publisher src/specific_transform_publ
 rosbuild_add_executable(specific_transform_subscriber src/specific_transform_subscriber.cpp)
 rosbuild_add_executable(transform_merger src/transform_merger.cpp)
 
+macro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
+  list(APPEND jsk_topic_tools_nodelet_sources ${_nodelet_cpp})
+  set(NODELET ${_nodelet_class})
+  set(DEFAULT_NODE_NAME ${_single_nodelet_exec_name})
+  configure_file(${PROJECT_SOURCE_DIR}/src/single_nodelet_exec.cpp.in
+    ${_single_nodelet_exec_name}.cpp) #${CMAKE_CURRENT_BINARY_DIR}/
+  rosbuild_add_executable(${_single_nodelet_exec_name} build/${_single_nodelet_exec_name}.cpp)
+endmacro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
+
+jsk_topic_tools_nodelet(src/lightweight_throttle_nodelet.cpp
+  "jsk_topic_tools/LightweightThrottle" "lightweight_throttle")
+jsk_topic_tools_nodelet(src/mux_nodelet.cpp
+  "jsk_topic_tools/MUX" "mux")
+jsk_topic_tools_nodelet(src/relay_nodelet.cpp
+  "jsk_topic_tools/Relay" "relay")
+jsk_topic_tools_nodelet(src/block_nodelet.cpp
+  "jsk_topic_tools/Block" "block")
+jsk_topic_tools_nodelet(src/hz_measure_nodelet.cpp
+  "jsk_topic_tools/HzMeasure" "hz_measure")
+
+
 rosbuild_add_library (jsk_topic_tools
-  src/lightweight_throttle_nodelet.cpp
-  src/mux_nodelet.cpp
-  src/relay_nodelet.cpp
-  src/hz_measure_nodelet.cpp)
+  ${jsk_topic_tools_nodelet_sources})
 
 #target_link_libraries(example ${PROJECT_NAME})
 rosbuild_add_rostest(test/test_topic_buffer.test)
@@ -51,3 +69,4 @@ rosbuild_add_rostest(test/test_topic_buffer_close_wait.test)
 rosbuild_add_rostest(test/test_lightweight_throttle.test)
 rosbuild_add_rostest(test/test_topic_compare.test)
 rosbuild_add_rostest(test/test_hz_measure.test)
+rosbuild_add_rostest(test/test_block.test)

@@ -2,6 +2,21 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.29 (2014-07-02)
+-------------------
+
+1.0.28 (2014-06-24)
+-------------------
+* initialize variable in relay_nodelet
+* shutdown subscriber if no need to publish message in relay nodelet
+* Merge pull request #466 from garaemon/add-single-executable-for-nodelet
+  Add single executables for nodelets of jsk_topic_tools
+* add single executable files for each nodelet in jsk_topic_tools
+* add test code for block nodelet
+* add nodelet to BLOCK topic pipeline according to the number of the subscribers
+* add nodelet to relay topic
+* Contributors: Ryohei Ueda, Yusuke Furuta
+
 1.0.27 (2014-06-10)
 -------------------
 * add nodelet to relay topic
