@@ -3,6 +3,7 @@ all: installed
 TOP_DIR = $(shell pwd)
 GIT_DIR = build/python-twitter
 GIT_URL = https://github.com/bear/python-twitter
+GIT_REVISION = v0.8.5
 include $(shell rospack find mk)/git_checkout.mk
 
 installed: $(GIT_DIR) patched
@@ -17,7 +18,7 @@ installed: $(GIT_DIR) patched
 	touch installed
 
 clean:
-	rm -rf installed bin lib src
+	rm -rf installed bin lib src build
 
 wipe: clean
 	rm -rf $(GIT_DIR)

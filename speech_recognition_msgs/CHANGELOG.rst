@@ -1,12 +1,15 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package rostwitter
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package speech_recognition_msgs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1.0.29 (2014-07-02)
 -------------------
 
 1.0.28 (2014-06-24)
 -------------------
+* catkinize speech_recognition_msgs, see #470
+* add speech_recognition_msgs
+* Contributors: Yuki Furuta, Kei Okada
 
 1.0.27 (2014-06-10)
 -------------------
@@ -16,16 +19,12 @@ Changelog for package rostwitter
 
 1.0.25 (2014-05-26)
 -------------------
-* do not error if pip is not installed
 
 1.0.24 (2014-05-24)
 -------------------
-* rostwitter/rbayesian_belief_networks : add disable_ssl
 
 1.0.23 (2014-05-23)
 -------------------
-* add rostwitter
-* Contributors: Kei Okada
 
 1.0.22 (2014-05-22)
 -------------------
