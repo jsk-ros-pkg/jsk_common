@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.30 (2014-07-15)
+-------------------
 * add tool to check the existence of ros nodes and publish them to diagnostics
 * Contributors: Ryohei Ueda
 
