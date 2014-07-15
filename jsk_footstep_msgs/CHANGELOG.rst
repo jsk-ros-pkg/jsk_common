@@ -2,6 +2,12 @@
 Changelog for package jsk_footstep_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add constant variables to ExecFootsteps to specify resume/overwrite the
+  plan to execute
+* Contributors: Ryohei Ueda
+
 1.0.29 (2014-07-02)
 -------------------
 
