@@ -18,9 +18,11 @@
   <depend package="nodelet"/>
   <depend package="rostopic"/>
   <depend package="std_msgs"/>
+  <depend package="roslaunch" />
+  <depend package="diagnostic_updater"/>
+  <depend package="diagnostic_msgs" />
+  <depend package="rosnode" />
   <export>
     <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>
   </export>
 </package>
-
-
