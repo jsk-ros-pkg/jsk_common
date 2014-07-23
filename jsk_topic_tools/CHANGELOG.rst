@@ -2,6 +2,11 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.31 (2014-07-23)
+-------------------
+* add class TimeAccumulator to measure and accumurate time to jsk_topic_tools
+* Contributors: Ryohei Ueda
+
 1.0.30 (2014-07-15)
 -------------------
 * add tool to check the existence of ros nodes and publish them to diagnostics
