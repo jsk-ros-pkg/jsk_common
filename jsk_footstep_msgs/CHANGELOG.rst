@@ -2,6 +2,9 @@
 Changelog for package jsk_footstep_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.30 (2014-07-15)
 -------------------
 * add constant variables to ExecFootsteps to specify resume/overwrite the
