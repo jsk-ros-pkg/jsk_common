@@ -1,7 +1,7 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
+diff --git CMakeLists.txt CMakeLists.txt
 index 7a760d2..6aa3b40 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
+--- CMakeLists.txt
++++ CMakeLists.txt
 @@ -13,8 +13,8 @@ set(ASSIMP_PACKAGE_VERSION "0" CACHE STRING "the package-specific version used f
  
  option(ASSIMP_OPT_BUILD_PACKAGES "Set to ON to generate CPack configuration files and packaging targets" OFF)
@@ -66,8 +66,8 @@ index 7a760d2..6aa3b40 100644
    set(CPACK_DEBIAN_CHANGELOG)
 diff --git a/code/CMakeLists.txt b/code/CMakeLists.txt
 index 29ed3cc..9a887a4 100644
---- a/code/CMakeLists.txt
-+++ b/code/CMakeLists.txt
+--- code/CMakeLists.txt
++++ code/CMakeLists.txt
 @@ -681,31 +681,31 @@ SET( assimp_src
  
  ADD_MSVC_PRECOMPILED_HEADER("AssimpPCH.h" "AssimpPCH.cpp" assimp_src)
@@ -110,8 +110,8 @@ index 29ed3cc..9a887a4 100644
           RUNTIME DESTINATION ${ASSIMP_BIN_INSTALL_DIR}
 diff --git a/tools/assimp_cmd/CMakeLists.txt b/tools/assimp_cmd/CMakeLists.txt
 index 899a8e0..d474e01 100644
---- a/tools/assimp_cmd/CMakeLists.txt
-+++ b/tools/assimp_cmd/CMakeLists.txt
+--- tools/assimp_cmd/CMakeLists.txt
++++ tools/assimp_cmd/CMakeLists.txt
 @@ -26,9 +26,9 @@ IF( WIN32 )
  		MAIN_DEPENDENCY assimp)
  ENDIF( WIN32 )
@@ -126,8 +126,8 @@ index 899a8e0..d474e01 100644
  INSTALL( TARGETS assimp_cmd
 diff --git a/assimp.pc.in b/assimp.pc.in
 index 1d3d995..cf06364 100644
---- a/assimp.pc.in
-+++ b/assimp.pc.in
+--- assimp.pc.in
++++ assimp.pc.in
 @@ -1,10 +1,10 @@
  prefix=@CMAKE_INSTALL_PREFIX@
  exec_prefix=@CMAKE_INSTALL_PREFIX@/@ASSIMP_BIN_INSTALL_DIR@
