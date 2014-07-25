@@ -2,8 +2,8 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.32 (2014-07-26)
+-------------------
 * update Makefile and *.patch file for using new assimp version, v3.1.1
 * Contributors: YoheiKakiuchi
 

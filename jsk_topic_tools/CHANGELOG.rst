@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.32 (2014-07-26)
+-------------------
 * fix compilation for jsk_topic_tools::TimeAccumulator
 * Contributors: Ryohei Ueda
 
