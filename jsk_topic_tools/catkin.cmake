@@ -51,7 +51,8 @@ jsk_topic_tools_nodelet(src/hz_measure_nodelet.cpp
   "jsk_topic_tools/HzMeasure" "hz_measure")
 
 add_library(jsk_topic_tools SHARED
-  ${jsk_topic_tools_nodelet_sources})
+  ${jsk_topic_tools_nodelet_sources}
+  src/time_accumulator.cpp)
   
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 
@@ -60,8 +61,8 @@ generate_messages()
 catkin_package(
     DEPENDS
     CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs
-    INCLUDE_DIRS
-    LIBRARIES
+    INCLUDE_DIRS include
+    LIBRARIES jsk_topic_tools
 )
 
 add_rostest(test/test_topic_buffer.test)
@@ -86,6 +87,9 @@ install(FILES jsk_topic_tools_nodelet.xml
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   )
+# install(DIRECTORY include
+#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+#   )
 
 install(DIRECTORY scripts launch test DESTINATION
   ${CATKIN_PACKAGE_SHARE_DESTINATION}

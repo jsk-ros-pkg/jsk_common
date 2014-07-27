@@ -24,5 +24,7 @@
   <depend package="rosnode" />
   <export>
     <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>
+    <cpp cflags="-I${prefix}/include"
+         lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -ljsk_topic_tools" />
   </export>
 </package>
