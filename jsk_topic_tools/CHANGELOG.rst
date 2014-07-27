@@ -2,6 +2,11 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.32 (2014-07-26)
+-------------------
+* fix compilation for jsk_topic_tools::TimeAccumulator
+* Contributors: Ryohei Ueda
+
 1.0.31 (2014-07-23)
 -------------------
 * add class TimeAccumulator to measure and accumurate time to jsk_topic_tools
