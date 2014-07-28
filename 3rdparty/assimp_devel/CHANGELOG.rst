@@ -2,8 +2,8 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.33 (2014-07-28)
+-------------------
 * use one process to compile assimp_devel
 * Contributors: Ryohei Ueda
 
