@@ -2,6 +2,9 @@
 Changelog for package openni_tracker_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.32 (2014-07-26)
 -------------------
 

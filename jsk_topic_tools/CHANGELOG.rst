@@ -2,6 +2,12 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* compile time_acucmulator.cpp on rosbuild environment
+* add depend to dynamic_tf_reconfigure
+* Contributors: Ryohei Ueda, Yuto Inagaki
+
 1.0.32 (2014-07-26)
 -------------------
 * fix compilation for jsk_topic_tools::TimeAccumulator
