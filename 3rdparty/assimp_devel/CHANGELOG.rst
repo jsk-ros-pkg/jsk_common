@@ -2,6 +2,22 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.33 (2014-07-28)
+-------------------
+* use one process to compile assimp_devel
+* Contributors: Ryohei Ueda
+
+1.0.32 (2014-07-26)
+-------------------
+* update Makefile and *.patch file for using new assimp version, v3.1.1
+* Contributors: YoheiKakiuchi
+
+1.0.31 (2014-07-23)
+-------------------
+
+1.0.30 (2014-07-15)
+-------------------
+
 1.0.29 (2014-07-02)
 -------------------
 
