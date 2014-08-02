@@ -113,7 +113,6 @@ class dynamic_tf_publisher:
             self.cur_tf[req.cur_tf.child_frame_id] = req.cur_tf
             print "Latch [%s]/[%shz]"%(req.cur_tf.child_frame_id,req.freq)
         self.lockobj.release()
-
         # set parameter
         if self.use_cache:
             time = rospy.Time.now()
@@ -123,8 +122,6 @@ class dynamic_tf_publisher:
                 pose.header.stamp = time
                 tfm.transforms.append(pose)
             rospy.set_param('dynamic_tf_publisher'+rospy.get_name(),tfm.__str__())
-
-        self.publish_tf()
         return SetDynamicTFResponse()
 
     def publish_and_sleep(self):
