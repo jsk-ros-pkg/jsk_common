@@ -58,7 +58,8 @@ jsk_topic_tools_nodelet(src/hz_measure_nodelet.cpp
 
 
 rosbuild_add_library (jsk_topic_tools
-  ${jsk_topic_tools_nodelet_sources})
+  ${jsk_topic_tools_nodelet_sources}
+  src/time_accumulator.cpp)
 
 #target_link_libraries(example ${PROJECT_NAME})
 rosbuild_add_rostest(test/test_topic_buffer.test)
