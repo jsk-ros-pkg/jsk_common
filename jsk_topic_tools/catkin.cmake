@@ -52,7 +52,8 @@ jsk_topic_tools_nodelet(src/hz_measure_nodelet.cpp
 
 add_library(jsk_topic_tools SHARED
   ${jsk_topic_tools_nodelet_sources}
-  src/time_accumulator.cpp)
+  src/time_accumulator.cpp
+  src/vital_checker.cpp)
   
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 
