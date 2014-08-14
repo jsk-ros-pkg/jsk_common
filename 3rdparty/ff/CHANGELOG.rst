@@ -2,6 +2,11 @@
 Changelog for package ff
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* download FF-v23.tgz from jsk-ros-pkg/archives
+* Contributors: Kei Okada
+
 1.0.33 (2014-07-28)
 -------------------
 

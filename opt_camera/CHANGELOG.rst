@@ -2,6 +2,11 @@
 Changelog for package opt_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Support ubuntu precise
+* Contributors: Hiroaki Yaguchi
+
 1.0.33 (2014-07-28)
 -------------------
 
