@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.34 (2014-08-14)
+-------------------
 * add new class: VitalChecker from jsk_pcl_ros
 * Contributors: Ryohei Ueda
 

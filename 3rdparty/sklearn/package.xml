@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>sklearn</name>
-  <version>1.0.33</version>
+  <version>1.0.34</version>
   <description>ROS wrapper for the sklearn library</description>
 
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
