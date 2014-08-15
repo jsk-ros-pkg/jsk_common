@@ -35,14 +35,10 @@ rosbuild_add_executable(topic_buffer_client src/topic_buffer_client.cpp)
 rosbuild_add_executable(specific_transform_publisher src/specific_transform_publisher.cpp)
 rosbuild_add_executable(specific_transform_subscriber src/specific_transform_subscriber.cpp)
 rosbuild_add_executable(transform_merger src/transform_merger.cpp)
-
+include(${PROJECT_SOURCE_DIR}/cmake/nodelet.cmake)
 macro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
-  list(APPEND jsk_topic_tools_nodelet_sources ${_nodelet_cpp})
-  set(NODELET ${_nodelet_class})
-  set(DEFAULT_NODE_NAME ${_single_nodelet_exec_name})
-  configure_file(${PROJECT_SOURCE_DIR}/src/single_nodelet_exec.cpp.in
-    ${_single_nodelet_exec_name}.cpp) #${CMAKE_CURRENT_BINARY_DIR}/
-  rosbuild_add_executable(${_single_nodelet_exec_name} build/${_single_nodelet_exec_name}.cpp)
+  jsk_nodelet(${_nodelet_cpp} ${_nodelet_class} ${_single_nodelet_exec_name}
+    jsk_topic_tools_nodelet_sources)
 endmacro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
 
 jsk_topic_tools_nodelet(src/lightweight_throttle_nodelet.cpp
