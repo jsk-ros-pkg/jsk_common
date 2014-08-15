@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>bayesian_belief_networks</name>
-  <version>1.0.34</version>
+  <version>1.0.35</version>
   <description>The bayesian_belief_networks package form https://github.com/eBay/bayesian-belief-networks, Authored by Neville Newey, Anzar Afaq, Copyright 2013 eBay Software Foundation</description>
 
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>

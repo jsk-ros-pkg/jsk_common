@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.35 (2014-08-16)
+-------------------
 * add nodelet.cmake to export utility cmake macro to
   compile nodelet libraries
 * Contributors: Ryohei Ueda

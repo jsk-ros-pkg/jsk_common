@@ -1,6 +1,6 @@
 <package>
   <name>collada_urdf_jsk_patch</name>
-  <version>1.0.34</version>
+  <version>1.0.35</version>
   <description>unaccepted patch for collada_urdf</description>
 
   <maintainer email="youhei@jsk.t.u-tokyo.ac.jp">Yohei Kakiuchi</maintainer>
