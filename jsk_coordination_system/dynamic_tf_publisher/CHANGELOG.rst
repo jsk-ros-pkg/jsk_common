@@ -2,6 +2,11 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.34 (2014-08-14)
+-------------------
+* not publish tf in service call
+* Contributors: Yusuke Furuta
+
 1.0.33 (2014-07-28)
 -------------------
 

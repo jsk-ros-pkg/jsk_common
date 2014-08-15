@@ -2,6 +2,11 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.34 (2014-08-14)
+-------------------
+* add new class: VitalChecker from jsk_pcl_ros
+* Contributors: Ryohei Ueda
+
 1.0.33 (2014-07-28)
 -------------------
 * compile time_acucmulator.cpp on rosbuild environment

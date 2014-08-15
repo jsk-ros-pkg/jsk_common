@@ -2,6 +2,9 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.34 (2014-08-14)
+-------------------
+
 1.0.33 (2014-07-28)
 -------------------
 * use one process to compile assimp_devel
