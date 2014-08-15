@@ -22,18 +22,11 @@ add_dependencies(topic_buffer_client ${PROJECT_NAME}_gencpp)
 target_link_libraries(topic_buffer_server ${catkin_LIBRARIES})
 target_link_libraries(topic_buffer_client ${catkin_LIBRARIES})
 
+include(${PROJECT_SOURCE_DIR}/cmake/nodelet.cmake)
+
 macro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
-  list(APPEND jsk_topic_tools_nodelet_sources ${_nodelet_cpp})
-  set(NODELET ${_nodelet_class})
-  set(DEFAULT_NODE_NAME ${_single_nodelet_exec_name})
-  configure_file(${PROJECT_SOURCE_DIR}/src/single_nodelet_exec.cpp.in
-    ${_single_nodelet_exec_name}.cpp)
-  add_executable(${_single_nodelet_exec_name} ${_single_nodelet_exec_name}.cpp)
-  target_link_libraries(${_single_nodelet_exec_name} ${catkin_LIBRARIES})
-  install(TARGETS ${_single_nodelet_exec_name}
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
+  jsk_nodelet(${_nodelet_cpp} ${_nodelet_class} ${_single_nodelet_exec_name}
+    jsk_topic_tools_nodelet_sources)
 endmacro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
 
 # nodelet shared object
@@ -64,6 +57,7 @@ catkin_package(
     CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs
     INCLUDE_DIRS include
     LIBRARIES jsk_topic_tools
+    CFG_EXTRAS nodelet.cmake
 )
 
 add_rostest(test/test_topic_buffer.test)
@@ -85,14 +79,13 @@ install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
 install(FILES jsk_topic_tools_nodelet.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  )
+install(DIRECTORY include/${PROJECT_NAME}/ 
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 # install(DIRECTORY include
 #   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 #   )
 
-install(DIRECTORY scripts launch test DESTINATION
+install(DIRECTORY scripts launch test cmake DESTINATION
   ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
   )
