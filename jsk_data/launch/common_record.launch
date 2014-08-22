@@ -1,0 +1,46 @@
+<launch>
+  <arg name="other_topics" default=""/>
+  <arg name="other_options" default=""/>
+
+  <arg name="save_openni" default="true" />
+  <arg name="save_openni2" default="false" />
+  <arg name="save_robot_model" default="true" />
+  <arg name="save_all_image" default="true" />
+  <arg name="camera_namespace" default="openni"/>
+  
+  <arg name="save_dir" default="/tmp"/>
+  <!--                          -->
+  <!--       Conditions         -->
+  <!--                          -->
+
+  <arg unless="$(arg save_openni)"
+       name="openni_topics" value="" />
+  <arg if    ="$(arg save_openni)"
+       name="openni_topics" value="/$(arg camera_namespace)/depth_registered/image_raw /$(arg camera_namespace)/depth_registered/camera_info /$(arg camera_namespace)/rgb/image_raw /$(arg camera_namespace)/rgb/camera_info /tf" />
+
+  <arg unless="$(arg save_openni2)"
+       name="openni2_topics" value="" />
+  <arg if    ="$(arg save_openni2)"
+       name="openni2_topics" value="/$(arg camera_namespace)/depth_registered/image_raw /$(arg camera_namespace)/depth_registered/hw_registered/image_rect_raw /$(arg camera_namespace)/depth_registered/camera_info /$(arg camera_namespace)/rgb/image_raw /$(arg camera_namespace)/rgb/camera_info /tf" />
+
+  <arg unless="$(arg save_robot_model)"
+       name="robot_model_topics" value="" />
+  <arg if    ="$(arg save_robot_model)"
+       name="robot_model_topics" value="/tf /joint_states" />
+
+  <arg unless="$(arg save_all_image)"
+       name="all_image_topics" value="" />
+  <arg if    ="$(arg save_all_image)"
+       name="all_image_topics" value="-e .*/(image_raw|camera_info)" />
+
+  <!-- execute -->
+  <node name="default_rosbag_record" pkg="rosbag" type="record"
+        args="$(arg openni_topics)
+              $(arg openni2_topics) 
+              $(arg robot_model_topics) 
+              $(arg all_image_topics)
+              $(arg other_topics)
+              -o $(arg save_dir) 
+              $(arg other_options)
+              "/>
+</launch>
