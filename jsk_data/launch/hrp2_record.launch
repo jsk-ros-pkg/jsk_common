@@ -1,10 +1,9 @@
 <launch>
   <!-- for HRP2 -->
+  <arg name="camera_namespace" default="camera" />
   <node name="$(anon hrp2_sensor_record)"
         pkg="rosbag"
-        type="rosbag"
-        args="record /tf 
-              -e '/hrp2/.*' 
-              -e '.*/(left|right)/(image_raw|image_rect|image_rect_color|camera_info)' 
-              -e '.*/color_pcloud2'" />
+        type="record"
+        args="-o /tmp/hrp2_rosbag /tf  '/$(arg camera_namespace)/depth_registered/image_raw' '/$(arg camera_namespace)/depth_registered/camera_info' '/$(arg camera_namespace)/rgb/image_raw' '/$(arg camera_namespace)/rgb/camera_info' '/joint_states' '/imu' '/odom' '/lfsensor' '/rfsensor' '/lhsensor' '/rhsensor' '/off_lfsensor' '/off_rfsensor' '/off_lhsensor' '/off_rhsensor' '/zmp' '/$(arg camera_namespace)/depth/image_raw' '/$(arg camera_namespace)/depth/camera_info' '/$(arg camera_namespace)/depth_registered/hw_registered/image_rect_raw'"
+        />
 </launch>

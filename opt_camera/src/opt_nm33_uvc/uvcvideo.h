@@ -7,6 +7,8 @@
 
 #include <linux/kernel.h>
 #include <linux/videodev2.h>
+#include <linux/usb/video.h>
+#include <linux/uvcvideo.h>
 
 /* Compatibility */
 #include "uvc_compat.h"
@@ -66,49 +68,9 @@
 #define XU_LOCATION_ABSOLUTE_CONTROL       0x17
 #define XU_GAIN_ABSOLUTE_CONTROL           0x1E
 
-/* Data types for UVC control data */
-#define UVC_CTRL_DATA_TYPE_RAW		0
-#define UVC_CTRL_DATA_TYPE_SIGNED	1
-#define UVC_CTRL_DATA_TYPE_UNSIGNED	2
-#define UVC_CTRL_DATA_TYPE_BOOLEAN	3
-#define UVC_CTRL_DATA_TYPE_ENUM		4
-#define UVC_CTRL_DATA_TYPE_BITMASK	5
-
 /* Control flags */
 #define UVC_CONTROL_SET_CUR	(1 << 0)
 #define UVC_CONTROL_GET_CUR	(1 << 1)
-
-struct uvc_xu_control_info {
-	__u8 entity[16];
-	__u8 index;
-	__u8 selector;
-	__u16 size;
-	__u32 flags;
-};
-
-struct uvc_xu_control_mapping {
-	__u32 id;
-	__u8 name[32];
-	__u8 entity[16];
-	__u8 selector;
-
-	__u8 size;
-	__u8 offset;
-	enum v4l2_ctrl_type v4l2_type;
-	__u32 data_type;
-};
-
-struct uvc_xu_control {
-	__u8 unit;
-	__u8 selector;
-	__u16 size;
-	__u8 __user *data;
-};
-
-#define UVCIOC_CTRL_ADD		_IOW('U', 1, struct uvc_xu_control_info)
-#define UVCIOC_CTRL_MAP		_IOWR('U', 2, struct uvc_xu_control_mapping)
-#define UVCIOC_CTRL_GET		_IOWR('U', 3, struct uvc_xu_control)
-#define UVCIOC_CTRL_SET		_IOW('U', 4, struct uvc_xu_control)
 
 #ifdef __KERNEL__
 

@@ -540,51 +540,52 @@ bool OptNM3xCamera::setLocationAbsolute(int no, int pan, int tilt, int roll, int
 }
 //
 bool OptNM3xCamera::getXuValue(int selector, const char *str) {
-  return xu_ioctl(selector, UVCIOC_CTRL_GET, (void *)str);
+  return xu_ioctl(selector, UVC_GET_CUR, (void *)str);
 }
 bool OptNM3xCamera::getXuValue(int selector, short *value) {
-  return xu_ioctl(selector, UVCIOC_CTRL_GET, (void *)value);
+  return xu_ioctl(selector, UVC_GET_CUR, (void *)value);
 }
 bool OptNM3xCamera::setXuValue(int selector, char value) {
-  return xu_ioctl(selector, UVCIOC_CTRL_SET, (void *)&value);
+  return xu_ioctl(selector, UVC_SET_CUR, (void *)&value);
 }
 bool OptNM3xCamera::setXuValue(int selector, short v1, short v2) {
   struct { short v1, v2;} value;
   value.v1 = v1;
   value.v2 = v2;
-  return xu_ioctl(selector, UVCIOC_CTRL_SET, (void *)&value);
+  return xu_ioctl(selector, UVC_SET_CUR, (void *)&value);
 }
 bool OptNM3xCamera::setXuValue(int selector, short v1, short v2, short v3, short v4, short v5) {
   struct { short v1, v2, v3, v4, v5;} value;
   value.v1 = v1; value.v2 = v2; value.v3 = v3; value.v4 = v4; value.v5 = v5;
-  return xu_ioctl(selector, UVCIOC_CTRL_SET, (void *)&value);
+  return xu_ioctl(selector, UVC_SET_CUR, (void *)&value);
 }
+
 bool OptNM3xCamera::xu_ioctl(int selector, int ctrl, void* value) {
-  for (int i = 0; i < uvc_xu_tbl_cnt; i++){
-    if ( xu_control_tbl[i].selector == selector ) {
-      struct uvc_xu_control xctrl;
-      xctrl.unit      = 0x60;
+  for (int i = 0; i < uvc_xu_tbl_cnt; i++) {
+    if (xu_control_tbl[i].selector == selector) {
+      struct uvc_xu_control_query xctrl;
+      xctrl.unit     = 0x60;
       xctrl.selector = xu_control_tbl[i].selector;
       xctrl.size     = xu_control_tbl[i].size;
       xctrl.data     = (__u8*)value;
+      xctrl.query    = ctrl;
       fprintf(stderr, "%s: name = %s, sel = 0x%02x, size = %d, data =",
-              (ctrl==UVCIOC_CTRL_SET)?"UVCIOC_CTRL_SET":"UVCIOC_CTRL_GET",
+              (ctrl == UVC_SET_CUR) ? "UVC_SET_CUR" : "UVC_GET_CUR",
               xu_control_tbl[i].name,
               xctrl.selector,
               xctrl.size);
-      if (  ioctl(fd, ctrl, &xctrl) != 0 ) {
-        xctrl.data[0]=0;
+      if (ioctl(fd, UVCIOC_CTRL_QUERY, &xctrl) != 0) {
+        xctrl.data[0] = 0;
         fprintf(stderr, "\nioctl error %s\n", strerror(errno));
         return false;
       } else {
-        for ( int j = 0; j  < xctrl.size; j++ )
+        for (int j = 0; j < xctrl.size; j++)
           fprintf(stderr, " 0x%02x", *(xctrl.data + j));
         fprintf(stderr, "\n");
-        if ( xu_control_tbl[i].size==255 ) xctrl.data[xctrl.size] = 0;
+        if (xu_control_tbl[i].size == 255) xctrl.data[xctrl.size] = 0;
         return true;
       }
     }
   }
   return false;
 }
-
