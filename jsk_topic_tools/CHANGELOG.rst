@@ -2,6 +2,12 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.35 (2014-08-16)
+-------------------
+* add nodelet.cmake to export utility cmake macro to
+  compile nodelet libraries
+* Contributors: Ryohei Ueda
+
 1.0.34 (2014-08-14)
 -------------------
 * add new class: VitalChecker from jsk_pcl_ros

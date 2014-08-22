@@ -1,6 +1,6 @@
 <package>
   <name>jsk_tools</name>
-  <version>1.0.34</version>
+  <version>1.0.35</version>
   <description>Includes emacs scripts, ros tool alias generator, and launch doc generator.</description>
 
   <maintainer email="ueda@jsk.t.u-tokyo.ac.jp">Ryohei Ueda</maintainer>

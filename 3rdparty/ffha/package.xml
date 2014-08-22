@@ -1,6 +1,6 @@
 <package>
   <name>ffha</name>
-  <version>1.0.34</version>
+  <version>1.0.35</version>
   <description>ffha: PDDL Planner (http://ipc.informatik.uni-freiburg.de)</description>
   <maintainer email="youhei@jsk.t.u-tokyo.ac.jp">Yohei Kakiuchi</maintainer>
 

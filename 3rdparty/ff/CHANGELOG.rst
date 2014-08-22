@@ -2,6 +2,9 @@
 Changelog for package ff
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.35 (2014-08-16)
+-------------------
+
 1.0.34 (2014-08-14)
 -------------------
 * download FF-v23.tgz from jsk-ros-pkg/archives
