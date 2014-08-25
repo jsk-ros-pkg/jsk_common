@@ -2,6 +2,23 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.35 (2014-08-16)
+-------------------
+* add nodelet.cmake to export utility cmake macro to
+  compile nodelet libraries
+* Contributors: Ryohei Ueda
+
+1.0.34 (2014-08-14)
+-------------------
+* add new class: VitalChecker from jsk_pcl_ros
+* Contributors: Ryohei Ueda
+
+1.0.33 (2014-07-28)
+-------------------
+* compile time_acucmulator.cpp on rosbuild environment
+* add depend to dynamic_tf_reconfigure
+* Contributors: Ryohei Ueda, Yuto Inagaki
+
 1.0.32 (2014-07-26)
 -------------------
 * fix compilation for jsk_topic_tools::TimeAccumulator

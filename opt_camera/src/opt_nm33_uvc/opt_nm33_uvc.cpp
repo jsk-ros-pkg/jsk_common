@@ -75,44 +75,71 @@ uvc_xu_tbl_info xu_control_tbl[] = {
 
 int uvc_xu_tbl_cnt = sizeof(xu_control_tbl)/sizeof(uvc_xu_tbl_info);
 
+uvc_menu_info xu_menu_flip_table[] = {
+  {0, "off"},
+  {1, "horizontal"},
+  {2, "vertical"},
+  {3, "both"}
+};
+
+uvc_menu_info xu_menu_button_table[] = {
+  {0, "off"},
+  {1, "east"},
+  {2, "west"},
+  {3, "south"},
+  {4, "north"},
+  {5, "se"},
+  {6, "ne"},
+  {7, "sw"},
+  {8, "nw"},
+  {9, "zoom-in"},
+  {10, "zoom-out"},
+  {11, "menu"},
+  {12, "select"}
+};
+
 int set_XU_control(int vd)
 {
   int i = 0;
   int value = 0;
   int ret = 0;
-  struct uvc_xu_control_info info = {UVC_GUID_UVC_EXTENSION,0,0,0,0};
-  struct uvc_xu_control_mapping map = {0,"",UVC_GUID_UVC_EXTENSION,0,0,0,(v4l2_ctrl_type)0,0};
+
+  struct uvc_xu_control_mapping map = {0, "", UVC_GUID_UVC_EXTENSION, 0,
+                                       0, 0, 0, 0,
+                                       NULL, 0, {0, 0, 0, 0}};
 
   printf("********XU registration************\n");
   for(i = 0; i < uvc_xu_tbl_cnt; i++){
-    info.index = i + 1 ;
-    info.selector = xu_control_tbl[i].selector;
-    info.size = xu_control_tbl[i].size;
-    info.flags = xu_control_tbl[i].flag;
-    if ((value = ioctl(vd, UVCIOC_CTRL_ADD, &info)) != -1){
-      map.id = V4L2_XU_ID_BASE + i;
-      memcpy(map.name, xu_control_tbl[i].name, 32);
-      map.selector = xu_control_tbl[i].selector;
-      if(xu_control_tbl[i].size == 0xFF)
-	map.size = xu_control_tbl[i].size;
-      else
-	map.size = xu_control_tbl[i].size*8;
-      map.offset = xu_control_tbl[i].offset;
-      map.v4l2_type = xu_control_tbl[i].v4l2_type;
-      map.data_type = xu_control_tbl[i].data_type;
-      if ((value = ioctl(vd, UVCIOC_CTRL_MAP, &map)) < 0){
-	ret = 1;
-	printf("XU mapping error:%s\n", xu_control_tbl[i].name);
-      }
+    map.id = V4L2_XU_ID_BASE + i;
+    memcpy(map.name, xu_control_tbl[i].name, 32);
+    map.selector = xu_control_tbl[i].selector;
+    if (xu_control_tbl[i].size == 0xFF)
+      map.size = xu_control_tbl[i].size;
+    else
+      map.size = xu_control_tbl[i].size * 8;
+    map.offset = xu_control_tbl[i].offset;
+    map.v4l2_type = xu_control_tbl[i].v4l2_type;
+    map.data_type = xu_control_tbl[i].data_type;
+
+    switch (xu_control_tbl[i].selector) {
+      case XU_FLIP_SCREEN_CONTROL:
+        map.menu_info = xu_menu_flip_table;
+        map.menu_count = sizeof(xu_menu_flip_table) / sizeof(uvc_menu_info);
+        break;
+      case XU_PUSH_BUTTON_CONTROL:
+        map.menu_info = xu_menu_button_table;
+        map.menu_count = sizeof(xu_menu_button_table) / sizeof(uvc_menu_info);
+        break;
+      default:
+        map.menu_info = NULL;
+        map.menu_count = 0;
     }
-    else {
-      if(errno == EEXIST){
-	printf("XU add already:%s\n", xu_control_tbl[i].name);
-      }
-      else{
-	ret = 1;
-	printf("XU add error:%s\n", xu_control_tbl[i].name);
-      }
+
+    if ((value = ioctl(vd, UVCIOC_CTRL_MAP, &map)) < 0){
+      ret = 1;
+      printf("XU mapping error: %s, %s\n", xu_control_tbl[i].name, strerror(errno));
+    } else {
+      printf("XU mapping succeeded: %s\n", xu_control_tbl[i].name);
     }
   }
 

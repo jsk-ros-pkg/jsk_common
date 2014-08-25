@@ -18,11 +18,6 @@
   <!--       Conditions         -->
   <!--                          -->
 
-  <arg unless="$(arg save_openni)"
-       name="openni_topics" value="" />
-  <arg if    ="$(arg save_openni)"
-       name="openni_topics" value="/$(arg camera_namespace)/depth_registered/image_raw /$(arg camera_namespace)/depth_registered/camera_info /$(arg camera_namespace)/rgb/image_raw /$(arg camera_namespace)/rgb/camera_info /tf" />
-
   <arg unless="$(arg save_base_scan)"
        name="base_scan_topics" value="" />
   <arg if    ="$(arg save_base_scan)"
@@ -32,11 +27,6 @@
        name="tilt_scan_topics" value="" />
   <arg if    ="$(arg save_tilt_scan)"
        name="tilt_scan_topics" value="/tilt_scan" />
-
-  <arg unless="$(arg save_robot_model)"
-       name="robot_model_topics" value="" />
-  <arg if    ="$(arg save_robot_model)"
-       name="robot_model_topics" value="/tf /joint_states" />
 
   <arg unless="$(arg save_all_image)"
        name="all_image_topics" value="" />
@@ -66,21 +56,23 @@
 
 
   <!-- execute -->
-  <node name="default_rosbag_record" pkg="rosbag" type="record"
-	args="$(arg openni_topics) 
-          $(arg base_scan_topics) 
-          $(arg tilt_scan_topics) 
-          $(arg robot_model_topics) 
-          $(arg all_image_topics)
-	  $(arg r_c2) 
-          $(arg pressure_topics) 
-          $(arg gripper_command_topics) 
-	  $(arg prosilica_topics)
-          $(arg other_topics)
-          -o $(arg save_dir) 
-          $(arg other_options)
-          "/>
-   <node if  ="$(arg save_prosilica)" 
-         name="set_prosilica_mode" pkg="dynamic_reconfigure" type="dynparam"
-         args="set /prosilica_driver trigger_mode 'streaming'" />
+  <include file="$(find jsk_data)/launch/common_record.launch">
+    <arg name="save_openni" value="$(arg save_openni)" />
+    <arg name="save_openni2" value="false" />
+    <arg name="save_robot_model" value="$(arg save_robot_model)" />
+    <arg name="save_all_image" value="$(arg save_all_image)" />
+    <arg name="camera_namespace" value="$(arg camera_namespace)" />
+    <arg name="save_dir" value="$(arg save_dir)" />
+    <arg name="other_options" value="$(arg other_options)" />
+    <arg name="other_topics" value="$(arg other_topics)
+                                    $(arg base_scan_topics)
+                                    $(arg tilt_scan_topics) 
+                                    $(arg r_c2)
+                                    $(arg pressure_topics) 
+                                    $(arg gripper_command_topics) 
+                                    $(arg prosilica_topics)" />
+  </include>
+  <node if  ="$(arg save_prosilica)" 
+        name="set_prosilica_mode" pkg="dynamic_reconfigure" type="dynparam"
+        args="set /prosilica_driver trigger_mode 'streaming'" />
 </launch>
