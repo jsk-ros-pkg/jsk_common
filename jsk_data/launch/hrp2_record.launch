@@ -1,10 +1,26 @@
 <launch>
   <!-- for HRP2 -->
-  <node name="$(anon hrp2_sensor_record)"
-        pkg="rosbag"
-        type="rosbag"
-        args="record /tf 
-              -e '/hrp2/.*' 
-              -e '.*/(left|right)/(image_raw|image_rect|image_rect_color|camera_info)' 
-              -e '.*/color_pcloud2'" />
+  <arg name="save_dir" default="/tmp/hrp2_rosbag"/>
+  <arg name="camera_namespace" default="camera" />
+  <arg name="save_openni" default="true" />
+  <arg name="save_robot_model" default="true" />
+  
+  <include file="$(find jsk_data)/launch/common_record.launch">
+    <arg name="camera_namespace" value="$(arg camera_namespace)" />
+    <arg name="save_openni2" value="$(arg save_openni)" />
+    <arg name="save_openni" value="false" />
+    <arg name="save_robot_model" value="$(arg save_robot_model)" />
+    <arg name="other_topics" value="/imu
+                                    /odom
+                                    /lfsensor
+                                    /rfsensor
+                                    /lhsensor
+                                    /rhsensor
+                                    /off_lfsensor
+                                    /off_rfsensor
+                                    /off_lhsensor
+                                    /off_rhsensor
+                                    /zmp" />
+    <arg name="save_dir" value="$(arg save_dir)" />    
+  </include>
 </launch>

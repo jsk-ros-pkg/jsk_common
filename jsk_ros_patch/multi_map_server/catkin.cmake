@@ -23,19 +23,16 @@ if(NEW_YAMLCPP_FOUND)
 add_definitions(-DHAVE_NEW_YAMLCPP)
 endif(NEW_YAMLCPP_FOUND)
 
+catkin_package(
+    DEPENDS rosconsole roscpp rospy nav_msgs tf
+    CATKIN_DEPENDS
+    INCLUDE_DIRS
+    LIBRARIES
+)
+
 link_directories(${map_server_PREFIX}/lib)
 add_executable(map_server src/main.cpp)
 target_link_libraries(map_server ${catkin_LIBRARIES} image_loader SDL SDL_image yaml-cpp)
-
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-    DEPENDS rosconsole roscpp rospy nav_msgs tf
-    CATKIN_DEPENDS # TODO
-    INCLUDE_DIRS # TODO include
-    LIBRARIES # TODO
-)
 
 install(TARGETS map_server
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
