@@ -107,6 +107,9 @@ function setup-ros {
     sudo apt-get update
     sudo apt-get upgrade -y --force-yes
     sudo apt-get -y --force-yes install ros-${DISTRIBUTION}-rosbash python-rosdep python-rosinstall python-wstool || sudo apt-get -y --force-yes install python-rosdep
+    if [ "$USE_SOURCE" == "true" ]; then
+        sudo apt-get -y --force-yes install libftdi-dev libgstreamer0.10-dev libgst-dev libgstreamer-plugins-base0.10-dev
+    fi
     if [ -e /etc/ros/rosdep/sources.list.d/20-default.list ] ; then
         sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list;  # rosdep init fails when arleady initialized
     fi
@@ -159,11 +162,14 @@ function install-pkg {
     echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
 
     if [ "$USE_SOURCE" == "true" ]; then
-        rosinstall_generator --from-path $ROS_INSTALLDIR_SRC --deps --deps-only --flat --exclude random_numbers --wet-only --tar > /tmp/parent.rosinstall.$$
+        rosinstall_generator --from-path $ROS_INSTALLDIR_SRC --deps --deps-only --flat --exclude rosjava_bootstrap rosjava_build_tools rosjava_messages rwt_speech_recognition --wet-only --tar > /tmp/parent.rosinstall.$$
+        rosinstall_generator openni_launch openni2_launch rospack --deps --flat --wet-only --tar > /tmp/parent_direct.rosinstall.$$
         ROS_PARENT_DIR=${ROS_INSTALLDIR}_parent
         ROS_PARENT_DIR_SRC=${ROS_PARENT_DIR}/src
         (mkdir -p $ROS_PARENT_DIR_SRC && cd $ROS_PARENT_DIR_SRC; catkin_init_workspace)
-        (cd $ROS_PARENT_DIR_SRC && ( [ -f .rosinstall ] || ( wstool init ) ) && wstool merge /tmp/parent.rosinstall.$$)
+        (cd $ROS_PARENT_DIR_SRC && ( [ -f .rosinstall ] || ( wstool init ) ) \
+            && wstool merge /tmp/parent.rosinstall.$$ \
+            && wstool merge /tmp/parent_direct.rosinstall.$$)
         (cd $ROS_PARENT_DIR_SRC && wstool update -j 8)
         unset CMAKE_PREFIX_PATH
         unset ROS_PACKAGE_PATH
