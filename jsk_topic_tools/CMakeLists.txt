@@ -59,7 +59,12 @@ rosbuild_add_library (jsk_topic_tools
   src/rosparam_utils.cpp
   src/time_accumulator.cpp)
 
-#target_link_libraries(example ${PROJECT_NAME})
+# rosbuild_add_executable(test_rosparam_utils EXCLUDE_FROM_ALL
+#   src/test/test_rosparam_utils.cpp)
+rosbuild_add_executable(test_rosparam_utils
+  src/test/test_rosparam_utils.cpp)
+rosbuild_add_gtest_build_flags(test_rosparam_utils)
+rosbuild_add_rostest(test/test_rosparam_utils.test)
 rosbuild_add_rostest(test/test_topic_buffer.test)
 rosbuild_add_rostest(test/test_topic_buffer_fixed_rate.test)
 rosbuild_add_rostest(test/test_topic_buffer_update_rate.test)
