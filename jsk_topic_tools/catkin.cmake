@@ -70,7 +70,7 @@ add_executable(test_rosparam_utils
   src/test/test_rosparam_utils.cpp)
 target_link_libraries(test_rosparam_utils jsk_topic_tools
   ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
-add_rostest(test/test_rosparam_utils.test)
+# add_rostest(test/test_rosparam_utils.test)
 add_rostest(test/test_topic_buffer.test)
 add_rostest(test/test_topic_buffer_close_wait.test)
 add_rostest(test/test_topic_buffer_fixed_rate.test)
