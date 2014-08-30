@@ -12,17 +12,17 @@ find_package(catkin REQUIRED COMPONENTS sensor_msgs image_transport)
 #  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
 #set(ROS_BUILD_TYPE RelWithDebInfo)
 
-add_executable(stereo_synchronizer src/stereo_synchronizer.cpp)
-target_link_libraries(stereo_synchronizer ${catkin_LIBRARIES})
-add_executable(cr_synchronizer src/cr_synchronizer.cpp)
-target_link_libraries(cr_synchronizer ${catkin_LIBRARIES})
-
 catkin_package(
     DEPENDS sensor_msgs image_transport
     CATKIN_DEPENDS # TODO
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
 )
+
+add_executable(stereo_synchronizer src/stereo_synchronizer.cpp)
+target_link_libraries(stereo_synchronizer ${catkin_LIBRARIES})
+add_executable(cr_synchronizer src/cr_synchronizer.cpp)
+target_link_libraries(cr_synchronizer ${catkin_LIBRARIES})
 
 install(TARGETS stereo_synchronizer cr_synchronizer
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

@@ -8,6 +8,7 @@ function usage {
     echo >&2 "          [-e|--environment] display environment variables"
     echo >&2 "          [-d|--use-deb] use debian package if they are already released"
     echo >&2 "          [--rtm|--start-jsk|--rtm-ros-robotics] merge .rosinstall for rtm-ros stuff"
+    echo >&2 "          [--from-source] install whole ros system using source code"
     exit 0
 }
 
@@ -20,7 +21,7 @@ function error {
 trap error ERR
 
 # command line parse
-OPT=`getopt -o hiped -l help,show-install,show-package,show-environment,use-deb,rtm,start-jsk,rtm-ros-robotics -- $*`
+OPT=`getopt -o hiped -l help,show-install,show-package,show-environment,use-deb,rtm,start-jsk,rtm-ros-robotics,from-source -- $*`
 if [ $? != 0 ]; then
     usage
 fi
@@ -34,6 +35,7 @@ while [ -n "$1" ] ; do
 	-e|--show-environment) SHOW="environment"; shift;;
 	-d|--use-deb) USE_DEB=true; shift;;
   --rtm|--start-jsk|--rtm-ros-robotics) RTM_ROS_ROBOTICS=true; shift;;
+  --from-source) USE_SOURCE=true; shift;;
 	--) shift; break;;
 	*) echo "Unknown option($1)"; usage;;
     esac
@@ -77,7 +79,11 @@ fi
 if [ "$WORKSPACE" == "" ]; then # if not jenkins
     export WORKSPACE=$HOME
 fi
-export ROS_INSTALLDIR=$WORKSPACE/ros/$DISTRIBUTION
+if [ "$USE_SOURCE" == "true" ]; then
+    export ROS_INSTALLDIR=$WORKSPACE/ros/${DISTRIBUTION}_scratch
+else
+    export ROS_INSTALLDIR=$WORKSPACE/ros/$DISTRIBUTION
+fi
 export PATH=$PATH:/usr/sbin:/usr/bin:/sbin:/bin
 
 # set environment variables
@@ -101,6 +107,9 @@ function setup-ros {
     sudo apt-get update
     sudo apt-get upgrade -y --force-yes
     sudo apt-get -y --force-yes install ros-${DISTRIBUTION}-rosbash python-rosdep python-rosinstall python-wstool || sudo apt-get -y --force-yes install python-rosdep
+    if [ "$USE_SOURCE" == "true" ]; then
+        sudo apt-get -y --force-yes install libftdi-dev libgstreamer0.10-dev libgst-dev libgstreamer-plugins-base0.10-dev
+    fi
     if [ -e /etc/ros/rosdep/sources.list.d/20-default.list ] ; then
         sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list;  # rosdep init fails when arleady initialized
     fi
@@ -143,15 +152,33 @@ function install-pkg {
         if ( [[ "$DISTRIBUTION" =~ (electric|fuerte|groovy) ]] ) then
             (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" rosws update ) && success=1 || sleep 120
         else
-            (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" wstool update ) && success=1 || sleep 120
+            (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" wstool update) && success=1 || sleep 120
+            success=1
+            echo pass
         fi
         retry=`expr $retry + 1`
     done
 
     echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
-    # rosdep install
-    (cd $ROS_INSTALLDIR_SRC &&
-        wget https://raw.github.com/jsk-ros-pkg/jsk_common/master/rosdep-update.sh -O - | ROS_DISTRO=$DISTRIBUTION bash)
+
+    if [ "$USE_SOURCE" == "true" ]; then
+        rosinstall_generator --from-path $ROS_INSTALLDIR_SRC --deps --deps-only --flat --exclude rosjava_bootstrap rosjava_build_tools rosjava_messages rwt_speech_recognition --wet-only --tar > /tmp/parent.rosinstall.$$
+        rosinstall_generator openni_launch openni2_launch rospack --deps --flat --wet-only --tar > /tmp/parent_direct.rosinstall.$$
+        ROS_PARENT_DIR=${ROS_INSTALLDIR}_parent
+        ROS_PARENT_DIR_SRC=${ROS_PARENT_DIR}/src
+        (mkdir -p $ROS_PARENT_DIR_SRC && cd $ROS_PARENT_DIR_SRC; catkin_init_workspace)
+        (cd $ROS_PARENT_DIR_SRC && ( [ -f .rosinstall ] || ( wstool init ) ) \
+            && wstool merge /tmp/parent.rosinstall.$$ \
+            && wstool merge /tmp/parent_direct.rosinstall.$$)
+        (cd $ROS_PARENT_DIR_SRC && wstool update -j 8)
+        unset CMAKE_PREFIX_PATH
+        unset ROS_PACKAGE_PATH
+        (cd $ROS_PARENT_DIR_SRC/.. && catkin_make_isolated --install -DCMAKE_BUILD_TYPE=RelWithDebInfo)
+    else
+        # rosdep install
+        (cd $ROS_INSTALLDIR_SRC &&
+            wget https://raw.github.com/jsk-ros-pkg/jsk_common/master/rosdep-update.sh -O - | ROS_DISTRO=$DISTRIBUTION bash)
+    fi
     return 0
 }
 
@@ -178,7 +205,12 @@ function compile-pkg {
             (cd `rospack find $PACKAGE`; [ ! -e ROS_NOBUILD ] && make ) || echo "ROS_NOBUILD found" # make sure to compile package
         done
     else ## hydro and up, use catkin
-        . /opt/ros/$DISTRIBUTION/setup.sh
+        if [ "$USE_SOURCE" == "true" ]; then
+            . /opt/ros/$DISTRIBUTION/setup.sh
+            . ${ROS_INSTALLDIR}_parent/install_isolated/setup.sh
+        else
+            . /opt/ros/$DISTRIBUTION/setup.sh
+        fi
         (cd $ROS_INSTALLDIR && LC_ALL=C catkin_make && LC_ALL=C catkin_make install )
         ## use rosbuild for rest of componentes
         (cd $ROS_INSTALLDIR; rm -f .rosinstall; rosws init . $ROS_INSTALLDIR/install )
@@ -290,7 +322,9 @@ function install-jsk-ros-pkg {
     else
         install-pkg /tmp/jsk.rosinstall.$$
     fi
-    rosdep install -y euslisp -v -r -i || echo "error on rosdep, but continues" # y: default-yes, v: verbose, r: continue despite errors, i: ignore packages
+    if [ "$USE_SOURCE" != "true" ]; then
+        rosdep install -y euslisp -v -r -i || echo "error on rosdep, but continues" # y: default-yes, v: verbose, r: continue despite errors, i: ignore packages
+    fi
     if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
         xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi || return 0
     fi
@@ -326,4 +360,3 @@ fi
 
 #
 (which rosrun && rosrun rosunit clean_junit_xml.py; echo "done")     # check error
-
