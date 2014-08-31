@@ -1,0 +1,9 @@
+<launch>
+  <test test-name="test_rosparam_utils" pkg="jsk_topic_tools" type="test_rosparam_utils">
+    <rosparam>
+      string_vector: ["string_value0", "string_value1", "string_value2"]
+      double_vector: [0.0, 1.0, 2.0, 3.0]
+    </rosparam>
+  </test>
+
+</launch>
