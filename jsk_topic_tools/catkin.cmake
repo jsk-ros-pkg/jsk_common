@@ -61,6 +61,7 @@ add_library(jsk_topic_tools SHARED
   
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 
+# do not compile test for rospram_utils
 # build with run_tests target like:
 # catkin_make run_tests --only-pkg-with-deps ...
 # add_rostest_gtest(test_rosparam_utils test/test_rosparam_utils.test

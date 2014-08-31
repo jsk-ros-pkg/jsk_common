@@ -59,6 +59,7 @@ rosbuild_add_library (jsk_topic_tools
   src/rosparam_utils.cpp
   src/time_accumulator.cpp)
 
+# do not compile test for rospram_utils
 # rosbuild_add_executable(test_rosparam_utils EXCLUDE_FROM_ALL
 #   src/test/test_rosparam_utils.cpp)
 # rosbuild_add_executable(test_rosparam_utils
