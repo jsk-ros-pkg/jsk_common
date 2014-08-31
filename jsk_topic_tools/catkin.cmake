@@ -66,10 +66,10 @@ target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 # add_rostest_gtest(test_rosparam_utils test/test_rosparam_utils.test
 #   src/test/test_rosparam_utils.cpp)
 # target_link_libraries(test_rosparam_utils jsk_topic_tools ${catkin_LIBRARIES})
-add_executable(test_rosparam_utils
-  src/test/test_rosparam_utils.cpp)
-target_link_libraries(test_rosparam_utils jsk_topic_tools
-  ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
+# add_executable(test_rosparam_utils
+#   src/test/test_rosparam_utils.cpp)
+# target_link_libraries(test_rosparam_utils jsk_topic_tools
+#   ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
 # do not run test for rosparam_utils as default
 # add_rostest(test/test_rosparam_utils.test)
 add_rostest(test/test_topic_buffer.test)
@@ -83,7 +83,7 @@ add_rostest(test/test_hz_measure.test)
 add_rostest(test/test_block.test)
 
 install(TARGETS
-  topic_buffer_server topic_buffer_client jsk_topic_tools test_rosparam_utils
+  topic_buffer_server topic_buffer_client jsk_topic_tools #test_rosparam_utils
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
