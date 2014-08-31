@@ -2,9 +2,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(jsk_topic_tools)
 
-find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp rostest std_msgs
-  nodelet
-  topic_tools)
+find_package(catkin REQUIRED COMPONENTS
+  topic_tools message_generation roscpp rostest std_msgs
+  nodelet)
 
 add_message_files(
   FILES TopicInfo.msg
@@ -12,6 +12,16 @@ add_message_files(
 
 add_service_files(
   FILES List.srv Update.srv
+)
+
+generate_messages()
+
+catkin_package(
+    DEPENDS
+    CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs
+    INCLUDE_DIRS include
+    LIBRARIES jsk_topic_tools
+    CFG_EXTRAS nodelet.cmake
 )
 
 #include_directories(${Boost_INCLUDE_DIRS})
@@ -45,21 +55,23 @@ jsk_topic_tools_nodelet(src/hz_measure_nodelet.cpp
 
 add_library(jsk_topic_tools SHARED
   ${jsk_topic_tools_nodelet_sources}
+  src/rosparam_utils.cpp
   src/time_accumulator.cpp
   src/vital_checker.cpp)
   
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 
-generate_messages()
-
-catkin_package(
-    DEPENDS
-    CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs
-    INCLUDE_DIRS include
-    LIBRARIES jsk_topic_tools
-    CFG_EXTRAS nodelet.cmake
-)
-
+# build with run_tests target like:
+# catkin_make run_tests --only-pkg-with-deps ...
+# add_rostest_gtest(test_rosparam_utils test/test_rosparam_utils.test
+#   src/test/test_rosparam_utils.cpp)
+# target_link_libraries(test_rosparam_utils jsk_topic_tools ${catkin_LIBRARIES})
+# add_executable(test_rosparam_utils
+#   src/test/test_rosparam_utils.cpp)
+# target_link_libraries(test_rosparam_utils jsk_topic_tools
+#   ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
+# do not run test for rosparam_utils as default
+# add_rostest(test/test_rosparam_utils.test)
 add_rostest(test/test_topic_buffer.test)
 add_rostest(test/test_topic_buffer_close_wait.test)
 add_rostest(test/test_topic_buffer_fixed_rate.test)
@@ -70,7 +82,8 @@ add_rostest(test/test_topic_compare.test)
 add_rostest(test/test_hz_measure.test)
 add_rostest(test/test_block.test)
 
-install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
+install(TARGETS
+  topic_buffer_server topic_buffer_client jsk_topic_tools #test_rosparam_utils
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
