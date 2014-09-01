@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>jsk_common</name>
-  <version>1.0.35</version>
+  <version>1.0.36</version>
   <description>
    <p>Metapackage that contains commonly used toolset for jsk-ros-pkg</p>
   </description>

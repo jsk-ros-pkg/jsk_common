@@ -1,6 +1,6 @@
 <package>
   <name>image_view2</name>
-  <version>1.0.35</version>
+  <version>1.0.36</version>
   <description>A simple viewer for ROS image topics with draw-on features</description>
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
 

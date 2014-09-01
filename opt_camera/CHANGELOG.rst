@@ -2,8 +2,8 @@
 Changelog for package opt_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.36 (2014-09-01)
+-------------------
 * modifying oprnm33_camera_stereo and stereo_synchronizer
 * Contributors: Hiroaki Yaguchi
 

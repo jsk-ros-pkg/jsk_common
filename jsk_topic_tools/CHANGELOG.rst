@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.36 (2014-09-01)
+-------------------
 * Add rosparam_utils.cpp: utility functions for ros parameters
 * Contributors: Ryohei Ueda
 

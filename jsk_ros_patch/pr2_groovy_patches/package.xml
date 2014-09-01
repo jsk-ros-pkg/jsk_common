@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>pr2_groovy_patches</name>
-  <version>1.0.35</version>
+  <version>1.0.36</version>
   <description>The pr2_groovy_patches package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 

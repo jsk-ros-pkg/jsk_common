@@ -2,8 +2,8 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.36 (2014-09-01)
+-------------------
 * modify to install executable to right path
 * Contributors: Yuto Inagaki
 

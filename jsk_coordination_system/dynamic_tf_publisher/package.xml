@@ -5,7 +5,7 @@
   <description>
     dynamically set the tf trensformation
   </description>
-  <version>1.0.35</version>
+  <version>1.0.36</version>
   <author email="saito@jsk.t.u-tokyo.ac.jp">Manabu Saito</author>
   <maintainer email="garaemon@gmail.com">Ryohei Ueda</maintainer>
   <license>BSD</license>
