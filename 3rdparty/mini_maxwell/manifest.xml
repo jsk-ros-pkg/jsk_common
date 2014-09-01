@@ -7,7 +7,7 @@
   <author>furuta</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/mini_maxwell</url>
+  <url></url>
   <depend package="dynamic_reconfigure"/>
 
 </package>
