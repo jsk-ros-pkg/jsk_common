@@ -40,12 +40,13 @@ class MMClient():
         return config
 
     def updateMM(self):
-        self.bnds.SetDelayAmount(1, True, self.round_trip)
-        self.bnds.SetDelayAmount(1, False, self.round_trip)
-        self.bnds.SetRateLimit(1, True, self.rate_limit)
-        self.bnds.SetRateLimit(1, False, self.rate_limit)
-        self.bnds.SetDelayReorder(1, True, False)
-        self.bnds.SetDelayReorder(1, False, False)
+        band_num = 5
+        self.bnds.SetDelayAmount(band_num, True, self.round_trip)
+        self.bnds.SetDelayAmount(band_num, False, self.round_trip)
+        self.bnds.SetRateLimit(band_num, True, self.rate_limit)
+        self.bnds.SetRateLimit(band_num, False, self.rate_limit)
+        self.bnds.SetDelayReorder(band_num, True, False)
+        self.bnds.SetDelayReorder(band_num, False, False)
 
         rospy.loginfo('round_trip = %s', self.round_trip)
         rospy.loginfo('rate_limit = %s', self.rate_limit)
