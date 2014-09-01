@@ -14,24 +14,30 @@
   <!-- rename nm33_cam_left/middle -> nm33_cam_middle/left -->
   <node pkg="topic_tools" type="relay"
 	name="left_middle_2_middle_left_image"
-	args="/nm33_cam_left/middle/image_raw /nm33_cam_middle/left/image_raw" />
+	args="/nm33_cam_left/middle/image_raw
+	      /nm33_cam_middle/left_raw/image_raw" />
   <node pkg="topic_tools" type="relay"
 	name="right_middle_2_middle_right_image"
-	args="/nm33_cam_right/middle/image_raw /nm33_cam_middle/right/image_raw" />
+	args="/nm33_cam_right/middle/image_raw
+	      /nm33_cam_middle/right_raw/image_raw" />
   <node pkg="topic_tools" type="relay"
 	name="left_middle_2_middle_left_info"
-	args="/nm33_cam_left/middle/camera_info /nm33_cam_middle/left/camera_info" />
+	args="/nm33_cam_left/middle/camera_info
+	      /nm33_cam_middle/left_raw/camera_info" />
   <node pkg="topic_tools" type="relay"
 	name="left_middle_2_middle_right_info"
 	args="/nm33_cam_right/middle/camera_info
-	      /nm33_cam_middle/right/camera_info" />
+	      /nm33_cam_middle/right_raw/camera_info" />
 
   <group ns="nm33_cam_middle">
-    <node pkg="stereo_synchronizer" name="stereo_image_proc"
-	  type="stereo_image_proc">
+    <node pkg="stereo_synchronizer" name="stereo_synchronizer"
+    	  type="stereo_synchronizer">
+    </node>
+    <node pkg="stereo_image_proc" name="stereo_image_proc"
+    	  type="stereo_image_proc">
     </node>
     <node pkg="image_view" name="stereo_view" type="stereo_view" >
-      <remap from="stereo" to="/" />
+      <remap from="stereo" to="/nm33_cam_middle" />
       <remap from="image" to="/image_rect" />
     </node>
   </group>
