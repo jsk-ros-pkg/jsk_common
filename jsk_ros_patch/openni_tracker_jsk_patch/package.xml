@@ -1,6 +1,6 @@
 <package>
   <name>openni_tracker_jsk_patch</name>
-  <version>1.0.35</version>
+  <version>1.0.36</version>
   <description>patch for openni_tracker in order to use auto calibration</description>
 
   <maintainer email="youhei@jsk.imi.i.u-tokyo.ac.jp">Yohei Kakiuchi</maintainer>
