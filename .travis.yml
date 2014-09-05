@@ -20,6 +20,7 @@ matrix:
     - env: ROS_DISTRO=indigo  ROSWS=wstool BUILDER=catkin   USE_DEB=false
 script: source .travis/travis.sh
 before_script:
+  - export ROSDEP_UPDATE_QUIET="true"
   - export ROS_PARALLEL_JOBS="-j4 -l4"
 notifications:
   email:
