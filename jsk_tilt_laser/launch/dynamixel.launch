@@ -34,6 +34,7 @@
           type="dynamixel_joint_state_publisher.py"
           output="screen" >
       <param name="rate" value="30" />
+      <param name="tilt_speed" value="0.104" />
     </node>
 
 </launch>

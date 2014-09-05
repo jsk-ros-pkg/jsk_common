@@ -24,6 +24,9 @@ import rospy
 
 from sensor_msgs.msg import JointState as JointStatePR2
 from dynamixel_msgs.msg import JointState as JointStateDynamixel
+from dynamixel_controllers.srv import SetSpeed
+from dynamic_reconfigure.server import Server
+from jsk_tilt_laser.cfg import DynamixelTiltControllerConfig
 
 class JointStateMessage():
     def __init__(self, name, position, velocity, effort):
@@ -31,11 +34,12 @@ class JointStateMessage():
         self.position = position
         self.velocity = velocity
         self.effort = effort
-
+    
 class JointStatePublisher():
     def __init__(self):
         rospy.init_node('dynamixel_joint_state_publisher', anonymous=True)
-        
+        rospy.wait_for_service('tilt_controller/set_speed')
+        self.srv = Server(DynamixelTiltControllerConfig, self.reconfigure_callback)
         dynamixel_namespace = rospy.get_namespace()
         rate = rospy.get_param('~rate', 10)
         r = rospy.Rate(rate)
@@ -75,7 +79,13 @@ class JointStatePublisher():
             self.publish_joint_states()
             # With 23 servos, we go as fast as possible
             r.sleep()
-           
+    def reconfigure_callback(self, config, level):
+        try:
+            set_speed = rospy.ServiceProxy('tilt_controller/set_speed', SetSpeed)
+            set_speed(config.tilt_speed)
+        except rospy.ServiceException, e:
+            print "Service call failed: %s"%e
+        return config
     def controller_state_handler(self, msg):
         js = JointStateMessage(msg.name, msg.current_pos, msg.velocity, msg.load)
         self.joint_states[msg.name] = js
