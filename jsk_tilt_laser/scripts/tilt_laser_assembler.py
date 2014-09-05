@@ -41,10 +41,10 @@ class AssembleCaller:
         pos = None
         try:
             pos = msg.position[msg.name.index('tilt_joint')] ### 
-            rospy.debug('pos = %f'%pos)
+            rospy.logdebug('pos = %f'%pos)
         except:
             # do nothing
-            rospy.debug('exept')
+            rospy.logdebug('exept')
 
         if pos:
             if not self.prev_angle:
@@ -70,18 +70,18 @@ class AssembleCaller:
 
     def scan_and_publish(self, sec):
         tm = rospy.get_rostime()
-        rospy.debug('scan rostime : %d %d'%(tm.secs, tm.nsecs))
+        rospy.logdebug('scan rostime : %d %d'%(tm.secs, tm.nsecs))
         req = AssembleScans2Request()
         req.begin = rospy.Time.from_sec(tm.to_sec() - sec)
         req.end = tm
         try:
             ret = self.assemble_srv(req.begin, req.end)
             if ret:
-                rospy.debug('publish')
+                rospy.logdebug('publish')
                 self.cloud_pub.publish(ret.cloud)
         except:
             # do nothing
-            rospy.debug('error calling service')
+            rospy.logdebug('error calling service')
 
     def spin(self):
         rospy.spin()
