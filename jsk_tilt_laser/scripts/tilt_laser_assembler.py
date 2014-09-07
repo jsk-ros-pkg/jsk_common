@@ -22,11 +22,10 @@ class AssembleCaller:
         self.assemble_srv = rospy.ServiceProxy('assemble_scans2', AssembleScans2)
 
         if not self.max_angle:
-            self.max_angle = 0.70
+            self.max_angle = rospy.get_param('~tilt_joint_max_angle', default=0.70)
 
         if not self.min_angle:
-            self.min_angle = -0.95
-
+            self.min_angle = rospy.get_param('~tilt_joint_min_angle',default=-0.95)
         if not self.scan_time:
             self.scan_time = 8.0
         if not self.lower_threshold:
@@ -41,10 +40,10 @@ class AssembleCaller:
         pos = None
         try:
             pos = msg.position[msg.name.index('tilt_joint')] ### 
-            rospy.debug('pos = %f'%pos)
+            rospy.logdebug('pos = %f'%pos)
         except:
             # do nothing
-            rospy.debug('exept')
+            rospy.logdebug('exept')
 
         if pos:
             if not self.prev_angle:
@@ -70,18 +69,18 @@ class AssembleCaller:
 
     def scan_and_publish(self, sec):
         tm = rospy.get_rostime()
-        rospy.debug('scan rostime : %d %d'%(tm.secs, tm.nsecs))
+        rospy.logdebug('scan rostime : %d %d'%(tm.secs, tm.nsecs))
         req = AssembleScans2Request()
         req.begin = rospy.Time.from_sec(tm.to_sec() - sec)
         req.end = tm
         try:
             ret = self.assemble_srv(req.begin, req.end)
             if ret:
-                rospy.debug('publish')
+                rospy.logdebug('publish')
                 self.cloud_pub.publish(ret.cloud)
         except:
             # do nothing
-            rospy.debug('error calling service')
+            rospy.logerr('error calling service')
 
     def spin(self):
         rospy.spin()

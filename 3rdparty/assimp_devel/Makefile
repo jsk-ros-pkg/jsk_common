@@ -3,7 +3,7 @@ all: assimp_devel
 INSTALL_DIR=`rospack find assimp_devel`
 TARBALL = v3.1.1.zip
 TARBALL_URL = https://github.com/assimp/assimp/archive/v3.1.1.zip
-UNPACK_CMD = unzip
+UNPACK_CMD = unzip -q
 PATCH_DIR = $(CURDIR)
 TARBALL_PATCH = ${PATCH_DIR}/assimp_git.technique.patch ${PATCH_DIR}/assimp_git.obj_export.patch ${PATCH_DIR}/assimp_devel.patch
 MK_DIR    = $(shell rospack find mk)

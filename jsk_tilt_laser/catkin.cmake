@@ -4,7 +4,9 @@ project(jsk_tilt_laser)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED
+  dynamic_reconfigure
+  )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -38,6 +40,12 @@ find_package(catkin REQUIRED)
 ##     and list every .msg/.srv/.action file to be processed
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
+
+generate_dynamic_reconfigure_options(
+  cfg/DynamixelTiltController.cfg
+  )
+
+
 
 ## Generate messages in the 'msg' folder
 # add_message_files(
