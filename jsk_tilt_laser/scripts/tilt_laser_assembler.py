@@ -49,30 +49,31 @@ class AssembleCaller:
             if not self.prev_angle:
                 self.prev_angle = pos
                 if pos - self.min_angle > self.max_angle - pos:
+                    self.prev_time = msg.header.stamp
                     self.move_to_angle(self.max_angle + 0.01)
                 else:
+                    self.prev_time = msg.header.stamp
                     self.move_to_angle(self.min_angle - 0.01)
                 return
             if pos > self.max_angle:
                 self.move_to_angle(self.min_angle - 0.01)
-
             if self.prev_angle < self.upper_threshold and pos > self.upper_threshold:
-                self.scan_and_publish(self.scan_time)
+                self.scan_and_publish(self.prev_time, msg.header.stamp)
 
             if self.prev_angle > self.lower_threshold and pos < self.lower_threshold:
-                self.scan_and_publish(self.scan_time)
+                self.scan_and_publish(self.prev_time, msg.header.stamp)
 
             if pos < self.min_angle:
                 self.move_to_angle(self.max_angle + 0.01)
-
+            # update timestamp
+            if pos < self.min_angle or pos > self.max_angle:
+                self.prev_time = msg.header.stamp
             self.prev_angle = pos
 
-    def scan_and_publish(self, sec):
-        tm = rospy.get_rostime()
-        rospy.logdebug('scan rostime : %d %d'%(tm.secs, tm.nsecs))
+    def scan_and_publish(self, begin, end):
         req = AssembleScans2Request()
-        req.begin = rospy.Time.from_sec(tm.to_sec() - sec)
-        req.end = tm
+        req.begin = begin
+        req.end = end
         try:
             ret = self.assemble_srv(req.begin, req.end)
             if ret:
