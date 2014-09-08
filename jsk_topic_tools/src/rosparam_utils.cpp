@@ -55,7 +55,7 @@ namespace jsk_topic_tools
     }
     }
   }
-
+  
   bool readVectorParameter(ros::NodeHandle& nh,
                            const std::string& param_name,
                            std::vector<double>& result)
@@ -65,7 +65,7 @@ namespace jsk_topic_tools
       nh.param(param_name, v, v);
       if (v.getType() == XmlRpc::XmlRpcValue::TypeArray) {
         result.resize(v.size());
-        for (size_t i = 0; i < result.size(); i++) {
+        for (size_t i = 0; i < v.size(); i++) {
           result[i] = getXMLDoubleValue(v[i]);
         }
         return true;
@@ -79,6 +79,79 @@ namespace jsk_topic_tools
     }
   }
 
+  bool readVectorParameter(ros::NodeHandle& nh,
+                           const std::string& param_name,
+                           std::vector<std::vector<double> >& result)
+  {
+    if (nh.hasParam(param_name)) {
+      XmlRpc::XmlRpcValue v_toplevel;
+      nh.param(param_name, v_toplevel, v_toplevel);
+      if (v_toplevel.getType() == XmlRpc::XmlRpcValue::TypeArray) {
+        result.resize(v_toplevel.size());
+        for (size_t i = 0; i < v_toplevel.size(); i++) {
+          // ensure v[i] is an array
+          XmlRpc::XmlRpcValue nested_v = v_toplevel[i];
+          if (nested_v.getType() == XmlRpc::XmlRpcValue::TypeArray) {
+            std::vector<double> nested_std_vector(nested_v.size());
+            for (size_t j = 0; j < nested_v.size(); j++) {
+              nested_std_vector[j] = getXMLDoubleValue(nested_v[j]);
+            }
+            result[i] = nested_std_vector;
+          }
+          else {
+            return false;
+          }
+        }
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      return false;
+    }
+  }
+
+  bool readVectorParameter(ros::NodeHandle& nh,
+                           const std::string& param_name,
+                           std::vector<std::vector<std::string> >& result)
+  {
+    if (nh.hasParam(param_name)) {
+      XmlRpc::XmlRpcValue v_toplevel;
+      nh.param(param_name, v_toplevel, v_toplevel);
+      if (v_toplevel.getType() == XmlRpc::XmlRpcValue::TypeArray) {
+        result.resize(v_toplevel.size());
+        for (size_t i = 0; i < v_toplevel.size(); i++) {
+          // ensure v[i] is an array
+          XmlRpc::XmlRpcValue nested_v = v_toplevel[i];
+          if (nested_v.getType() == XmlRpc::XmlRpcValue::TypeArray) {
+            std::vector<std::string> nested_std_vector(nested_v.size());
+            for (size_t j = 0; j < nested_v.size(); j++) {
+              if (nested_v[j].getType() == XmlRpc::XmlRpcValue::TypeString) {
+                nested_std_vector[j] = (std::string)nested_v[j];
+              }
+              else {
+                return false;
+              }
+            }
+            result[i] = nested_std_vector;
+          }
+          else {
+            return false;
+          }
+        }
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      return false;
+    }
+  }
+  
   bool readVectorParameter(ros::NodeHandle& nh,
                            const std::string& param_name,
                            std::vector<std::string>& result)
