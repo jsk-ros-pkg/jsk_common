@@ -51,6 +51,16 @@ namespace jsk_topic_tools
     std::vector<double>& result);
 
   ////////////////////////////////////////////////////////
+  // a function to read vector of vector of double
+  // parameters. (nested)
+  // from ros parameter servers.
+  ////////////////////////////////////////////////////////
+  bool readVectorParameter(
+    ros::NodeHandle& nh,
+    const std::string& param_name,
+    std::vector<std::vector<double> >& result);
+  
+  ////////////////////////////////////////////////////////
   // a function to read vector of string parameters
   // from ros parameter servers.
   ////////////////////////////////////////////////////////
@@ -58,7 +68,17 @@ namespace jsk_topic_tools
     ros::NodeHandle& nh,
     const std::string& param_name,
     std::vector<std::string>& result);
-
+  
+  ////////////////////////////////////////////////////////
+  // a function to read vector of vector of string
+  // parameters. (nested)
+  // from ros parameter servers.
+  ////////////////////////////////////////////////////////
+  bool readVectorParameter(
+    ros::NodeHandle& nh,
+    const std::string& param_name,
+    std::vector<std::vector<std::string> >& result);
+  
   ////////////////////////////////////////////////////////
   // a function to convert from XmlRpc type to double
   ////////////////////////////////////////////////////////
