@@ -1,0 +1,23 @@
+tilt_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: tilt_joint
+#    joint_speed: 0.104 ## specified by dynamixel_joint_state_publisher.py
+#    joint_speed: 0.207 ## rad/sec ...
+#    joint_speed: 0.417 ## rad/sec 
+    motor:
+        id: 1
+        init: 2048
+        min: 0
+        max: 4095
+tilt_trajectory_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_trajectory_action_controller
+        type: JointTrajectoryActionController
+    joint_trajectory_action_node:
+        min_velocity: 0.25
+        constraints:
+            goal_time: 1.0

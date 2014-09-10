@@ -1,0 +1,40 @@
+<launch>
+    <node name="dynamixel_manager" pkg="dynamixel_controllers"
+          type="controller_manager.py" required="true" output="screen">
+        <rosparam>
+            namespace: dxl_manager
+            serial_ports:
+                pan_tilt_port:
+                    port_name: "/dev/ttyUSB0"
+                    baud_rate: 1000000
+                    min_motor_id: 1
+                    max_motor_id: 1
+                    update_rate: 50
+        </rosparam>
+    </node>
+    <!-- Start tilt joint controller -->
+    <rosparam file="$(find jsk_tilt_laser)/config/tilt_controller_config.yaml" command="load"/>
+    <node name="tilt_controller_spawner" pkg="dynamixel_controllers"
+          type="controller_spawner.py"
+          args="--manager=dxl_manager
+                --port=pan_tilt_port
+                --type=simple
+                tilt_controller"
+          output="screen"/>
+    <node name="dynamixel_trajectory_controller_spawner" pkg="dynamixel_controllers"
+          type="controller_spawner.py"
+          args="--manager=dxl_manager
+                --port=pan_tilt_port
+                --type=meta
+                tilt_trajectory_controller
+                tilt_controller"
+          output="screen"/>
+
+    <node name="dxl_joint_state_publisher" pkg="jsk_tilt_laser"
+          type="dynamixel_joint_state_publisher.py"
+          output="screen" >
+      <param name="rate" value="30" />
+      <param name="tilt_speed" value="0.104" />
+    </node>
+
+</launch>

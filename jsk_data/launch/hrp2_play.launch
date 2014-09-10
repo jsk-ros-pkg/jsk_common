@@ -1,0 +1,32 @@
+<launch>
+  <!-- other file args -->
+  <arg name="bagfile_names" default="tmp.bag"/>
+  <arg name="launch_openni" default="true"/>
+  <arg name="launch_robot_model" default="true"/>
+  <arg name="use_gui" default="false"/>
+  <arg name="rosbag_option" default="--clock -l" />
+  <arg name="use_xterm" default="false" />
+  
+  <!-- set params for rviz -->
+  <param name="use_sim_time" value="true" />
+  <param if="$(arg launch_robot_model)" name="robot_description" textfile="$(find hrpsys_ros_bridge_tutorials)/models/HRP2JSKNTS.dae" />
+
+  <!-- setup openni_launch -->
+  <include if="$(arg launch_openni)" file="$(find jsk_pcl_ros)/launch/openni2_remote.launch">
+  </include>
+
+  <group if="$(arg use_xterm)">
+    <node unless="$(arg use_gui)" pkg="rosbag" type="play" name="rosbag_play"
+          launch-prefix="xterm -e"
+          args="$(arg rosbag_option) $(arg bagfile_names)" />
+  </group>
+  <group unless="$(arg use_xterm)">
+    <node unless="$(arg use_gui)" pkg="rosbag" type="play" name="rosbag_play"
+          args="$(arg rosbag_option) $(arg bagfile_names)" />
+  </group>
+  
+  <node if="$(arg use_gui)" pkg="rqt_bag" type="rqt_bag" name="rqt_bag" />
+
+  <node if="$(arg use_gui)" pkg="rviz" type="rviz" name="rviz" />
+
+</launch>
