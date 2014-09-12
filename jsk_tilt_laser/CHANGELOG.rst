@@ -2,6 +2,14 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* update CHANGELOG.rst
+* Add ~tilt_joint_name parameter to tilt_laser_assembler.py to specify the joint name
+  of tilt laser
+* Change scan time according to change of joint state
+* Contributors: Ryohei Ueda
+
 1.0.37 (2014-09-08)
 -------------------
 * commonize tilt_laser_assembler

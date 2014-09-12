@@ -5,6 +5,9 @@ Changelog for package voice_text
 Forthcoming
 -----------
 * catkinize python_twoauth and voice_text, modify multi_map_server's catkin.cmake
+* Contributors: JSK applications, Ryohei Ueda
+
+* catkinize python_twoauth and voice_text, modify multi_map_server's catkin.cmake
 * Contributors: Yuto Inagaki
 
 1.0.37 (2014-09-08)
