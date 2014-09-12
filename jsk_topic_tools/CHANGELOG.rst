@@ -2,6 +2,11 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.36 (2014-09-01)
+-------------------
+* Add rosparam_utils.cpp: utility functions for ros parameters
+* Contributors: Ryohei Ueda
+
 1.0.35 (2014-08-16)
 -------------------
 * add nodelet.cmake to export utility cmake macro to

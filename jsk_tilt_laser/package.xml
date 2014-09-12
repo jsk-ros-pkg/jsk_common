@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package>
+  <name>jsk_tilt_laser</name>
+  <version>1.0.37</version>
+  <description>The jsk_tilt_laser package</description>
+
+  <maintainer email="youhei@jsk.imi.i.u-tokyo.ac.jp">YoheiKakiuchi</maintainer>
+
+  <license>BSD</license>
+
+  <!-- <url type="website">http://wiki.ros.org/moge</url> -->
+  <author email="youhei@jsk.imi.i.u-tokyo.ac.jp">YoheiKakiuchi</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>laser_assembler</build_depend>
+
+  <run_depend>urg_node</run_depend>
+  <run_depend>dynamixel_controllers</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>laser_assembler</run_depend>
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+  </export>
+</package>
