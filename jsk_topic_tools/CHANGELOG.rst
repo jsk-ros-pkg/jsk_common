@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.38 (2014-09-13)
+-------------------
 * add new utility function colorCategory20 to jsk_topic_tools
 * Contributors: Ryohei Ueda
 
