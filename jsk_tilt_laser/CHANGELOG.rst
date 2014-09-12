@@ -8,7 +8,7 @@ Changelog for package jsk_tilt_laser
 * added codes to controll tilt_speed with dynamixel_reconfigure
 * Fix: rospy.debug -> rospy.logdebug
 * add jsk_tilt_laser
-* Contributors: Furushchev, Ryohei Ueda, YoheiKakiuchi
+* Contributors: Yuki Furuta, Ryohei Ueda, YoheiKakiuchi
 
 1.0.36 (2014-09-01)
 -------------------
