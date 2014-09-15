@@ -2,6 +2,9 @@
 Changelog for package stereo_synchronizer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.38 (2014-09-13)
+-------------------
+
 1.0.36 (2014-09-01)
 -------------------
 * modifying oprnm33_camera_stereo and stereo_synchronizer
