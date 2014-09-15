@@ -1,8 +1,16 @@
-^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package ff
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package voice_text
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1.0.38 (2014-09-13)
+-------------------
+* catkinize python_twoauth and voice_text, modify multi_map_server's catkin.cmake
+* Contributors: JSK applications, Ryohei Ueda
+
+* catkinize python_twoauth and voice_text, modify multi_map_server's catkin.cmake
+* Contributors: Yuto Inagaki
+
+1.0.37 (2014-09-08)
 -------------------
 
 1.0.36 (2014-09-01)
@@ -13,8 +21,6 @@ Changelog for package ff
 
 1.0.34 (2014-08-14)
 -------------------
-* download FF-v23.tgz from jsk-ros-pkg/archives
-* Contributors: Kei Okada
 
 1.0.33 (2014-07-28)
 -------------------
@@ -60,15 +66,9 @@ Changelog for package ff
 
 1.0.19 (2014-05-06)
 -------------------
-* add find_package(catkin)
-* Add several missing build deps
-* ff, ffha: add CHANGELOG.rst
-* Contributors: Kei Okada, Scott K Logan
 
 1.0.18 (2014-05-04)
 -------------------
-* catkinize ff
-* Contributors: Kei Okada
 
 1.0.17 (2014-04-20)
 -------------------
@@ -123,7 +123,8 @@ Changelog for package ff
 
 1.0.0 (2014-03-05)
 ------------------
-* added rosdeps : flex and bison
-* udpate ff url
-* put jsk tools in jsk_common stack
-* Contributors: k-okada, mikita, rosen
+* add nkf to rosdep.yaml
+* do not compile if voicetext is not installed
+* add r58200(fixed include path), r58221(added nkf to rosdep) by mikita
+* add voice_text client program, copy from jsk-ros-pkg-unreleased
+* Contributors: k-okada
