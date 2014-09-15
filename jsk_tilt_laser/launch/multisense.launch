@@ -1,0 +1,47 @@
+<launch>
+  <arg name="ip_address" default="10.66.171.21" />
+  <arg name="namespace"  default="multisense" />
+  <arg name="mtu"        default="7200" />
+
+  <param name="robot_description"     
+         textfile="$(find multisense_description)/urdf/multisense.urdf"/>
+
+  <!-- Robot state publisher -->
+  <node pkg="robot_state_publisher" type="state_publisher" name="$(arg namespace)_state_publisher">
+    <param name="publish_frequency" type="double" value="50.0" />
+    <remap from="joint_states" to="/$(arg namespace)/joint_states" />
+    <param name="tf_prefix" value="/$(arg namespace)" />
+  </node>
+
+  <!-- ROS Driver -->
+   <node pkg="multisense_ros" ns="$(arg namespace)" type="ros_driver" name="multisense_driver" output="screen">
+     <param name="robot_description"     
+         textfile="$(find multisense_description)/urdf/multisense.urdf"/>
+     <param name="sensor_ip"   value="$(arg ip_address)" />
+     <param name="sensor_mtu"  value="$(arg mtu)" />
+     <param name="tf_prefix"   value="/$(arg namespace)" />
+     <param name="use_organized_pointcloud" value="true"/>
+  </node>
+
+   <!-- pointcloud pipeline -->
+   <!-- run spindle -->
+   <node pkg="dynamic_reconfigure" type="dynparam" name="set_multisense_spindle"
+         args="set multisense motor_speed 1.57" />
+   <node pkg="jsk_tilt_laser" type="spin_laser_snapshotter"
+         output="screen"
+         name="multisense_laser_snapshotter">
+     <rosparam>
+       use_tf: true
+       negative_direction: true
+     </rosparam>
+   </node>
+   <node pkg="laser_assembler" type="laser_scan_assembler"
+         name="laser_scan_assembler_node"
+         output="screen" >
+     <remap from="scan" to="/multisense/lidar_scan"/>
+     <param name="tf_cache_time_secs" value="20" />
+     <param name="max_scans" type="int" value="1000" />
+     <param name="fixed_frame" type="string" value="multisense/head_root"/>
+     <rosparam command="load" file="$(find jsk_tilt_laser)/config/multisense_laser_filter.yaml" />
+   </node>
+</launch>
