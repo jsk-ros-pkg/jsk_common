@@ -2,6 +2,9 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.38 (2014-09-13)
 -------------------
 * catkinize python_twoauth and voice_text, modify multi_map_server's catkin.cmake

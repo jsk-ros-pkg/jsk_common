@@ -2,6 +2,9 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.38 (2014-09-13)
 -------------------
 * update CHANGELOG.rst
