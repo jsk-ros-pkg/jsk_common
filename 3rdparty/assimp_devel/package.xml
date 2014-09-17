@@ -1,11 +1,12 @@
 <package>
   <name>assimp_devel</name>
-  <version>1.0.38</version>
+  <version>1.0.39</version>
   <description>assimp library</description>
   <license>LGPL</license>
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>mk</build_depend>
+  <build_depend>rosbuild</build_depend>
   <build_depend>git</build_depend>
   <build_depend>rosboost_cfg</build_depend>
   <build_depend>boost</build_depend>
