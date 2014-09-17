@@ -13,7 +13,8 @@
   <depend package="dynamixel_controllers" />
   <depend package="robot_state_publisher" />
   <depend package="laser_assembler" />
-
+  <depend package="tf_conversions" />
+  <depend package="tf" />
 </package>
 
 
