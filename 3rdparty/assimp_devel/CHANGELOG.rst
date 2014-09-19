@@ -2,6 +2,9 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.39 (2014-09-17)
 -------------------
 * add rosbuild to build_depend
