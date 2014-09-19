@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.40 (2014-09-19)
+-------------------
 * Add diagnostic utils from jsk_pcl_ros
 * Contributors: Ryohei Ueda
 
