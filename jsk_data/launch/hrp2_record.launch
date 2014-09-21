@@ -4,7 +4,7 @@
   <arg name="camera_namespace" default="camera" />
   <arg name="save_openni" default="true" />
   <arg name="save_robot_model" default="true" />
-  <arg name="save_all_image" default="true" />
+  <arg name="save_all_image" default="false" />
   <arg name="other_topics" default=""/>
 
   <include file="$(find jsk_data)/launch/common_record.launch">
