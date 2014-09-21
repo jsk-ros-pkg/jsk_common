@@ -2,6 +2,12 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.40 (2014-09-19)
+-------------------
+* Add spin_laser_assmbler to build pointcloud from spining laser and add
+  launch and config files for multisense SL.
+* Contributors: Ryohei Ueda
+
 1.0.39 (2014-09-17)
 -------------------
 
