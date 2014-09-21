@@ -2,6 +2,14 @@
 import imp  ## for rosbuild                                                                                       
 try:
     imp.find_module('rostwitter')
+    # # append oauth package path
+    # import rospkg
+    # rp = rospkg.RosPack()
+    # rostwitter_path = rp.get_path('rostwitter')
+    # rostwitter_path
+    # import sys, os
+    # sys.path.append(os.path.join(rostwitter_path, "lib", "python2.7", 
+    #                              "dist-packages"))
 except:
     import roslib; roslib.load_manifest('rostwitter')
 
@@ -20,15 +28,17 @@ def tweet(dat):
     rospy.loginfo(rospy.get_name() + " sending %s", message)
     # search word start from / and end with {.jpeg,.jpg,.png,.gif}                                                 
     m = re.search('/\S+\.(jpeg|jpg|png|gif)', message)
-    if m :
+    if m:
         filename = m.group(0)
         message = re.sub(filename,"",message)
         if os.path.exists(filename):
             ##rospy.logdebug(rospy.get_name() + " tweet %s with file %s", message, filename)                       
             Api.PostMedia(message, filename)
             return
-
-    ## seg faults if message is longer than 140 byte ???                           Api.PostUpdate(message[0:140])
+    else:
+        Api.PostUpdate(message[0:140])
+    ## seg faults if message is longer than 140 byte ???                           
+        
     ##rospy.logdebug(rospy.get_name() + " tweet %s", sub_msg)                                                      
     return
 
@@ -43,7 +53,7 @@ def load_oauth_settings():
         AKEY = key['AKEY']
         ASECRET = key['ASECRET']
     except IOError as e:
-        rospy.logerr('"/var/lib/robot/%s" not found'%account_info)
+        rospy.logerr('"%s" not found'%account_info)
         rospy.logerr("$ rosrun rostwitter get_access_token.py")
         rospy.logerr("cat /var/lib/robot/%s <<EOF"%account_info)
         rospy.logerr("CKEY: xxx")
