@@ -31,10 +31,10 @@ catkin_package(
 )
 
 link_directories(${map_server_PREFIX}/lib)
-add_executable(map_server src/main.cpp)
-target_link_libraries(map_server ${catkin_LIBRARIES} image_loader SDL SDL_image yaml-cpp)
+add_executable(multi_map_server src/main.cpp)
+target_link_libraries(multi_map_server ${catkin_LIBRARIES} image_loader SDL SDL_image yaml-cpp)
 
-install(TARGETS map_server
+install(TARGETS multi_map_server
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
