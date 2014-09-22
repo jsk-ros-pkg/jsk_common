@@ -4,13 +4,17 @@
   <arg name="camera_namespace" default="camera" />
   <arg name="save_openni" default="true" />
   <arg name="save_robot_model" default="true" />
-  
+  <arg name="save_all_image" default="false" />
+  <arg name="other_topics" default=""/>
+
   <include file="$(find jsk_data)/launch/common_record.launch">
     <arg name="camera_namespace" value="$(arg camera_namespace)" />
     <arg name="save_openni2" value="$(arg save_openni)" />
     <arg name="save_openni" value="false" />
     <arg name="save_robot_model" value="$(arg save_robot_model)" />
-    <arg name="other_topics" value="/imu
+    <arg name="save_all_image" value="$(arg save_all_image)" />
+    <arg name="other_topics" value="$(arg other_topics)
+                                    /imu
                                     /odom
                                     /lfsensor
                                     /rfsensor

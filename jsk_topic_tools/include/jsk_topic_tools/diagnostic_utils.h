@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
@@ -32,43 +33,41 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#include <pluginlib/class_list_macros.h>
-#include "jsk_topic_tools/hz_measure_nodelet.h"
 
-#include "std_msgs/Float32.h"
+#ifndef JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
+#define JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
+
+#include <string>
+#include <diagnostic_updater/diagnostic_updater.h>
+#include "jsk_topic_tools/time_accumulator.h"
+#include "jsk_topic_tools/vital_checker.h"
 
 namespace jsk_topic_tools
 {
-  void HzMeasure::onInit()
-  {
-    pnh_ = getPrivateNodeHandle();
-    if (!pnh_.getParam("message_num", average_message_num_)) {
-      average_message_num_ = 10; // defaults to 10
-    }
-    hz_pub_ = pnh_.advertise<std_msgs::Float32>("output", 1);
-    sub_ = pnh_.subscribe<topic_tools::ShapeShifter>("input", 1,
-                                                     &HzMeasure::inputCallback, this);
-  }
+  ////////////////////////////////////////////////////////
+  // add TimeAcumulator information to Diagnostics
+  ////////////////////////////////////////////////////////
+  void addDiagnosticInformation(
+    const std::string& string_prefix,
+    jsk_topic_tools::TimeAccumulator& accumulator,
+    diagnostic_updater::DiagnosticStatusWrapper& stat);
 
-  void HzMeasure::inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
-  {
-    ros::Time now = ros::Time::now();
-    buffer_.push(now);
-    if (buffer_.size() > average_message_num_) {
-      ros::Time oldest = buffer_.front();
-      double whole_time = (now - oldest).toSec();
-      double average_time = whole_time / (buffer_.size() - 1);
-      std_msgs::Float32 output;
-      output.data = 1.0 / average_time;
-      hz_pub_.publish(output);
-      buffer_.pop();
-    }
-    else {
-      NODELET_DEBUG("there is no enough messages yet");
-    }
-  }
-  
+  ////////////////////////////////////////////////////////
+  // set error string to 
+  ////////////////////////////////////////////////////////
+  void addDiagnosticErrorSummary(
+    const std::string& string_prefix,
+    jsk_topic_tools::VitalChecker::Ptr vital_checker,
+    diagnostic_updater::DiagnosticStatusWrapper& stat);
+
+  ////////////////////////////////////////////////////////
+  // add Boolean string to stat
+  ////////////////////////////////////////////////////////
+  void addDiagnosticBooleanStat(
+    const std::string& string_prefix,
+    const bool value,
+    diagnostic_updater::DiagnosticStatusWrapper& stat);
+
 }
 
-typedef jsk_topic_tools::HzMeasure HzMeasure;
-PLUGINLIB_EXPORT_CLASS(HzMeasure, nodelet::Nodelet)
+#endif

@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
@@ -32,43 +33,56 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#include <pluginlib/class_list_macros.h>
-#include "jsk_topic_tools/hz_measure_nodelet.h"
-
-#include "std_msgs/Float32.h"
+#include "jsk_topic_tools/timered_diagnostic_updater.h"
 
 namespace jsk_topic_tools
 {
-  void HzMeasure::onInit()
+  TimeredDiagnosticUpdater::TimeredDiagnosticUpdater(
+    ros::NodeHandle& nh,
+    const ros::Duration& timer_duration):
+    diagnostic_updater_(new diagnostic_updater::Updater)
   {
-    pnh_ = getPrivateNodeHandle();
-    if (!pnh_.getParam("message_num", average_message_num_)) {
-      average_message_num_ = 10; // defaults to 10
-    }
-    hz_pub_ = pnh_.advertise<std_msgs::Float32>("output", 1);
-    sub_ = pnh_.subscribe<topic_tools::ShapeShifter>("input", 1,
-                                                     &HzMeasure::inputCallback, this);
-  }
-
-  void HzMeasure::inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
-  {
-    ros::Time now = ros::Time::now();
-    buffer_.push(now);
-    if (buffer_.size() > average_message_num_) {
-      ros::Time oldest = buffer_.front();
-      double whole_time = (now - oldest).toSec();
-      double average_time = whole_time / (buffer_.size() - 1);
-      std_msgs::Float32 output;
-      output.data = 1.0 / average_time;
-      hz_pub_.publish(output);
-      buffer_.pop();
-    }
-    else {
-      NODELET_DEBUG("there is no enough messages yet");
-    }
+    timer_ = nh.createTimer(
+      timer_duration, boost::bind(
+        &TimeredDiagnosticUpdater::timerCallback,
+        this,
+        _1));
+    timer_.stop();
   }
   
-}
+  void TimeredDiagnosticUpdater::start()
+  {
+    timer_.start();
+  }
 
-typedef jsk_topic_tools::HzMeasure HzMeasure;
-PLUGINLIB_EXPORT_CLASS(HzMeasure, nodelet::Nodelet)
+  TimeredDiagnosticUpdater::~TimeredDiagnosticUpdater()
+  {
+  }
+
+  void TimeredDiagnosticUpdater::setHardwareID(const std::string& name)
+  {
+    diagnostic_updater_->setHardwareID(name);
+  }
+  
+  void TimeredDiagnosticUpdater::add(const std::string& name,
+                                     diagnostic_updater::TaskFunction f)
+  {
+    diagnostic_updater_->add(name, f);
+  }
+  
+  // void TimeredDiagnosticUpdater::add(diagnostic_updater::DiagnosticTask task)
+  // {
+  //   diagnostic_updater_->add(task);
+  // }
+
+  void TimeredDiagnosticUpdater::update()
+  {
+    diagnostic_updater_->update();
+  }
+  
+  void TimeredDiagnosticUpdater::timerCallback(const ros::TimerEvent& event)
+  {
+    update();
+  }
+
+}

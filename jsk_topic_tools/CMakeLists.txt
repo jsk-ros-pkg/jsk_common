@@ -55,6 +55,8 @@ jsk_topic_tools_nodelet(src/hz_measure_nodelet.cpp
 
 rosbuild_add_library (jsk_topic_tools
   ${jsk_topic_tools_nodelet_sources}
+  src/timered_diagnostic_updater.cpp
+  src/diagnostic_utils.cpp
   src/rosparam_utils.cpp
   src/vital_checker.cpp
   src/time_accumulator.cpp

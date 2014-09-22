@@ -185,5 +185,5 @@ namespace jsk_topic_tools
 }
 
 typedef jsk_topic_tools::MUX MUX;
-PLUGINLIB_DECLARE_CLASS(jsk_topic_tools, MUX, MUX, nodelet::Nodelet)
+PLUGINLIB_EXPORT_CLASS(MUX, nodelet::Nodelet)
 
