@@ -2,6 +2,11 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.41 (2014-09-23)
+-------------------
+* Install binaries for deb package
+* Contributors: Ryohei Ueda
+
 1.0.40 (2014-09-19)
 -------------------
 
