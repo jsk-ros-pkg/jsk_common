@@ -2,6 +2,9 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.40 (2014-09-19)
 -------------------
 * Add spin_laser_assmbler to build pointcloud from spining laser and add
