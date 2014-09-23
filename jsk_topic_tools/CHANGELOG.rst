@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.41 (2014-09-23)
+-------------------
 * Compile transform_merger on catkin
 * Use PLUGINLIB_EXPORT_CLASS instead of deprecated PLUGINLIB_DECLARE_CLASS
 * Contributors: Ryohei Ueda
