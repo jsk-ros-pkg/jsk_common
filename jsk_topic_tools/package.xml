@@ -1,6 +1,6 @@
 <package>
   <name>jsk_topic_tools</name>
-  <version>1.0.40</version>
+  <version>1.0.41</version>
   <description>jsk_topic_tools</description>
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
   <maintainer email="furuta@jsk.t.u-tokyo.ac.jp">Yusuke Furuta</maintainer>
@@ -27,6 +27,7 @@
   <build_depend>diagnostic_msgs</build_depend>
   <build_depend>rosnode</build_depend>
   <build_depend>dynamic_tf_publisher</build_depend>
+  <build_depend>tf</build_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>topic_tools</run_depend>
   <run_depend>message_runtime</run_depend>
@@ -37,6 +38,7 @@
   <run_depend>diagnostic_msgs</run_depend>
   <run_depend>rosnode</run_depend>
   <run_depend>dynamic_tf_publisher</run_depend>
+  <run_depend>tf</run_depend>
   <export>
     <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>
   </export>

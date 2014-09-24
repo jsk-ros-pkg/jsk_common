@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(jsk_topic_tools)
 
 find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp rostest std_msgs
-  nodelet
+  nodelet tf
   topic_tools)
 
 add_message_files(
@@ -17,6 +17,8 @@ add_service_files(
 #include_directories(${Boost_INCLUDE_DIRS})
 add_executable(topic_buffer_server src/topic_buffer_server.cpp)
 add_executable(topic_buffer_client src/topic_buffer_client.cpp)
+add_executable(transform_merger src/transform_merger.cpp)
+target_link_libraries(transform_merger ${catkin_LIBRARIES})
 add_dependencies(topic_buffer_server ${PROJECT_NAME}_gencpp)
 add_dependencies(topic_buffer_client ${PROJECT_NAME}_gencpp)
 target_link_libraries(topic_buffer_server ${catkin_LIBRARIES})
