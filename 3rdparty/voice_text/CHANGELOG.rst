@@ -2,6 +2,11 @@
 Changelog for package voice_text
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Support cakint for vice_text by using catkin_find command
+* Contributors: Ryohei Ueda
+
 1.0.41 (2014-09-23)
 -------------------
 

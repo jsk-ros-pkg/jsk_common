@@ -2,6 +2,11 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Rename executable of multi_map_server to avoid conflict against map_server
+* Contributors: Ryohei Ueda
+
 1.0.41 (2014-09-23)
 -------------------
 
