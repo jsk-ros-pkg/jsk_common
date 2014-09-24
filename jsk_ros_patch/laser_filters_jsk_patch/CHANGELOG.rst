@@ -2,8 +2,8 @@
 Changelog for package laser_filters_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.42 (2014-09-25)
+-------------------
 * Add catkin.cmake to catkinize laser_filters_jsk_patch
 * Merge remote-tracking branch 'refs/remotes/origin/master' into catkinize-laser-filters-jsk-patch
 * Catkinize laser_scan_filters_jsk_patch

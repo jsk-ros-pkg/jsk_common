@@ -2,8 +2,8 @@
 Changelog for package rostwitter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.42 (2014-09-25)
+-------------------
 * add oauth2 and oauthlib to depends
 * Contributors: Kei Okada
 
