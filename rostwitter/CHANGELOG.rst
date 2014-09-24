@@ -2,6 +2,11 @@
 Changelog for package rostwitter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.41 (2014-09-23)
+-------------------
+* Fix rostwitter to call Api.postUpdate
+* Contributors: Ryohei Ueda
+
 1.0.40 (2014-09-19)
 -------------------
 
