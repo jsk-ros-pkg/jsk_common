@@ -2,6 +2,9 @@
 Changelog for package voice_text
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.42 (2014-09-25)
 -------------------
 * Support cakint for vice_text by using catkin_find command

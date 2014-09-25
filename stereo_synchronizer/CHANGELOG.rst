@@ -2,6 +2,9 @@
 Changelog for package stereo_synchronizer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.42 (2014-09-25)
 -------------------
 

@@ -2,6 +2,9 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.42 (2014-09-25)
 -------------------
 * Rename executable of multi_map_server to avoid conflict against map_server
