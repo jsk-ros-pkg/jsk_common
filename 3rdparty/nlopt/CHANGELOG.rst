@@ -2,6 +2,11 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.42 (2014-09-25)
+-------------------
+* Add rospack to nlopt dependency
+* Contributors: Ryohei Ueda
+
 1.0.41 (2014-09-23)
 -------------------
 * Install binaries for deb package

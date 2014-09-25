@@ -1,5 +1,5 @@
 <class_libraries>
-  <library path="lib/liblaser_scan_filters">
+  <library path="lib/liblaser_scan_filters_jsk_patch">
     <class name="laser_filters/ScanFootObjectFilter" type="laser_filters::ScanFootObjectFilter"
 	    base_class_type="filters::FilterBase<sensor_msgs::LaserScan>">
       <description>

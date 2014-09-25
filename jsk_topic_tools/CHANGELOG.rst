@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.42 (2014-09-25)
+-------------------
+
 1.0.41 (2014-09-23)
 -------------------
 * Compile transform_merger on catkin

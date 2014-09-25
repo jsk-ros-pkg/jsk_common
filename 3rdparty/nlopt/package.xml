@@ -4,7 +4,7 @@
   <description>
     nlopt
   </description>
-  <version>1.0.41</version>
+  <version>1.0.42</version>
   <maintainer email="s-noda@jsk.t.u-tokyo.ac.jp">Noda Shintaro</maintainer>
   <license>BSD</license>
   <export>
@@ -16,5 +16,5 @@
 
   <build_depend>mk</build_depend>
   <build_depend>rosbuild</build_depend>
-
+  <build_depend>rospack</build_depend>
 </package>
