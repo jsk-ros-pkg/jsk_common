@@ -2,6 +2,11 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Do not use rospack to build nlopt on catkin
+* Contributors: Ryohei Ueda
+
 1.0.43 (2014-09-26)
 -------------------
 
