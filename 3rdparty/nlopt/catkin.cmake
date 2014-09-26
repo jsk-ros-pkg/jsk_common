@@ -2,14 +2,14 @@ project(nlopt)
 
 cmake_minimum_required(VERSION 2.4.6)
 
-find_package(catkin)
+find_package(catkin REQUIRED COMPONENTS mk)
 
-message("cmake -E chdir ${PROJECT_SOURCE_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile DSTDIR=${PROJECT_SOURCE_DIR}")
-execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile DSTDIR=${PROJECT_SOURCE_DIR})
+execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile DSTDIR=${PROJECT_SOURCE_DIR}
+  MK_DIR=${mk_PREFIX}/share/mk)
 
 catkin_package(
     DEPENDS
-    CATKIN-DEPENDS
+    CATKIN_DEPENDS
     INCLUDE_DIRS
     LIBRARIES
 )
