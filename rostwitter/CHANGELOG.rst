@@ -2,6 +2,17 @@
 Changelog for package rostwitter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.44 (2014-09-26)
+-------------------
+
+1.0.43 (2014-09-26)
+-------------------
+
+1.0.42 (2014-09-25)
+-------------------
+* add oauth2 and oauthlib to depends
+* Contributors: Kei Okada
+
 1.0.41 (2014-09-23)
 -------------------
 * Fix rostwitter to call Api.postUpdate

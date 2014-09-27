@@ -1,4 +1,5 @@
 if(NOT USE_ROSBUILD)
+  include(catkin.cmake)
   return()
 endif()
 cmake_minimum_required(VERSION 2.4.6)
@@ -30,8 +31,8 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_gensrv()
 
 #common commands for building c++ executables and libraries
-rosbuild_add_library(laser_scan_filters src/laser_scan_filters.cpp)
-rosbuild_link_boost(laser_scan_filters system)
+rosbuild_add_library(laser_scan_filters_jsk_patch src/laser_scan_filters.cpp)
+rosbuild_link_boost(laser_scan_filters_jsk_patch system)
 
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
