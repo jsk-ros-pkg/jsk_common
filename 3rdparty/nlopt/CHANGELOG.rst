@@ -2,6 +2,24 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.44 (2014-09-26)
+-------------------
+* Do not use rospack to build nlopt on catkin
+* Contributors: Ryohei Ueda
+
+1.0.43 (2014-09-26)
+-------------------
+
+1.0.42 (2014-09-25)
+-------------------
+* Add rospack to nlopt dependency
+* Contributors: Ryohei Ueda
+
+1.0.41 (2014-09-23)
+-------------------
+* Install binaries for deb package
+* Contributors: Ryohei Ueda
+
 1.0.40 (2014-09-19)
 -------------------
 

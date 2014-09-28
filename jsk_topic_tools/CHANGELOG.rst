@@ -2,6 +2,21 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.44 (2014-09-26)
+-------------------
+
+1.0.43 (2014-09-26)
+-------------------
+
+1.0.42 (2014-09-25)
+-------------------
+
+1.0.41 (2014-09-23)
+-------------------
+* Compile transform_merger on catkin
+* Use PLUGINLIB_EXPORT_CLASS instead of deprecated PLUGINLIB_DECLARE_CLASS
+* Contributors: Ryohei Ueda
+
 1.0.40 (2014-09-19)
 -------------------
 * Add diagnostic utils from jsk_pcl_ros
