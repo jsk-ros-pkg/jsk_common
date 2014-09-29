@@ -109,4 +109,4 @@ namespace jsk_topic_tools
 }
 
 typedef jsk_topic_tools::Relay Relay;
-PLUGINLIB_DECLARE_CLASS(jsk_topic_tools, Relay, Relay, nodelet::Nodelet)
+PLUGINLIB_EXPORT_CLASS(Relay, nodelet::Nodelet)

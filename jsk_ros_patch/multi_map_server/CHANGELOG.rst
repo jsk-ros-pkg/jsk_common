@@ -2,6 +2,36 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.44 (2014-09-26)
+-------------------
+
+1.0.43 (2014-09-26)
+-------------------
+
+1.0.42 (2014-09-25)
+-------------------
+* Rename executable of multi_map_server to avoid conflict against map_server
+* Contributors: Ryohei Ueda
+
+1.0.41 (2014-09-23)
+-------------------
+
+1.0.40 (2014-09-19)
+-------------------
+
+1.0.39 (2014-09-17)
+-------------------
+
+1.0.38 (2014-09-13)
+-------------------
+* catkinize python_twoauth and voice_text, modify multi_map_server's catkin.cmake
+* Contributors: Yuto Inagaki
+
+1.0.36 (2014-09-01)
+-------------------
+* modify to install executable to right path
+* Contributors: Yuto Inagaki
+
 1.0.35 (2014-08-16)
 -------------------
 

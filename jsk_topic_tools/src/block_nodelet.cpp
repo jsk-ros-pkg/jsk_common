@@ -157,5 +157,5 @@ namespace jsk_topic_tools
 }
 
 typedef jsk_topic_tools::Block Block;
-PLUGINLIB_DECLARE_CLASS(jsk_topic_tools, Block, Block, nodelet::Nodelet)
+PLUGINLIB_EXPORT_CLASS(Block, nodelet::Nodelet)
 

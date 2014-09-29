@@ -1,6 +1,6 @@
 <package>
   <name>laser_filters_jsk_patch</name>
-  <version>1.0.35</version>
+  <version>1.0.44</version>
   <description>laser_filters_jsk_patch</description>
 
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
@@ -11,13 +11,16 @@
   <!-- <url type="bugtracker"></url> -->
 
   <author>k-okada</author>
-
+  <buildtool_depend>catkin</buildtool_depend>
   <build_depend>laser_geometry</build_depend>
 
   <build_depend>git</build_depend>
   <build_depend>cmake_modules</build_depend>
   <build_depend>mk</build_depend>
-
+  <build_depend>laser_filters</build_depend>
+  <run_depend>laser_filters</run_depend>
+  <build_depend>filters</build_depend>
+  <run_depend>filters</run_depend>
   <!-- <build_depend>filters</build_depend> -->
   <!-- <run_depend>laser_filters</run_depend> -->
   <!-- <run_depend>filters</run_depend> -->
