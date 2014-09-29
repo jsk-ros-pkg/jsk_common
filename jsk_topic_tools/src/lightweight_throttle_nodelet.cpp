@@ -69,5 +69,4 @@ namespace jsk_topic_tools
   
 }
 typedef jsk_topic_tools::LightweightThrottle LightweightThrottle;
-PLUGINLIB_DECLARE_CLASS(jsk_topic_tools, LightweightThrottle,
-                        LightweightThrottle, nodelet::Nodelet)
+PLUGINLIB_EXPORT_CLASS(LightweightThrottle, nodelet::Nodelet)

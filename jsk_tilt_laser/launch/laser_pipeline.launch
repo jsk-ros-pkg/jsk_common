@@ -1,0 +1,22 @@
+<launch>
+  <arg name="FIXED_FRAME" default="/base_link" />
+  <arg name="USE_ASSEMBLER_FILTER" default="true" />
+  <arg name="laser_scan" default="scan" />
+  <arg name="pointcloud" default="/cloud_filtered" />
+  <arg name="max_scans" default="1000" />
+  <arg name="tilt_name" default="tilt_joint" />
+
+  <!-- laser assembler for recognizing environment -->
+  <node pkg="laser_assembler" type="laser_scan_assembler"
+        name="laser_scan_assembler_node"
+        output="screen" >
+    <remap from="scan" to="$(arg laser_scan)"/>
+    <!-- <remap from="cloud_filtered" to="$(arg pointcloud)"/> -->
+    <param name="tf_cache_time_secs" value="20" />
+    <param name="max_scans" type="int" value="$(arg max_scans)" />
+    <param name="fixed_frame" type="string" value="$(arg FIXED_FRAME)"/>
+    <rosparam if="$(arg USE_ASSEMBLER_FILTER)"
+              command="load" file="$(find jsk_tilt_laser)/config/jsk_laser_filter.yaml" />
+  </node>
+
+</launch>

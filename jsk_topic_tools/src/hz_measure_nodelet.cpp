@@ -71,4 +71,4 @@ namespace jsk_topic_tools
 }
 
 typedef jsk_topic_tools::HzMeasure HzMeasure;
-PLUGINLIB_DECLARE_CLASS(jsk_topic_tools, HzMeasure, HzMeasure, nodelet::Nodelet)
+PLUGINLIB_EXPORT_CLASS(HzMeasure, nodelet::Nodelet)

@@ -1,0 +1,17 @@
+<launch>
+  <arg name="RUN_DRIVER" default="true" />
+  <param name="robot_description" textfile="$(find jsk_tilt_laser)/config/tilt_laser.urdf" />
+  <node name="tilt_robot_state_publisher" pkg="robot_state_publisher"
+        type="state_publisher" />
+  <group if="$(arg RUN_DRIVER)">
+    <include file="$(find jsk_tilt_laser)/launch/dynamixel.launch" />
+    <include file="$(find jsk_tilt_laser)/launch/start_urg.launch" />
+  </group>
+  <include file="$(find jsk_tilt_laser)/launch/laser_pipeline.launch" />
+
+  <node pkg="jsk_tilt_laser" type="tilt_laser_assembler.py"
+        name="tilt_laser_controller" />
+
+  <node name="rviz" pkg="rviz" type="rviz"
+        args="-d $(find jsk_tilt_laser)/launch/jsk_tilt_laser.rviz" />
+</launch>
