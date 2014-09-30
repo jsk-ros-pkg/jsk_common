@@ -2,6 +2,9 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.45 (2014-09-29)
+-------------------
+
 1.0.44 (2014-09-26)
 -------------------
 * Do not use rospack to build nlopt on catkin
