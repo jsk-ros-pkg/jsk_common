@@ -52,6 +52,7 @@ namespace jsk_topic_tools
     ros::TransportHints th_;
     bool advertised_;
     double update_rate_;
+    ros::Time latest_stamp_;
   };
 }
 
