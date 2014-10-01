@@ -40,6 +40,7 @@ namespace jsk_topic_tools
   void LightweightThrottle::onInit()
   {
     ros::NodeHandle nh = this->getPrivateNodeHandle();
+    latest_stamp_ = ros::Time::now();
     advertised_ = false;
     nh.param("update_rate", update_rate_, 1.0); // default 1.0
     sub_.reset(new ros::Subscriber(
@@ -57,13 +58,15 @@ namespace jsk_topic_tools
                             "output", 1);
       advertised_ = true;
     }
-    // publish the message to output topic only if any
-    // subscriber is
-    if (pub_.getNumSubscribers()) {
-      pub_.publish(msg);
+    ros::Time now = ros::Time::now();
+    if ((now - latest_stamp_).toSec() > 1 / update_rate_) {
+      // publish the message to output topic only if any
+      // subscriber is
+      if (pub_.getNumSubscribers()) {
+        pub_.publish(msg);
+      }
+      latest_stamp_ = now;
     }
-    // sleep to block callback
-    ros::Duration(1 / update_rate_).sleep();
   }
   
   
