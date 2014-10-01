@@ -2,6 +2,18 @@
 Changelog for package rostwitter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.45 (2014-09-29)
+-------------------
+* Merge pull request #543 from k-okada/use_deb_request
+  rewrite twitter.py to use ubuntu python-oauth2 and python-request
+* rewrite twitter.py to use ubuntu python-oauth2 and python-request
+
+1.0.44 (2014-09-26)
+-------------------
+
+1.0.43 (2014-09-26)
+-------------------
+
 1.0.42 (2014-09-25)
 -------------------
 * add oauth2 and oauthlib to depends

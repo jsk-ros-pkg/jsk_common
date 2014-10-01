@@ -1,6 +1,6 @@
 <package>
   <name>posedetection_msgs</name>
-  <version>1.0.42</version>
+  <version>1.0.45</version>
   <description>posedetection_msgs provides messages and services to facilitate passing pose detection results and features.</description>
   <!-- <maintainer>Rosen Diankov</maintainer> -->
 
