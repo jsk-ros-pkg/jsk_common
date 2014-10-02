@@ -57,18 +57,11 @@ class twitter(object):
         headers = req.to_header()
 
         if verb == 'POST':
-            if data.has_key('media[]'):
-                return requests.post(
-                    url,
-                    headers=headers,
-                    files=data
-                    )
-            else:
-                return requests.post(
-                    url,
-                    headers=headers,
-                    data=data
-                    )
+            return requests.post(
+                url,
+                headers=headers,
+                files=data
+                )
         if verb == 'GET':
             url = self._BuildUrl(url, extra_params=data)
             return requests.get(
