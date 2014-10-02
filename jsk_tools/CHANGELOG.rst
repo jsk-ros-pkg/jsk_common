@@ -2,6 +2,12 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* if user specify ip address by arguments, then we'll use this
+* set IP of first candidates
+* set /sbin to PATH
+
 1.0.45 (2014-09-29)
 -------------------
 
