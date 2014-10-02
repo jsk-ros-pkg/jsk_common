@@ -73,7 +73,7 @@ class twitter(object):
     def PostUpdate(self, status):
         url = 'https://api.twitter.com/1.1/statuses/update.json'
 
-        data = {'status': status}
+        data = {'status': StringIO(status)}
         json = self._RequestUrl(url, 'POST', data=data)
         data = simplejson.loads(json.content)
         if 'error' in data:
