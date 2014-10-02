@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.46 (2014-10-03)
+-------------------
 * Do not use sleep inside of lightweight_throttle
 
 1.0.45 (2014-09-29)
