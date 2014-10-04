@@ -23,7 +23,7 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
-install(DIRECTORY scripts launch
+install(DIRECTORY scripts
   DESTINATION
   ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
