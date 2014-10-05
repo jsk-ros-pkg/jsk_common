@@ -48,7 +48,7 @@ namespace jsk_topic_tools
   
   void Relay::inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
   {
-    boost::mutex::scoped_lock(mutex_);
+    boost::mutex::scoped_lock lock(mutex_);
     if (!advertised_) {
       // this block is called only once
       // in order to advertise topic.
@@ -77,7 +77,7 @@ namespace jsk_topic_tools
 
   void Relay::connectCb()
   {
-    boost::mutex::scoped_lock(mutex_);
+    boost::mutex::scoped_lock lock(mutex_);
     NODELET_DEBUG("connectCB");
     if (advertised_) {
       if (pub_.getNumSubscribers() > 0) {
@@ -93,7 +93,7 @@ namespace jsk_topic_tools
 
   void Relay::disconnectCb()
   {
-    boost::mutex::scoped_lock(mutex_);
+    boost::mutex::scoped_lock lock(mutex_);
     NODELET_DEBUG("disconnectCb");
     if (advertised_) {
       if (pub_.getNumSubscribers() == 0) {
