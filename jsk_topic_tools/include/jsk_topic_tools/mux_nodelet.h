@@ -60,10 +60,10 @@ namespace jsk_topic_tools
                                    topic_tools::MuxList::Response& res);
     virtual void inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
   protected:
-    virtual std::vector<std::string> readStringArray(std::string param_name,
-                                                     ros::NodeHandle& handle);
+    virtual void connectCb(const ros::SingleSubscriberPublisher& pub);
     virtual void subscribeSelectedTopic();
     bool advertised_;
+    bool subscribing_;
     std::vector<std::string> topics_;
     std::string selected_topic_;
     boost::shared_ptr<ros::Subscriber> sub_;
