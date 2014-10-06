@@ -39,24 +39,56 @@ namespace jsk_topic_tools
 {
   void LightweightThrottle::onInit()
   {
-    ros::NodeHandle nh = this->getPrivateNodeHandle();
+    pnh_ = this->getPrivateNodeHandle();
     latest_stamp_ = ros::Time::now();
     advertised_ = false;
-    nh.param("update_rate", update_rate_, 1.0); // default 1.0
+    subscribing_ = false;
+    pnh_.param("update_rate", update_rate_, 1.0); // default 1.0
     sub_.reset(new ros::Subscriber(
-                 nh.subscribe<topic_tools::ShapeShifter>("input", 1,
-                                                         &LightweightThrottle::inCallback,
-                                                         this,
-                                                         th_)));
+                 pnh_.subscribe<topic_tools::ShapeShifter>("input", 1,
+                                                           &LightweightThrottle::inCallback,
+                                                           this,
+                                                           th_)));
   }
 
-  void LightweightThrottle::inCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
+  void LightweightThrottle::connectionCallback(
+    const ros::SingleSubscriberPublisher& pub)
+  {
+    if (pub_.getNumSubscribers() > 0) {
+      if (!subscribing_) {
+        sub_.reset(new ros::Subscriber(
+                     pnh_.subscribe<topic_tools::ShapeShifter>(
+                       "input", 1,
+                       &LightweightThrottle::inCallback,
+                       this,
+                       th_)));
+        subscribing_ = false;
+      }
+    }
+    else {
+      if (subscribing_) {
+        sub_->shutdown();
+        subscribing_ = true;
+      }
+    }
+  }
+  
+  void LightweightThrottle::inCallback(
+    const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
   {
     // advertise if not
     if (!advertised_) {
-      pub_ = msg->advertise(this->getPrivateNodeHandle(),
-                            "output", 1);
+      ros::SubscriberStatusCallback connect_cb
+        = boost::bind(&LightweightThrottle::connectionCallback, this, _1);
+      ros::AdvertiseOptions opts("output", 1,
+                                 msg->getMD5Sum(),
+                                 msg->getDataType(),
+                                 msg->getMessageDefinition(),
+                                 connect_cb,
+                                 connect_cb);
+      pub_ = pnh_.advertise(opts);
       advertised_ = true;
+      sub_->shutdown();
     }
     ros::Time now = ros::Time::now();
     if ((now - latest_stamp_).toSec() > 1 / update_rate_) {
@@ -68,8 +100,7 @@ namespace jsk_topic_tools
       latest_stamp_ = now;
     }
   }
-  
-  
 }
+
 typedef jsk_topic_tools::LightweightThrottle LightweightThrottle;
 PLUGINLIB_EXPORT_CLASS(LightweightThrottle, nodelet::Nodelet)

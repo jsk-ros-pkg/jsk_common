@@ -44,15 +44,18 @@ namespace jsk_topic_tools
   public:
     virtual void onInit();
     virtual void inCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
-
+    virtual void connectionCallback(
+      const ros::SingleSubscriberPublisher& pub);
   protected:
     typedef boost::shared_ptr<ros::Subscriber> SubscriberPtr;
     SubscriberPtr sub_;
     ros::Publisher pub_;
     ros::TransportHints th_;
     bool advertised_;
+    bool subscribing_;
     double update_rate_;
     ros::Time latest_stamp_;
+    ros::NodeHandle pnh_;
   };
 }
 
