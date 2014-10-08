@@ -28,7 +28,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/nodelet.cmake)
 
 macro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
   jsk_nodelet(${_nodelet_cpp} ${_nodelet_class} ${_single_nodelet_exec_name}
-    jsk_topic_tools_nodelet_sources)
+    jsk_topic_tools_nodelet_sources jsk_topic_tools_nodelet_executable_names)
 endmacro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
 
 # nodelet shared object
@@ -77,6 +77,7 @@ add_rostest(test/test_hz_measure.test)
 add_rostest(test/test_block.test)
 
 install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
+  ${jsk_topic_tools_nodelet_executable_names}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
