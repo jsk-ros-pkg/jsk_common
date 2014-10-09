@@ -34,6 +34,7 @@
 #include <pluginlib/class_list_macros.h>
 #include "jsk_topic_tools/mux_nodelet.h"
 #include <std_msgs/String.h>
+#include "jsk_topic_tools/rosparam_utils.h"
 
 namespace jsk_topic_tools
 {
@@ -44,33 +45,61 @@ namespace jsk_topic_tools
   {
     advertised_ = false;
     pnh_ = getPrivateNodeHandle();
-    topics_ = readStringArray("topics", pnh_);
+    readVectorParameter(pnh_, "topics", topics_);
     if (topics_.size() < 1) {
       NODELET_FATAL("need to specify at least one topic in ~topics");
       return;
     }
     pub_selected_ = pnh_.advertise<std_msgs::String>("selected", 1, true);
-    selected_topic_ = topics_[0];
-    subscribeSelectedTopic();
     // in original mux node, it subscribes all the topics first, however
     // in our version, we never subscribe topic which are not selected.
-
+    // ros::SubscriberStatusCallback connect_cb
+    //     = boost::bind( &Mux::connectCb, this);
+    selected_topic_ = topics_[0];
+    subscribeSelectedTopic();
     // service advertise: _select, select, add, list, delete
     ss_select_ = pnh_.advertiseService("select", &MUX::selectTopicCallback, this);
     ss_add_ = pnh_.advertiseService("add", &MUX::addTopicCallback, this);
-    ss_list_ = pnh_.advertiseService("list", &MUX::listTopicCallback, this);
+    ss_list_ = pnh_.advertiseService("list_topics", &MUX::listTopicCallback, this);
     ss_del_ = pnh_.advertiseService("delete", &MUX::deleteTopicCallback, this);
+    
   }
 
+  void MUX::connectCb(const ros::SingleSubscriberPublisher& pub)
+  {
+    // new subscriber come or
+    if (pub_.getNumSubscribers() > 0) {
+      // subscribe topic again
+      if (!subscribing_) {
+        //NODELET_INFO("subscribe");
+        sub_.reset(new ros::Subscriber(
+                     pnh_.subscribe<topic_tools::ShapeShifter>(
+                       selected_topic_, 10,
+                       &MUX::inputCallback, this, th_)));
+        subscribing_ = true;
+      }
+    }
+    else {
+      if (subscribing_) {
+        //NODELET_INFO("unsubscribe");
+        sub_->shutdown();
+        subscribing_ = false;
+      }
+    }
+  }
+
+  
+  
   bool MUX::selectTopicCallback(topic_tools::MuxSelect::Request  &req,
                                 topic_tools::MuxSelect::Response &res)
   {
     res.prev_topic = selected_topic_;
     if (selected_topic_ != g_none_topic) {
+      //NODELET_INFO("unsubscribe");
       sub_->shutdown();            // unsubscribe first
     }
 
-    if (req.topic == g_none_topic) {
+    if (req.topic == g_none_topic) { // same topic
       selected_topic_ = g_none_topic;
       return true;
     }
@@ -141,43 +170,41 @@ namespace jsk_topic_tools
     return true;
   }
   
-  std::vector<std::string> MUX::readStringArray(std::string param_name,
-                                                ros::NodeHandle& handle)
-  {
-    // read string array
-    std::vector<std::string> strings;
-    XmlRpc::XmlRpcValue v;
-    if (handle.hasParam(param_name)) {
-      handle.param(param_name, v, v);
-      for (size_t i = 0; i < v.size(); i++) {
-        strings.push_back(v[i]);
-      }
-    }
-    return strings;
-  }
-
   void MUX::subscribeSelectedTopic()
   {
+    // subscribe topic in order to "advertise"
     advertised_ = false;
+    subscribing_ = false;
     // assume that selected_topic_ is already set correctly
     if (selected_topic_ == g_none_topic) {
       NODELET_WARN("none topic is selected");
       return;
     }
+    //NODELET_INFO("subscribe");
     sub_.reset(new ros::Subscriber(
-                 pnh_.subscribe<topic_tools::ShapeShifter>(selected_topic_, 10,
-                                                           &MUX::inputCallback, this, th_)));
+                 pnh_.subscribe<topic_tools::ShapeShifter>(
+                   selected_topic_, 10,
+                   &MUX::inputCallback, this, th_)));
     std_msgs::String msg;
     msg.data = selected_topic_;
     pub_selected_.publish(msg);
-
   }
 
   void MUX::inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
   {
-    if (!advertised_) {
-      pub_ = msg->advertise(pnh_, "output", 1);
+    if (!advertised_) {         // first time
+      ros::SubscriberStatusCallback connect_cb
+        = boost::bind(&MUX::connectCb, this, _1);
+      ros::AdvertiseOptions opts("output", 1,
+                                 msg->getMD5Sum(),
+                                 msg->getDataType(),
+                                 msg->getMessageDefinition(),
+                                 connect_cb,
+                                 connect_cb);
+      pub_ = pnh_.advertise(opts);
       advertised_ = true;
+      sub_->shutdown();
+      //NODELET_INFO("unsubscribe");
     }
     pub_.publish(msg);
   }
