@@ -2,6 +2,14 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.47 (2014-10-08)
+-------------------
+* Install executables build as single nodelet
+* LightweightThrottle does not subscribe any topics if no need
+* fix mutex lock of relay node
+* Do not subscribe topics until mux/output is subscribed
+* Contributors: Ryohei Ueda
+
 1.0.46 (2014-10-03)
 -------------------
 * Do not use sleep inside of lightweight_throttle
