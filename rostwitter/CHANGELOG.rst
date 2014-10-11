@@ -2,6 +2,9 @@
 Changelog for package rostwitter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.47 (2014-10-08)
+-------------------
+
 1.0.46 (2014-10-03)
 -------------------
 * fix: data=data does not work, see https://github.com/jsk-ros-pkg/jsk_robot/issues/91

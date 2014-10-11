@@ -2,6 +2,9 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.47 (2014-10-08)
+-------------------
+
 1.0.46 (2014-10-03)
 -------------------
 * if user specify ip address by arguments, then we'll use this

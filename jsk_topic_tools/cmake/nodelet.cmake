@@ -26,6 +26,9 @@ macro(jsk_nodelet _nodelet_cpp _nodelet_class
     add_executable(${_single_nodelet_exec_name} ${_single_nodelet_exec_name}.cpp)
     target_link_libraries(${_single_nodelet_exec_name} ${catkin_LIBRARIES})
   endif(${USE_ROSBUILD})
+  if (${ARGC} GREATER 4)
+    list(APPEND ${ARGV4} ${_single_nodelet_exec_name})
+  endif(${ARGC} GREATER 4)
   if(NOT ${USE_ROSBUILD})
     install(TARGETS ${_single_nodelet_exec_name}
       RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
