@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.48 (2014-10-12)
+-------------------
 * add cmake_modules for indigo compile
 * Contributors: Kei Okada
 
