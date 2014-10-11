@@ -2,6 +2,11 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* disable collada_urdf_jsk_patch for indigo
+* Contributors: Kei Okada
+
 1.0.47 (2014-10-08)
 -------------------
 

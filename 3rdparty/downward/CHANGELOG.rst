@@ -2,6 +2,11 @@
 Changelog for package downward
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* use tgz to download source
+* Contributors: Kei Okada
+
 1.0.47 (2014-10-08)
 -------------------
 
