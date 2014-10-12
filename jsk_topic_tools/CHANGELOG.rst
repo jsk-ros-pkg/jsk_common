@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.48 (2014-10-12)
+-------------------
+
 1.0.47 (2014-10-08)
 -------------------
 * Install executables build as single nodelet
