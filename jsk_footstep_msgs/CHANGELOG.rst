@@ -2,6 +2,11 @@
 Changelog for package jsk_footstep_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add optional parameters for visualization to jsk_footstep_msgs/Footstep
+* Contributors: Ryohei Ueda
+
 1.0.48 (2014-10-12)
 -------------------
 

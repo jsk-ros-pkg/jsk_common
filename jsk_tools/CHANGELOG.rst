@@ -2,6 +2,11 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add script to kill/respawn automatically according to roscore status
+* Contributors: Ryohei Ueda
+
 1.0.48 (2014-10-12)
 -------------------
 

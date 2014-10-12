@@ -2,6 +2,9 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.48 (2014-10-12)
 -------------------
 * remove depends to opencv2, since indigo depends on libopencv-dev, so we depends on cv_bridge whcih both hydro/indigo depends on it
