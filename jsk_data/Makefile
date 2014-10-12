@@ -30,3 +30,6 @@ small:
 
 pkls:
 	rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" --bwlimit=100000 ${DATA_DIR}/pkls . || exit 0
+
+pcds:
+	rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" --bwlimit=100000 ${DATA_DIR}/pcds . || exit 0

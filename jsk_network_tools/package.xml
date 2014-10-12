@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <name>jsk_network_tools</name>
+  <version>1.0.48</version>
+  <description>jsk_network_tools</description>
+
+  <maintainer email="furuta@jsk.imi.i.u-tokyo.ac.jp">Yusuke Furuta</maintainer>
+
+  <license>BSD</license>
+
+  <author email="furuta@jsk.imi.i.u-tokyo.ac.jp">Yusuke Furuta</author>
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>std_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>message_runtime</run_depend>
+</package>
