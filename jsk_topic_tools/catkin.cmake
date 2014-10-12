@@ -14,6 +14,16 @@ add_service_files(
   FILES List.srv Update.srv
 )
 
+generate_messages()
+catkin_package(
+    DEPENDS
+    CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs
+    INCLUDE_DIRS include
+    LIBRARIES jsk_topic_tools
+    CFG_EXTRAS nodelet.cmake
+)
+
+include_directories(include ${catkin_INCLUDE_DIRS})
 #include_directories(${Boost_INCLUDE_DIRS})
 add_executable(topic_buffer_server src/topic_buffer_server.cpp)
 add_executable(topic_buffer_client src/topic_buffer_client.cpp)
@@ -32,8 +42,6 @@ macro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_n
 endmacro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
 
 # nodelet shared object
-include_directories(${catkin_INCLUDE_DIRS} include)
-
 jsk_topic_tools_nodelet(src/lightweight_throttle_nodelet.cpp
   "jsk_topic_tools/LightweightThrottle" "lightweight_throttle")
 jsk_topic_tools_nodelet(src/mux_nodelet.cpp
@@ -55,17 +63,6 @@ add_library(jsk_topic_tools SHARED
   src/color_utils.cpp)
   
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
-
-generate_messages()
-
-catkin_package(
-    DEPENDS
-    CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs
-    INCLUDE_DIRS include
-    LIBRARIES jsk_topic_tools
-    CFG_EXTRAS nodelet.cmake
-)
-
 add_rostest(test/test_topic_buffer.test)
 add_rostest(test/test_topic_buffer_close_wait.test)
 add_rostest(test/test_topic_buffer_fixed_rate.test)
