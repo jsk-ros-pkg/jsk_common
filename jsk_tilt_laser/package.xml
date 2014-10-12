@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>jsk_tilt_laser</name>
-  <version>1.0.47</version>
+  <version>1.0.48</version>
   <description>The jsk_tilt_laser package</description>
 
   <maintainer email="youhei@jsk.imi.i.u-tokyo.ac.jp">YoheiKakiuchi</maintainer>
@@ -12,6 +12,8 @@
   <author email="youhei@jsk.imi.i.u-tokyo.ac.jp">YoheiKakiuchi</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>cmake_modules</build_depend>
 
   <build_depend>laser_assembler</build_depend>
   <run_depend>urg_node</run_depend>
