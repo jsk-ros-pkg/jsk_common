@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.49 (2014-10-13)
+-------------------
 * Fix location of catkin_package of jsk_topic_tools
 * Contributors: Ryohei Ueda
 
