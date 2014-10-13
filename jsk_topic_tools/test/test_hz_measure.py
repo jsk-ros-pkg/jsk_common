@@ -11,6 +11,8 @@ from topic_compare import ROSTopicCompare
 import rospy
 import time
 
+import numpy as np
+
 try:
     from std_msgs.msg import Float32
 except:
@@ -31,13 +33,22 @@ class TestHzMeasure(unittest.TestCase):
     def test_hz(self):
         global hz_msg
         while hz_msg == None:
+            rospy.loginfo('wait for msg...')
             if not rospy.is_shutdown():
                 rospy.sleep(1.0)          #wait 1 sec
         # should be 30Hz
-        self.assertTrue(eps_equal(hz_msg.data,
+        msgs = []
+        while len(msgs) < 30:
+            msgs.append(hz_msg.data)
+            rospy.loginfo('hz of msg %s'%hz_msg.data)
+            rospy.sleep(0.1)
+        hz = np.median(msgs)
+        rospy.loginfo('average hz of msg %s'%np.mean(msgs))
+        rospy.loginfo('median  hz of msg %s'%hz)
+        self.assertTrue(eps_equal(hz,
                                   30,
                                   1))
-        
+
 if __name__ == "__main__":
     import rostest
     rospy.init_node("test_hz_measure")
