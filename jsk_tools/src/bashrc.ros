@@ -53,3 +53,6 @@ function rossetip() {
       echo -e "\e[1;31mset ROS_IP and ROS_HOSTNAME to $ROS_IP\e[m";
   fi
 }
+
+export ANDROID_HOME=$HOME/android-sdk-linux
+export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools

@@ -9,7 +9,7 @@ endif(NOT $ENV{ROS_DISTRO} STREQUAL "groovy")
 
 find_package(catkin REQUIRED
   dynamic_reconfigure sensor_msgs ${laser_assembler}
-  tf_conversions tf
+  tf_conversions tf cmake_modules
   )
 
 find_package(Eigen REQUIRED)

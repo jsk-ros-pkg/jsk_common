@@ -2,6 +2,19 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.50 (2014-10-20)
+-------------------
+* add path for android in bashrc.ros
+* Contributors: Masaki Murooka
+
+1.0.49 (2014-10-13)
+-------------------
+* Add script to kill/respawn automatically according to roscore status
+* Contributors: Ryohei Ueda
+
+1.0.48 (2014-10-12)
+-------------------
+
 1.0.47 (2014-10-08)
 -------------------
 

@@ -1,6 +1,10 @@
 # http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
 cmake_minimum_required(VERSION 2.8.3)
 project(collada_urdf_jsk_patch)
+if((NOT "$ENV{ROS_DISTRO}" STREQUAL "groovy") AND (NOT "$ENV{ROS_DISTRO}" STREQUAL "hydro"))
+  return()
+endif()
+
 
 find_package(catkin REQUIRED COMPONENTS collada_urdf)
 

@@ -2,6 +2,20 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.50 (2014-10-20)
+-------------------
+* Add dynamic_reconfigure and sensor_msgs to jsk_tilt_laser depdendency
+* Add missing deps to jsk_tilt_laser
+* Contributors: Ryohei Ueda, Scott K Logan
+
+1.0.49 (2014-10-13)
+-------------------
+
+1.0.48 (2014-10-12)
+-------------------
+* add cmake_modules for indigo compile
+* Contributors: Kei Okada
+
 1.0.47 (2014-10-08)
 -------------------
 
