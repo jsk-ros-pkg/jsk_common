@@ -21,6 +21,7 @@ class MMClient():
             self.bnds = Bands()
 
         # Get parameter
+        rospy.logwarn('[usage] rosrun mini_maxwell ros_client.py _ip:=[mini_maxwell ip or hostname] _round_trimp:=[round trip(ms)] _rate_limit:=[rate limit(bps)]')
         self.mm2name = rospy.get_param('~ip', '192.168.0.5')
         self.round_trip  = rospy.get_param('~round_trip', 100) #100ms
         self.rate_limit = rospy.get_param('~rate_limit', 100000) #100kbps
