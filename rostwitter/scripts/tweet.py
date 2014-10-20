@@ -57,18 +57,11 @@ class twitter(object):
         headers = req.to_header()
 
         if verb == 'POST':
-            if data.has_key('media[]'):
-                return requests.post(
-                    url,
-                    headers=headers,
-                    files=data
-                    )
-            else:
-                return requests.post(
-                    url,
-                    headers=headers,
-                    data=data
-                    )
+            return requests.post(
+                url,
+                headers=headers,
+                files=data
+                )
         if verb == 'GET':
             url = self._BuildUrl(url, extra_params=data)
             return requests.get(
@@ -80,7 +73,7 @@ class twitter(object):
     def PostUpdate(self, status):
         url = 'https://api.twitter.com/1.1/statuses/update.json'
 
-        data = {'status': status}
+        data = {'status': StringIO(status)}
         json = self._RequestUrl(url, 'POST', data=data)
         data = simplejson.loads(json.content)
         if 'error' in data:

@@ -1,6 +1,8 @@
 <launch>
   <arg name="other_topics" default=""/>
+  <arg name="other_regex_topics" default=""/>
   <arg name="other_options" default=""/>
+
 
   <arg name="save_openni" default="true" />
   <arg name="save_openni2" default="false" />
@@ -31,16 +33,18 @@
   <arg unless="$(arg save_all_image)"
        name="all_image_topics" value="" />
   <arg if    ="$(arg save_all_image)"
-       name="all_image_topics" value="-e .*/(image_raw|camera_info)" />
+       name="all_image_topics" value=" .*/(image_raw|camera_info)" />
 
   <!-- execute -->
   <node name="default_rosbag_record" pkg="rosbag" type="record"
         args="$(arg openni_topics)
               $(arg openni2_topics) 
               $(arg robot_model_topics) 
-              $(arg all_image_topics)
               $(arg other_topics)
               -o $(arg save_dir) 
               $(arg other_options)
+	      -e
+              $(arg all_image_topics)
+	      $(arg other_regex_topics)
               "/>
 </launch>
