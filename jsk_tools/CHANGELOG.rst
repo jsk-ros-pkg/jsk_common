@@ -2,6 +2,9 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.50 (2014-10-20)
 -------------------
 * add path for android in bashrc.ros

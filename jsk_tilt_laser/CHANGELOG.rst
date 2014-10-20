@@ -2,6 +2,9 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.50 (2014-10-20)
 -------------------
 * Add dynamic_reconfigure and sensor_msgs to jsk_tilt_laser depdendency

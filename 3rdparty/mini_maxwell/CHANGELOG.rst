@@ -1,9 +1,16 @@
-^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package ff
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package mini_maxwell
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Forthcoming
 -----------
+* fix version number of mini_maxwell
+* download scripts in catkin_make
+* add sample program to control bandwidth
+* change band number
+* catkinize mini_maxwell
+* change mini maxwell parameter with dynamic reconfigure
+* Contributors: Kei Okada, Yusuke Furuta
 
 1.0.50 (2014-10-20)
 -------------------
@@ -23,11 +30,11 @@ Forthcoming
 1.0.45 (2014-09-29)
 -------------------
 
-1.0.44 (2014-09-26)
--------------------
+1.0.44 (2014-09-26 09:17)
+-------------------------
 
-1.0.43 (2014-09-26)
--------------------
+1.0.43 (2014-09-26 01:08)
+-------------------------
 
 1.0.42 (2014-09-25)
 -------------------
@@ -44,6 +51,9 @@ Forthcoming
 1.0.38 (2014-09-13)
 -------------------
 
+1.0.37 (2014-09-08)
+-------------------
+
 1.0.36 (2014-09-01)
 -------------------
 
@@ -52,8 +62,6 @@ Forthcoming
 
 1.0.34 (2014-08-14)
 -------------------
-* download FF-v23.tgz from jsk-ros-pkg/archives
-* Contributors: Kei Okada
 
 1.0.33 (2014-07-28)
 -------------------
@@ -99,15 +107,9 @@ Forthcoming
 
 1.0.19 (2014-05-06)
 -------------------
-* add find_package(catkin)
-* Add several missing build deps
-* ff, ffha: add CHANGELOG.rst
-* Contributors: Kei Okada, Scott K Logan
 
 1.0.18 (2014-05-04)
 -------------------
-* catkinize ff
-* Contributors: Kei Okada
 
 1.0.17 (2014-04-20)
 -------------------
@@ -162,7 +164,3 @@ Forthcoming
 
 1.0.0 (2014-03-05)
 ------------------
-* added rosdeps : flex and bison
-* udpate ff url
-* put jsk tools in jsk_common stack
-* Contributors: k-okada, mikita, rosen

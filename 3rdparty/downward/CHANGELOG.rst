@@ -2,6 +2,9 @@
 Changelog for package downward
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.50 (2014-10-20)
 -------------------
 * disabel downward compiling
