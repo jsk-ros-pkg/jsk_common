@@ -2,8 +2,8 @@
 Changelog for package mini_maxwell
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.51 (2014-10-20)
+-------------------
 * fix version number of mini_maxwell
 * download scripts in catkin_make
 * add sample program to control bandwidth
