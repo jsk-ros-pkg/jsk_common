@@ -21,10 +21,10 @@ class MMClient():
             self.bnds = Bands()
 
         # Get parameter
-        self.mm2name = rospy.get_param('~mm2name', '192.168.0.5')
+        self.mm2name = rospy.get_param('~ip', '192.168.0.5')
         self.round_trip  = rospy.get_param('~round_trip', 100) #100ms
         self.rate_limit = rospy.get_param('~rate_limit', 100000) #100kbps
-
+        self.band_number = 5
         rospy.loginfo('mm2 hostname or ip = %s', self.mm2name)
 
         # Create a dynamic reconfigure server.
@@ -40,13 +40,12 @@ class MMClient():
         return config
 
     def updateMM(self):
-        band_num = 5
-        self.bnds.SetDelayAmount(band_num, True, self.round_trip)
-        self.bnds.SetDelayAmount(band_num, False, self.round_trip)
-        self.bnds.SetRateLimit(band_num, True, self.rate_limit)
-        self.bnds.SetRateLimit(band_num, False, self.rate_limit)
-        self.bnds.SetDelayReorder(band_num, True, False)
-        self.bnds.SetDelayReorder(band_num, False, False)
+        self.bnds.SetDelayAmount(self.band_number, True, self.round_trip)
+        self.bnds.SetDelayAmount(self.band_number, False, self.round_trip)
+        self.bnds.SetRateLimit(self.band_number, True, self.rate_limit)
+        self.bnds.SetRateLimit(self.band_number, False, self.rate_limit)
+        self.bnds.SetDelayReorder(self.band_number, True, False)
+        self.bnds.SetDelayReorder(self.band_number, False, False)
 
         rospy.loginfo('round_trip = %s', self.round_trip)
         rospy.loginfo('rate_limit = %s', self.rate_limit)
