@@ -45,32 +45,21 @@
 
 # for snap map icp
 - git:
-    uri: https://github.com/code-iai/SnapMapICP.git
-    local-name: tum-ros-pkg/highlevel/SnapMapICP
-# for face_detector_mono
-- svn:
-    uri: https://svn.code.sf.net/p/tum-ros-pkg/code/perception/
-    local-name: tum-ros-pkg/perception
-# for safe_teleop_pr2
-- svn:
-    uri: http://svn.code.sf.net/p/bosch-ros-pkg/code/trunk
-    local-name: bosch-ros-pkg
-# for ee_cart_imped
-- svn:
-    uri: https://svn.csail.mit.edu/mit-ros-pkg/trunk
-    local-name: mit-ros-pkg/trunk
+    uri: https://github.com/code-iai/snap_map_icp.git
+    local-name: snap_map_icp
+    version: hydro-devel
 
 # rwt
-- git:    
-    uri: git://github.com/jihoonl/roswww.git
-    local-name : roswww
-- git:    
+# - git:
+#     uri: git://github.com/jihoonl/roswww.git
+#     local-name : roswww
+- git:
     uri: https://github.com/tork-a/rwt_ros.git
     local-name : rwt_ros
 - git:
     uri: https://github.com/tork-a/visualization_rwt.git
     local-name: visualization_rwt
-   
+
 # nao
 - git:
     uri: https://github.com/ahornung/nao_robot.git
@@ -84,9 +73,9 @@
 - git:
     uri: https://github.com/ahornung/humanoid_msgs.git
     local-name: humanoid_stacks/humanoid_msgs
-- git:
-    uri: https://github.com/ahornung/humanoid_navigation.git
-    local-name: humanoid_stacks/humanoid_navigation
+# - git:
+#     uri: https://github.com/ahornung/humanoid_navigation.git
+#     local-name: humanoid_stacks/humanoid_navigation
 
 # baxter
 - git:
@@ -111,4 +100,59 @@
     uri: https://github.com/ros-visualization/view_controller_msgs.git
     version: hydro-devel
 
-    
+# pr2
+- git:
+    local-name: pr2_mechanism
+    uri: 'https://github.com/PR2/pr2_mechanism.git'
+    version: hydro-devel
+- git:
+    local-name: pr2_robot
+    uri: 'https://github.com/PR2/pr2_robot.git'
+- git:
+    local-name: shared_autonomy_manipulation
+    uri: 'https://github.com/garaemon/shared_autonomy_manipulation.git'
+    version: catkinize
+- git:
+    local-name: multimaster_experimental
+    uri: 'https://github.com/garaemon/multimaster_experimental.git'
+    version: catkinize
+- git:
+    local-name: pr2_navigation_apps
+    uri: 'https://github.com/PR2/pr2_navigation_apps.git'
+    version: hydro-devel
+- git:
+    local-name: pr2_apps
+    uri: 'https://github.com/PR2/pr2_apps.git'
+    version: hydro-devel
+# - git:
+#     local-name: pr2_gripper_sensor
+#     uri: 'https://github.com/PR2/pr2_gripper_sensor.git'
+#     version: hydro-devel
+- git:
+    local-name: pr2_common_actions
+    uri: 'https://github.com/PR2/pr2_common_actions.git'
+    version: hydro-devel
+- git:
+    local-name: pr2_navigation
+    uri: 'https://github.com/PR2/pr2_navigation.git'
+    version: hydro-devel
+- git:
+    local-name: willow_maps
+    uri: 'https://github.com/PR2/willow_maps.git'
+    version: hydro-devel
+# - git:
+#     local-name: pr2_calibration
+#     uri: 'https://github.com/PR2/pr2_calibration.git'
+#     version: hydro-devel
+- git:
+    local-name: kinematics_msgs
+    uri: 'https://github.com/PR2/kinematics_msgs.git'
+    version: hydro-devel
+- git:
+    local-name: arm_navigation_msgs
+    uri: 'https://github.com/PR2/arm_navigation_msgs.git'
+    version: hydro-devel
+- git:
+    local-name: pr2_kinematics
+    uri: 'https://github.com/PR2/pr2_kinematics.git'
+    version: hydro-devel

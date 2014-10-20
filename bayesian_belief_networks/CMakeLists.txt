@@ -12,11 +12,17 @@ if(NOT USE_ROSBUILD)
 
   catkin_package(CATKIN_DEPENDS std_msgs message_runtime)
 
+  if(EXISTS "/etc/debian_version")
+    set(SETUPTOOLS_ARG_EXTRA "--install-layout=deb")
+  else()
+    set(SETUPTOOLS_ARG_EXTRA "")
+  endif()
+
   add_custom_target(python_baysian_belief_networks_download ALL
     DEPENDS ${PROJECT_SOURCE_DIR}/${CATKIN_GLOBAL_PYTHON_DESTINATION}/bayesian)
   add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/${CATKIN_GLOBAL_PYTHON_DESTINATION}/bayesian
     DEPENDS Makefile.bayesian
-    COMMAND cmake -E chdir ${CMAKE_CURRENT_BINARY_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile.bayesian MK_DIR=${mk_PREFIX}/share/mk INSTALL_DIR=${PROJECT_SOURCE_DIR})
+    COMMAND cmake -E chdir ${CMAKE_CURRENT_BINARY_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile.bayesian MK_DIR=${mk_PREFIX}/share/mk INSTALL_DIR=${PROJECT_SOURCE_DIR} SETUPTOOLS_ARG_EXTRA=${SETUPTOOLS_ARG_EXTRA} DIST_DIR=${PROJECT_SOURCE_DIR}/${CATKIN_GLOBAL_PYTHON_DESTINATION})
 
   install(DIRECTORY samples # examples
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
@@ -33,8 +39,8 @@ else() ## rosbuild
   rosbuild_init()
 
   add_custom_target(python_baysian_belief_networks_download ALL
-    DEPENDS ${PROJECT_SOURCE_DIR}/lib/python2.7/dist-packages/bayesian)
-  add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/lib/python2.7/dist-packages/bayesian
+    DEPENDS ${PROJECT_SOURCE_DIR}/${CATKIN_GLOBAL_PYTHON_DESTINATION}/bayesian)
+  add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/${CATKIN_GLOBAL_PYTHON_DESTINATION}/bayesian
     DEPENDS Makefile
     COMMAND make -f ${PROJECT_SOURCE_DIR}/Makefile.bayesian INSTALL_DIR=${PROJECT_SOURCE_DIR})
 

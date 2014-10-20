@@ -1,0 +1,15 @@
+<package>
+  <description brief="mini_maxwell">
+
+     mini_maxwell
+
+  </description>
+  <author>furuta</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  <depend package="dynamic_reconfigure"/>
+
+</package>
+
+

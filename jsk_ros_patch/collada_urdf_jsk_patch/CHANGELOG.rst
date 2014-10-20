@@ -2,6 +2,15 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.50 (2014-10-20)
+-------------------
+* Fix a logic error in collada_jsk_patch
+  This fixes a regression caused by 9846892b8ec1c1b3e655015298cd9a8e17b155e7
+* Contributors: Scott K Logan
+
+1.0.49 (2014-10-13)
+-------------------
+
 1.0.48 (2014-10-12)
 -------------------
 * disable collada_urdf_jsk_patch for indigo

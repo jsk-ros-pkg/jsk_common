@@ -2,6 +2,14 @@
 Changelog for package bayesian_belief_networks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.50 (2014-10-20)
+-------------------
+* Update bayesian_belief_networks to work on non-debian systems
+* Contributors: Scott K Logan
+
+1.0.49 (2014-10-13)
+-------------------
+
 1.0.48 (2014-10-12)
 -------------------
 

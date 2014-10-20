@@ -2,6 +2,17 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.50 (2014-10-20)
+-------------------
+* use 300 for default message_num, rostopic hz uses 50000? https://github.com/ros/ros_comm/blob/indigo-devel/tools/rostopic/src/rostopic/__init__.py#L111
+* use median instead of average
+* Contributors: Kei Okada
+
+1.0.49 (2014-10-13)
+-------------------
+* Fix location of catkin_package of jsk_topic_tools
+* Contributors: Ryohei Ueda
+
 1.0.48 (2014-10-12)
 -------------------
 
