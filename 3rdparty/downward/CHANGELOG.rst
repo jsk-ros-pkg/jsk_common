@@ -2,6 +2,17 @@
 Changelog for package downward
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.51 (2014-10-20)
+-------------------
+
+1.0.50 (2014-10-20)
+-------------------
+* disabel downward compiling
+* Contributors: Ryohei Ueda
+
+1.0.49 (2014-10-13)
+-------------------
+
 1.0.48 (2014-10-12)
 -------------------
 * use tgz to download source
