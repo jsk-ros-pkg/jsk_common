@@ -75,5 +75,5 @@ namespace jsk_topic_tools
       stat.add(string_prefix, "False");
     }
   }
+  
 }
-

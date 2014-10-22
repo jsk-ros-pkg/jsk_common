@@ -33,41 +33,32 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-
-#ifndef JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
-#define JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
-
-#include <string>
-#include <diagnostic_updater/diagnostic_updater.h>
-#include "jsk_topic_tools/time_accumulator.h"
-#include "jsk_topic_tools/vital_checker.h"
+#include "jsk_topic_tools/diagnostic_nodelet.h"
 
 namespace jsk_topic_tools
 {
-  ////////////////////////////////////////////////////////
-  // add TimeAcumulator information to Diagnostics
-  ////////////////////////////////////////////////////////
-  void addDiagnosticInformation(
-    const std::string& string_prefix,
-    jsk_topic_tools::TimeAccumulator& accumulator,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
+  DiagnosticNodelet::DiagnosticNodelet(const std::string& name):
+    name_(name)
+  {
 
-  ////////////////////////////////////////////////////////
-  // set error string to 
-  ////////////////////////////////////////////////////////
-  void addDiagnosticErrorSummary(
-    const std::string& string_prefix,
-    jsk_topic_tools::VitalChecker::Ptr vital_checker,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-
-  ////////////////////////////////////////////////////////
-  // add Boolean string to stat
-  ////////////////////////////////////////////////////////
-  void addDiagnosticBooleanStat(
-    const std::string& string_prefix,
-    const bool value,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
+  }
   
+  void DiagnosticNodelet::onInit()
+  {
+    ConnectionBasedNodelet::onInit();
+    diagnostic_updater_.reset(
+      new TimeredDiagnosticUpdater(*pnh_, ros::Duration(1.0)));
+    diagnostic_updater_->setHardwareID(getName());
+    diagnostic_updater_->add(
+      getName() + "::" + name_,
+      boost::bind(
+        &DiagnosticNodelet::updateDiagnostic,
+        this,
+        _1));
+    double vital_rate;
+    pnh_->param("vital_rate", vital_rate, 1.0);
+    vital_checker_.reset(
+      new jsk_topic_tools::VitalChecker(1 / vital_rate));
+    diagnostic_updater_->start();
+  }
 }
-
-#endif

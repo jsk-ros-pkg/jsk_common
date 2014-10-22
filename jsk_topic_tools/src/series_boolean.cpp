@@ -33,41 +33,38 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-
-#ifndef JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
-#define JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
-
-#include <string>
-#include <diagnostic_updater/diagnostic_updater.h>
-#include "jsk_topic_tools/time_accumulator.h"
-#include "jsk_topic_tools/vital_checker.h"
+#include "jsk_topic_tools/series_boolean.h"
 
 namespace jsk_topic_tools
 {
-  ////////////////////////////////////////////////////////
-  // add TimeAcumulator information to Diagnostics
-  ////////////////////////////////////////////////////////
-  void addDiagnosticInformation(
-    const std::string& string_prefix,
-    jsk_topic_tools::TimeAccumulator& accumulator,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-
-  ////////////////////////////////////////////////////////
-  // set error string to 
-  ////////////////////////////////////////////////////////
-  void addDiagnosticErrorSummary(
-    const std::string& string_prefix,
-    jsk_topic_tools::VitalChecker::Ptr vital_checker,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-
-  ////////////////////////////////////////////////////////
-  // add Boolean string to stat
-  ////////////////////////////////////////////////////////
-  void addDiagnosticBooleanStat(
-    const std::string& string_prefix,
-    const bool value,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
+  SeriesBoolean::SeriesBoolean(const int buf_len):
+    buf_(buf_len)
+  {
+  }
   
-}
+  SeriesBoolean::~SeriesBoolean()
+  {
+  }
 
-#endif
+  void SeriesBoolean::addValue(bool val)
+  {
+    buf_.push_front(val);
+  }
+  
+  bool SeriesBoolean::getValue()
+  {
+    if (buf_.size() == 0) {
+      return false;
+    }
+    else {
+      for (boost::circular_buffer<bool>::iterator it = buf_.begin();
+           it != buf_.end();
+           ++it) {
+        if (!*it) {
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+}
