@@ -34,40 +34,36 @@
  *********************************************************************/
 
 
-#ifndef JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
-#define JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
+#ifndef JSK_TOPIC_TOOLS_DIAGNOSTIC_NODELET_
+#define JSK_TOPIC_TOOLS_DIAGNOSTIC_NODELET_
 
-#include <string>
 #include <diagnostic_updater/diagnostic_updater.h>
-#include "jsk_topic_tools/time_accumulator.h"
-#include "jsk_topic_tools/vital_checker.h"
+#include <diagnostic_updater/publisher.h>
+#include <jsk_topic_tools/vital_checker.h>
 
+#include "jsk_topic_tools/connection_based_nodelet.h"
+#include "jsk_topic_tools/diagnostic_utils.h"
+#include "jsk_topic_tools/timered_diagnostic_updater.h"
 namespace jsk_topic_tools
 {
-  ////////////////////////////////////////////////////////
-  // add TimeAcumulator information to Diagnostics
-  ////////////////////////////////////////////////////////
-  void addDiagnosticInformation(
-    const std::string& string_prefix,
-    jsk_topic_tools::TimeAccumulator& accumulator,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
+  class DiagnosticNodelet: public ConnectionBasedNodelet
+  {
+  public:
+    typedef boost::shared_ptr<DiagnosticNodelet> Ptr;
+    DiagnosticNodelet(const std::string& name);
 
-  ////////////////////////////////////////////////////////
-  // set error string to 
-  ////////////////////////////////////////////////////////
-  void addDiagnosticErrorSummary(
-    const std::string& string_prefix,
-    jsk_topic_tools::VitalChecker::Ptr vital_checker,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
+  protected:
+    virtual void onInit();
+    virtual void updateDiagnostic(
+      diagnostic_updater::DiagnosticStatusWrapper &stat) = 0;
 
-  ////////////////////////////////////////////////////////
-  // add Boolean string to stat
-  ////////////////////////////////////////////////////////
-  void addDiagnosticBooleanStat(
-    const std::string& string_prefix,
-    const bool value,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-  
+    const std::string name_;
+    TimeredDiagnosticUpdater::Ptr diagnostic_updater_;
+    jsk_topic_tools::VitalChecker::Ptr vital_checker_;
+
+  private:
+    
+  };
 }
 
 #endif

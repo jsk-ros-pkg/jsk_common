@@ -33,41 +33,29 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
+#ifndef JSK_TOPIC_TOOLS_SERIESED_BOOLEAN_H_
+#define JSK_TOPIC_TOOLS_SERIESED_BOOLEAN_H_
 
-#ifndef JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
-#define JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
-
-#include <string>
-#include <diagnostic_updater/diagnostic_updater.h>
-#include "jsk_topic_tools/time_accumulator.h"
-#include "jsk_topic_tools/vital_checker.h"
+#include <boost/circular_buffer.hpp>
 
 namespace jsk_topic_tools
 {
   ////////////////////////////////////////////////////////
-  // add TimeAcumulator information to Diagnostics
+  // SeriesBoolean
+  //   store boolean value to limited buffer
+  //   and return true if all the values are true.
   ////////////////////////////////////////////////////////
-  void addDiagnosticInformation(
-    const std::string& string_prefix,
-    jsk_topic_tools::TimeAccumulator& accumulator,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-
-  ////////////////////////////////////////////////////////
-  // set error string to 
-  ////////////////////////////////////////////////////////
-  void addDiagnosticErrorSummary(
-    const std::string& string_prefix,
-    jsk_topic_tools::VitalChecker::Ptr vital_checker,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-
-  ////////////////////////////////////////////////////////
-  // add Boolean string to stat
-  ////////////////////////////////////////////////////////
-  void addDiagnosticBooleanStat(
-    const std::string& string_prefix,
-    const bool value,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-  
+  class SeriesBoolean
+  {
+  public:
+    typedef boost::shared_ptr<SeriesBoolean> Ptr;
+    SeriesBoolean(const int buf_len);
+    virtual ~SeriesBoolean();
+    virtual void addValue(bool val);
+    virtual bool getValue();
+  protected:
+  private:
+    boost::circular_buffer<bool> buf_;
+  };
 }
-
 #endif
