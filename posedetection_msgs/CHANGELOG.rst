@@ -2,6 +2,9 @@
 Changelog for package posedetection_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.51 (2014-10-20)
 -------------------
 
