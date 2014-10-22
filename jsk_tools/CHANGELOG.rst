@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.52 (2014-10-23)
+-------------------
 * Ignore exception during kill child process of the process
   launched by roscore_regardless.py
 * Contributors: Ryohei Ueda
