@@ -33,39 +33,59 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#ifndef JSK_TOPIC_TOOLS_VITAL_CHECKER_H_
-#define JSK_TOPIC_TOOLS_VITAL_CHECKER_H_
 
-#include <ros/time.h>
-#include <boost/accumulators/accumulators.hpp>
-#include <boost/accumulators/statistics/stats.hpp>
-#include <boost/accumulators/statistics/min.hpp>
-#include <boost/accumulators/statistics/max.hpp>
-#include <boost/accumulators/statistics/variance.hpp>
-
-#include <boost/timer.hpp>
-
-#include <boost/thread.hpp>
+#include "jsk_topic_tools/vital_checker_nodelet.h"
 
 namespace jsk_topic_tools
 {
-  // multi-thread safe
-  class VitalChecker
+  void VitalCheckerNodelet::onInit()
   {
-  public:
-    typedef boost::shared_ptr<VitalChecker> Ptr;
-    VitalChecker(const double dead_sec);
-    virtual ~VitalChecker();
-    void poke();
-    bool isAlive();
-    double deadSec();
-    double lastAliveTimeRelative();
-  protected:
-    ros::Time last_alive_time_;
-    double dead_sec_;
-    boost::mutex mutex_;
-  private:
-  };
+    DiagnosticNodelet::onInit();
+    if (pnh_->hasParam("title")) {
+      pnh_->getParam("title", title_);
+    }
+    else {
+      NODELET_FATAL("no ~title is specified");
+      return;
+    }
+    sub_ = pnh_->subscribe<topic_tools::ShapeShifter>(
+      "input", 1,
+      &VitalCheckerNodelet::inputCallback, this);
+  }
+
+  void VitalCheckerNodelet::subscribe()
+  {
+    
+  }
+  
+  void VitalCheckerNodelet::unsubscribe()
+  {
+
+  }
+
+  void VitalCheckerNodelet::inputCallback(
+    const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    vital_checker_->poke();
+  }
+  
+  void VitalCheckerNodelet::updateDiagnostic(
+    diagnostic_updater::DiagnosticStatusWrapper &stat)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    if (vital_checker_->isAlive()) {
+      stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
+                   title_ + " is running");
+      stat.add("last alive time", vital_checker_->lastAliveTimeRelative());
+    }
+    else {
+      addDiagnosticErrorSummary(
+        title_, vital_checker_, stat);
+    }
+  }
 }
 
-#endif
+#include <pluginlib/class_list_macros.h>
+typedef jsk_topic_tools::VitalCheckerNodelet VitalCheckerNodelet;
+PLUGINLIB_EXPORT_CLASS(VitalCheckerNodelet, nodelet::Nodelet)

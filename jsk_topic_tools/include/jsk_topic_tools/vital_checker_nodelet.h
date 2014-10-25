@@ -33,38 +33,38 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#ifndef JSK_TOPIC_TOOLS_VITAL_CHECKER_H_
-#define JSK_TOPIC_TOOLS_VITAL_CHECKER_H_
 
-#include <ros/time.h>
-#include <boost/accumulators/accumulators.hpp>
-#include <boost/accumulators/statistics/stats.hpp>
-#include <boost/accumulators/statistics/min.hpp>
-#include <boost/accumulators/statistics/max.hpp>
-#include <boost/accumulators/statistics/variance.hpp>
+#ifndef JSK_TOPIC_TOOLS_VITAL_CHECKER_NODELET_H_
+#define JSK_TOPIC_TOOLS_VITAL_CHECKER_NODELET_H_
 
-#include <boost/timer.hpp>
-
-#include <boost/thread.hpp>
+#include "jsk_topic_tools/diagnostic_nodelet.h"
+#include <topic_tools/shape_shifter.h>
 
 namespace jsk_topic_tools
 {
-  // multi-thread safe
-  class VitalChecker
+  class VitalCheckerNodelet: public DiagnosticNodelet
   {
   public:
-    typedef boost::shared_ptr<VitalChecker> Ptr;
-    VitalChecker(const double dead_sec);
-    virtual ~VitalChecker();
-    void poke();
-    bool isAlive();
-    double deadSec();
-    double lastAliveTimeRelative();
+    VitalCheckerNodelet(): DiagnosticNodelet("VitalCheckerNodelet") { }
   protected:
-    ros::Time last_alive_time_;
-    double dead_sec_;
+    ////////////////////////////////////////////////////////
+    // methods
+    ////////////////////////////////////////////////////////
+    virtual void onInit();
+    virtual void subscribe();
+    virtual void unsubscribe();    
+    virtual void updateDiagnostic(
+      diagnostic_updater::DiagnosticStatusWrapper &stat);
+    virtual void inputCallback(
+      const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
+    ////////////////////////////////////////////////////////
+    // ROS variables
+    ////////////////////////////////////////////////////////
+    ros::Subscriber sub_;
+    std::string title_;
     boost::mutex mutex_;
-  private:
+   private:
+    
   };
 }
 
