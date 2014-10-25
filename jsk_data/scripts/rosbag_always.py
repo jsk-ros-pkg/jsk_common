@@ -36,7 +36,7 @@ def runROSBag(topics, size, save_dir):
 def parseBagFile(bag):
     # bag file name is ...
     # 'rosbag_YYYY-MM-DD-HH-mm-SS_i.bag'
-    regexp = 'rosbag_(\d\d\d\d)-(\d\d)-(\d\d)-(\d\d)-(\d\d)-(\d\d)_(\d).bag'
+    regexp = 'rosbag_(\d\d\d\d)-(\d\d)-(\d\d)-(\d\d)-(\d\d)-(\d\d)_([\d]+).bag'
     result = re.match(regexp, bag)
     if not result:
         return None

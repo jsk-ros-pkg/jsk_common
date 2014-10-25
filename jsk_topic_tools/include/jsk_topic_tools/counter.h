@@ -34,40 +34,38 @@
  *********************************************************************/
 
 
-#ifndef JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
-#define JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
+#ifndef JSK_TOPIC_TOOLS_COUNTER_H_
+#define JSK_TOPIC_TOOLS_COUNTER_H_
 
-#include <string>
-#include <diagnostic_updater/diagnostic_updater.h>
-#include "jsk_topic_tools/time_accumulator.h"
-#include "jsk_topic_tools/vital_checker.h"
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/min.hpp>
+#include <boost/accumulators/statistics/max.hpp>
+#include <boost/accumulators/statistics/variance.hpp>
+#include <boost/accumulators/statistics/count.hpp>
+
 
 namespace jsk_topic_tools
 {
-  ////////////////////////////////////////////////////////
-  // add TimeAcumulator information to Diagnostics
-  ////////////////////////////////////////////////////////
-  void addDiagnosticInformation(
-    const std::string& string_prefix,
-    jsk_topic_tools::TimeAccumulator& accumulator,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-
-  ////////////////////////////////////////////////////////
-  // set error string to 
-  ////////////////////////////////////////////////////////
-  void addDiagnosticErrorSummary(
-    const std::string& string_prefix,
-    jsk_topic_tools::VitalChecker::Ptr vital_checker,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-
-  ////////////////////////////////////////////////////////
-  // add Boolean string to stat
-  ////////////////////////////////////////////////////////
-  void addDiagnosticBooleanStat(
-    const std::string& string_prefix,
-    const bool value,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-  
+  class Counter
+  {
+  public:
+    typedef boost::accumulators::accumulator_set<
+    double,
+    boost::accumulators::stats<boost::accumulators::tag::count,
+                               boost::accumulators::tag::mean,
+                               boost::accumulators::tag::min,
+                               boost::accumulators::tag::max,
+                               boost::accumulators::tag::variance> > Accumulator;
+    virtual void add(double v);
+    virtual double mean();
+    virtual double min();
+    virtual double max();
+    virtual int count();
+    virtual double variance();
+  protected:
+    Accumulator acc_;
+  };
 }
 
 #endif

@@ -7,15 +7,17 @@
      mini_maxwell
 
   </description>
-  <version>1.0.51</version>
-  <author email="furuta@jsk.imi.i.u-tokyo.ac.jp">furuta</author>
-  <maintainer email="furuta@jsk.imi.i.u-tokyo.ac.jp">furuta</maintainer>
+  <version>1.0.52</version>
+  <author email="furuta@jsk.imi.i.u-tokyo.ac.jp">Yusuke Furuta</author>
+  <maintainer email="furuta@jsk.imi.i.u-tokyo.ac.jp">Yusuke Furuta</maintainer>
   <license>BSD</license>
 
   <url></url>
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>cmake_modules</build_depend>
+  <build_depend>roslib</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
   <run_depend>dynamic_reconfigure</run_depend>
 

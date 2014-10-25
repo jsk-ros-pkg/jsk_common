@@ -40,7 +40,10 @@ def killProcess():
     global g_process_object
     if g_process_object:
         g_process_object.send_signal(subprocess.signal.SIGINT)
-        killChildProcesses(g_process_object.pid)
+        try:
+            killChildProcesses(g_process_object.pid)
+        except:
+            print "Failed to kill child process, ignore"
     
 def main(cmds):
     

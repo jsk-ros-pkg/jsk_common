@@ -34,40 +34,48 @@
  *********************************************************************/
 
 
-#ifndef JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
-#define JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
+#ifndef CONNECTION_BASED_NODELET_H_
+#define CONNECTION_BASED_NODELET_H_
 
-#include <string>
-#include <diagnostic_updater/diagnostic_updater.h>
-#include "jsk_topic_tools/time_accumulator.h"
-#include "jsk_topic_tools/vital_checker.h"
+#include <ros/ros.h>
+#include <nodelet/nodelet.h>
+#include <boost/thread.hpp>
 
 namespace jsk_topic_tools
 {
-  ////////////////////////////////////////////////////////
-  // add TimeAcumulator information to Diagnostics
-  ////////////////////////////////////////////////////////
-  void addDiagnosticInformation(
-    const std::string& string_prefix,
-    jsk_topic_tools::TimeAccumulator& accumulator,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-
-  ////////////////////////////////////////////////////////
-  // set error string to 
-  ////////////////////////////////////////////////////////
-  void addDiagnosticErrorSummary(
-    const std::string& string_prefix,
-    jsk_topic_tools::VitalChecker::Ptr vital_checker,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-
-  ////////////////////////////////////////////////////////
-  // add Boolean string to stat
-  ////////////////////////////////////////////////////////
-  void addDiagnosticBooleanStat(
-    const std::string& string_prefix,
-    const bool value,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-  
+  //class ConnectionBasedNodelet: public pcl_ros::PCLNodelet
+  class ConnectionBasedNodelet: public nodelet::Nodelet
+  {
+  public:
+    ConnectionBasedNodelet(): subscribed_(false) { }
+  protected:
+    virtual void onInit();
+    virtual void connectionCallback(const ros::SingleSubscriberPublisher& pub);
+    virtual void subscribe() = 0;
+    virtual void unsubscribe() = 0;
+    
+    template<class T> ros::Publisher
+    advertise(ros::NodeHandle& nh,
+              std::string topic, int queue_size)
+    {
+      ros::SubscriberStatusCallback connect_cb
+        = boost::bind( &ConnectionBasedNodelet::connectionCallback, this, _1);
+      ros::SubscriberStatusCallback disconnect_cb
+        = boost::bind( &ConnectionBasedNodelet::connectionCallback, this, _1);
+      ros::Publisher ret = nh.advertise<T>(topic, queue_size,
+                                           connect_cb,
+                                           disconnect_cb);
+      publishers_.push_back(ret);
+      return ret;
+    }
+    
+    boost::mutex connection_mutex_;
+    std::vector<ros::Publisher> publishers_;
+    boost::shared_ptr<ros::NodeHandle> pnh_;
+    bool subscribed_;
+  private:
+    
+  };
 }
 
 #endif
