@@ -1,4 +1,11 @@
 <library path="lib/libjsk_topic_tools">
+  <class name="jsk_topic_tools/VitalCheckerNodelet" type="VitalCheckerNodelet"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      check ~input is alive or not and publish the status into /diagnostics.
+      ~title parameter is required.
+    </description>
+  </class>
   <class name="jsk_topic_tools/HzMeasure" type="HzMeasure"
          base_class_type="nodelet::Nodelet">
     <description>
