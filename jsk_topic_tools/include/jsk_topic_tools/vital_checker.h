@@ -59,6 +59,7 @@ namespace jsk_topic_tools
     void poke();
     bool isAlive();
     double deadSec();
+    double lastAliveTimeRelative();
   protected:
     ros::Time last_alive_time_;
     double dead_sec_;

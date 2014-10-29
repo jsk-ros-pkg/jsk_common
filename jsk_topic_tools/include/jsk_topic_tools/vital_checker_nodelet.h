@@ -34,40 +34,38 @@
  *********************************************************************/
 
 
-#ifndef JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
-#define JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
+#ifndef JSK_TOPIC_TOOLS_VITAL_CHECKER_NODELET_H_
+#define JSK_TOPIC_TOOLS_VITAL_CHECKER_NODELET_H_
 
-#include <string>
-#include <diagnostic_updater/diagnostic_updater.h>
-#include "jsk_topic_tools/time_accumulator.h"
-#include "jsk_topic_tools/vital_checker.h"
+#include "jsk_topic_tools/diagnostic_nodelet.h"
+#include <topic_tools/shape_shifter.h>
 
 namespace jsk_topic_tools
 {
-  ////////////////////////////////////////////////////////
-  // add TimeAcumulator information to Diagnostics
-  ////////////////////////////////////////////////////////
-  void addDiagnosticInformation(
-    const std::string& string_prefix,
-    jsk_topic_tools::TimeAccumulator& accumulator,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-
-  ////////////////////////////////////////////////////////
-  // set error string to 
-  ////////////////////////////////////////////////////////
-  void addDiagnosticErrorSummary(
-    const std::string& string_prefix,
-    jsk_topic_tools::VitalChecker::Ptr vital_checker,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-
-  ////////////////////////////////////////////////////////
-  // add Boolean string to stat
-  ////////////////////////////////////////////////////////
-  void addDiagnosticBooleanStat(
-    const std::string& string_prefix,
-    const bool value,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-  
+  class VitalCheckerNodelet: public DiagnosticNodelet
+  {
+  public:
+    VitalCheckerNodelet(): DiagnosticNodelet("VitalCheckerNodelet") { }
+  protected:
+    ////////////////////////////////////////////////////////
+    // methods
+    ////////////////////////////////////////////////////////
+    virtual void onInit();
+    virtual void subscribe();
+    virtual void unsubscribe();    
+    virtual void updateDiagnostic(
+      diagnostic_updater::DiagnosticStatusWrapper &stat);
+    virtual void inputCallback(
+      const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
+    ////////////////////////////////////////////////////////
+    // ROS variables
+    ////////////////////////////////////////////////////////
+    ros::Subscriber sub_;
+    std::string title_;
+    boost::mutex mutex_;
+   private:
+    
+  };
 }
 
 #endif

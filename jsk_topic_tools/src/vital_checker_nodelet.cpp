@@ -34,40 +34,58 @@
  *********************************************************************/
 
 
-#ifndef JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
-#define JSK_TOPIC_TOOLS_DIAGNOSTIC_UTIL_H_
-
-#include <string>
-#include <diagnostic_updater/diagnostic_updater.h>
-#include "jsk_topic_tools/time_accumulator.h"
-#include "jsk_topic_tools/vital_checker.h"
+#include "jsk_topic_tools/vital_checker_nodelet.h"
 
 namespace jsk_topic_tools
 {
-  ////////////////////////////////////////////////////////
-  // add TimeAcumulator information to Diagnostics
-  ////////////////////////////////////////////////////////
-  void addDiagnosticInformation(
-    const std::string& string_prefix,
-    jsk_topic_tools::TimeAccumulator& accumulator,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
+  void VitalCheckerNodelet::onInit()
+  {
+    DiagnosticNodelet::onInit();
+    if (pnh_->hasParam("title")) {
+      pnh_->getParam("title", title_);
+    }
+    else {
+      NODELET_FATAL("no ~title is specified");
+      return;
+    }
+    sub_ = pnh_->subscribe<topic_tools::ShapeShifter>(
+      "input", 1,
+      &VitalCheckerNodelet::inputCallback, this);
+  }
 
-  ////////////////////////////////////////////////////////
-  // set error string to 
-  ////////////////////////////////////////////////////////
-  void addDiagnosticErrorSummary(
-    const std::string& string_prefix,
-    jsk_topic_tools::VitalChecker::Ptr vital_checker,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
-
-  ////////////////////////////////////////////////////////
-  // add Boolean string to stat
-  ////////////////////////////////////////////////////////
-  void addDiagnosticBooleanStat(
-    const std::string& string_prefix,
-    const bool value,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
+  void VitalCheckerNodelet::subscribe()
+  {
+    
+  }
   
+  void VitalCheckerNodelet::unsubscribe()
+  {
+
+  }
+
+  void VitalCheckerNodelet::inputCallback(
+    const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    vital_checker_->poke();
+  }
+  
+  void VitalCheckerNodelet::updateDiagnostic(
+    diagnostic_updater::DiagnosticStatusWrapper &stat)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    if (vital_checker_->isAlive()) {
+      stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
+                   title_ + " is running");
+      stat.add("last alive time", vital_checker_->lastAliveTimeRelative());
+    }
+    else {
+      addDiagnosticErrorSummary(
+        title_, vital_checker_, stat);
+    }
+  }
 }
 
-#endif
+#include <pluginlib/class_list_macros.h>
+typedef jsk_topic_tools::VitalCheckerNodelet VitalCheckerNodelet;
+PLUGINLIB_EXPORT_CLASS(VitalCheckerNodelet, nodelet::Nodelet)
