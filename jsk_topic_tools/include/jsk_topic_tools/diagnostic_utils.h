@@ -67,7 +67,7 @@ namespace jsk_topic_tools
     const std::string& string_prefix,
     const bool value,
     diagnostic_updater::DiagnosticStatusWrapper& stat);
-
+  
 }
 
 #endif

@@ -54,6 +54,11 @@ namespace jsk_topic_tools
     last_alive_time_ = ros::Time::now();
   }
 
+  double VitalChecker::lastAliveTimeRelative()
+  {
+    return (ros::Time::now() - last_alive_time_).toSec();
+  }
+  
   bool VitalChecker::isAlive()
   {
     bool ret;

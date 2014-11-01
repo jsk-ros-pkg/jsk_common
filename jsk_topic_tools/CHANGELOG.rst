@@ -2,6 +2,19 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.53 (2014-11-01)
+-------------------
+* add nodelet to check vital of topic
+* Contributors: Ryohei Ueda
+
+1.0.52 (2014-10-23)
+-------------------
+* Move several utilities for roscpp from jsk_pcl_ros
+* Contributors: Ryohei Ueda
+
+1.0.51 (2014-10-20)
+-------------------
+
 1.0.50 (2014-10-20)
 -------------------
 * use 300 for default message_num, rostopic hz uses 50000? https://github.com/ros/ros_comm/blob/indigo-devel/tools/rostopic/src/rostopic/__init__.py#L111

@@ -34,6 +34,7 @@ add_dependencies(topic_buffer_client ${PROJECT_NAME}_gencpp)
 target_link_libraries(topic_buffer_server ${catkin_LIBRARIES})
 target_link_libraries(topic_buffer_client ${catkin_LIBRARIES})
 
+
 include(${PROJECT_SOURCE_DIR}/cmake/nodelet.cmake)
 
 macro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
@@ -52,6 +53,8 @@ jsk_topic_tools_nodelet(src/block_nodelet.cpp
   "jsk_topic_tools/Block" "block")
 jsk_topic_tools_nodelet(src/hz_measure_nodelet.cpp
   "jsk_topic_tools/HzMeasure" "hz_measure")
+jsk_topic_tools_nodelet(src/vital_checker_nodelet.cpp
+  "jsk_topic_tools/VitalCheckerNodelet" "vital_checker")
 
 add_library(jsk_topic_tools SHARED
   ${jsk_topic_tools_nodelet_sources}
@@ -60,7 +63,11 @@ add_library(jsk_topic_tools SHARED
   src/rosparam_utils.cpp
   src/time_accumulator.cpp
   src/vital_checker.cpp
-  src/color_utils.cpp)
+  src/color_utils.cpp
+  src/connection_based_nodelet.cpp
+  src/diagnostic_nodelet.cpp
+  src/series_boolean.cpp
+  src/counter.cpp)
   
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 add_rostest(test/test_topic_buffer.test)
