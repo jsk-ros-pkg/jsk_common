@@ -8,6 +8,9 @@ wget -q -O /tmp/jsk.rosbuild https://raw.github.com/jsk-ros-pkg/jsk_common/maste
 bash /tmp/jsk.rosbuild hydro
 ```
 
+Watch all the jsk github repositories.
+===
+Please use [this](http://jsk-github-watcher.herokuapp.com/)
 
 Deb Build Status
 -----------------
