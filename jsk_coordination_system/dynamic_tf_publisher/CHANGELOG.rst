@@ -2,6 +2,11 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.53 (2014-11-01)
+-------------------
+* change frequency
+* Contributors: Yusuke Furuta
+
 1.0.52 (2014-10-23)
 -------------------
 

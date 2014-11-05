@@ -62,20 +62,38 @@
 
 # nao
 - git:
-    uri: https://github.com/ahornung/nao_robot.git
-    local-name: humanoid_stacks/nao_robot
+    uri: https://github.com/ros-nao/nao_robot.git
+    local-name: ros_nao/nao_robot
 - git:
-    uri: https://github.com/ahornung/nao_common.git
-    local-name: humanoid_stacks/nao_common
+    uri: https://github.com/ros-nao/nao_meshes.git
+    local-name: ros_nao/nao_meshes
 - git:
-    uri: https://github.com/ahornung/nao_viz.git
-    local-name: humanoid_stacks/nao_viz
+    uri: https://github.com/ros-nao/nao_virtual.git
+    local-name: ros_nao/nao_virtual
 - git:
-    uri: https://github.com/ahornung/humanoid_msgs.git
-    local-name: humanoid_stacks/humanoid_msgs
-# - git:
-#     uri: https://github.com/ahornung/humanoid_navigation.git
-#     local-name: humanoid_stacks/humanoid_navigation
+    uri: https://github.com/ros-nao/nao_sensors.git
+    local-name: ros_nao/nao_sensors
+- git:
+    uri: https://github.com/ros-nao/nao_moveit_config.git
+    local-name: ros_nao/nao_moveit_config
+- git:
+    uri: https://github.com/ros-nao/nao_interaction.git
+    local-name: ros_nao/nao_interaction
+- git:
+    uri: https://github.com/ros-nao/nao_viz.git
+    local-name: ros_nao/nao_viz
+- git:
+    uri: https://github.com/ros-nao/nao_extras.git
+    local-name: ros_nao/nao_extras
+- git:
+    local-name: roboticsgroup/roboticsgroup_gazebo_plugins
+    uri: https://github.com/roboticsgroup/roboticsgroup_gazebo_plugins.git
+- git:
+    local-name: pal-robotics/pal_msgs
+    uri: https://github.com/pal-robotics/pal_msgs.git
+- git:
+    local-name: pal-robotics/pal_gazebo_plugins
+    uri: https://github.com/pal-robotics/pal_gazebo_plugins.git
 
 # baxter
 - git:

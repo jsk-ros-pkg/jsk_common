@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<robot name="tilt_laser" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- <xacro:include filename="$(find jsk_tilt_laser/urdf/tilt_laser_properties.urdf.xacro" /> -->
+
+  <xacro:macro name="tilt_laser" params="parent"> <!-- argument when this file is called -->
+    <link name="mount_link">
+      <visual>
+        <origin xyz="0 0 -0.0525" />
+        <geometry>
+          <box size="0.074 0.105 0.004" />
+        </geometry>
+        <material name="gray" >
+          <color rgba="0.4 0.4 0.4 1"/>
+        </material>
+      </visual>
+      <visual>
+        <origin xyz="-0.0436 0 -0.0305" />
+        <geometry>
+          <box size="0.004 0.105 0.044" />
+        </geometry>
+        <material name="gray" />
+      </visual>
+    </link>
+
+    <link name="laser_body">
+      <visual>
+        <origin xyz="0 0 0.034" />
+        <geometry>
+          <cylinder length="0.030" radius="0.02" />
+        </geometry>
+        <material name="blue">
+          <color rgba="0 0 .75 1"/>
+        </material>
+      </visual>
+      <visual>
+        <origin xyz="0 0 -0.0015" />
+        <geometry>
+          <box size="0.05 0.05 0.035" />
+        </geometry>
+        <material name="blue" />
+      </visual>
+    </link>
+
+    <link name="laser_origin" />
+
+    <!-- for debugging
+    <link name="mount_origin" />
+    <joint name="mount_origin" type="fixed">
+      <origin xyz="0 0 0" />
+      <parent link="${parent}" />
+      <child link="mount_origin" />
+    </joint> -->
+
+    <joint name="mount_joint" type="fixed">
+      <origin xyz="0.0950 0 0.0575" />
+      <!-- <parent link="mount_origin" /> -->
+      <parent link="${parent}" />
+      <child link="mount_link" />
+      <!-- <child link="mount_origin" /> -->
+    </joint>
+
+    <joint name="tilt_joint" type="revolute">
+      <origin xyz="0 0 0" />
+      <axis xyz="0 -1 0"/>
+      <parent link="mount_link" />
+      <child link="laser_body" />
+      <limit lower="-2.0" upper="2.0" effort="1.0" velocity="1.0" />
+    </joint>
+
+    <joint name="fixed_origin" type="fixed">
+      <origin xyz="0 0 0.0384" />
+      <parent link="laser_body" />
+      <child link="laser_origin" />
+      <!--limit/-->
+    </joint>
+  </xacro:macro>
+</robot>
