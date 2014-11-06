@@ -331,7 +331,32 @@ EOF
 function install-jsk-ros-pkg {
     wget  'https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosinstall' -O /tmp/jsk.rosinstall.$$
     if [ "$RTM_ROS_ROBOTICS" = "true" ]; then
-        wget  'http://rtm-ros-robotics.googlecode.com/svn/trunk/agentsystem_ros_tutorials/rtm-ros-robotics.rosinstall' -O /tmp/rtm-ros-robotics.rosinstall.$$
+        cat <<EOF > /tmp/rtm-ros-robotics.rosinstall.$$
+- git:
+    uri: https://github.com/start-jsk/openrtm_aist_core.git
+    local-name: rtm-ros-robotics/openrtm_common/openrtm_aist_core
+- git:
+    uri: https://github.com/start-jsk/openhrp3.git
+    local-name: rtm-ros-robotics/openrtm_common/openhrp3
+- git:
+    uri: https://github.com/start-jsk/hrpsys.git
+    local-name: rtm-ros-robotics/openrtm_common/hrpsys
+- git:
+    uri: https://github.com/start-jsk/rtshell_core.git
+    local-name: rtm-ros-robotics/openrtm_common/rtshell_core
+- git:
+    uri: https://github.com/start-jsk/rtmros_common.git
+    local-name: rtm-ros-robotics/rtmros_common
+- git:
+    uri: https://github.com/start-jsk/rtmros_tutorials.git
+    local-name: rtm-ros-robotics/rtmros_tutorials
+- git:
+    uri: https://github.com/start-jsk/rtmros_hironx.git
+    local-name: rtm-ros-robotics/rtmros_hironx
+- git:
+    uri: https://github.com/start-jsk/rtmros_gazebo.git
+    local-name: rtm-ros-robotics/rtmros_gazebo
+EOF
         install-pkg /tmp/jsk.rosinstall.$$ /tmp/rtm-ros-robotics.rosinstall.$$
     else
         install-pkg /tmp/jsk.rosinstall.$$

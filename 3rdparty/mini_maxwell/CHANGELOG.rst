@@ -2,6 +2,12 @@
 Changelog for package mini_maxwell
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.53 (2014-11-01)
+-------------------
+* fix author/maintaner name
+* add more build_depend
+* Contributors: Kei Okada
+
 1.0.52 (2014-10-23)
 -------------------
 

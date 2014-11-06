@@ -2,6 +2,11 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.53 (2014-11-01)
+-------------------
+* add nodelet to check vital of topic
+* Contributors: Ryohei Ueda
+
 1.0.52 (2014-10-23)
 -------------------
 * Move several utilities for roscpp from jsk_pcl_ros
