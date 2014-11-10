@@ -1,12 +1,16 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dynamic_tf_publisher)
 
-find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp rospy std_msgs message_generation)
+find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp rospy std_msgs message_generation dynamic_reconfigure)
 add_service_files(DIRECTORY srv
   FILES DeleteTF.srv DissocTF.srv SetDynamicTF.srv AssocTF.srv)
 generate_messages(
   DEPENDENCIES geometry_msgs
 )
+generate_dynamic_reconfigure_options(
+  cfg/TfParameter.cfg
+  )
+
 
 catkin_package(
     DEPENDS
