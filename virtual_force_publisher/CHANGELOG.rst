@@ -2,8 +2,8 @@
 Changelog for package virtual_force_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.54 (2014-11-15)
+-------------------
 * add virtual_force_publisher
 * Contributors: Kei Okada
 

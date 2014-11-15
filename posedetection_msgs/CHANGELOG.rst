@@ -2,8 +2,8 @@
 Changelog for package posedetection_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.54 (2014-11-15)
+-------------------
 * new srv and changed Object6DPose
 * Contributors: Kamada Hitoshi
 
