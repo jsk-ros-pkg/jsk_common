@@ -30,6 +30,7 @@ add_service_files(FILES
   Detect.srv
   Feature0DDetect.srv
   Feature1DDetect.srv
+  TargetObj.srv
 )
 
 # to compatible with fuerte directories
