@@ -2,6 +2,9 @@
 Changelog for package mini_maxwell
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.53 (2014-11-01)
 -------------------
 * fix author/maintaner name

@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.53 (2014-11-01)
 -------------------
 * add nodelet to check vital of topic

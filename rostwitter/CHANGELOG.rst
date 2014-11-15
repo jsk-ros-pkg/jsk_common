@@ -2,6 +2,11 @@
 Changelog for package rostwitter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add python-requests
+* Contributors: Kei Okada
+
 1.0.53 (2014-11-01)
 -------------------
 
