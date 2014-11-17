@@ -32,6 +32,7 @@ class dynamic_tf_publisher:
         self.lockobj = thread.allocate_lock()
         rospy.Service('/set_dynamic_tf', SetDynamicTF, self.set_tf)
         rospy.Service('/assoc_tf', AssocTF, self.assoc)
+        rospy.Service('/publish_tf', Empty, self.publish)
         rospy.Service('/dissoc_tf', DissocTF, self.dissoc)
         rospy.Service('/delete_tf', DeleteTF, self.delete)
 
@@ -49,7 +50,7 @@ class dynamic_tf_publisher:
             for pose in tfm.transforms :
                 self.cur_tf[pose.child_frame_id] = pose
 
-    def publish_tf(self):
+    def publish_tf(self, req=None):
         self.lockobj.acquire()
         time = rospy.Time.now()
         tfm = tf.msg.tfMessage()
