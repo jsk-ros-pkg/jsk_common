@@ -174,3 +174,7 @@
     local-name: pr2_kinematics
     uri: 'https://github.com/PR2/pr2_kinematics.git'
     version: hydro-devel
+- git:
+    local-name: mongodb_store
+    uri: 'https://github.com/strands-project/mongodb_store.git'
+    version: hydro-devel

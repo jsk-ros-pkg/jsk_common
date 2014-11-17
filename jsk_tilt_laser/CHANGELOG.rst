@@ -2,6 +2,11 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.54 (2014-11-15)
+-------------------
+* Added tilt_laser.urdf.xacro to mount on a urdf of TurtleBot.
+* Contributors: Tanaka Yoshimaru
+
 1.0.53 (2014-11-01)
 -------------------
 
