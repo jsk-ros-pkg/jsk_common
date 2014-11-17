@@ -20,3 +20,8 @@ catkin_package(
     CATKIN_DEPENDS dynamic_reconfigure
 )
 
+install(DIRECTORY scripts
+  DESTINATION
+  ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  USE_SOURCE_PERMISSIONS
+  )
