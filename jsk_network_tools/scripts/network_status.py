@@ -8,8 +8,9 @@ class NetworkStatus():
     def __init__(self):
         rospy.init_node('network')
         self.match_face = re.compile('(.+):(.*)')
-        self.hz = 100
-
+        self.hz = rospy.get_param('~hz', 100)
+        rospy.logwarn('publish network status (bps) at ' +  str(self.hz) + 'Hz')
+        rospy.logwarn('usage:\n$rosrun jsk_network_tools network_status.py _hz:=[Hz]')
         self.init_publisher()
         rospy.Timer(rospy.Duration(1.0/self.hz), self.publish)
         rospy.spin()
