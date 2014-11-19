@@ -12,8 +12,10 @@ function rossetrobot() { # 自分のよく使うロボットのhostnameを入れ
 }
 
 function rossetlocal() {
-    export ROS_MASTER_URI=http://localhost:11311
-    echo -e "\e[1;31mset ROS_MASTER_URI to $ROS_MASTER_URI\e[m"
+    rossetrobot localhost
+    if [[ "${PS1}" =~ \[http://.*:.*\]\ (.*)$ ]] ; then
+        export PS1="${BASH_REMATCH[1]}"
+    fi
 }
 
 function rossetip_dev() {
