@@ -12,6 +12,7 @@ import rospy
 
 from dynamic_tf_publisher.srv import * # SetDynamicTF
 from geometry_msgs.msg import TransformStamped,Quaternion,Vector3
+from std_srvs.srv import Empty, EmptyResponse
 import tf
 import tf.msg
 import thread
@@ -32,7 +33,7 @@ class dynamic_tf_publisher:
         self.lockobj = thread.allocate_lock()
         rospy.Service('/set_dynamic_tf', SetDynamicTF, self.set_tf)
         rospy.Service('/assoc_tf', AssocTF, self.assoc)
-        rospy.Service('/publish_tf', Empty, self.publish)
+        rospy.Service('/publish_tf', Empty, self.publish_tf)
         rospy.Service('/dissoc_tf', DissocTF, self.dissoc)
         rospy.Service('/delete_tf', DeleteTF, self.delete)
 
@@ -72,6 +73,7 @@ class dynamic_tf_publisher:
             self.pub_tf.publish(tfm)
             self.pub_tf_mine.publish(tfm)
         self.lockobj.release()
+        return EmptyResponse()
 
     def assoc(self,req):
         if (not self.cur_tf.has_key(req.child_frame)) or self.cur_tf[req.child_frame] == req.parent_frame:
