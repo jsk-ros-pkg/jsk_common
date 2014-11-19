@@ -185,8 +185,8 @@ namespace virtual_force_publisher{
 		tf::vectorKDLToTF(F.force, tf_force);
 		tf::vectorKDLToTF(F.torque, tf_torque);
 		try{
-		  listener_.waitForTransform( root, tip, state->header.stamp, ros::Duration(1.0));
-		  listener_.lookupTransform( root, tip, state->header.stamp , transform);
+		  listener_.waitForTransform( tip, root, state->header.stamp, ros::Duration(1.0));
+		  listener_.lookupTransform( tip, root, state->header.stamp , transform);
 		}   
 		catch (tf::TransformException ex){
 		  ROS_ERROR("%s",ex.what());
