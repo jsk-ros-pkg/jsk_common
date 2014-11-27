@@ -1,11 +1,11 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package posedetection_msgs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package virtual_force_publisher
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1.0.54 (2014-11-15)
 -------------------
-* new srv and changed Object6DPose
-* Contributors: Kamada Hitoshi
+* add virtual_force_publisher
+* Contributors: Kei Okada
 
 1.0.53 (2014-11-01)
 -------------------
@@ -13,11 +13,11 @@ Changelog for package posedetection_msgs
 1.0.52 (2014-10-23)
 -------------------
 
-1.0.51 (2014-10-20)
--------------------
+1.0.51 (2014-10-20 16:01)
+-------------------------
 
-1.0.50 (2014-10-20)
--------------------
+1.0.50 (2014-10-20 01:50)
+-------------------------
 
 1.0.49 (2014-10-13)
 -------------------
@@ -34,11 +34,11 @@ Changelog for package posedetection_msgs
 1.0.45 (2014-09-29)
 -------------------
 
-1.0.44 (2014-09-26)
--------------------
+1.0.44 (2014-09-26 09:17)
+-------------------------
 
-1.0.43 (2014-09-26)
--------------------
+1.0.43 (2014-09-26 01:08)
+-------------------------
 
 1.0.42 (2014-09-25)
 -------------------
@@ -53,6 +53,9 @@ Changelog for package posedetection_msgs
 -------------------
 
 1.0.38 (2014-09-13)
+-------------------
+
+1.0.37 (2014-09-08)
 -------------------
 
 1.0.36 (2014-09-01)
@@ -115,23 +118,23 @@ Changelog for package posedetection_msgs
 1.0.17 (2014-04-20)
 -------------------
 
-1.0.16 (2014-04-19)
--------------------
+1.0.16 (2014-04-19 23:29)
+-------------------------
 
-1.0.15 (2014-04-19)
--------------------
+1.0.15 (2014-04-19 20:19)
+-------------------------
 
-1.0.14 (2014-04-19)
--------------------
+1.0.14 (2014-04-19 12:52)
+-------------------------
 
-1.0.13 (2014-04-19)
--------------------
+1.0.13 (2014-04-19 11:06)
+-------------------------
 
-1.0.12 (2014-04-18)
--------------------
+1.0.12 (2014-04-18 16:58)
+-------------------------
 
-1.0.11 (2014-04-18)
--------------------
+1.0.11 (2014-04-18 08:18)
+-------------------------
 
 1.0.10 (2014-04-17)
 -------------------
@@ -142,21 +145,26 @@ Changelog for package posedetection_msgs
 1.0.8 (2014-04-11)
 ------------------
 
-1.0.4 (2014-03-27)
+1.0.7 (2014-04-10)
 ------------------
-* posedetection_msgs: add message_generation to package.xml
+
+1.0.6 (2014-04-07)
+------------------
+
+1.0.5 (2014-03-31)
+------------------
+
+1.0.4 (2014-03-29)
+------------------
+
+1.0.3 (2014-03-19)
+------------------
+
+1.0.2 (2014-03-12)
+------------------
+
+1.0.1 (2014-03-07)
+------------------
 
 1.0.0 (2014-03-05)
 ------------------
-* set all package to 1.0.0
-* use USE_ROSBUILD for catkin/rosbuild environment
-* remove debug code
-* use ROS_Distributions instead of ROS_DISTRO for electric
-* comment out : add catkin.cmake
-* add depends to roscpp
-* update to opencv2
-* move depend opencv2 to jsk_common since posedetection_msgs is under jsk_common stack
-* add rosdep2 for electric, will fixed in opencv2.4. https://code.ros.org/trac/ros-pkg/ticket/5437
-* use rosdep opencv2 and pkg-config, as described in the wiki http://www.ros.org/wiki/opencv2
-* moved posedetection_msgs, sift processing, and other packages to jsk_common and jsk_perception
-* Contributors: Kei Okada, k-okada, rosen

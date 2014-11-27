@@ -2,6 +2,11 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.54 (2014-11-15)
+-------------------
+* Add tf publisher which can be reconfigured by dynamic_reconfigure
+* Contributors: Ryohei Ueda
+
 1.0.53 (2014-11-01)
 -------------------
 * change frequency
