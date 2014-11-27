@@ -7,6 +7,9 @@
 #include "jsk_topic_tools/Update.h"
 #include "topic_tools/shape_shifter.h"
 #include "topic_tools/parse.h"
+#include <boost/thread.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time.hpp>
 
 using std::string;
 using std::vector;
@@ -23,6 +26,18 @@ public:
     boost::shared_ptr<ShapeShifter const> msg;
     ros::Time last_time_received;
     ros::Duration rate;
+    bool periodic;
+    ros::Duration periodic_rate;
+    boost::thread periodic_thread;
+    void periodic_update_topic(){
+        ROS_INFO_STREAM("topic " << this->topic_name << " is now published at " << 1.0/(this->periodic_rate).toSec() << " Hz.");
+        while(ros::ok() && this->periodic){
+            this->pub.publish(this->msg);
+            ROS_DEBUG_STREAM("sleep " << this->periodic_rate.toNSec() * 1e-6 << " msec.");
+            boost::this_thread::sleep(boost::posix_time::milliseconds(this->periodic_rate.toNSec() * 1e-6));
+        }
+        ROS_INFO_STREAM("topic " << this->topic_name << " is now NOT published.");
+    }
 };
 
 typedef boost::shared_ptr<sub_info_t> sub_info_ref;
@@ -108,11 +123,33 @@ bool update_topic_cb(jsk_topic_tools::Update::Request& req,
                     ROS_WARN_STREAM("service (update) " << (*it)->topic_name << " is not running yet...");
                     continue;
                 }
-                ROS_INFO_STREAM("service (update) " << (*it)->topic_name << " running at " << 1.0/((*it)->rate).toSec() << " Hz");
-                (*it)->pub.publish((*it)->msg);
-                res.rate = (*it)->rate.toSec();
-                ROS_INFO_STREAM("service (update) is called, req.topic:" << req.topic_name << ", res.rate " << res.rate);
-                return true;
+                if (req.periodic && ! (*it)->periodic) {
+                    // start periodic publish thread
+                    if (req.periodic_rate > (*it)->rate) {
+                        (*it)->periodic = true;
+                        (*it)->periodic_rate = ros::Duration(req.periodic_rate);
+                        (*it)->periodic_thread = boost::thread(boost::bind(&sub_info_t::periodic_update_topic, &(**it)));
+                        res.rate = (*it)->rate.toSec();
+                        return true;
+                    } else {
+                        ROS_ERROR_STREAM("Invalid periodic rate is set at " << (*it)->topic_name << ". rate must be 0.0 < " << 1.0/req.periodic_rate.toSec() << " < " << 1.0/((*it)->rate).toSec());
+                        return false;
+                    }
+                } else if (! req.periodic && (*it)->periodic) {
+                    // stop periodic publish thread
+                    (*it)->periodic = false;
+                    ((*it)->periodic_thread).join();
+                    res.rate = 0.0;
+                    ROS_INFO_STREAM("periodic publish of topic " << (*it)->topic_name << " is now stopped.");
+                    return true;
+                } else {
+                    // single publish
+                    ROS_INFO_STREAM("service (update) " << (*it)->topic_name << " running at " << 1.0/((*it)->rate).toSec() << " Hz");
+                    (*it)->pub.publish((*it)->msg);
+                    res.rate = (*it)->rate.toSec();
+                    ROS_INFO_STREAM("service (update) is called, req.topic:" << req.topic_name << ", res.rate " << res.rate);
+                    return true;
+                }
             }
         }
     ROS_ERROR_STREAM("could not find topic named " << req.topic_name );
