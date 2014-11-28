@@ -30,7 +30,7 @@ public:
     ros::Duration periodic_rate;
     boost::thread periodic_thread;
     void periodic_update_topic(){
-        ROS_INFO_STREAM("topic " << this->topic_name << " is now published at " << 1.0/(this->periodic_rate).toSec() << " Hz.");
+        ROS_INFO_STREAM("topic " << this->topic_name << " is now published at " << 1.0/(this->periodic_rate).toSec() << " Hz periodically.");
         while(ros::ok() && this->periodic){
             this->pub.publish(this->msg);
             ROS_DEBUG_STREAM("sleep " << this->periodic_rate.toNSec() * 1e-6 << " msec.");
@@ -130,6 +130,7 @@ bool update_topic_cb(jsk_topic_tools::Update::Request& req,
                         (*it)->periodic_rate = ros::Duration(req.periodic_rate);
                         (*it)->periodic_thread = boost::thread(boost::bind(&sub_info_t::periodic_update_topic, &(**it)));
                         res.rate = (*it)->rate.toSec();
+                        ROS_INFO_STREAM("periodic publish of topic is started in the new thread. topic:" << (*it)->topic_name << " rate:" << (*it)->periodic_rate);
                         return true;
                     } else {
                         ROS_ERROR_STREAM("Invalid periodic rate is set at " << (*it)->topic_name << ". rate must be 0.0 < " << 1.0/req.periodic_rate.toSec() << " < " << 1.0/((*it)->rate).toSec());
@@ -142,13 +143,23 @@ bool update_topic_cb(jsk_topic_tools::Update::Request& req,
                     res.rate = 0.0;
                     ROS_INFO_STREAM("periodic publish of topic " << (*it)->topic_name << " is now stopped.");
                     return true;
-                } else {
-                    // single publish
-                    ROS_INFO_STREAM("service (update) " << (*it)->topic_name << " running at " << 1.0/((*it)->rate).toSec() << " Hz");
-                    (*it)->pub.publish((*it)->msg);
-                    res.rate = (*it)->rate.toSec();
-                    ROS_INFO_STREAM("service (update) is called, req.topic:" << req.topic_name << ", res.rate " << res.rate);
+                } else if (req.periodic) {
+                  if (req.periodic_rate > (*it)->rate) {
+                    (*it)->periodic = true;
+                    (*it)->periodic_rate = ros::Duration(req.periodic_rate);
+                    ROS_INFO_STREAM("periodic publish of topic is started in the existing thread. topic:" << (*it)->topic_name << " rate:" << (*it)->periodic_rate);
                     return true;
+                  } else {
+                    ROS_ERROR_STREAM("Invalid periodic rate is set at " << (*it)->topic_name << ". rate must be 0.0 < " << 1.0/req.periodic_rate.toSec() << " < " << 1.0/((*it)->rate).toSec());
+                    return false;
+                    }
+                } else {
+                  // single publish
+                  ROS_INFO_STREAM("service (update) " << (*it)->topic_name << " running at " << 1.0/((*it)->rate).toSec() << " Hz");
+                  (*it)->pub.publish((*it)->msg);
+                  res.rate = (*it)->rate.toSec();
+                  ROS_INFO_STREAM("service (update) is called, req.topic:" << req.topic_name << ", res.rate " << res.rate);
+                  return true;
                 }
             }
         }
@@ -186,6 +197,7 @@ int main(int argc, char **argv)
             sub_info->last_time_received = ros::Time(0);
             sub_info->rate = ros::Duration(0);
             sub_info->advertised = false;
+            sub_info->periodic = false;
             ROS_INFO_STREAM("subscribe " << sub_info->topic_name);
             sub_info->sub = new ros::Subscriber(n.subscribe<ShapeShifter>(sub_info->topic_name, 10, boost::bind(in_cb, _1, sub_info)));
 
