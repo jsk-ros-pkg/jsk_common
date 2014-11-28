@@ -179,9 +179,9 @@ int main(int argc, char **argv)
       ros::ServiceClient sc_list = n.serviceClient<jsk_topic_tools::List>(string("/list"), true);
       jsk_topic_tools::List::Request req;
       jsk_topic_tools::List::Response res;
-      ROS_INFO_STREAM("calling /list");
+      ROS_INFO_STREAM("calling "  << sc_list.getService());
       while ( sc_list.call(req, res) == false) {
-        ROS_WARN_STREAM("calling /list fails, retry...");
+        ROS_WARN_STREAM("calling " << sc_list.getService() << " fails, retry...");
         ros::Duration(1).sleep();
       }
       ROS_WARN_STREAM("calling /list success!!!");
@@ -219,10 +219,10 @@ int main(int argc, char **argv)
         pub_update = n.advertise<std_msgs::String>("/update", 1);
     }
 
-    for (list<pub_info_ref>::iterator it = g_pubs.begin();
-         it != g_pubs.end();
-         ++it) {
-      if (use_periodic_rate) {
+    if (use_periodic_rate) {
+      for (list<pub_info_ref>::iterator it = g_pubs.begin();
+           it != g_pubs.end();
+           ++it) {
         jsk_topic_tools::Update::Request req;
         jsk_topic_tools::Update::Response res;
         req.topic_name = (*it)->topic_name;
