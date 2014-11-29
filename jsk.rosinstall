@@ -62,29 +62,32 @@
 
 # nao
 - git:
-    uri: https://github.com/ros-nao/nao_robot.git
-    local-name: ros_nao/nao_robot
+    uri: https://github.com/ros-naoqi/nao_robot.git
+    local-name: ros_naoqi/nao_robot
 - git:
-    uri: https://github.com/ros-nao/nao_meshes.git
-    local-name: ros_nao/nao_meshes
+    uri: https://github.com/ros-naoqi/nao_meshes.git
+    local-name: ros_naoqi/nao_meshes
 - git:
-    uri: https://github.com/ros-nao/nao_virtual.git
-    local-name: ros_nao/nao_virtual
+    uri: https://github.com/ros-naoqi/nao_virtual.git
+    local-name: ros_naoqi/nao_virtual
+# - git:
+#     uri: https://github.com/ros-nao/nao_sensors.git
+#     local-name: ros_nao/nao_sensors
 - git:
-    uri: https://github.com/ros-nao/nao_sensors.git
-    local-name: ros_nao/nao_sensors
+    uri: https://github.com/ros-naoqi/nao_moveit_config.git
+    local-name: ros_naoqi/nao_moveit_config
 - git:
-    uri: https://github.com/ros-nao/nao_moveit_config.git
-    local-name: ros_nao/nao_moveit_config
+    uri: https://github.com/ros-naoqi/nao_interaction.git
+    local-name: ros_naoqi/nao_interaction
 - git:
-    uri: https://github.com/ros-nao/nao_interaction.git
-    local-name: ros_nao/nao_interaction
+    uri: https://github.com/ros-naoqi/nao_viz.git
+    local-name: ros_naoqi/nao_viz
 - git:
-    uri: https://github.com/ros-nao/nao_viz.git
-    local-name: ros_nao/nao_viz
+    uri: https://github.com/ros-naoqi/nao_extras.git
+    local-name: ros_naoqi/nao_extras
 - git:
-    uri: https://github.com/ros-nao/nao_extras.git
-    local-name: ros_nao/nao_extras
+    uri: https://github.com/ros-naoqi/naoqi_bridge.git
+    local-name: ros_naoqi/naoqi_bridge
 - git:
     local-name: roboticsgroup/roboticsgroup_gazebo_plugins
     uri: https://github.com/roboticsgroup/roboticsgroup_gazebo_plugins.git
