@@ -16,6 +16,8 @@ using std::vector;
 using std::list;
 using namespace topic_tools;
 
+static bool use_periodic_rate = false;
+
 class sub_info_t
 {
 public:
@@ -189,6 +191,13 @@ int main(int argc, char **argv)
 
     g_node = &n;
 
+    double periodic_rate = 0.1; // 10Hz
+    if (nh.hasParam("periodic_rate")) {
+      use_periodic_rate = true;
+      nh.param ("periodic_rate", periodic_rate, 0.1);
+      ROS_INFO("use periodic rate = %f", periodic_rate);
+    }
+
     for (size_t i = 0; i < topics.size(); i++)
         {
             //sub_info_t sub_info;
@@ -210,6 +219,15 @@ int main(int argc, char **argv)
             g_subs.push_back(sub_info);
         }
     ROS_INFO_STREAM("setup done, subscribed " << topics.size() << " topics");
+
+    if(use_periodic_rate) {
+      for (list<sub_info_ref>::iterator it = g_subs.begin(); it != g_subs.end(); ++it) {
+        (*it)->periodic = true;
+        (*it)->periodic_rate = ros::Duration(periodic_rate);
+        (*it)->periodic_thread = boost::thread(boost::bind(&sub_info_t::periodic_update_topic, &(**it)));
+        ROS_INFO_STREAM("periodic publish of topic is started in the new thread. topic:" << (*it)->topic_name << " rate:" << (*it)->periodic_rate);
+      }
+    }
 
     // New service
     ros::ServiceServer ss_list = nh.advertiseService(string("list"), list_topic_cb);
