@@ -1,4 +1,4 @@
-# -*- mode: Shell-script; -*-
+# -*- mode: shell-script -*-
 
 function rossetrobot() { # 自分のよく使うロボットのhostnameを入れる
     if [ "${ZSH_REMATCH}" = "" ]; then
