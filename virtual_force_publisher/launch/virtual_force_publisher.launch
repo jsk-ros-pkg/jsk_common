@@ -1,0 +1,17 @@
+<launch>
+  <arg name="namespace" default="left_endeffector" />
+  <arg name="publish_frequency" default="50.0"/>
+  <arg name="time_constant" default="0.3"/>
+  <arg name="root" default="torso_lift_link"/>
+  <arg name="tip"  default="l_gripper_tool_frame"/>
+  <arg name="input" default="joint_states"/>
+  <group ns="$(arg namespace)">
+    <node pkg="virtual_force_publisher" type="virtual_force_publisher" name="virtual_force_publisher">
+      <remap from="joint_states" to="/$(arg input)"/>
+      <param name="publish_frequency" value="$(arg publish_frequency)"/>
+      <param name="time_constant" value="$(arg time_constant)"/>
+      <param name="root" value="$(arg root)"/>
+      <param name="tip" value="$(arg tip)"/>
+    </node>
+  </group>
+</launch>

@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-import roslib
-roslib.load_manifest('heartbeat')
 import rospy
-from heartbeat.msg import Heartbeat, HeartbeatResponse
+from jsk_network_tools.msg import Heartbeat, HeartbeatResponse
 
 class Responser():
     def __init__(self):

@@ -43,6 +43,9 @@
 #include <tf_conversions/tf_kdl.h>
 #include <geometry_msgs/WrenchStamped.h>
 #include <sensor_msgs/JointState.h>
+#include <tf/transform_listener.h>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
 typedef boost::shared_ptr<sensor_msgs::JointState const> JointStateConstPtr;
 
@@ -61,6 +64,9 @@ namespace virtual_force_publisher{
 
         ros::Duration publish_interval_;
         std::map<std::string, ros::Time> last_publish_time_;
+        double t_const_;
+        KDL::Wrench F_pre_;
+        tf::TransformListener listener_;
     public:
 
         VirtualForcePublisher()
@@ -77,10 +83,12 @@ namespace virtual_force_publisher{
             n_tilde.param("publish_frequency", publish_freq, 50.0);
             publish_interval_ = ros::Duration(1.0/std::max(publish_freq,1.0));
 
+	    //set time constant of low pass filter
+	    n_tilde.param("time_constant", t_const_, 0.3);
             // set root and tip
             n_tilde.param("root", root, std::string("torso_lift_link"));
             n_tilde.param("tip", tip, std::string("l_gripper_tool_frame"));
-
+	    
             // load robot model
             urdf::Model robot_model;
             robot_model.initParam("robot_description");
@@ -127,6 +135,13 @@ namespace virtual_force_publisher{
 
                 KDL::JntArray  tau;
                 KDL::Wrench    F;
+		Eigen::Matrix<double,Eigen::Dynamic,6> jac_t;
+		Eigen::Matrix<double,6,Eigen::Dynamic> jac_t_pseudo_inv;
+		tf::StampedTransform transform;
+		KDL::Wrench    F_pub;
+		tf::Vector3 tf_force;
+		tf::Vector3 tf_torque;
+
                 tau.resize(chain_.getNrOfJoints());
 
                 //getPositions;
@@ -145,29 +160,54 @@ namespace virtual_force_publisher{
                     tau(j) = joint_efforts[joint_name];
                     j++;
                 }
-
-                // f = inv(jt) * effort
-                jnt_to_jac_solver_->JntToJac(jnt_pos_, jacobian_);
+		
+		jnt_to_jac_solver_->JntToJac(jnt_pos_, jacobian_);
+		jac_t = jacobian_.data.transpose();
+		jac_t_pseudo_inv =(jac_t.transpose() * jac_t).inverse() *  jac_t.transpose();
+                // f = - inv(jt) * effort
                 for (unsigned int j=0; j<6; j++)
                     {
                         F(j) = 0;
                         for (unsigned int i = 0; i < jnt_pos_.rows(); i++)
                             {
-                                F(j) += jacobian_(j, i) * tau(i);
+                                F(j) += -1 * jac_t_pseudo_inv(j, i) * tau(i);
                             }
                     }
+
+		//low pass filter
+		F += (F_pre_ - F) * exp(-1.0 / t_const_);
+		for (unsigned int j=0; j<6; j++){
+		  F_pre_(j) = 0;
+		}
+		F_pre_ += F;
+
+		//tf transformation
+		tf::vectorKDLToTF(F.force, tf_force);
+		tf::vectorKDLToTF(F.torque, tf_torque);
+		try{
+		  listener_.waitForTransform( tip, root, state->header.stamp, ros::Duration(1.0));
+		  listener_.lookupTransform( tip, root, state->header.stamp , transform);
+		}   
+		catch (tf::TransformException ex){
+		  ROS_ERROR("%s",ex.what());
+		  ros::Duration(1.0).sleep();
+		}
+		for (unsigned int j=0; j<3; j++){
+		  F_pub.force[j] = transform.getBasis()[j].dot(tf_force);
+		  F_pub.torque[j] = transform.getBasis()[j].dot(tf_torque);
+		}
 
                 geometry_msgs::WrenchStamped msg;
                 msg.header.stamp = state->header.stamp;
                 msg.header.frame_id = tip;
                 // http://code.ros.org/lurker/message/20110107.151127.7177af06.nl.html
                 //tf::WrenchKDLToMsg(F,msg.wrench);
-                msg.wrench.force.x = F.force[0];
-                msg.wrench.force.y = F.force[1];
-                msg.wrench.force.z = F.force[2];
-                msg.wrench.torque.x = F.torque[0];
-                msg.wrench.torque.y = F.torque[1];
-                msg.wrench.torque.z = F.torque[2];
+                msg.wrench.force.x = F_pub.force[0];
+                msg.wrench.force.y = F_pub.force[1];
+                msg.wrench.force.z = F_pub.force[2];
+                msg.wrench.torque.x = F_pub.torque[0];
+                msg.wrench.torque.y = F_pub.torque[1];
+                msg.wrench.torque.z = F_pub.torque[2];
                 wrench_stamped_pub_.publish(msg);
 
                 {
