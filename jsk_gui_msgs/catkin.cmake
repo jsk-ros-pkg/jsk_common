@@ -9,7 +9,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 add_message_files(FILES
 Action.msg
-DeviceSensorALL.msg
 MagneticField.msg
 Touch.msg
 AndroidSensor.msg
@@ -17,7 +16,6 @@ Gravity.msg
 MultiTouch.msg
 TouchEvent.msg
 DeviceSensor.msg
-Imu.msg
 Tablet.msg
 VoiceMessage.msg
 )
