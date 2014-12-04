@@ -4,6 +4,8 @@
   -->
   <arg name="USE_FIXED_RATE" default="false" />
   <arg name="USE_UPDATE_RATE" default="false" />
+  <arg name="UPDATE_RATE" default="1" />
+  <arg name="FIXED_RATE" default="0.1" />
 
   <node pkg="roscpp_tutorials" type="listener" name="listener"
 	output="screen">
@@ -15,8 +17,8 @@
 	output="screen">
     <remap from="/list" to="/sample_topic_buffer_server/list"/>
     <remap from="/update" to="/sample_topic_buffer_server/update"/>
-    <param name="update_rate" value="1" if="$(arg USE_UPDATE_RATE)"  />
-    <param name="fixed_rate" value="0.1" if="$(arg USE_FIXED_RATE)"/>
+    <param name="update_rate" value="$(arg UPDATE_RATE)" if="$(arg USE_UPDATE_RATE)"  />
+    <param name="fixed_rate" value="$(arg FIXED_RATE)" if="$(arg USE_FIXED_RATE)"/>
   </node>
 
 
