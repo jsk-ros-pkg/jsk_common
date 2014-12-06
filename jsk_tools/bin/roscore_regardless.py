@@ -7,7 +7,7 @@ import subprocess
 import signal
 import os
 import sys
-
+import re
 global g_process_object
 
 def isMasterAlive():
@@ -16,10 +16,15 @@ def isMasterAlive():
     master is not alive
     """
     try:
+        # first check the host is available
         master = rospy.get_master()
+        master_host = re.search('http://([a-zA-Z0-9\-_]*):', master.getUri()[2]).groups(1)[0]
+        response = os.system("ping -c 1 " + master_host + " > /dev/null")
+        if response != 0:
+            return False
         master.getSystemState()
         return True
-    except:
+    except Exception, e:
         return False
 
 def runProcess(cmds):
@@ -50,6 +55,8 @@ def main(cmds):
     previous_master_state = None
     while True:
         master_state = isMasterAlive()
+        if not master_state:
+            print "Master is dead..."
         if not master_state and previous_master_state:
             print "kill process"    
             killProcess()
