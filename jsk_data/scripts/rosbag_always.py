@@ -17,6 +17,10 @@ def isMasterAlive():
     """
     try:
         master = rospy.get_master()
+        master_host = re.search('http://([a-zA-Z0-9\-_]*):', master.getUri()[2]).groups(1)[0]
+        response = os.system("ping -c 1 " + master_host + " > /dev/null")
+        if response != 0:
+            return False
         master.getSystemState()
         return True
     except:
