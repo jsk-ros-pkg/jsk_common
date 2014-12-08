@@ -1,15 +1,16 @@
 # -*- mode: Shell-script; -*-
 
-function rossetrobot() { # 自分のよく使うロボットのhostnameを入れる
+function rossetmaster() { # 自分のよく使うロボットのhostnameを入れる
     local hostname=${1-"pr1040"}
     local ros_port=${2-"11311"}
     export ROS_MASTER_URI=http://$hostname:$ros_port
     if [[ "${PS1}" =~ \[http://.*:.*\]\ (.*)$ ]] ; then
         export PS1="${BASH_REMATCH[1]}"
     fi
-    export PS1="\[\033[00;31m\][$ROS_MASTER_URI]\[\033[00m\] ${PS1}"
+    export PS1="\[\033[00;31m\][$ROS_MASTER_URI][$ROS_IP]\[\033[00m\] ${PS1}"
     echo -e "\e[1;31mset ROS_MASTER_URI to $ROS_MASTER_URI\e[m"
 }
+alias rossetrobot=rossetmaster
 
 function rossetlocal() {
     rossetrobot localhost
@@ -53,6 +54,10 @@ function rossetip() {
       echo -e "\e[1;31munable to set ROS_IP and ROS_HOSTNAME\e[m"
   else
       echo -e "\e[1;31mset ROS_IP and ROS_HOSTNAME to $ROS_IP\e[m";
+  fi
+  # update PS1
+  if [[ "${ROS_MASTER_URI}" =~ ^http://(.*):(.*)$ ]] ; then
+      rossetrobot ${BASH_REMATCH[1]} ${BASH_REMATCH[2]}
   fi
 }
 

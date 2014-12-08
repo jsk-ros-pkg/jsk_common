@@ -21,6 +21,7 @@ static bool use_periodic_rate = false;
 class sub_info_t
 {
 public:
+    boost::mutex mutex;
     std::string topic_name;
     ros::Subscriber *sub;
     ros::Publisher pub;
@@ -34,9 +35,14 @@ public:
     void periodic_update_topic(){
         ROS_INFO_STREAM("topic " << this->topic_name << " is now published at " << 1.0/(this->periodic_rate).toSec() << " Hz periodically.");
         while(ros::ok() && this->periodic){
+          double sleep_sec;
+          {
+            sleep_sec = this->periodic_rate.toNSec();
+            boost::mutex::scoped_lock lock(mutex);
             this->pub.publish(this->msg);
-            ROS_DEBUG_STREAM("sleep " << this->periodic_rate.toNSec() * 1e-6 << " msec.");
-            boost::this_thread::sleep(boost::posix_time::milliseconds(this->periodic_rate.toNSec() * 1e-6));
+          }
+          //ROS_DEBUG_STREAM("sleep " << this->periodic_rate.toNSec() * 1e-6 << " msec.");
+          boost::this_thread::sleep(boost::posix_time::milliseconds(sleep_sec * 1e-6));
         }
         ROS_INFO_STREAM("topic " << this->topic_name << " is now NOT published.");
     }
@@ -51,6 +57,7 @@ static ros::NodeHandle *g_node = NULL;
 void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
            boost::shared_ptr<sub_info_t> s)
 {
+    boost::mutex::scoped_lock lock(s->mutex);
     if ( s->rate.isZero() && s->last_time_received.isZero() ) { // skip first time
     } else if ( s->rate.isZero() && ! s->last_time_received.isZero() ) { // just for second time
         s->rate = ros::Time::now() - s->last_time_received;
@@ -120,7 +127,7 @@ bool update_topic_cb(jsk_topic_tools::Update::Request& req,
          it != g_subs.end();
          ++it)
         {
-            if ( (*it)->topic_name == req.topic_name && (*it)->advertised == true ) {
+          if ( (*it)->topic_name == req.topic_name && (*it)->advertised == true ) {
                 if (! (*it)->advertised ) {
                     ROS_WARN_STREAM("service (update) " << (*it)->topic_name << " is not running yet...");
                     continue;
