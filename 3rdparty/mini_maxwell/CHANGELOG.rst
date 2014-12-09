@@ -2,8 +2,8 @@
 Changelog for package mini_maxwell
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.55 (2014-12-09)
+-------------------
 * add install macro
 * add mini maxwell scripts instead of downloading them
 * Contributors: Yusuke Furuta

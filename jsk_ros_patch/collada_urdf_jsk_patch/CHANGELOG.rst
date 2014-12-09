@@ -2,8 +2,8 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.55 (2014-12-09)
+-------------------
 * fix compiling jsk_ros_patch for indigo
 * Contributors: Yohei Kakiuchi
 

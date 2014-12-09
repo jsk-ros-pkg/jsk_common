@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.55 (2014-12-09)
+-------------------
 * Added parameter configuration for fps and spindle_speed of multisense and fixed urdf name
 * Contributors: Terasawa
 

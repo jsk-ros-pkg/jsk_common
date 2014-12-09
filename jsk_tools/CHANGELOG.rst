@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.55 (2014-12-09)
+-------------------
 * Add document about roscore_regardless.py
 * Check master is reachable before chcking master is alive
 * Merge pull request `#613 <https://github.com/jsk-ros-pkg/jsk_common/issues/613>`_ from k-okada/show_ip

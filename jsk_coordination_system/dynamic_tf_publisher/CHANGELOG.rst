@@ -2,8 +2,8 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.55 (2014-12-09)
+-------------------
 * import empty srv
 * add pubish tf service
 * Contributors: Yusuke Furuta

@@ -2,8 +2,8 @@
 Changelog for package pr2_groovy_patches
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.55 (2014-12-09)
+-------------------
 * remove safe_teleop_base.patcj
 * Contributors: Yuto Inagaki
 
