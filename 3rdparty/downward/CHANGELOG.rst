@@ -2,6 +2,11 @@
 Changelog for package downward
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix downward copy directory
+* Contributors: Yuki Furuta
+
 1.0.54 (2014-11-15)
 -------------------
 

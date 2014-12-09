@@ -2,6 +2,11 @@
 Changelog for package jsk_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add more dependency to jsk_common
+* Contributors: Ryohei Ueda
+
 1.0.54 (2014-11-15)
 -------------------
 
