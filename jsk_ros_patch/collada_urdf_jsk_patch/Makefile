@@ -5,7 +5,7 @@ GIT_DIR = build/robot_model/src
 GIT_URL = git://github.com/ros/robot_model.git
 GIT_REVISION = ${SOURCE_DISTRO}-devel
 PATCH_DIR = $(CURDIR)
-GIT_PATCH = ${PATCH_DIR}/use_assimp_devel.patch
+GIT_PATCH = ${PATCH_DIR}/use_assimp_devel.patch ${PATCH_DIR}/collada_urdf_latest_gazebo.patch
 BUILD_BIN_DIR  = build/robot_model/devel/lib/collada_urdf
 include $(shell rospack find mk)/git_checkout.mk
 
