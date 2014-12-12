@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>jsk_common</name>
-  <version>1.0.54</version>
+  <version>1.0.55</version>
   <description>
    <p>Metapackage that contains commonly used toolset for jsk-ros-pkg</p>
   </description>
@@ -28,7 +28,25 @@
   <run_depend>opt_camera</run_depend>
   <run_depend>rosping</run_depend>
   <run_depend>rospatlite</run_depend>
-
+  <run_depend>nlopt</run_depend>
+  <run_depend>voice_text</run_depend>
+  <run_depend>sklearn</run_depend>
+  <run_depend>assimp_devel</run_depend>
+  <run_depend>ff</run_depend>
+  <run_depend>mini_maxwell</run_depend>
+  <run_depend>libsiftfast</run_depend>
+  <run_depend>ffha</run_depend>
+  <run_depend>downward</run_depend>
+  <!-- <run_depend>depth_image_proc_jsk_patch</run_depend> -->
+  <!-- <run_depend>laser_filters_jsk_patch</run_depend> -->
+  <!-- <run_depend>pr2_groovy_patches</run_depend> -->
+  <!-- <run_depend>image_view_jsk_patch</run_depend> -->
+  <run_depend>rostwitter</run_depend>
+  <run_depend>virtual_force_publisher</run_depend>
+  <run_depend>bayesian_belief_networks</run_depend>
+  <run_depend>jsk_network_tools</run_depend>
+  <run_depend>jsk_tilt_laser</run_depend>
+  <run_depend>speech_recognition_msgs</run_depend>
   <export>
     <metapackage/>
   </export>

@@ -1,6 +1,18 @@
 JSK Common Tools
 ################
 
+Reboot programs according to roscore aliveness
+----------------------------------------------
+Please use jsk_tools/roscore_regardless.py
+.. code-block::
+
+  rosrun jsk_tools roscore_regardless.py your-awesome-program
+
+For example,
+
+.. code-block::
+  rosrun jsk_tools roscore_regardless.py roslaunch robot_pkg robot.launch
+
 Auto roslaunch documentation
 ----------------------------
 

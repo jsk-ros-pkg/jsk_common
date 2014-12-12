@@ -2,6 +2,16 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.55 (2014-12-09)
+-------------------
+* added topic_buffer_periodic_test.launch and added argument to topic_buffer_client/server_sample.launch
+* add mutex lock in callback and thread function
+* enable to select periodic mode from server param
+* enable to select periodic mode from server param
+* send request periodic publish from client when rosparam is set
+* add update periodically function
+* Contributors: Yuki Furuta, Masaki Murooka
+
 1.0.54 (2014-11-15)
 -------------------
 
