@@ -2,6 +2,11 @@
 Changelog for package jsk_gui_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.55 (2014-12-09)
+-------------------
+* delete Imu and DeviceSensorAll msgs
+* Contributors: Yuto Inagaki
+
 1.0.54 (2014-11-15)
 -------------------
 

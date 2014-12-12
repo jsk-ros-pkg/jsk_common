@@ -2,6 +2,21 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.55 (2014-12-09)
+-------------------
+* Add document about roscore_regardless.py
+* Check master is reachable before chcking master is alive
+* Merge pull request `#613 <https://github.com/jsk-ros-pkg/jsk_common/issues/613>`_ from k-okada/show_ip
+  show ROS_IP in prompt
+* Merge pull request `#612 <https://github.com/jsk-ros-pkg/jsk_common/issues/612>`_ from k-okada/rename_rossetrobot
+  rename rossetrobot -> rossetmaster
+* show ROS_IP in prompt
+* rename rossetrobot -> rossetmaster, keep rossetrobot for backword compatibility
+* add: zshrc.ros (Change emacs mode configuration: Shell-script -> shell-script)
+* add: zshrc.ros
+* fix prompt when rossetlocal is called.
+* Contributors: Kei Okada, Kentaro Wada, Masaki Murooka, Ryohei Ueda
+
 1.0.54 (2014-11-15)
 -------------------
 

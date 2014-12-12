@@ -2,6 +2,13 @@
 Changelog for package virtual_force_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.55 (2014-12-09)
+-------------------
+* fix a mistack of transformation
+* add launch file for virtual_force_publisher
+* use pseudo-inv-jacobian to calc forces, add low pass filter ,use tf to transform forces to if proper coords
+* Contributors: Chi Wun Au
+
 1.0.54 (2014-11-15)
 -------------------
 * add virtual_force_publisher

@@ -2,6 +2,11 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.55 (2014-12-09)
+-------------------
+* Added parameter configuration for fps and spindle_speed of multisense and fixed urdf name
+* Contributors: Terasawa
+
 1.0.54 (2014-11-15)
 -------------------
 * Added tilt_laser.urdf.xacro to mount on a urdf of TurtleBot.

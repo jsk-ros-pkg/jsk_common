@@ -2,6 +2,13 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.55 (2014-12-09)
+-------------------
+* fix msg error in heartbeat
+* add description
+* add parameter to set hz
+* Contributors: Yusuke Furuta
+
 1.0.54 (2014-11-15)
 -------------------
 

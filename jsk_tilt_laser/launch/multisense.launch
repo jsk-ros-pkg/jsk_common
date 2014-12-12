@@ -4,7 +4,7 @@
   <arg name="mtu"        default="7200" />
 
   <param name="robot_description"     
-         textfile="$(find multisense_description)/urdf/multisense.urdf"/>
+         textfile="$(find multisense_description)/urdf/multisenseSL.urdf"/>
 
   <!-- Robot state publisher -->
   <node pkg="robot_state_publisher" type="state_publisher" name="$(arg namespace)_state_publisher">
@@ -16,7 +16,7 @@
   <!-- ROS Driver -->
    <node pkg="multisense_ros" ns="$(arg namespace)" type="ros_driver" name="multisense_driver" output="screen">
      <param name="robot_description"     
-         textfile="$(find multisense_description)/urdf/multisense.urdf"/>
+         textfile="$(find multisense_description)/urdf/multisenseSL.urdf"/>
      <param name="sensor_ip"   value="$(arg ip_address)" />
      <param name="sensor_mtu"  value="$(arg mtu)" />
      <param name="tf_prefix"   value="/$(arg namespace)" />
@@ -44,4 +44,9 @@
      <param name="fixed_frame" type="string" value="multisense/head_root"/>
      <rosparam command="load" file="$(find jsk_tilt_laser)/config/multisense_laser_filter.yaml" />
    </node>
+   
+   <!-- modify multisense parameters -->
+   <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense spindle_speed 1.0" name="set_multisense_spindle_speed" />
+   <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense fps 30.0" name="set_multisense_fps" />
+
 </launch>

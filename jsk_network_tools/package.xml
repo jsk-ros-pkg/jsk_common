@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>jsk_network_tools</name>
-  <version>1.0.54</version>
+  <version>1.0.55</version>
   <description>jsk_network_tools</description>
 
   <maintainer email="furuta@jsk.imi.i.u-tokyo.ac.jp">Yusuke Furuta</maintainer>
