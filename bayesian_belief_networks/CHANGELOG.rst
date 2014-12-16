@@ -2,6 +2,11 @@
 Changelog for package bayesian_belief_networks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* modify bayseian setup.py
+* Contributors: aginika
+
 1.0.55 (2014-12-09)
 -------------------
 

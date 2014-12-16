@@ -2,6 +2,9 @@
 Changelog for package jsk_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.55 (2014-12-09)
 -------------------
 * Add more dependency to jsk_common

@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.55 (2014-12-09)
 -------------------
 * added topic_buffer_periodic_test.launch and added argument to topic_buffer_client/server_sample.launch

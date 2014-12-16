@@ -2,6 +2,12 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Use ping with 10 seconds timeout to check master aliveness
+* add battery full capacity summary script
+* Contributors: Ryohei Ueda, aginika
+
 1.0.55 (2014-12-09)
 -------------------
 * Add document about roscore_regardless.py

@@ -2,6 +2,11 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add patch for removing old gazebo settings
+* Contributors: YoheiKakiuchi
+
 1.0.55 (2014-12-09)
 -------------------
 * fix compiling jsk_ros_patch for indigo
