@@ -2,8 +2,8 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.56 (2014-12-17)
+-------------------
 * add patch for removing old gazebo settings
 * Contributors: YoheiKakiuchi
 

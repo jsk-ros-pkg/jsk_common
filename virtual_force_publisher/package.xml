@@ -1,6 +1,6 @@
 <package>
   <name>virtual_force_publisher</name>
-  <version>1.0.55</version>
+  <version>1.0.56</version>
   <description>
     publish end effector's force, which is estmated from joint torque value
   </description>

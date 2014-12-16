@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.56 (2014-12-17)
+-------------------
 * Use ping with 10 seconds timeout to check master aliveness
 * add battery full capacity summary script
 * Contributors: Ryohei Ueda, aginika
