@@ -21,20 +21,24 @@ def callback(data):
         if s.name.startswith("/Power System/Smart Battery"):
             for key_value in s.values:
                 if(key_value.key.startswith("Full Charge Capacity (mAh)")):
-                    results[s.name] = key_value.value
+                    results[s.name] = {
+                        "value":key_value.value,
+                        "hardware_id":s.hardware_id
+                        }
     keep_flag = False
 
 def output():
     global results
-    for key,value in results.items():
-        value = int(value)
+    print " |         Battery Name          | value|hardware_id|" + bcolors.ENDC
+    for key,v in results.items():
+        value = int(v["value"])
         if value > 5500:
             print bcolors.OKGREEN,
         elif value > 4000:
             print bcolors.WARNING,
         else:
             print bcolors.FAIL,
-        print "|" + key + "|" + str(value) + "|" + bcolors.ENDC
+        print "|" + key + "| " + str(value) + " |   " + str(v["hardware_id"]) + "   |" + bcolors.ENDC
 
 
 if __name__ == '__main__':
