@@ -1,0 +1,8 @@
+string text
+---
+string revisedText
+string[] words
+string command
+string[] args
+string[] extractedWords
+

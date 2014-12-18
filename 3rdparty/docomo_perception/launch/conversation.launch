@@ -1,0 +1,15 @@
+<launch>
+  <arg name="use_android" default="true" />
+  <arg name="launch_stt" default="false" />
+  <arg name="launch_sound_play" default="true" />
+
+  <include file="$(find docomo_perception)/launch/chat_example.launch">
+    <arg name="launch_stt" value="$(arg launch_stt)" />
+  </include>
+  <include file="$(find docomo_perception)/launch/text_to_speech_example.launch">
+    <arg name="use_android" value="$(arg use_android)" />
+  </include>
+
+  <include file="$(find sound_play)/soundplay_node.launch"
+           if="$(arg launch_sound_play)" />
+</launch>

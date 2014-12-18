@@ -1,0 +1,13 @@
+<launch>
+  <arg name="use_android" default="true" />
+  <node name="docomo_text2voice"
+        pkg="docomo_perception" type="text2voice.py"
+        output="screen" >
+    <remap from="/Tablet/voice" to="voice"
+           if="$(arg use_android)"/>
+  </node>
+
+  <node name="android2speech_recog_bridge"
+        pkg ="docomo_perception" type="android_speechrecog_bridge.py"
+        if="$(arg use_android)"/>
+</launch>
