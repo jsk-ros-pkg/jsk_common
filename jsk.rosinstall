@@ -130,9 +130,9 @@
     local-name: pr2_robot
     uri: 'https://github.com/PR2/pr2_robot.git'
 - git:
-    local-name: shared_autonomy_manipulation
-    uri: 'https://github.com/garaemon/shared_autonomy_manipulation.git'
-    version: catkinize
+    local-name: SharedAutonomyToolkit/shared_autonomy_manipulation
+    uri: 'https://github.com/SharedAutonomyToolkit/shared_autonomy_manipulation.git'
+    version: hydro-devel
 - git:
     local-name: multimaster_experimental
     uri: 'https://github.com/garaemon/multimaster_experimental.git'
