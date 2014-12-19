@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>docomo_perception</name>
-  <version>0.0.0</version>
+  <version>1.0.56</version>
   <description>The docomo_perception package</description>
 
   <maintainer email="furushchev@jsk.imi.i.u-tokyo.ac.jp">Yuki Furuta</maintainer>
