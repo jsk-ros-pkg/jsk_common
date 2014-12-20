@@ -4,6 +4,8 @@ project(jsk_topic_tools)
 
 find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp rostest std_msgs
   nodelet tf
+  geometry_msgs
+  eigen_conversions
   topic_tools)
 
 add_message_files(
@@ -28,7 +30,11 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(topic_buffer_server src/topic_buffer_server.cpp)
 add_executable(topic_buffer_client src/topic_buffer_client.cpp)
 add_executable(transform_merger src/transform_merger.cpp)
+add_executable(static_transform_pose_stamped
+  src/static_transform_pose_stamped.cpp)
 target_link_libraries(transform_merger ${catkin_LIBRARIES})
+target_link_libraries(static_transform_pose_stamped ${catkin_LIBRARIES})
+add_dependencies(static_transform_pose_stamped ${PROJECT_NAME}_gencpp)
 add_dependencies(topic_buffer_server ${PROJECT_NAME}_gencpp)
 add_dependencies(topic_buffer_client ${PROJECT_NAME}_gencpp)
 target_link_libraries(topic_buffer_server ${catkin_LIBRARIES})
