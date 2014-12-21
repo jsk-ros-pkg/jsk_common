@@ -12,6 +12,6 @@
     <remap from="left/camera_info" to="/multisense/left/camera_info" />
     <remap from="right/camera_info" to="/multisense/right/camera_info" />
     <remap from="disparity" to="/multisense/left/disparity_image" />
-    <remap from="points2" to="/disparity_image/reconstruction/points2" />
+    <remap from="points2" to="/multisense/image_points2_color" />
   </node>
 </launch>
