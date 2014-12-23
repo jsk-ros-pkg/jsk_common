@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.57 (2014-12-23)
+-------------------
 * Add function to compute heat color gradient
 * Add new script: static_transform_pose_stamped. It looks like tf's
   satatic_transform_publisher but it re-publishes geometry_msgs/PoseStamped.

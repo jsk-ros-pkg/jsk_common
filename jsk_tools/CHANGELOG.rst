@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.57 (2014-12-23)
+-------------------
 * add hardware id tp battery capacity
 * Contributors: Kei Okada
 
