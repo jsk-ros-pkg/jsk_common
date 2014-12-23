@@ -135,8 +135,7 @@
     version: hydro-devel
 - git:
     local-name: multimaster_experimental
-    uri: 'https://github.com/garaemon/multimaster_experimental.git'
-    version: catkinize
+    uri: 'https://github.com/willowgarage/multimaster_experimental.git'
 - git:
     local-name: pr2_navigation_apps
     uri: 'https://github.com/PR2/pr2_navigation_apps.git'
