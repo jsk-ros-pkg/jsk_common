@@ -185,4 +185,18 @@ namespace jsk_topic_tools
     }
     return c;
   }
+
+  std_msgs::ColorRGBA heatColor(double v)
+  {
+    double ratio = 2 * v;
+    int b = std::max(0.0, 255 * (1.0 - ratio));
+    int r = std::max(0.0, 255 * (ratio - 1.0));
+    int g = 255 - b - r;
+    std_msgs::ColorRGBA color;
+    color.a = 1.0;
+    color.r = r / 255.0;
+    color.g = g / 255.0;
+    color.b = b / 255.0;
+  }
+
 }
