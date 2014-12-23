@@ -393,7 +393,7 @@ if [ $# -gt 0 ]; then ## if we have arguments, check functions
 else
     setup-ros
     install-jsk-ros-pkg
-    setup-android
+    # setup-android
     compile-jsk-ros-pkg
     test-jsk-ros-pkg
 fi

@@ -2,6 +2,12 @@
 Changelog for package assimp_devel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.57 (2014-12-23)
+-------------------
+
+1.0.56 (2014-12-17)
+-------------------
+
 1.0.55 (2014-12-09)
 -------------------
 
@@ -74,7 +80,7 @@ Changelog for package assimp_devel
 1.0.32 (2014-07-26)
 -------------------
 * update Makefile and *.patch file for using new assimp version, v3.1.1
-* Contributors: YoheiKakiuchi
+* Contributors: Yohei Kakiuchi
 
 1.0.31 (2014-07-23)
 -------------------
@@ -120,7 +126,7 @@ Changelog for package assimp_devel
 * (#408) fix revision of assimp_git
 * fix patch for cmake
 * catch up with update of assimp
-* Contributors: Kei Okada, Yohei Kakiuchi
+* Contributors: Yohei Kakiuchi, Kei Okada
 
 1.0.17 (2014-04-20)
 -------------------
@@ -131,7 +137,7 @@ Changelog for package assimp_devel
 1.0.15 (2014-04-19)
 -------------------
 * remove export for rosbuild at assimp_devel
-* Contributors: YoheiKakiuchi
+* Contributors: Yohei Kakiuchi
 
 1.0.14 (2014-04-19)
 -------------------
@@ -180,7 +186,7 @@ Changelog for package assimp_devel
 * compiling with git repository
 * add eus_assimp for eusing assimp library on EusLisp
 * move euscollada,collada_tools,assimp_devl to jsk_model_tools
-* Contributors: Kei Okada, Ryohei Ueda, Yohei Kakiuchi
+* Contributors: Ryohei Ueda, Yohei Kakiuchi, Kei Okada
 
 1.0.9 (2014-04-12)
 ------------------

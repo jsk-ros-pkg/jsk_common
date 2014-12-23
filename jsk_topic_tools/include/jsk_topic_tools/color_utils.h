@@ -46,6 +46,13 @@ namespace jsk_topic_tools
   //   choose a color out of 20 good selected colors
   ////////////////////////////////////////////////////////
   std_msgs::ColorRGBA colorCategory20(int i);
+  
+  ////////////////////////////////////////////////////////
+  // heatColor
+  //   returns heat color gradation according to
+  //   v. v should be 0.0 ~ 1.0.
+  ////////////////////////////////////////////////////////
+  std_msgs::ColorRGBA heatColor(double v);
 }
 
 #endif
