@@ -2,6 +2,9 @@
 Changelog for package voice_text
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.56 (2014-12-17)
 -------------------
 
@@ -61,7 +64,7 @@ Changelog for package voice_text
 1.0.38 (2014-09-13)
 -------------------
 * catkinize python_twoauth and voice_text, modify multi_map_server's catkin.cmake
-* Contributors: JSK applications, Ryohei Ueda
+* Contributors: Ryohei Ueda, JSK applications
 
 * catkinize python_twoauth and voice_text, modify multi_map_server's catkin.cmake
 * Contributors: Yuto Inagaki
@@ -183,4 +186,4 @@ Changelog for package voice_text
 * do not compile if voicetext is not installed
 * add r58200(fixed include path), r58221(added nkf to rosdep) by mikita
 * add voice_text client program, copy from jsk-ros-pkg-unreleased
-* Contributors: k-okada
+* Contributors: Kei Okada

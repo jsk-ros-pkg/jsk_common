@@ -2,11 +2,16 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add hardware id tp battery capacity
+* Contributors: Kei Okada
+
 1.0.56 (2014-12-17)
 -------------------
 * Use ping with 10 seconds timeout to check master aliveness
 * add battery full capacity summary script
-* Contributors: Ryohei Ueda, aginika
+* Contributors: Ryohei Ueda, Yuto Inagaki
 
 1.0.55 (2014-12-09)
 -------------------
@@ -21,7 +26,7 @@ Changelog for package jsk_tools
 * add: zshrc.ros (Change emacs mode configuration: Shell-script -> shell-script)
 * add: zshrc.ros
 * fix prompt when rossetlocal is called.
-* Contributors: Kei Okada, Kentaro Wada, Masaki Murooka, Ryohei Ueda
+* Contributors: Ryohei Ueda, Kei Okada, Masaki Murooka, Kentaro Wada
 
 1.0.54 (2014-11-15)
 -------------------
@@ -270,4 +275,4 @@ Changelog for package jsk_tools
 * updated launch doc
 * updated launch doc
 * updated launch doc
-* Contributors: chen, k-okada, manabu, nozawa, rosen, y-tnaka, youhei
+* Contributors: nozawa, manabu, Kei Okada, youhei, rosen, chen, y-tnaka

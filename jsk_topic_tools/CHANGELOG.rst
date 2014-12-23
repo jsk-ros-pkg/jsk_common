@@ -2,6 +2,13 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add function to compute heat color gradient
+* Add new script: static_transform_pose_stamped. It looks like tf's
+  satatic_transform_publisher but it re-publishes geometry_msgs/PoseStamped.
+* Contributors: Ryohei Ueda
+
 1.0.56 (2014-12-17)
 -------------------
 
@@ -315,4 +322,4 @@ Changelog for package jsk_topic_tools
 * fix broken xml: catkinize jsk_topic_tools
 * catkinize jsk_topic_tools
 * add jsk_topic_tools
-* Contributors: Kei Okada, furuta, k-okada, ueda, youhei
+* Contributors: Ryohei Ueda, Kei Okada, youhei, Yusuke Furuta

@@ -2,6 +2,9 @@
 Changelog for package image_view_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.56 (2014-12-17)
 -------------------
 
@@ -163,4 +166,4 @@ Changelog for package image_view_jsk_patch
 * clean up patches
 * add trac number to Makefile
 * add image_view_jsk_patch. this is a patch of image_saver.cpp in image_view. you can call service to save subscribed image. also you can set saving image directory and image encodings
-* Contributors: k-okada, tsuda, wesley
+* Contributors: tsuda, wesley, Kei Okada

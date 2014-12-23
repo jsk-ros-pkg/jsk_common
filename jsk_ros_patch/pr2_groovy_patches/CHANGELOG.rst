@@ -2,6 +2,9 @@
 Changelog for package pr2_groovy_patches
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.56 (2014-12-17)
 -------------------
 
@@ -163,4 +166,4 @@ Changelog for package pr2_groovy_patches
 * add comment
 * fix typo
 * add pr2_groovy_patches
-* Contributors: Kei Okada, k-okada, ueda
+* Contributors: Ryohei Ueda, Kei Okada

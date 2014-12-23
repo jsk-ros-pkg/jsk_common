@@ -2,10 +2,13 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.56 (2014-12-17)
 -------------------
 * add patch for removing old gazebo settings
-* Contributors: YoheiKakiuchi
+* Contributors: Yohei Kakiuchi
 
 1.0.55 (2014-12-09)
 -------------------
@@ -226,4 +229,4 @@ Changelog for package collada_urdf_jsk_patch
 * update not to run rosmake in Makefile
 * collada_urdf_jsk_patch does not depends on collada_urdf
 * add jsk patch for collada_urdf, that support material, cube, cylinder, sphere
-* Contributors: Kei Okada, k-okada, ueda, youhei
+* Contributors: Ryohei Ueda, Kei Okada, youhei

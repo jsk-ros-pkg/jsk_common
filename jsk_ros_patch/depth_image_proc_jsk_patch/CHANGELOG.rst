@@ -2,6 +2,9 @@
 Changelog for package depth_image_proc_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.56 (2014-12-17)
 -------------------
 
@@ -164,4 +167,4 @@ Changelog for package depth_image_proc_jsk_patch
 * modify undistort.cpp according to the change of kinect_near_mode_calibration. fitting with depth information
 * miscommit wrong parameter file by mistake
 * add depth_image_proc_jsk_patch. this package is a patch to undistort pointcloud acquired from kinect with zoom lens
-* Contributors: k-okada, tsuda
+* Contributors: tsuda, Kei Okada

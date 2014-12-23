@@ -2,6 +2,9 @@
 Changelog for package ffha
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.56 (2014-12-17)
 -------------------
 
@@ -117,7 +120,7 @@ Changelog for package ffha
 * add find_package(catkin)
 * Add several missing build deps
 * ff, ffha: add CHANGELOG.rst
-* Contributors: Kei Okada, Scott K Logan
+* Contributors: Scott K Logan, Kei Okada
 
 1.0.18 (2014-05-04)
 -------------------
@@ -181,4 +184,4 @@ Changelog for package ffha
 * add patch for parse.c, segv if last condition of inititial state is 'not-condition' in problem
 * remove strange exit(-1) for use non DNF preconditions
 * put jsk tools in jsk_common stack
-* Contributors: furushchev, manabu, rosen
+* Contributors: Yuki Furuta, rosen, manabu

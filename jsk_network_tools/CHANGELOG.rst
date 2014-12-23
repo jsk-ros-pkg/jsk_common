@@ -2,11 +2,14 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.56 (2014-12-17)
 -------------------
 * plot multiple lines
 * add network plot
-* Contributors: tarukosu
+* Contributors: Yusuke Furuta
 
 1.0.55 (2014-12-09)
 -------------------

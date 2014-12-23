@@ -2,6 +2,9 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.56 (2014-12-17)
 -------------------
 
@@ -173,7 +176,7 @@ Changelog for package multi_map_server
 * multi_map_server: disable map_server for default in build_depend, run_depend
 * fix typo CATKIN-DEPENDS -> CATKIN_DEPENDS
 * multi_map_server: catkinize
-* Contributors: Kei Okada, Ryohei Ueda
+* Contributors: Ryohei Ueda, Kei Okada
 
 1.0.3 (2014-03-19)
 ------------------
@@ -189,4 +192,4 @@ Changelog for package multi_map_server
 ------------------
 * add explicit dependency to yaml-cpp as yaml-cpp i sinstalled as a rosdep system dependency
 * add multi_map_server, map_server with switch service, (this will publish TF between maps in the future)
-* Contributors: k-okada, manabu
+* Contributors: Kei Okada, manabu

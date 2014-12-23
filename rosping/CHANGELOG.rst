@@ -2,6 +2,9 @@
 Changelog for package rosping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.56 (2014-12-17)
 -------------------
 
@@ -189,4 +192,4 @@ Changelog for package rosping
 * publish -1 when connection timed out
 * catkinize rosping
 * add rosping
-* Contributors: Kei Okada, furuta, k-okada, ueda
+* Contributors: Ryohei Ueda, Kei Okada, Yusuke Furuta

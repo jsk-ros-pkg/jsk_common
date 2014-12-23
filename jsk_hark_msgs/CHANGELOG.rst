@@ -2,6 +2,9 @@
 Changelog for package jsk_hark_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.56 (2014-12-17)
 -------------------
 
@@ -163,4 +166,4 @@ Changelog for package jsk_hark_msgs
 * add package.xml for groovy
 * add catkin.cmake, update CMakeLists.txt for groovy
 * add jsk_hark_msgs
-* Contributors: fujii, k-okada, youhei
+* Contributors: fujii, Kei Okada, youhei

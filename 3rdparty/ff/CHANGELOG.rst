@@ -2,6 +2,9 @@
 Changelog for package ff
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.56 (2014-12-17)
 -------------------
 
@@ -117,7 +120,7 @@ Changelog for package ff
 * add find_package(catkin)
 * Add several missing build deps
 * ff, ffha: add CHANGELOG.rst
-* Contributors: Kei Okada, Scott K Logan
+* Contributors: Scott K Logan, Kei Okada
 
 1.0.18 (2014-05-04)
 -------------------
@@ -180,4 +183,4 @@ Changelog for package ff
 * added rosdeps : flex and bison
 * udpate ff url
 * put jsk tools in jsk_common stack
-* Contributors: k-okada, mikita, rosen
+* Contributors: mikita, Kei Okada, rosen
