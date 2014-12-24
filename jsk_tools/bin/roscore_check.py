@@ -3,15 +3,10 @@
 import rospy
 from std_msgs.msg import String
 from datetime import datetime
+from jsk_topic_tools.master_util import isMasterAlive
 
 def check_master():
-    try:
-        m = rospy.get_master()
-        code, msg, val = m.getSystemState()
-        return True
-    except Exception, e:
-        return False
-
+    return isMasterAlive()
 
 if __name__ == '__main__':
     rospy.init_node('roscore_check')
