@@ -2,6 +2,12 @@
 Changelog for package libsiftfast
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.57 (2014-12-23)
+-------------------
+
+1.0.56 (2014-12-17)
+-------------------
+
 1.0.55 (2014-12-09)
 -------------------
 
@@ -167,4 +173,4 @@ Changelog for package libsiftfast
 * add clean patched
 * change SVN repository to new sourceforge server. Fixed https://code.google.com/p/rtm-ros-robotics/issues/detail?id=84
 * moved posedetection_msgs, sift processing, and other packages to jsk_common and jsk_perception
-* Contributors: furuta, k-okada, rosen
+* Contributors: Yusuke Furuta, rosen, Kei Okada

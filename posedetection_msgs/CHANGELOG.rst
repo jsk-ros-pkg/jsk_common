@@ -2,6 +2,12 @@
 Changelog for package posedetection_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.57 (2014-12-23)
+-------------------
+
+1.0.56 (2014-12-17)
+-------------------
+
 1.0.55 (2014-12-09)
 -------------------
 
@@ -162,4 +168,4 @@ Changelog for package posedetection_msgs
 * add rosdep2 for electric, will fixed in opencv2.4. https://code.ros.org/trac/ros-pkg/ticket/5437
 * use rosdep opencv2 and pkg-config, as described in the wiki http://www.ros.org/wiki/opencv2
 * moved posedetection_msgs, sift processing, and other packages to jsk_common and jsk_perception
-* Contributors: Kei Okada, k-okada, rosen
+* Contributors: Kei Okada, rosen

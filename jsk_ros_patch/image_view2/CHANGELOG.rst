@@ -2,6 +2,12 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.57 (2014-12-23)
+-------------------
+
+1.0.56 (2014-12-17)
+-------------------
+
 1.0.55 (2014-12-09)
 -------------------
 
@@ -156,7 +162,7 @@ Changelog for package image_view2
 * image_View2:add message_generation, message_runtime to package.xml
 * in order to avoid empty catkin_LIBRARIES problem, call generate_messaegs after target_link_libraries
 * fix typo CATKIN-DEPENDS -> CATKIN_DEPENDS
-* Contributors: Kei Okada, Ryohei Ueda
+* Contributors: Ryohei Ueda, Kei Okada
 
 1.0.2 (2014-03-12)
 ------------------
@@ -168,7 +174,7 @@ Changelog for package image_view2
 ------------------
 * added CIRCLE3D type marker sample
 * add CIRCLE3D type marker
-* Contributors: HiroyukiMikita, Kei Okada
+* Contributors: Kei Okada, HiroyukiMikita
 
 1.0.0 (2014-03-05)
 ------------------
@@ -224,4 +230,4 @@ Changelog for package image_view2
 * back to previous version, which is not using subscribeCamera, becouse of slow connection of pr2-network
 * rewrite using subscribeCamera
 * add image_view2/
-* Contributors: Kei Okada, chen, k-okada, kazuto, manabu, mikita, ueda, youhei
+* Contributors: manabu, kazuto, Kei Okada, youhei, Ryohei Ueda, chen, mikita

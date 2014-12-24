@@ -1,0 +1,17 @@
+<launch>
+  <arg name="MANAGER" default="stereo_manager" />
+  <arg name="CREATE_MANAGER" default="true" />
+  <node if="$(arg CREATE_MANAGER)"
+        pkg="nodelet" type="nodelet" name="$(arg MANAGER)"
+        args="manager" output="screen"/>
+
+  <node pkg="nodelet" type="nodelet" name="stereo_image_proc"
+        args="load stereo_image_proc/point_cloud2 $(arg MANAGER)"
+        clear_params="true">
+    <remap from="left/image_rect_color" to="/multisense/left/image_rect_color" />
+    <remap from="left/camera_info" to="/multisense/left/camera_info" />
+    <remap from="right/camera_info" to="/multisense/right/camera_info" />
+    <remap from="disparity" to="/multisense/left/disparity_image" />
+    <remap from="points2" to="/multisense/organized_image_points2_color" />
+  </node>
+</launch>

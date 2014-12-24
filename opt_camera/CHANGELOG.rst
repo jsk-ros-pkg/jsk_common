@@ -2,6 +2,12 @@
 Changelog for package opt_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.57 (2014-12-23)
+-------------------
+
+1.0.56 (2014-12-17)
+-------------------
+
 1.0.55 (2014-12-09)
 -------------------
 
@@ -153,7 +159,7 @@ Changelog for package opt_camera
 ------------------
 * opt_camera: include unistd.h on the top
 * Added missing unistd.h includes
-* Contributors: Kei Okada, Scott K Logan
+* Contributors: Scott K Logan, Kei Okada
 
 1.0.3 (2014-03-19)
 ------------------
@@ -187,4 +193,4 @@ Changelog for package opt_camera
 * fix name_sapce : opt_cam to camera
 * display firmwareVersion and serialId in opt_nm33_camera program
 * add opt_camera package for NM33 camera
-* Contributors: k-okada, youhei
+* Contributors: Kei Okada, youhei

@@ -2,6 +2,12 @@
 Changelog for package laser_filters_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.57 (2014-12-23)
+-------------------
+
+1.0.56 (2014-12-17)
+-------------------
+
 1.0.55 (2014-12-09)
 -------------------
 
@@ -162,4 +168,4 @@ Changelog for package laser_filters_jsk_patch
 * change params and modify x and y
 * renew params in yaml
 * add laser_filters_jsk_patch
-* Contributors: inagaki, k-okada
+* Contributors: Kei Okada, inagaki

@@ -49,4 +49,8 @@
    <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense spindle_speed 1.0" name="set_multisense_spindle_speed" />
    <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense fps 30.0" name="set_multisense_fps" />
 
+   <include file="$(find jsk_pcl_ros)/launch/multi_resolution_organized_pointcloud.launch">
+     <arg name="NAMESPACE" value="multisense" />
+     <arg name="INPUT" value="/multisense/organized_image_points2_color" />
+   </include>
 </launch>

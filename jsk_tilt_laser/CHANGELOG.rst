@@ -2,10 +2,16 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.57 (2014-12-23)
+-------------------
+
+1.0.56 (2014-12-17)
+-------------------
+
 1.0.55 (2014-12-09)
 -------------------
 * Added parameter configuration for fps and spindle_speed of multisense and fixed urdf name
-* Contributors: Terasawa
+* Contributors: Ryo Terasawa
 
 1.0.54 (2014-11-15)
 -------------------
@@ -79,7 +85,7 @@ Changelog for package jsk_tilt_laser
 * added codes to controll tilt_speed with dynamixel_reconfigure
 * Fix: rospy.debug -> rospy.logdebug
 * add jsk_tilt_laser
-* Contributors: Yuki Furuta, Ryohei Ueda, YoheiKakiuchi
+* Contributors: Yuki Furuta, Ryohei Ueda, Yohei Kakiuchi
 
 1.0.36 (2014-09-01)
 -------------------

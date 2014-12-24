@@ -8,7 +8,8 @@ TARBALL_URL = "http://sourceforge.jp/frs/redir.php?m=iij&f=%2Fjulius%2F51159%2Fg
 TARBALL_PATCH =
 SOURCE_DIR = build/grammar-kit-v4.1
 UNPACK_CMD = tar xf
-MD5SUM_FILE = $(FILENAME).md5sum
+MD5SUM_DIR = $(CURDIR)
+MD5SUM_FILE = $(MD5SUM_DIR)/$(FILENAME).md5sum
 include $(shell rospack find mk)/download_unpack_build.mk
 
 INSTALL_DIR = `rospack find julius`

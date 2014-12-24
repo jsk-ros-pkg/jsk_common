@@ -2,6 +2,12 @@
 Changelog for package openni_tracker_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.57 (2014-12-23)
+-------------------
+
+1.0.56 (2014-12-17)
+-------------------
+
 1.0.55 (2014-12-09)
 -------------------
 
@@ -154,4 +160,4 @@ Changelog for package openni_tracker_jsk_patch
 ------------------
 * use http instead of https to avoid certificate verify failure
 * add openni_tracker_jsk_patch for using auto calibration
-* Contributors: k-okada, youhei
+* Contributors: Kei Okada, youhei

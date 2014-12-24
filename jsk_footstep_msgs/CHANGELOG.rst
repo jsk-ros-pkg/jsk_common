@@ -2,6 +2,12 @@
 Changelog for package jsk_footstep_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.57 (2014-12-23)
+-------------------
+
+1.0.56 (2014-12-17)
+-------------------
+
 1.0.55 (2014-12-09)
 -------------------
 
@@ -158,4 +164,4 @@ Changelog for package jsk_footstep_msgs
 * adding jsk_footstep_planner, euslisp implementation
 * adding an action for footstep planning
 * adding jsk_footstep stack for footstep planning
-* Contributors: Kei Okada, k-okada, ueda
+* Contributors: Ryohei Ueda, Kei Okada
