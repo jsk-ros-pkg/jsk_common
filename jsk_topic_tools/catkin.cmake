@@ -7,7 +7,7 @@ find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp ro
   geometry_msgs
   eigen_conversions
   topic_tools)
-
+catkin_python_setup()
 add_message_files(
   FILES TopicInfo.msg
 )
