@@ -89,6 +89,7 @@ private:
   sensor_msgs::CameraInfoConstPtr info_msg_;
   cv_bridge::CvImage img_bridge_;
   boost::mutex image_mutex_;
+  int skip_draw_rate_;
   cv::Mat original_image_, image_, draw_;
 
   tf::TransformListener tf_listener_;
@@ -105,7 +106,6 @@ private:
   static CvRect window_selection_;
   int count_;
   bool blurry_mode;
-  bool use_window;
   bool show_info;
   double tf_timeout;
   ros::Publisher point_pub_;
@@ -114,6 +114,8 @@ private:
   ros::Publisher move_point_pub_;
   
 public:
+  bool use_window;
+
   enum KEY_MODE {
     MODE_RECTANGLE = 0,
     MODE_SERIES = 1,
@@ -143,7 +145,7 @@ public:
     rectangle_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/screenrectangle",100);
     move_point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/movepoint", 100);
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
-
+    local_nh.param("skip_draw_rate", skip_draw_rate_, 0);
     local_nh.param("autosize", autosize, false);
     local_nh.param("image_transport", transport, std::string("raw"));
     local_nh.param("blurry", blurry_mode, false);
@@ -957,11 +959,18 @@ public:
   
   void image_cb(const sensor_msgs::ImageConstPtr& msg)
   {
-    
+    static int count = 0;
+    if (count < skip_draw_rate_) {
+      count++;
+      return;
+    }
+    else {
+      count = 0;
+    }
     static ros::Time old_time;
     times.push_front(ros::Time::now().toSec() - old_time.toSec());
+    old_time = ros::Time::now();
 
-    ROS_DEBUG("image_cb");
     if(old_time.toSec() - ros::Time::now().toSec() > 0) {
       ROS_WARN("TF Cleared for old time");
     }
@@ -981,7 +990,6 @@ public:
     // Hang on to message pointer for sake of mouse_cb
     last_msg_ = msg;
     redraw();
-    old_time = ros::Time::now();
   }
 
   void draw_image() {
@@ -1124,22 +1132,26 @@ int main(int argc, char **argv)
 
   ImageView2 view(n);
 
-  //ros::spin();
-  while (ros::ok()) {
-    ros::spinOnce();
-    int key = cvWaitKey(33);
-    if (key != -1) {
-      if (key == 65505) {
-        if (view.getMode() == ImageView2::MODE_RECTANGLE) {
-          ROS_INFO("series mode");
-          view.setMode(ImageView2::MODE_SERIES);
-        }
-        else {
-          ROS_INFO("rectangle mode");
-          view.setMode(ImageView2::MODE_RECTANGLE);
+  if (view.use_window) {
+    while (ros::ok()) {
+      ros::spinOnce();
+      int key = cvWaitKey(33);
+      if (key != -1) {
+        if (key == 65505) {
+          if (view.getMode() == ImageView2::MODE_RECTANGLE) {
+            ROS_INFO("series mode");
+            view.setMode(ImageView2::MODE_SERIES);
+          }
+          else {
+            ROS_INFO("rectangle mode");
+            view.setMode(ImageView2::MODE_RECTANGLE);
+          }
         }
       }
     }
+  }
+  else {
+    ros::spin();
   }
 
   return 0;
