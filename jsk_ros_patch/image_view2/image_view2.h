@@ -79,28 +79,37 @@ namespace image_view2
   {
   public:
     enum KEY_MODE {
-      MODE_RECTANGLE = 0,
-      MODE_SERIES = 1,
+      MODE_RECTANGLE,
+      MODE_SERIES,
+      MODE_SELECT_FORE_AND_BACK
     };
       
     ImageView2();
     ImageView2(ros::NodeHandle& nh);
     ~ImageView2();
+    void pressKey(int key);
     void markerCb(const image_view2::ImageMarker2ConstPtr& marker);
     void infoCb(const sensor_msgs::CameraInfoConstPtr& msg);
     void redraw();
     void imageCb(const sensor_msgs::ImageConstPtr& msg);
     void drawImage();
     void addPoint(int x, int y);
+    void addRegionPoint(int x, int y);
     void clearPointArray();
     void publishPointArray();
     void setMode(KEY_MODE mode);
     KEY_MODE getMode();
     static void mouseCb(int event, int x, int y, int flags, void* param);
-    
+    bool toggleSelection();
+    void publishForegroundBackgroundMask();
     bool use_window;
   protected:
   private:
+    void pointArrayToMask(std::vector<cv::Point2d>& points,
+                          cv::Mat& mask);
+    void publishMonoImage(ros::Publisher& pub,
+                          cv::Mat& image,
+                          const std_msgs::Header& header);
     ////////////////////////////////////////////////////////
     // drawing helper methods
     ////////////////////////////////////////////////////////
@@ -160,7 +169,7 @@ namespace image_view2
 
     V_ImageMarkerMessage marker_queue_;
     boost::mutex queue_mutex_;
-
+    boost::mutex point_array_mutex_;
     sensor_msgs::ImageConstPtr last_msg_;
     sensor_msgs::CameraInfoConstPtr info_msg_;
     cv_bridge::CvImage img_bridge_;
@@ -174,6 +183,11 @@ namespace image_view2
     std::vector<cv::Point2d> point_array_;
     boost::mutex info_mutex_;
 
+    // for grabcut selection
+    bool selecting_fg_;
+    std::vector<cv::Point2d> point_bg_array_;
+    std::vector<cv::Point2d> point_fg_array_;
+    
     std::string window_name_;
     boost::format filename_format_;
     int font_;
@@ -188,6 +202,8 @@ namespace image_view2
     ros::Publisher point_array_pub_;
     ros::Publisher rectangle_pub_;
     ros::Publisher move_point_pub_;
+    ros::Publisher foreground_mask_pub_;
+    ros::Publisher background_mask_pub_;
     KEY_MODE mode_;
   };
 }

@@ -41,7 +41,7 @@ namespace image_view2{
   }
   
   ImageView2::ImageView2(ros::NodeHandle& nh)
-    : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100)
+    : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), selecting_fg_(true)
   {
     std::string camera = nh.resolveName("image");
     std::string camera_info = nh.resolveName("camera_info");
@@ -55,6 +55,8 @@ namespace image_view2{
     point_array_pub_ = nh.advertise<sensor_msgs::PointCloud2>(camera + "/screenpoint_array",100);
     rectangle_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/screenrectangle",100);
     move_point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/movepoint", 100);
+    foreground_mask_pub_ = nh.advertise<sensor_msgs::Image>(camera + "/foreground", 100);
+    background_mask_pub_ = nh.advertise<sensor_msgs::Image>(camera + "/background", 100);
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
     local_nh.param("skip_draw_rate", skip_draw_rate_, 0);
     local_nh.param("autosize", autosize, false);
@@ -78,6 +80,9 @@ namespace image_view2{
     else if (interaction_mode == "freeform" ||
              interaction_mode == "series") {
       setMode(image_view2::ImageView2::MODE_SERIES);
+    }
+    else if (interaction_mode == "grabcut") {
+      setMode(image_view2::ImageView2::MODE_SELECT_FORE_AND_BACK);
     }
     
     resize_x_ = 1.0/xx;
@@ -853,6 +858,27 @@ namespace image_view2{
         }
       }
     }
+    else if (mode_ == MODE_SELECT_FORE_AND_BACK) {
+      boost::mutex::scoped_lock lock(point_array_mutex_);
+      if (point_fg_array_.size() > 1) {
+        cv::Point2d from, to;
+        from = point_fg_array_[0];
+        for (size_t i = 1; i < point_fg_array_.size(); i++) {
+          to = point_fg_array_[i];
+          cv::line(draw_, from, to, CV_RGB(255, 0, 0), 8, 8, 0);
+          from = to;
+        }
+      }
+      if (point_bg_array_.size() > 1) {
+        cv::Point2d from, to;
+        from = point_bg_array_[0];
+        for (size_t i = 1; i < point_bg_array_.size(); i++) {
+          to = point_bg_array_[i];
+          cv::line(draw_, from, to, CV_RGB(0, 255, 0), 8, 8, 0);
+          from = to;
+        }
+      }
+    }
   }
 
   void ImageView2::drawInfo(ros::Time& before_rendering)
@@ -970,11 +996,33 @@ namespace image_view2{
     cv::Point2d p;
     p.x = x;
     p.y = y;
-    point_array_.push_back(p);
+    {
+      boost::mutex::scoped_lock lock(point_array_mutex_);
+      point_array_.push_back(p);
+    }
+  }
+
+  void ImageView2::addRegionPoint(int x, int y)
+  {
+    cv::Point2d p;
+    p.x = x;
+    p.y = y;
+    {
+      boost::mutex::scoped_lock lock(point_array_mutex_);
+      if (selecting_fg_) {
+        point_fg_array_.push_back(p);
+      }
+      else {
+        point_bg_array_.push_back(p);
+      }
+    }
   }
 
   void ImageView2::clearPointArray()
   {
+    boost::mutex::scoped_lock lock(point_array_mutex_);
+    point_fg_array_.clear();
+    point_bg_array_.clear();
     point_array_.clear();
   }
 
@@ -1004,6 +1052,50 @@ namespace image_view2{
   {
     return mode_;
   }
+
+  bool ImageView2::toggleSelection()
+  {
+    boost::mutex::scoped_lock lock(point_array_mutex_);
+    selecting_fg_ = !selecting_fg_;
+    return selecting_fg_;
+  }
+
+  void ImageView2::pointArrayToMask(std::vector<cv::Point2d>& points,
+                                    cv::Mat& mask)
+  {
+    cv::Point2d from, to;
+    if (points.size() > 1) {
+      from = points[0];
+      for (size_t i = 1; i < points.size(); i++) {
+        to = points[i];
+        cv::line(mask, from, to, cv::Scalar(255), 8, 8, 0);
+        from = to;
+      }
+    }
+  }
+
+  void ImageView2::publishMonoImage(ros::Publisher& pub,
+                                    cv::Mat& image,
+                                    const std_msgs::Header& header)
+  {
+    cv_bridge::CvImage image_bridge(
+      header, sensor_msgs::image_encodings::MONO8, image);
+    pub.publish(image_bridge.toImageMsg());
+  }
+  
+  void ImageView2::publishForegroundBackgroundMask()
+  {
+    boost::mutex::scoped_lock lock(image_mutex_);
+    boost::mutex::scoped_lock lock2(point_array_mutex_);
+    cv::Mat foreground_mask
+      = cv::Mat::zeros(last_msg_->height, last_msg_->width, CV_8UC1);
+    cv::Mat background_mask
+      = cv::Mat::zeros(last_msg_->height, last_msg_->width, CV_8UC1);
+    pointArrayToMask(point_fg_array_, foreground_mask);
+    pointArrayToMask(point_bg_array_, background_mask);
+    publishMonoImage(foreground_mask_pub_, foreground_mask, last_msg_->header);
+    publishMonoImage(background_mask_pub_, background_mask, last_msg_->header);
+  }
   
   void ImageView2::mouseCb(int event, int x, int y, int flags, void* param)
   {
@@ -1017,8 +1109,11 @@ namespace image_view2{
           window_selection_.width  = x - window_selection_.x;
           window_selection_.height = y - window_selection_.y;
         }
-        else if (iv->getMode() == MODE_SERIES) {                  // todo
+        else if (iv->getMode() == MODE_SERIES) {
           iv->addPoint(x, y);
+        }
+        else if (iv->getMode() == MODE_SELECT_FORE_AND_BACK) {
+          iv->addRegionPoint(x, y);
         }
       }
       {
@@ -1041,7 +1136,14 @@ namespace image_view2{
         iv->publishPointArray();
         iv->clearPointArray();
       }
-      else {
+      else if (iv->getMode() == MODE_SELECT_FORE_AND_BACK) {
+        bool fgp = iv->toggleSelection();
+        if (fgp) {
+          iv->publishForegroundBackgroundMask();
+          //iv->clearPointArray();
+        }
+      }
+      else if (iv->getMode() == MODE_RECTANGLE) {
         if ( ( ros::Time::now().toSec() - left_buttondown_time.toSec() ) < 0.5 ) {
           geometry_msgs::PointStamped screen_msg;
           screen_msg.point.x = window_selection_.x * resize_x_;
@@ -1082,9 +1184,31 @@ namespace image_view2{
       break;
     }
     }
-    iv->drawImage();
+    {
+      boost::mutex::scoped_lock lock2(iv->image_mutex_);
+      iv->drawImage();
+    }
     return;
   }
+
+  void ImageView2::pressKey(int key)
+  {
+    if (key != -1) {
+      if (getMode() == MODE_SELECT_FORE_AND_BACK) {
+        // only grabcut works here
+        switch (key) {
+        case 27: {
+          boost::mutex::scoped_lock lock(point_array_mutex_);
+          point_fg_array_.clear();
+          point_bg_array_.clear();
+          selecting_fg_ = true;
+          break;
+        }
+        }
+      }
+    }
+  }
+  
   CvRect ImageView2::window_selection_;
   double ImageView2::resize_x_, ImageView2::resize_y_;
 }
@@ -1101,13 +1225,12 @@ int main(int argc, char **argv)
     ROS_WARN("image_view: image has not been remapped! Typical command-line usage:\n"
              "\t$ ./image_view image:=<image topic> [transport]");
   }
-
+  ros::AsyncSpinner spinner(1);
   image_view2::ImageView2 view(n);
-  ros::Rate r(30);
+  spinner.start();
   while (ros::ok()) {
-    ros::spinOnce();
-    cv::waitKey(1);
-    r.sleep();
+    int key = cv::waitKey(1000 / 30);
+    view.pressKey(key);
   }
 
   return 0;
