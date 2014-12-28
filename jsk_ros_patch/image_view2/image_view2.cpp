@@ -70,6 +70,16 @@ namespace image_view2{
     local_nh.param("resize_scale_y", yy, 1.0);
     local_nh.param("tf_timeout", tf_timeout_, 1.0);
     
+    std::string interaction_mode;
+    local_nh.param("interaction_mode", interaction_mode, std::string("rectangle"));
+    if (interaction_mode == "rectangle") {
+      setMode(image_view2::ImageView2::MODE_RECTANGLE);
+    }
+    else if (interaction_mode == "freeform" ||
+             interaction_mode == "series") {
+      setMode(image_view2::ImageView2::MODE_SERIES);
+    }
+    
     resize_x_ = 1.0/xx;
     resize_y_ = 1.0/yy;
     filename_format_.parse(format_string);
@@ -1046,28 +1056,7 @@ int main(int argc, char **argv)
   }
 
   image_view2::ImageView2 view(n);
-
-  if (view.use_window) {
-    while (ros::ok()) {
-      ros::spinOnce();
-      int key = cvWaitKey(33);
-      if (key != -1) {
-        if (key == 65505) {
-          if (view.getMode() == image_view2::ImageView2::MODE_RECTANGLE) {
-            ROS_INFO("series mode");
-            view.setMode(image_view2::ImageView2::MODE_SERIES);
-          }
-          else {
-            ROS_INFO("rectangle mode");
-            view.setMode(image_view2::ImageView2::MODE_RECTANGLE);
-          }
-        }
-      }
-    }
-  }
-  else {
-    ros::spin();
-  }
+  ros::spin();
 
   return 0;
 }
