@@ -76,16 +76,16 @@ namespace image_view2{
 
     if ( use_window ) {
       cvNamedWindow(window_name_.c_str(), autosize ? CV_WINDOW_AUTOSIZE : 0);
-      cvSetMouseCallback(window_name_.c_str(), &ImageView2::mouse_cb, this);
+      cvSetMouseCallback(window_name_.c_str(), &ImageView2::mouseCb, this);
       font_ = cv::FONT_HERSHEY_DUPLEX;
       window_selection_.x = window_selection_.y =
         window_selection_.height = window_selection_.width = 0;
       cvStartWindowThread();
     }
 
-    image_sub_ = it.subscribe(camera, 1, &ImageView2::image_cb, this, transport);
-    info_sub_ = nh.subscribe(camera_info, 1, &ImageView2::info_cb, this);
-    marker_sub_ = nh.subscribe(marker_topic_, 10, &ImageView2::marker_cb, this);
+    image_sub_ = it.subscribe(camera, 1, &ImageView2::imageCb, this, transport);
+    info_sub_ = nh.subscribe(camera_info, 1, &ImageView2::infoCb, this);
+    marker_sub_ = nh.subscribe(marker_topic_, 10, &ImageView2::markerCb, this);
 
     image_pub_ = it.advertise("image_marked", 1);
   }
@@ -97,9 +97,9 @@ namespace image_view2{
     }
   }
 
-  void ImageView2::marker_cb(const image_view2::ImageMarker2ConstPtr& marker)
+  void ImageView2::markerCb(const image_view2::ImageMarker2ConstPtr& marker)
   {
-    ROS_DEBUG("marker_cb");
+    ROS_DEBUG("markerCb");
     // convert lifetime to duration from Time(0)
     if(marker->lifetime != ros::Duration(0))
       boost::const_pointer_cast<image_view2::ImageMarker2>(marker)->lifetime = (ros::Time::now() - ros::Time(0)) + marker->lifetime;
@@ -109,8 +109,8 @@ namespace image_view2{
     redraw();
   }
 
-  void ImageView2::info_cb(const sensor_msgs::CameraInfoConstPtr& msg) {
-    ROS_DEBUG("info_cb");
+  void ImageView2::infoCb(const sensor_msgs::CameraInfoConstPtr& msg) {
+    ROS_DEBUG("infoCb");
     boost::mutex::scoped_lock lock(info_mutex_);
     info_msg_ = msg;
   }
@@ -868,7 +868,7 @@ namespace image_view2{
     image_pub_.publish(out_msg.toImageMsg());
   }
   
-  void ImageView2::image_cb(const sensor_msgs::ImageConstPtr& msg)
+  void ImageView2::imageCb(const sensor_msgs::ImageConstPtr& msg)
   {
     static int count = 0;
     if (count < skip_draw_rate_) {
@@ -898,12 +898,12 @@ namespace image_view2{
       }
     }
     boost::lock_guard<boost::mutex> guard(image_mutex_);
-    // Hang on to message pointer for sake of mouse_cb
+    // Hang on to message pointer for sake of mouseCb
     last_msg_ = msg;
     redraw();
   }
 
-  void ImageView2::draw_image() {
+  void ImageView2::drawImage() {
     if (image_.rows > 0 && image_.cols > 0) {
       redraw();
       cv::imshow(window_name_.c_str(), image_);
@@ -950,7 +950,7 @@ namespace image_view2{
     return mode_;
   }
   
-  void ImageView2::mouse_cb(int event, int x, int y, int flags, void* param)
+  void ImageView2::mouseCb(int event, int x, int y, int flags, void* param)
   {
     ImageView2 *iv = (ImageView2*)param;
     static ros::Time left_buttondown_time(0);
@@ -1025,7 +1025,7 @@ namespace image_view2{
       }
       break;
     }
-    iv->draw_image();
+    iv->drawImage();
     return;
   }
   CvRect ImageView2::window_selection_;
