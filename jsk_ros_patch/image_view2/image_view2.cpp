@@ -126,6 +126,33 @@ namespace image_view2{
     info_msg_ = msg;
   }
 
+  bool ImageView2::lookupTransformation(
+    std::string frame_id, ros::Time& acquisition_time,
+    std::map<std::string, int>& tf_fail,
+    tf::StampedTransform &transform)
+  {
+    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
+    try {
+      ros::Time tm;
+      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+                                    acquisition_time, timeout);
+      tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
+                                   acquisition_time, transform);
+      tf_fail[frame_id]=0;
+      return true;
+    }
+    catch (tf::TransformException& ex) {
+      tf_fail[frame_id]++;
+      if ( tf_fail[frame_id] < 5 ) {
+        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+      } else {
+        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+      }
+      return false;
+    }
+  }
+  
   void ImageView2::drawCircle(const image_view2::ImageMarker2::ConstPtr& marker)
   {
     cv::Point2d uv = cv::Point2d(marker->position.x, marker->position.y);
@@ -304,27 +331,8 @@ namespace image_view2{
     BOOST_FOREACH(std::string frame_id, marker->frames) {
       tf::StampedTransform transform;
       ros::Time acquisition_time = last_msg_->header.stamp;
-      ros::Duration timeout(tf_timeout_);
-      try {
-        ros::Time tm;
-        tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-        ros::Duration diff = ros::Time::now() - tm;
-        if ( diff > ros::Duration(1.0) ) { break; }
-
-        tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                      acquisition_time, timeout);
-        tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                     acquisition_time, transform);
-        tf_fail[frame_id]=0;
-      }
-      catch (tf::TransformException& ex) {
-        tf_fail[frame_id]++;
-        if ( tf_fail[frame_id] < 5 ) {
-          ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-        } else {
-          ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-        }
-        break;
+      if(!lookupTransformation(frame_id, acquisition_time, tf_fail, transform)) {
+        return;
       }
       // center point
       tf::Point pt = transform.getOrigin();
@@ -473,26 +481,7 @@ namespace image_view2{
     std::string frame_id = marker->points3D.header.frame_id;
     tf::StampedTransform transform;
     ros::Time acquisition_time = last_msg_->header.stamp;
-    //ros::Time acquisition_time = msg->points3D.header.stamp;
-    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
-    try {
-      ros::Time tm;
-      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-      ros::Duration diff = ros::Time::now() - tm;
-      if ( diff > ros::Duration(1.0) ) { return; }
-      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                    acquisition_time, timeout);
-      tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                   acquisition_time, transform);
-      tf_fail[frame_id]=0;
-    }
-    catch (tf::TransformException& ex) {
-      tf_fail[frame_id]++;
-      if ( tf_fail[frame_id] < 5 ) {
-        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-      } else {
-        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-      }
+    if(!lookupTransformation(frame_id, acquisition_time, tf_fail, transform)) {
       return;
     }
     std::vector<geometry_msgs::Point> points2D;
@@ -527,7 +516,7 @@ namespace image_view2{
       if(++col_it == colors.end()) col_it = colors.begin();
     }
   }
-
+  
   void ImageView2::drawPolygon3D(const image_view2::ImageMarker2::ConstPtr& marker,
                                  std::vector<CvScalar>& colors,
                                  std::vector<CvScalar>::iterator& col_it)
@@ -536,26 +525,7 @@ namespace image_view2{
     std::string frame_id = marker->points3D.header.frame_id;
     tf::StampedTransform transform;
     ros::Time acquisition_time = last_msg_->header.stamp;
-    //ros::Time acquisition_time = msg->points3D.header.stamp;
-    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
-    try {
-      ros::Time tm;
-      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-      // ros::Duration diff = ros::Time::now() - tm;
-      // if ( diff > ros::Duration(1.0) ) { break; }
-      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                    acquisition_time, timeout);
-      tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                   acquisition_time, transform);
-      tf_fail[frame_id]=0;
-    }
-    catch (tf::TransformException& ex) {
-      tf_fail[frame_id]++;
-      if ( tf_fail[frame_id] < 5 ) {
-        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-      } else {
-        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-      }
+    if(!lookupTransformation(frame_id, acquisition_time, tf_fail, transform)) {
       return;
     }
     std::vector<geometry_msgs::Point> points2D;
@@ -613,26 +583,7 @@ namespace image_view2{
     std::string frame_id = marker->points3D.header.frame_id;
     tf::StampedTransform transform;
     ros::Time acquisition_time = last_msg_->header.stamp;
-    //ros::Time acquisition_time = msg->points3D.header.stamp;
-    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
-    try {
-      ros::Time tm;
-      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-      ros::Duration diff = ros::Time::now() - tm;
-      if ( diff > ros::Duration(1.0) ) { return; }
-      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                    acquisition_time, timeout);
-      tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                   acquisition_time, transform);
-      tf_fail[frame_id]=0;
-    }
-    catch (tf::TransformException& ex) {
-      tf_fail[frame_id]++;
-      if ( tf_fail[frame_id] < 5 ) {
-        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-      } else {
-        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-      }
+    if(!lookupTransformation(frame_id, acquisition_time, tf_fail, transform)) {
       return;
     }
     BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
@@ -662,26 +613,7 @@ namespace image_view2{
     std::string frame_id = marker->position3D.header.frame_id;
     tf::StampedTransform transform;
     ros::Time acquisition_time = last_msg_->header.stamp;
-    //ros::Time acquisition_time = msg->position3D.header.stamp;
-    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
-    try {
-      ros::Time tm;
-      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-      ros::Duration diff = ros::Time::now() - tm;
-      if ( diff > ros::Duration(1.0) ) { return; }
-      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                    acquisition_time, timeout);
-      tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                   acquisition_time, transform);
-      tf_fail[frame_id]=0;
-    }
-    catch (tf::TransformException& ex) {
-      tf_fail[frame_id]++;
-      if ( tf_fail[frame_id] < 5 ) {
-        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-      } else {
-        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-      }
+    if(!lookupTransformation(frame_id, acquisition_time, tf_fail, transform)) {
       return;
     }
     tf::Point pt = transform.getOrigin();
@@ -721,11 +653,10 @@ namespace image_view2{
     try {
       ros::Time tm;
       tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-      ros::Duration diff = ros::Time::now() - tm;
-      if ( diff > ros::Duration(1.0) ) { return; }
       tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
                                     acquisition_time, timeout);
-      tf_listener_.transformPose(cam_model_.tfFrame(), acquisition_time, marker->pose, frame_id, pose);
+      tf_listener_.transformPose(cam_model_.tfFrame(),
+                                 acquisition_time, marker->pose, frame_id, pose);
       tf_fail[frame_id]=0;
     }
     catch (tf::TransformException& ex) {

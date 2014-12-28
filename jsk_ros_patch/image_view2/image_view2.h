@@ -145,6 +145,11 @@ namespace image_view2
     void drawInteraction();
     void drawInfo(ros::Time& before_rendering);
     void resolveLocalMarkerQueue();
+    bool lookupTransformation(
+      std::string frame_id, ros::Time& acquisition_time,
+      std::map<std::string, int>& tf_fail,
+      tf::StampedTransform &transform);
+    
     V_ImageMarkerMessage local_queue_;
     image_transport::Subscriber image_sub_;
     ros::Subscriber info_sub_;
