@@ -44,5 +44,6 @@ install(DIRECTORY test
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
   )
-
-add_rostest(test/test-rosping.test)
+if (NOT $ENV{ROS_DISTRO} STREQUAL "indigo")
+  add_rostest(test/test-rosping.test)
+endif(NOT $ENV{ROS_DISTRO} STREQUAL "indigo")
