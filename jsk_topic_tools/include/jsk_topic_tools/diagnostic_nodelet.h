@@ -55,7 +55,7 @@ namespace jsk_topic_tools
   protected:
     virtual void onInit();
     virtual void updateDiagnostic(
-      diagnostic_updater::DiagnosticStatusWrapper &stat) = 0;
+      diagnostic_updater::DiagnosticStatusWrapper &stat);
 
     const std::string name_;
     TimeredDiagnosticUpdater::Ptr diagnostic_updater_;
