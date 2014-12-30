@@ -1,4 +1,4 @@
-// -*- tab-width: 8 -*-
+// -*- tab-width: 8; indent-tabs-mode: nil; -*-
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
@@ -79,7 +79,7 @@ private:
   ros::Subscriber info_sub_;
   ros::Subscriber marker_sub_;
   std::string marker_topic_;
-  boost::circular_buffer<double> times;
+  boost::circular_buffer<double> times_;
   image_transport::Publisher image_pub_;
 
   V_ImageMarkerMessage marker_queue_;
@@ -89,6 +89,7 @@ private:
   sensor_msgs::CameraInfoConstPtr info_msg_;
   cv_bridge::CvImage img_bridge_;
   boost::mutex image_mutex_;
+  int skip_draw_rate_;
   cv::Mat original_image_, image_, draw_;
 
   tf::TransformListener tf_listener_;
@@ -104,16 +105,17 @@ private:
   static double resize_x_, resize_y_;
   static CvRect window_selection_;
   int count_;
-  bool blurry_mode;
-  bool use_window;
-  bool show_info;
-  double tf_timeout;
+  bool blurry_mode_;
+  bool show_info_;
+  double tf_timeout_;
   ros::Publisher point_pub_;
   ros::Publisher point_array_pub_;
   ros::Publisher rectangle_pub_;
   ros::Publisher move_point_pub_;
   
 public:
+  bool use_window;
+
   enum KEY_MODE {
     MODE_RECTANGLE = 0,
     MODE_SERIES = 1,
@@ -124,7 +126,7 @@ private:
   
 public:
   
-  ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times(100)
+  ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100)
   {
   }
   ImageView2(ros::NodeHandle& nh)
@@ -143,19 +145,19 @@ public:
     rectangle_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/screenrectangle",100);
     move_point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/movepoint", 100);
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
-
+    local_nh.param("skip_draw_rate", skip_draw_rate_, 0);
     local_nh.param("autosize", autosize, false);
     local_nh.param("image_transport", transport, std::string("raw"));
-    local_nh.param("blurry", blurry_mode, false);
+    local_nh.param("blurry", blurry_mode_, false);
 
     local_nh.param("filename_format", format_string, std::string("frame%04i.jpg"));
     local_nh.param("use_window", use_window, true);
-    local_nh.param("show_info", show_info, false);
+    local_nh.param("show_info", show_info_, false);
 
     double xx,yy;
     local_nh.param("resize_scale_x", xx, 1.0);
     local_nh.param("resize_scale_y", yy, 1.0);
-    local_nh.param("tf_timeout", tf_timeout, 1.0);
+    local_nh.param("tf_timeout", tf_timeout_, 1.0);
     
     resize_x_ = 1.0/xx;
     resize_y_ = 1.0/yy;
@@ -207,18 +209,18 @@ public:
     static ros::Time last_time;
     static std::string info_str_1, info_str_2;
     original_image_.copyTo(image_);
-    if ( show_info && ( ros::Time::now().toSec() - last_time.toSec() > 2 ) ) {
-      int n = times.size();
+    if ( show_info_ && ( ros::Time::now().toSec() - last_time.toSec() > 2 ) ) {
+      int n = times_.size();
       double mean = 0, rate = 1.0, std_dev = 0.0, max_delta, min_delta;
 
-      std::for_each( times.begin(), times.end(), (mean += boost::lambda::_1) );
+      std::for_each( times_.begin(), times_.end(), (mean += boost::lambda::_1) );
       mean /= n;
       rate /= mean;
 
-      std::for_each( times.begin(), times.end(), (std_dev += (boost::lambda::_1 - mean)*(boost::lambda::_1 - mean) ) );
+      std::for_each( times_.begin(), times_.end(), (std_dev += (boost::lambda::_1 - mean)*(boost::lambda::_1 - mean) ) );
       std_dev = sqrt(std_dev/n);
-      min_delta = *std::min_element(times.begin(), times.end());
-      max_delta = *std::max_element(times.begin(), times.end());
+      min_delta = *std::min_element(times_.begin(), times_.end());
+      max_delta = *std::max_element(times_.begin(), times_.end());
 
       std::stringstream f1, f2;
       f1.precision(3); f1 << std::fixed;
@@ -228,7 +230,7 @@ public:
       info_str_1 = f1.str();
       info_str_2 = f2.str();
       ROS_INFO_STREAM(info_str_1 + " " + info_str_2);
-      times.clear();
+      times_.clear();
       last_time = ros::Time::now();
     }
 
@@ -263,7 +265,7 @@ public:
     }
 
     // Draw Section
-    if ( blurry_mode ) {
+    if ( blurry_mode_ ) {
       draw_ = cv::Mat(image_.size(), image_.type(), CV_RGB(0,0,0));
     } else {
       draw_ = image_;
@@ -309,7 +311,7 @@ public:
         switch ( marker->type ) {
         case image_view2::ImageMarker2::CIRCLE: {
           cv::Point2d uv = cv::Point2d(marker->position.x, marker->position.y);
-          if ( blurry_mode ) {
+          if ( blurry_mode_ ) {
             int s0 = (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width);
             CvScalar co = MsgToRGB(marker->outline_color);
             for (int s1 = s0*10; s1 >= s0; s1--) {
@@ -335,7 +337,7 @@ public:
         }
         case image_view2::ImageMarker2::LINE_STRIP: {
           cv::Point2d p0, p1;
-          if ( blurry_mode ) {
+          if ( blurry_mode_ ) {
             int s0 = (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width);
             std::vector<CvScalar>::iterator col_it = colors.begin();
             CvScalar co = (*col_it);
@@ -368,7 +370,7 @@ public:
         }
         case image_view2::ImageMarker2::LINE_LIST: {
           cv::Point2d p0, p1;
-          if ( blurry_mode ) {
+          if ( blurry_mode_ ) {
             int s0 = (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width);
             std::vector<CvScalar>::iterator col_it = colors.begin();
             CvScalar co = (*col_it);
@@ -399,7 +401,7 @@ public:
         }
         case image_view2::ImageMarker2::POLYGON: {
           cv::Point2d p0, p1;
-          if ( blurry_mode ) {
+          if ( blurry_mode_ ) {
             int s0 = (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width);
             std::vector<CvScalar>::iterator col_it = colors.begin();
             CvScalar co = (*col_it);
@@ -448,7 +450,7 @@ public:
         case image_view2::ImageMarker2::POINTS: {
           BOOST_FOREACH(geometry_msgs::Point p, marker->points) {
             cv::Point2d uv = cv::Point2d(p.x, p.y);
-            if ( blurry_mode ) {
+            if ( blurry_mode_ ) {
               int s0 = (marker->scale == 0 ? 3 : marker->scale);
               CvScalar co = (*col_it);
               for (int s1 = s0*2; s1 >= s0; s1--) {
@@ -469,7 +471,7 @@ public:
           BOOST_FOREACH(std::string frame_id, marker->frames) {
             tf::StampedTransform transform;
             ros::Time acquisition_time = last_msg_->header.stamp;
-            ros::Duration timeout(tf_timeout);
+            ros::Duration timeout(tf_timeout_);
             try {
               ros::Time tm;
               tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
@@ -519,7 +521,7 @@ public:
             uv2 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
 
             // draw
-            if ( blurry_mode ) {
+            if ( blurry_mode_ ) {
               int s0 = 2;
               CvScalar c0 = CV_RGB(255,0,0);
               CvScalar c1 = CV_RGB(0,255,0);
@@ -572,7 +574,7 @@ public:
           tf::StampedTransform transform;
           ros::Time acquisition_time = last_msg_->header.stamp;
           //ros::Time acquisition_time = msg->points3D.header.stamp;
-          ros::Duration timeout(tf_timeout); // wait 0.5 sec
+          ros::Duration timeout(tf_timeout_); // wait 0.5 sec
           try {
             ros::Time tm;
             tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
@@ -632,7 +634,7 @@ public:
           tf::StampedTransform transform;
           ros::Time acquisition_time = last_msg_->header.stamp;
           //ros::Time acquisition_time = msg->points3D.header.stamp;
-          ros::Duration timeout(tf_timeout); // wait 0.5 sec
+          ros::Duration timeout(tf_timeout_); // wait 0.5 sec
           try {
             ros::Time tm;
             tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
@@ -692,7 +694,7 @@ public:
           tf::StampedTransform transform;
           ros::Time acquisition_time = last_msg_->header.stamp;
           //ros::Time acquisition_time = msg->points3D.header.stamp;
-          ros::Duration timeout(tf_timeout); // wait 0.5 sec
+          ros::Duration timeout(tf_timeout_); // wait 0.5 sec
           try {
             ros::Time tm;
             tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
@@ -766,7 +768,7 @@ public:
           tf::StampedTransform transform;
           ros::Time acquisition_time = last_msg_->header.stamp;
           //ros::Time acquisition_time = msg->points3D.header.stamp;
-          ros::Duration timeout(tf_timeout); // wait 0.5 sec
+          ros::Duration timeout(tf_timeout_); // wait 0.5 sec
           try {
             ros::Time tm;
             tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
@@ -812,7 +814,7 @@ public:
           tf::StampedTransform transform;
           ros::Time acquisition_time = last_msg_->header.stamp;
           //ros::Time acquisition_time = msg->position3D.header.stamp;
-          ros::Duration timeout(tf_timeout); // wait 0.5 sec
+          ros::Duration timeout(tf_timeout_); // wait 0.5 sec
           try {
             ros::Time tm;
             tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
@@ -863,7 +865,7 @@ public:
           std::string frame_id = marker->pose.header.frame_id;
           geometry_msgs::PoseStamped pose;
           ros::Time acquisition_time = last_msg_->header.stamp;
-          ros::Duration timeout(tf_timeout); // wait 0.5 sec
+          ros::Duration timeout(tf_timeout_); // wait 0.5 sec
           try {
             ros::Time tm;
             tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
@@ -939,9 +941,9 @@ public:
       }
     }
 
-    if ( blurry_mode ) cv::addWeighted(image_, 0.9, draw_, 1.0, 0.0, image_);
+    if ( blurry_mode_ ) cv::addWeighted(image_, 0.9, draw_, 1.0, 0.0, image_);
     if ( use_window ) {
-      if (show_info) {
+      if (show_info_) {
         cv::putText(image_, info_str_1.c_str(), cv::Point(10,image_.rows-34), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar::all(255), 2);
         cv::putText(image_, info_str_2.c_str(), cv::Point(10,image_.rows-10), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar::all(255), 2);
       }
@@ -957,31 +959,37 @@ public:
   
   void image_cb(const sensor_msgs::ImageConstPtr& msg)
   {
-    
+    static int count = 0;
+    if (count < skip_draw_rate_) {
+      count++;
+      return;
+    }
+    else {
+      count = 0;
+    }
     static ros::Time old_time;
-    times.push_front(ros::Time::now().toSec() - old_time.toSec());
+    times_.push_front(ros::Time::now().toSec() - old_time.toSec());
+    old_time = ros::Time::now();
 
-    ROS_DEBUG("image_cb");
     if(old_time.toSec() - ros::Time::now().toSec() > 0) {
       ROS_WARN("TF Cleared for old time");
     }
 
     if (msg->encoding.find("bayer") != std::string::npos) {
       original_image_ = cv::Mat(msg->height, msg->width, CV_8UC1,
-		       const_cast<uint8_t*>(&msg->data[0]), msg->step);
+                       const_cast<uint8_t*>(&msg->data[0]), msg->step);
     } else {
       try {
-	original_image_ = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
+        original_image_ = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
       } catch (cv_bridge::Exception& e) {
-	ROS_ERROR("Unable to convert %s image to bgr8", msg->encoding.c_str());
-	return;
+        ROS_ERROR("Unable to convert %s image to bgr8", msg->encoding.c_str());
+        return;
       }
     }
     boost::lock_guard<boost::mutex> guard(image_mutex_);
     // Hang on to message pointer for sake of mouse_cb
     last_msg_ = msg;
     redraw();
-    old_time = ros::Time::now();
   }
 
   void draw_image() {
@@ -1098,7 +1106,7 @@ public:
       boost::lock_guard<boost::mutex> guard(iv->image_mutex_);
       if (!iv->image_.empty()) {
         std::string filename = (iv->filename_format_ % iv->count_).str();
-	cv::imwrite(filename.c_str(), iv->image_);
+        cv::imwrite(filename.c_str(), iv->image_);
         ROS_INFO("Saved image %s", filename.c_str());
         iv->count_++;
       } else {
@@ -1124,22 +1132,26 @@ int main(int argc, char **argv)
 
   ImageView2 view(n);
 
-  //ros::spin();
-  while (ros::ok()) {
-    ros::spinOnce();
-    int key = cvWaitKey(33);
-    if (key != -1) {
-      if (key == 65505) {
-        if (view.getMode() == ImageView2::MODE_RECTANGLE) {
-          ROS_INFO("series mode");
-          view.setMode(ImageView2::MODE_SERIES);
-        }
-        else {
-          ROS_INFO("rectangle mode");
-          view.setMode(ImageView2::MODE_RECTANGLE);
+  if (view.use_window) {
+    while (ros::ok()) {
+      ros::spinOnce();
+      int key = cvWaitKey(33);
+      if (key != -1) {
+        if (key == 65505) {
+          if (view.getMode() == ImageView2::MODE_RECTANGLE) {
+            ROS_INFO("series mode");
+            view.setMode(ImageView2::MODE_SERIES);
+          }
+          else {
+            ROS_INFO("rectangle mode");
+            view.setMode(ImageView2::MODE_RECTANGLE);
+          }
         }
       }
     }
+  }
+  else {
+    ros::spin();
   }
 
   return 0;
