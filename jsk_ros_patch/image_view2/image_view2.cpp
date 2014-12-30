@@ -33,103 +33,14 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+#include "image_view2.h"
 
-#include <ros/ros.h>
-#include <sensor_msgs/Image.h>
-#include <cv_bridge/cv_bridge.h>
-#include <sensor_msgs/image_encodings.h>
-#include <image_transport/image_transport.h>
-#include <image_geometry/pinhole_camera_model.h>
-#include <tf/transform_listener.h>
-
-#include <image_view2/ImageMarker2.h>
-#include <geometry_msgs/PointStamped.h>
-#include <geometry_msgs/PolygonStamped.h>
-#include <std_msgs/Empty.h>
-
-#include <boost/thread.hpp>
-#include <boost/format.hpp>
-#include <boost/foreach.hpp>
-#include <boost/circular_buffer.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <pcl/point_types.h>
-#include <pcl_ros/publisher.h>
-
-typedef std::vector<image_view2::ImageMarker2::ConstPtr> V_ImageMarkerMessage;
-
-#define DEFAULT_COLOR  CV_RGB(255,0,0)
-#define USER_ROI_COLOR CV_RGB(255,0,0)
-#define DEFAULT_CIRCLE_SCALE  20
-#define DEFAULT_LINE_WIDTH    3
-
-inline CvScalar MsgToRGB(const std_msgs::ColorRGBA &color){
-  if(color.a == 0.0 && color.r == 0.0 && color.g == 0.0 && color.b == 0.0)
-    return DEFAULT_COLOR;
-  else
-    return CV_RGB(color.r*255, color.g*255, color.b*255);
-}
-
-
-class ImageView2
-{
-private:
-  image_transport::Subscriber image_sub_;
-  ros::Subscriber info_sub_;
-  ros::Subscriber marker_sub_;
-  std::string marker_topic_;
-  boost::circular_buffer<double> times_;
-  image_transport::Publisher image_pub_;
-
-  V_ImageMarkerMessage marker_queue_;
-  boost::mutex queue_mutex_;
-
-  sensor_msgs::ImageConstPtr last_msg_;
-  sensor_msgs::CameraInfoConstPtr info_msg_;
-  cv_bridge::CvImage img_bridge_;
-  boost::mutex image_mutex_;
-  int skip_draw_rate_;
-  cv::Mat original_image_, image_, draw_;
-
-  tf::TransformListener tf_listener_;
-  image_geometry::PinholeCameraModel cam_model_;
-  std::vector<std::string> frame_ids_;
-  std::vector<cv::Point2d> point_array_;
-  boost::mutex info_mutex_;
-
-  std::string window_name_;
-  boost::format filename_format_;
-  int font_;
-
-  static double resize_x_, resize_y_;
-  static CvRect window_selection_;
-  int count_;
-  bool blurry_mode_;
-  bool show_info_;
-  double tf_timeout_;
-  ros::Publisher point_pub_;
-  ros::Publisher point_array_pub_;
-  ros::Publisher rectangle_pub_;
-  ros::Publisher move_point_pub_;
-  
-public:
-  bool use_window;
-
-  enum KEY_MODE {
-    MODE_RECTANGLE = 0,
-    MODE_SERIES = 1,
-  };
-  
-private:
-  KEY_MODE mode_;
-  
-public:
-  
-  ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100)
+namespace image_view2{
+  ImageView2::ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100)
   {
   }
-  ImageView2(ros::NodeHandle& nh)
+  
+  ImageView2::ImageView2(ros::NodeHandle& nh)
     : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE)
   {
     std::string camera = nh.resolveName("image");
@@ -179,14 +90,14 @@ public:
     image_pub_ = it.advertise("image_marked", 1);
   }
 
-  ~ImageView2()
+  ImageView2::~ImageView2()
   {
     if ( use_window ) {
       cvDestroyWindow(window_name_.c_str());
     }
   }
 
-  void marker_cb(const image_view2::ImageMarker2ConstPtr& marker)
+  void ImageView2::marker_cb(const image_view2::ImageMarker2ConstPtr& marker)
   {
     ROS_DEBUG("marker_cb");
     // convert lifetime to duration from Time(0)
@@ -198,13 +109,13 @@ public:
     redraw();
   }
 
-  void info_cb(const sensor_msgs::CameraInfoConstPtr& msg) {
+  void ImageView2::info_cb(const sensor_msgs::CameraInfoConstPtr& msg) {
     ROS_DEBUG("info_cb");
     boost::mutex::scoped_lock lock(info_mutex_);
     info_msg_ = msg;
   }
 
-  void redraw()
+  void ImageView2::redraw()
   {
     static ros::Time last_time;
     static std::string info_str_1, info_str_2;
@@ -957,7 +868,7 @@ public:
     image_pub_.publish(out_msg.toImageMsg());
   }
   
-  void image_cb(const sensor_msgs::ImageConstPtr& msg)
+  void ImageView2::image_cb(const sensor_msgs::ImageConstPtr& msg)
   {
     static int count = 0;
     if (count < skip_draw_rate_) {
@@ -977,7 +888,7 @@ public:
 
     if (msg->encoding.find("bayer") != std::string::npos) {
       original_image_ = cv::Mat(msg->height, msg->width, CV_8UC1,
-                       const_cast<uint8_t*>(&msg->data[0]), msg->step);
+                                const_cast<uint8_t*>(&msg->data[0]), msg->step);
     } else {
       try {
         original_image_ = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
@@ -992,14 +903,14 @@ public:
     redraw();
   }
 
-  void draw_image() {
+  void ImageView2::draw_image() {
     if (image_.rows > 0 && image_.cols > 0) {
       redraw();
       cv::imshow(window_name_.c_str(), image_);
     }
   }
 
-  void addPoint(int x, int y)
+  void ImageView2::addPoint(int x, int y)
   {
     cv::Point2d p;
     p.x = x;
@@ -1007,12 +918,12 @@ public:
     point_array_.push_back(p);
   }
 
-  void clearPointArray()
+  void ImageView2::clearPointArray()
   {
     point_array_.clear();
   }
 
-  void publishPointArray()
+  void ImageView2::publishPointArray()
   {
     pcl::PointCloud<pcl::PointXY> pcl_cloud;
     for (size_t i = 0; i < point_array_.size(); i++) {
@@ -1029,17 +940,17 @@ public:
   }
     
   
-  void setMode(KEY_MODE mode)
+  void ImageView2::setMode(KEY_MODE mode)
   {
     mode_ = mode;
   }
 
-  KEY_MODE getMode()
+  ImageView2::KEY_MODE ImageView2::getMode()
   {
     return mode_;
   }
   
-  static void mouse_cb(int event, int x, int y, int flags, void* param)
+  void ImageView2::mouse_cb(int event, int x, int y, int flags, void* param)
   {
     ImageView2 *iv = (ImageView2*)param;
     static ros::Time left_buttondown_time(0);
@@ -1072,8 +983,8 @@ public:
       break;
     case CV_EVENT_LBUTTONUP:
       if (iv->getMode() == MODE_SERIES) {
-          iv->publishPointArray();
-          iv->clearPointArray();
+        iv->publishPointArray();
+        iv->clearPointArray();
       }
       else {
         if ( ( ros::Time::now().toSec() - left_buttondown_time.toSec() ) < 0.5 ) {
@@ -1117,7 +1028,11 @@ public:
     iv->draw_image();
     return;
   }
-};
+  CvRect ImageView2::window_selection_;
+  double ImageView2::resize_x_, ImageView2::resize_y_;
+}
+
+
 
 int main(int argc, char **argv)
 {
@@ -1130,7 +1045,7 @@ int main(int argc, char **argv)
              "\t$ ./image_view image:=<image topic> [transport]");
   }
 
-  ImageView2 view(n);
+  image_view2::ImageView2 view(n);
 
   if (view.use_window) {
     while (ros::ok()) {
@@ -1138,13 +1053,13 @@ int main(int argc, char **argv)
       int key = cvWaitKey(33);
       if (key != -1) {
         if (key == 65505) {
-          if (view.getMode() == ImageView2::MODE_RECTANGLE) {
+          if (view.getMode() == image_view2::ImageView2::MODE_RECTANGLE) {
             ROS_INFO("series mode");
-            view.setMode(ImageView2::MODE_SERIES);
+            view.setMode(image_view2::ImageView2::MODE_SERIES);
           }
           else {
             ROS_INFO("rectangle mode");
-            view.setMode(ImageView2::MODE_RECTANGLE);
+            view.setMode(image_view2::ImageView2::MODE_RECTANGLE);
           }
         }
       }
@@ -1156,6 +1071,3 @@ int main(int argc, char **argv)
 
   return 0;
 }
-
-CvRect ImageView2::window_selection_;
-double ImageView2::resize_x_, ImageView2::resize_y_;
