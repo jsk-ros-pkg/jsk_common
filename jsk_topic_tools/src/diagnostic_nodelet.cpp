@@ -61,4 +61,17 @@ namespace jsk_topic_tools
       new jsk_topic_tools::VitalChecker(1 / vital_rate));
     diagnostic_updater_->start();
   }
+
+  void DiagnosticNodelet::updateDiagnostic(
+    diagnostic_updater::DiagnosticStatusWrapper &stat)
+  {
+    if (vital_checker_->isAlive()) {
+      stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
+                   name_ + " running");
+    }
+    else {
+      jsk_topic_tools::addDiagnosticErrorSummary(
+        name_, vital_checker_, stat);
+    }
+  }
 }
