@@ -86,17 +86,17 @@ namespace image_view2
     ImageView2();
     ImageView2(ros::NodeHandle& nh);
     ~ImageView2();
-    void marker_cb(const image_view2::ImageMarker2ConstPtr& marker);
-    void info_cb(const sensor_msgs::CameraInfoConstPtr& msg);
+    void markerCb(const image_view2::ImageMarker2ConstPtr& marker);
+    void infoCb(const sensor_msgs::CameraInfoConstPtr& msg);
     void redraw();
-    void image_cb(const sensor_msgs::ImageConstPtr& msg);
-    void draw_image();
+    void imageCb(const sensor_msgs::ImageConstPtr& msg);
+    void drawImage();
     void addPoint(int x, int y);
     void clearPointArray();
     void publishPointArray();
     void setMode(KEY_MODE mode);
     KEY_MODE getMode();
-    static void mouse_cb(int event, int x, int y, int flags, void* param);
+    static void mouseCb(int event, int x, int y, int flags, void* param);
     
     bool use_window;
   protected:
