@@ -101,6 +101,51 @@ namespace image_view2
     bool use_window;
   protected:
   private:
+    ////////////////////////////////////////////////////////
+    // drawing helper methods
+    ////////////////////////////////////////////////////////
+    void drawLineStrip(const image_view2::ImageMarker2::ConstPtr& marker,
+                       std::vector<CvScalar>& colors,
+                       std::vector<CvScalar>::iterator& col_it);
+    void drawLineList(const image_view2::ImageMarker2::ConstPtr& marker,
+                      std::vector<CvScalar>& colors,
+                      std::vector<CvScalar>::iterator& col_it);
+    void drawPolygon(const image_view2::ImageMarker2::ConstPtr& marker,
+                     std::vector<CvScalar>& colors,
+                     std::vector<CvScalar>::iterator& col_it);
+    void drawPoints(const image_view2::ImageMarker2::ConstPtr& marker,
+                    std::vector<CvScalar>& colors,
+                    std::vector<CvScalar>::iterator& col_it);
+    void drawFrames(const image_view2::ImageMarker2::ConstPtr& marker,
+                    std::vector<CvScalar>& colors,
+                    std::vector<CvScalar>::iterator& col_it);
+    void drawText(const image_view2::ImageMarker2::ConstPtr& marker,
+                    std::vector<CvScalar>& colors,
+                    std::vector<CvScalar>::iterator& col_it);
+    void drawLineStrip3D(const image_view2::ImageMarker2::ConstPtr& marker,
+                         std::vector<CvScalar>& colors,
+                         std::vector<CvScalar>::iterator& col_it);
+    void drawLineList3D(const image_view2::ImageMarker2::ConstPtr& marker,
+                        std::vector<CvScalar>& colors,
+                        std::vector<CvScalar>::iterator& col_it);
+    void drawPolygon3D(const image_view2::ImageMarker2::ConstPtr& marker,
+                       std::vector<CvScalar>& colors,
+                       std::vector<CvScalar>::iterator& col_it);
+    void drawPoints3D(const image_view2::ImageMarker2::ConstPtr& marker,
+                       std::vector<CvScalar>& colors,
+                       std::vector<CvScalar>::iterator& col_it);
+    void drawText3D(const image_view2::ImageMarker2::ConstPtr& marker,
+                    std::vector<CvScalar>& colors,
+                    std::vector<CvScalar>::iterator& col_it);
+    void drawCircle3D(const image_view2::ImageMarker2::ConstPtr& marker,
+                      std::vector<CvScalar>& colors,
+                      std::vector<CvScalar>::iterator& col_it);
+    void drawCircle(const image_view2::ImageMarker2::ConstPtr& marker);
+    void drawMarkers();
+    void drawInteraction();
+    void drawInfo(ros::Time& before_rendering);
+    void resolveLocalMarkerQueue();
+    V_ImageMarkerMessage local_queue_;
     image_transport::Subscriber image_sub_;
     ros::Subscriber info_sub_;
     ros::Subscriber marker_sub_;

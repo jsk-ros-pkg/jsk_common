@@ -41,7 +41,7 @@ namespace image_view2{
   }
   
   ImageView2::ImageView2(ros::NodeHandle& nh)
-    : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE)
+    : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100)
   {
     std::string camera = nh.resolveName("image");
     std::string camera_info = nh.resolveName("camera_info");
@@ -113,9 +113,10 @@ namespace image_view2{
     // convert lifetime to duration from Time(0)
     if(marker->lifetime != ros::Duration(0))
       boost::const_pointer_cast<image_view2::ImageMarker2>(marker)->lifetime = (ros::Time::now() - ros::Time(0)) + marker->lifetime;
-    boost::mutex::scoped_lock lock(queue_mutex_);
-
-    marker_queue_.push_back(marker);
+    {
+      boost::mutex::scoped_lock lock(queue_mutex_);
+      marker_queue_.push_back(marker);
+    }
     redraw();
   }
 
@@ -125,77 +126,688 @@ namespace image_view2{
     info_msg_ = msg;
   }
 
-  void ImageView2::redraw()
+  void ImageView2::drawCircle(const image_view2::ImageMarker2::ConstPtr& marker)
   {
-    static ros::Time last_time;
-    static std::string info_str_1, info_str_2;
-    original_image_.copyTo(image_);
-    if ( show_info_ && ( ros::Time::now().toSec() - last_time.toSec() > 2 ) ) {
-      int n = times_.size();
-      double mean = 0, rate = 1.0, std_dev = 0.0, max_delta, min_delta;
+    cv::Point2d uv = cv::Point2d(marker->position.x, marker->position.y);
+    if ( blurry_mode_ ) {
+      int s0 = (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width);
+      CvScalar co = MsgToRGB(marker->outline_color);
+      for (int s1 = s0*10; s1 >= s0; s1--) {
+        double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
+        cv::circle(draw_, uv,
+                   (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale),
+                   CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m),
+                   s1);
+      }
+    } else {
+      cv::circle(draw_, uv,
+                 (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale),
+                 MsgToRGB(marker->outline_color),
+                 (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+      if (marker->filled) {
+        cv::circle(draw_, uv,
+                   (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale) - (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width) / 2.0,
+                   MsgToRGB(marker->fill_color),
+                   -1);
+      }
+    }
+  }
 
-      std::for_each( times_.begin(), times_.end(), (mean += boost::lambda::_1) );
-      mean /= n;
-      rate /= mean;
+  void ImageView2::drawLineStrip(const image_view2::ImageMarker2::ConstPtr& marker,
+                                 std::vector<CvScalar>& colors,
+                                 std::vector<CvScalar>::iterator& col_it)
+  {
+    cv::Point2d p0, p1;
+    if ( blurry_mode_ ) {
+      int s0 = (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width);
+      std::vector<CvScalar>::iterator col_it = colors.begin();
+      CvScalar co = (*col_it);
+      for (int s1 = s0*10; s1 >= s0; s1--) {
+        double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
+        std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
+        std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
+        p0 = cv::Point2d(it->x, it->y); it++;
+        for ( ; it!= end; it++ ) {
+          p1 = cv::Point2d(it->x, it->y);
+          cv::line(draw_, p0, p1,
+                   CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m),
+                   s1);
+          p0 = p1;
+          if(++col_it == colors.end()) col_it = colors.begin();
+        }
+      }
+    } else {
+      std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
+      std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
+      p0 = cv::Point2d(it->x, it->y); it++;
+      for ( ; it!= end; it++ ) {
+        p1 = cv::Point2d(it->x, it->y);
+        cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+        p0 = p1;
+        if(++col_it == colors.end()) col_it = colors.begin();
+      }
+    }
+  }
 
-      std::for_each( times_.begin(), times_.end(), (std_dev += (boost::lambda::_1 - mean)*(boost::lambda::_1 - mean) ) );
-      std_dev = sqrt(std_dev/n);
-      min_delta = *std::min_element(times_.begin(), times_.end());
-      max_delta = *std::max_element(times_.begin(), times_.end());
+  void ImageView2::drawLineList(const image_view2::ImageMarker2::ConstPtr& marker,
+                                std::vector<CvScalar>& colors,
+                                std::vector<CvScalar>::iterator& col_it)
+  {
+    cv::Point2d p0, p1;
+    if ( blurry_mode_ ) {
+      int s0 = (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width);
+      std::vector<CvScalar>::iterator col_it = colors.begin();
+      CvScalar co = (*col_it);
+      for (int s1 = s0*10; s1 >= s0; s1--) {
+        double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
+        std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
+        std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
+        for ( ; it!= end; ) {
+          p0 = cv::Point2d(it->x, it->y); it++;
+          if ( it != end ) p1 = cv::Point2d(it->x, it->y);
+          cv::line(draw_, p0, p1, CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m), s1);
+          it++;
+          if(++col_it == colors.end()) col_it = colors.begin();
+        }
+      }
+    } else {
+      std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
+      std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
+      for ( ; it!= end; ) {
+        p0 = cv::Point2d(it->x, it->y); it++;
+        if ( it != end ) p1 = cv::Point2d(it->x, it->y);
+        cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+        it++;
+        if(++col_it == colors.end()) col_it = colors.begin();
+      }
+    }
+  }
 
-      std::stringstream f1, f2;
-      f1.precision(3); f1 << std::fixed;
-      f2.precision(3); f2 << std::fixed;
-      f1 << "" << image_sub_.getTopic() << " : rate:" << rate;
-      f2 << "min:" << min_delta << "s max: " << max_delta << "s std_dev: " << std_dev << "s n: " << n;
-      info_str_1 = f1.str();
-      info_str_2 = f2.str();
-      ROS_INFO_STREAM(info_str_1 + " " + info_str_2);
-      times_.clear();
-      last_time = ros::Time::now();
+  void ImageView2::drawPolygon(const image_view2::ImageMarker2::ConstPtr& marker,
+                               std::vector<CvScalar>& colors,
+                               std::vector<CvScalar>::iterator& col_it)
+  {
+    cv::Point2d p0, p1;
+    if ( blurry_mode_ ) {
+      int s0 = (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width);
+      std::vector<CvScalar>::iterator col_it = colors.begin();
+      CvScalar co = (*col_it);
+      for (int s1 = s0*10; s1 >= s0; s1--) {
+        double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
+        std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
+        std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
+        p0 = cv::Point2d(it->x, it->y); it++;
+        for ( ; it!= end; it++ ) {
+          p1 = cv::Point2d(it->x, it->y);
+          cv::line(draw_, p0, p1, CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m), s1);
+          p0 = p1;
+          if(++col_it == colors.end()) col_it = colors.begin();
+        }
+        it = marker->points.begin();
+        p1 = cv::Point2d(it->x, it->y);
+        cv::line(draw_, p0, p1, CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m), s1);
+      }
+    } else {
+      std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
+      std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
+      std::vector<cv::Point> points;
+
+      if (marker->filled) {
+        points.push_back(cv::Point(it->x, it->y));
+      }
+      p0 = cv::Point2d(it->x, it->y); it++;
+      for ( ; it!= end; it++ ) {
+        p1 = cv::Point2d(it->x, it->y);
+        if (marker->filled) {
+          points.push_back(cv::Point(it->x, it->y));
+        }
+        cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+        p0 = p1;
+        if(++col_it == colors.end()) col_it = colors.begin();
+      }
+      it = marker->points.begin();
+      p1 = cv::Point2d(it->x, it->y);
+      cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+      if (marker->filled) {
+        cv::fillConvexPoly(draw_, points.data(), points.size(), MsgToRGB(marker->fill_color));
+      }
+    }
+  }
+
+  void ImageView2::drawPoints(const image_view2::ImageMarker2::ConstPtr& marker,
+                              std::vector<CvScalar>& colors,
+                              std::vector<CvScalar>::iterator& col_it)
+  {
+    BOOST_FOREACH(geometry_msgs::Point p, marker->points) {
+      cv::Point2d uv = cv::Point2d(p.x, p.y);
+      if ( blurry_mode_ ) {
+        int s0 = (marker->scale == 0 ? 3 : marker->scale);
+        CvScalar co = (*col_it);
+        for (int s1 = s0*2; s1 >= s0; s1--) {
+          double m = pow((1.0-((double)(s1 - s0))/s0),2);
+          cv::circle(draw_, uv, s1,
+                     CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m),
+                     -1);
+        }
+      } else {
+        cv::circle(draw_, uv, (marker->scale == 0 ? 3 : marker->scale) , *col_it, -1);
+      }
+      if(++col_it == colors.end()) col_it = colors.begin();
+    }
+  }
+
+  void ImageView2::drawFrames(const image_view2::ImageMarker2::ConstPtr& marker,
+                              std::vector<CvScalar>& colors,
+                              std::vector<CvScalar>::iterator& col_it)
+  {
+    static std::map<std::string, int> tf_fail;
+    BOOST_FOREACH(std::string frame_id, marker->frames) {
+      tf::StampedTransform transform;
+      ros::Time acquisition_time = last_msg_->header.stamp;
+      ros::Duration timeout(tf_timeout_);
+      try {
+        ros::Time tm;
+        tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+        ros::Duration diff = ros::Time::now() - tm;
+        if ( diff > ros::Duration(1.0) ) { break; }
+
+        tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+                                      acquisition_time, timeout);
+        tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
+                                     acquisition_time, transform);
+        tf_fail[frame_id]=0;
+      }
+      catch (tf::TransformException& ex) {
+        tf_fail[frame_id]++;
+        if ( tf_fail[frame_id] < 5 ) {
+          ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+        } else {
+          ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+        }
+        break;
+      }
+      // center point
+      tf::Point pt = transform.getOrigin();
+      cv::Point3d pt_cv(pt.x(), pt.y(), pt.z());
+      cv::Point2d uv;
+      uv = cam_model_.project3dToPixel(pt_cv);
+
+      static const int RADIUS = 3;
+      cv::circle(draw_, uv, RADIUS, DEFAULT_COLOR, -1);
+
+      // x, y, z
+      cv::Point2d uv0, uv1, uv2;
+      tf::Stamped<tf::Point> pin, pout;
+
+      // x
+      pin = tf::Stamped<tf::Point>(tf::Point(0.05, 0, 0), acquisition_time, frame_id);
+      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+      uv0 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+      // y
+      pin = tf::Stamped<tf::Point>(tf::Point(0, 0.05, 0), acquisition_time, frame_id);
+      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+      uv1 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+
+      // z
+      pin = tf::Stamped<tf::Point>(tf::Point(0, 0, 0.05), acquisition_time, frame_id);
+      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+      uv2 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+
+      // draw
+      if ( blurry_mode_ ) {
+        int s0 = 2;
+        CvScalar c0 = CV_RGB(255,0,0);
+        CvScalar c1 = CV_RGB(0,255,0);
+        CvScalar c2 = CV_RGB(0,0,255);
+        for (int s1 = s0*10; s1 >= s0; s1--) {
+          double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
+          cv::line(draw_, uv, uv0,
+                   CV_RGB(c0.val[2] * m,c0.val[1] * m,c0.val[0] * m),
+                   s1);
+          cv::line(draw_, uv, uv1,
+                   CV_RGB(c1.val[2] * m,c1.val[1] * m,c1.val[0] * m),
+                   s1);
+          cv::line(draw_, uv, uv2,
+                   CV_RGB(c2.val[2] * m,c2.val[1] * m,c2.val[0] * m),
+                   s1);
+        }
+      } else {
+        cv::line(draw_, uv, uv0, CV_RGB(255,0,0), 2);
+        cv::line(draw_, uv, uv1, CV_RGB(0,255,0), 2);
+        cv::line(draw_, uv, uv2, CV_RGB(0,0,255), 2);
+      }
+
+      // index
+      cv::Size text_size;
+      int baseline;
+      text_size = cv::getTextSize(frame_id.c_str(), font_, 1.0, 1.0, &baseline);
+      cv::Point origin = cv::Point(uv.x - text_size.width / 2,
+                                   uv.y - RADIUS - baseline - 3);
+      cv::putText(draw_, frame_id.c_str(), origin, font_, 1.0, DEFAULT_COLOR, 1.5);
+    }
+  }
+  
+  void ImageView2::drawText(const image_view2::ImageMarker2::ConstPtr& marker,
+                            std::vector<CvScalar>& colors,
+                            std::vector<CvScalar>::iterator& col_it)
+  {
+    cv::Size text_size;
+    int baseline;
+    float scale = marker->scale;
+    if ( scale == 0 ) scale = 1.0;
+    text_size = cv::getTextSize(marker->text.c_str(), font_,
+                                scale, scale, &baseline);
+    cv::Point origin = cv::Point(marker->position.x - text_size.width/2,
+                                 marker->position.y - baseline-3);
+    cv::putText(draw_, marker->text.c_str(), origin, font_, scale, DEFAULT_COLOR);
+  }
+
+  void ImageView2::drawLineStrip3D(const image_view2::ImageMarker2::ConstPtr& marker,
+                                   std::vector<CvScalar>& colors,
+                                   std::vector<CvScalar>::iterator& col_it)
+  {
+    static std::map<std::string, int> tf_fail;
+    std::string frame_id = marker->points3D.header.frame_id;
+    tf::StampedTransform transform;
+    ros::Time acquisition_time = last_msg_->header.stamp;
+    //ros::Time acquisition_time = msg->points3D.header.stamp;
+    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
+    try {
+      ros::Time tm;
+      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+      ros::Duration diff = ros::Time::now() - tm;
+      if ( diff > ros::Duration(1.0) ) { return; }
+      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+                                    acquisition_time, timeout);
+      tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
+                                   acquisition_time, transform);
+      tf_fail[frame_id]=0;
+    }
+    catch (tf::TransformException& ex) {
+      tf_fail[frame_id]++;
+      if ( tf_fail[frame_id] < 5 ) {
+        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+      } else {
+        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+      }
+      return;
+    }
+    std::vector<geometry_msgs::Point> points2D;
+    BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
+      tf::Point pt = transform.getOrigin();
+      geometry_msgs::PointStamped pt_cam, pt_;
+      pt_cam.header.frame_id = cam_model_.tfFrame();
+      pt_cam.header.stamp = acquisition_time;
+      pt_cam.point.x = pt.x();
+      pt_cam.point.y = pt.y();
+      pt_cam.point.z = pt.z();
+      tf_listener_.transformPoint(frame_id, pt_cam, pt_);
+
+      cv::Point2d uv;
+      tf::Stamped<tf::Point> pin, pout;
+      pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
+      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+      uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+      geometry_msgs::Point point2D;
+      point2D.x = uv.x;
+      point2D.y = uv.y;
+      points2D.push_back(point2D);
+    }
+    cv::Point2d p0, p1;
+    std::vector<geometry_msgs::Point>::const_iterator it = points2D.begin();
+    std::vector<geometry_msgs::Point>::const_iterator end = points2D.end();
+    p0 = cv::Point2d(it->x, it->y); it++;
+    for ( ; it!= end; it++ ) {
+      p1 = cv::Point2d(it->x, it->y);
+      cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+      p0 = p1;
+      if(++col_it == colors.end()) col_it = colors.begin();
+    }
+  }
+
+  void ImageView2::drawLineList3D(const image_view2::ImageMarker2::ConstPtr& marker,
+                                  std::vector<CvScalar>& colors,
+                                  std::vector<CvScalar>::iterator& col_it)
+  {
+    static std::map<std::string, int> tf_fail;
+    std::string frame_id = marker->points3D.header.frame_id;
+    tf::StampedTransform transform;
+    ros::Time acquisition_time = last_msg_->header.stamp;
+    //ros::Time acquisition_time = msg->points3D.header.stamp;
+    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
+    try {
+      ros::Time tm;
+      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+      ros::Duration diff = ros::Time::now() - tm;
+      if ( diff > ros::Duration(1.0) ) { return; }
+      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+                                    acquisition_time, timeout);
+      tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
+                                   acquisition_time, transform);
+      tf_fail[frame_id]=0;
+    }
+    catch (tf::TransformException& ex) {
+      tf_fail[frame_id]++;
+      if ( tf_fail[frame_id] < 5 ) {
+        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+      } else {
+        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+      }
+      return;
+    }
+    std::vector<geometry_msgs::Point> points2D;
+    BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
+      tf::Point pt = transform.getOrigin();
+      geometry_msgs::PointStamped pt_cam, pt_;
+      pt_cam.header.frame_id = cam_model_.tfFrame();
+      pt_cam.header.stamp = acquisition_time;
+      pt_cam.point.x = pt.x();
+      pt_cam.point.y = pt.y();
+      pt_cam.point.z = pt.z();
+      tf_listener_.transformPoint(frame_id, pt_cam, pt_);
+
+      cv::Point2d uv;
+      tf::Stamped<tf::Point> pin, pout;
+      pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
+      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+      uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+      geometry_msgs::Point point2D;
+      point2D.x = uv.x;
+      point2D.y = uv.y;
+      points2D.push_back(point2D);
+    }
+    cv::Point2d p0, p1;
+    std::vector<geometry_msgs::Point>::const_iterator it = points2D.begin();
+    std::vector<geometry_msgs::Point>::const_iterator end = points2D.end();
+    for ( ; it!= end; ) {
+      p0 = cv::Point2d(it->x, it->y); it++;
+      if ( it != end ) p1 = cv::Point2d(it->x, it->y);
+      cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+      it++;
+      if(++col_it == colors.end()) col_it = colors.begin();
+    }
+  }
+
+  void ImageView2::drawPolygon3D(const image_view2::ImageMarker2::ConstPtr& marker,
+                                 std::vector<CvScalar>& colors,
+                                 std::vector<CvScalar>::iterator& col_it)
+  {
+    static std::map<std::string, int> tf_fail;
+    std::string frame_id = marker->points3D.header.frame_id;
+    tf::StampedTransform transform;
+    ros::Time acquisition_time = last_msg_->header.stamp;
+    //ros::Time acquisition_time = msg->points3D.header.stamp;
+    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
+    try {
+      ros::Time tm;
+      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+      // ros::Duration diff = ros::Time::now() - tm;
+      // if ( diff > ros::Duration(1.0) ) { break; }
+      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+                                    acquisition_time, timeout);
+      tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
+                                   acquisition_time, transform);
+      tf_fail[frame_id]=0;
+    }
+    catch (tf::TransformException& ex) {
+      tf_fail[frame_id]++;
+      if ( tf_fail[frame_id] < 5 ) {
+        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+      } else {
+        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+      }
+      return;
+    }
+    std::vector<geometry_msgs::Point> points2D;
+    BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
+      tf::Point pt = transform.getOrigin();
+      geometry_msgs::PointStamped pt_cam, pt_;
+      pt_cam.header.frame_id = cam_model_.tfFrame();
+      pt_cam.header.stamp = acquisition_time;
+      pt_cam.point.x = pt.x();
+      pt_cam.point.y = pt.y();
+      pt_cam.point.z = pt.z();
+      tf_listener_.transformPoint(frame_id, pt_cam, pt_);
+
+      cv::Point2d uv;
+      tf::Stamped<tf::Point> pin, pout;
+      pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
+      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+      uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+      geometry_msgs::Point point2D;
+      point2D.x = uv.x;
+      point2D.y = uv.y;
+      points2D.push_back(point2D);
+    }
+    cv::Point2d p0, p1;
+    std::vector<geometry_msgs::Point>::const_iterator it = points2D.begin();
+    std::vector<geometry_msgs::Point>::const_iterator end = points2D.end();
+    std::vector<cv::Point> points;
+
+    if (marker->filled) {
+      points.push_back(cv::Point(it->x, it->y));
+    }
+    p0 = cv::Point2d(it->x, it->y); it++;
+    for ( ; it!= end; it++ ) {
+      p1 = cv::Point2d(it->x, it->y);
+      if (marker->filled) {
+        points.push_back(cv::Point(it->x, it->y));
+      }
+      cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+      p0 = p1;
+      if(++col_it == colors.end()) col_it = colors.begin();
+    }
+    it = points2D.begin();
+    p1 = cv::Point2d(it->x, it->y);
+    cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+    if (marker->filled) {
+      cv::fillConvexPoly(draw_, points.data(), points.size(), MsgToRGB(marker->fill_color));
+    }
+  }
+
+  void ImageView2::drawPoints3D(const image_view2::ImageMarker2::ConstPtr& marker,
+                                std::vector<CvScalar>& colors,
+                                std::vector<CvScalar>::iterator& col_it)
+  {
+    static std::map<std::string, int> tf_fail;
+    std::string frame_id = marker->points3D.header.frame_id;
+    tf::StampedTransform transform;
+    ros::Time acquisition_time = last_msg_->header.stamp;
+    //ros::Time acquisition_time = msg->points3D.header.stamp;
+    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
+    try {
+      ros::Time tm;
+      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+      ros::Duration diff = ros::Time::now() - tm;
+      if ( diff > ros::Duration(1.0) ) { return; }
+      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+                                    acquisition_time, timeout);
+      tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
+                                   acquisition_time, transform);
+      tf_fail[frame_id]=0;
+    }
+    catch (tf::TransformException& ex) {
+      tf_fail[frame_id]++;
+      if ( tf_fail[frame_id] < 5 ) {
+        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+      } else {
+        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+      }
+      return;
+    }
+    BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
+      tf::Point pt = transform.getOrigin();
+      geometry_msgs::PointStamped pt_cam, pt_;
+      pt_cam.header.frame_id = cam_model_.tfFrame();
+      pt_cam.header.stamp = acquisition_time;
+      pt_cam.point.x = pt.x();
+      pt_cam.point.y = pt.y();
+      pt_cam.point.z = pt.z();
+      tf_listener_.transformPoint(frame_id, pt_cam, pt_);
+
+      cv::Point2d uv;
+      tf::Stamped<tf::Point> pin, pout;
+      pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
+      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+      uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+      cv::circle(draw_, uv, (marker->scale == 0 ? 3 : marker->scale) , *col_it, -1);
+    }
+  }
+
+  void ImageView2::drawText3D(const image_view2::ImageMarker2::ConstPtr& marker,
+                              std::vector<CvScalar>& colors,
+                              std::vector<CvScalar>::iterator& col_it)
+  {
+    static std::map<std::string, int> tf_fail;
+    std::string frame_id = marker->position3D.header.frame_id;
+    tf::StampedTransform transform;
+    ros::Time acquisition_time = last_msg_->header.stamp;
+    //ros::Time acquisition_time = msg->position3D.header.stamp;
+    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
+    try {
+      ros::Time tm;
+      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+      ros::Duration diff = ros::Time::now() - tm;
+      if ( diff > ros::Duration(1.0) ) { return; }
+      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+                                    acquisition_time, timeout);
+      tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
+                                   acquisition_time, transform);
+      tf_fail[frame_id]=0;
+    }
+    catch (tf::TransformException& ex) {
+      tf_fail[frame_id]++;
+      if ( tf_fail[frame_id] < 5 ) {
+        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+      } else {
+        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+      }
+      return;
+    }
+    tf::Point pt = transform.getOrigin();
+    geometry_msgs::PointStamped pt_cam, pt_;
+    pt_cam.header.frame_id = cam_model_.tfFrame();
+    pt_cam.header.stamp = acquisition_time;
+    pt_cam.point.x = pt.x();
+    pt_cam.point.y = pt.y();
+    pt_cam.point.z = pt.z();
+    tf_listener_.transformPoint(frame_id, pt_cam, pt_);
+
+    cv::Point2d uv;
+    tf::Stamped<tf::Point> pin, pout;
+    pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + marker->position3D.point.x, pt_.point.y + marker->position3D.point.y, pt_.point.z + marker->position3D.point.z), acquisition_time, frame_id);
+    tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
+    uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+    cv::Size text_size;
+    int baseline;
+    float scale = marker->scale;
+    if ( scale == 0 ) scale = 1.0;
+    text_size = cv::getTextSize(marker->text.c_str(), font_,
+                                scale, scale, &baseline);
+    cv::Point origin = cv::Point(uv.x - text_size.width/2,
+                                 uv.y - baseline-3);
+    cv::putText(draw_, marker->text.c_str(), origin, font_, scale, CV_RGB(0,255,0),3);
+  }
+
+  void ImageView2::drawCircle3D(const image_view2::ImageMarker2::ConstPtr& marker,
+                                std::vector<CvScalar>& colors,
+                                std::vector<CvScalar>::iterator& col_it)
+  {
+    static std::map<std::string, int> tf_fail;
+    std::string frame_id = marker->pose.header.frame_id;
+    geometry_msgs::PoseStamped pose;
+    ros::Time acquisition_time = last_msg_->header.stamp;
+    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
+    try {
+      ros::Time tm;
+      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
+      ros::Duration diff = ros::Time::now() - tm;
+      if ( diff > ros::Duration(1.0) ) { return; }
+      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
+                                    acquisition_time, timeout);
+      tf_listener_.transformPose(cam_model_.tfFrame(), acquisition_time, marker->pose, frame_id, pose);
+      tf_fail[frame_id]=0;
+    }
+    catch (tf::TransformException& ex) {
+      tf_fail[frame_id]++;
+      if ( tf_fail[frame_id] < 5 ) {
+        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
+      } else {
+        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
+      }
+      return;
     }
 
-    static V_ImageMarkerMessage local_queue;
+    tf::Quaternion q;
+    tf::quaternionMsgToTF(pose.pose.orientation, q);
+    tf::Matrix3x3 rot = tf::Matrix3x3(q);
+    double angle = (marker->arc == 0 ? 360.0 :marker->angle);
+    double scale = (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale);
+    int N = 100;
+    std::vector< std::vector<cv::Point2i> > ptss;
+    std::vector<cv::Point2i> pts;
+
+    for (int i=0; i<N; ++i) {
+      double th = angle * i / N * TFSIMD_RADS_PER_DEG;
+      tf::Vector3 v = rot * tf::Vector3(scale * tfCos(th), scale * tfSin(th),0);
+      cv::Point2d pt = cam_model_.project3dToPixel(cv::Point3d(pose.pose.position.x + v.getX(), pose.pose.position.y + v.getY(), pose.pose.position.z + v.getZ()));
+      pts.push_back(cv::Point2i((int)pt.x, (int)pt.y));
+    }
+    ptss.push_back(pts);
+
+    cv::polylines(draw_, ptss, (marker->arc == 0 ? true : false), MsgToRGB(marker->outline_color), (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
+
+    if (marker->filled) {
+      if(marker->arc != 0){
+        cv::Point2d pt = cam_model_.project3dToPixel(cv::Point3d(pose.pose.position.x, pose.pose.position.y, pose.pose.position.z));
+        pts.push_back(cv::Point2i((int)pt.x, (int)pt.y));
+        ptss.clear();
+        ptss.push_back(pts);
+      }
+      cv::fillPoly(draw_, ptss, MsgToRGB(marker->fill_color));
+    }
+  }
+
+  void ImageView2::resolveLocalMarkerQueue()
+  {
     {
       boost::mutex::scoped_lock lock(queue_mutex_);
 
       while ( ! marker_queue_.empty() ) {
         // remove marker by namespace and id
         V_ImageMarkerMessage::iterator new_msg = marker_queue_.begin();
-        V_ImageMarkerMessage::iterator message_it = local_queue.begin();
-        for ( ; message_it < local_queue.end(); ++message_it ) {
+        V_ImageMarkerMessage::iterator message_it = local_queue_.begin();
+        for ( ; message_it < local_queue_.end(); ++message_it ) {
           if((*new_msg)->ns == (*message_it)->ns && (*new_msg)->id == (*message_it)->id)
-            message_it = local_queue.erase(message_it);
+            message_it = local_queue_.erase(message_it);
         }
-        local_queue.push_back(*new_msg);
+        local_queue_.push_back(*new_msg);
         marker_queue_.erase(new_msg);
         // if action == REMOVE and id == -1, clear all marker_queue
         if ( (*new_msg)->action == image_view2::ImageMarker2::REMOVE &&
              (*new_msg)->id == -1 ) {
-          local_queue.clear();
+          local_queue_.clear();
         }
       }
     }
 
     // check lifetime and remove REMOVE-type marker msg
-    for(V_ImageMarkerMessage::iterator it = local_queue.begin(); it < local_queue.end(); it++) {
+    for(V_ImageMarkerMessage::iterator it = local_queue_.begin(); it < local_queue_.end(); it++) {
       if((*it)->action == image_view2::ImageMarker2::REMOVE ||
          ((*it)->lifetime.toSec() != 0.0 && (*it)->lifetime.toSec() < ros::Time::now().toSec())) {
-        it = local_queue.erase(it);
+        it = local_queue_.erase(it);
       }
     }
-
-    // Draw Section
-    if ( blurry_mode_ ) {
-      draw_ = cv::Mat(image_.size(), image_.type(), CV_RGB(0,0,0));
-    } else {
-      draw_ = image_;
-    }
-    if ( !local_queue.empty() )
+  }
+  
+  void ImageView2::drawMarkers()
+  {
+    resolveLocalMarkerQueue();
+    if ( !local_queue_.empty() )
     {
-      V_ImageMarkerMessage::iterator message_it = local_queue.begin();
-      V_ImageMarkerMessage::iterator message_end = local_queue.end();
-      ROS_DEBUG("markers = %ld", local_queue.size());
+      V_ImageMarkerMessage::iterator message_it = local_queue_.begin();
+      V_ImageMarkerMessage::iterator message_end = local_queue_.end();
+      ROS_DEBUG("markers = %ld", local_queue_.size());
       //processMessage;
       for ( ; message_it != message_end; ++message_it )
       {
@@ -231,610 +843,55 @@ namespace image_view2{
         // CIRCLE, LINE_STRIP, LINE_LIST, POLYGON, POINTS
         switch ( marker->type ) {
         case image_view2::ImageMarker2::CIRCLE: {
-          cv::Point2d uv = cv::Point2d(marker->position.x, marker->position.y);
-          if ( blurry_mode_ ) {
-            int s0 = (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width);
-            CvScalar co = MsgToRGB(marker->outline_color);
-            for (int s1 = s0*10; s1 >= s0; s1--) {
-              double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
-              cv::circle(draw_, uv,
-                         (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale),
-                         CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m),
-                         s1);
-            }
-          } else {
-            cv::circle(draw_, uv,
-                       (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale),
-                       MsgToRGB(marker->outline_color),
-                       (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
-            if (marker->filled) {
-              cv::circle(draw_, uv,
-                         (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale) - (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width) / 2.0,
-                         MsgToRGB(marker->fill_color),
-                         -1);
-            }
-          }
+          drawCircle(marker);
           break;
         }
         case image_view2::ImageMarker2::LINE_STRIP: {
-          cv::Point2d p0, p1;
-          if ( blurry_mode_ ) {
-            int s0 = (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width);
-            std::vector<CvScalar>::iterator col_it = colors.begin();
-            CvScalar co = (*col_it);
-            for (int s1 = s0*10; s1 >= s0; s1--) {
-              double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
-              std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
-              std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
-              p0 = cv::Point2d(it->x, it->y); it++;
-              for ( ; it!= end; it++ ) {
-                p1 = cv::Point2d(it->x, it->y);
-                cv::line(draw_, p0, p1,
-                         CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m),
-                         s1);
-                p0 = p1;
-                if(++col_it == colors.end()) col_it = colors.begin();
-              }
-            }
-          } else {
-            std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
-            std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
-            p0 = cv::Point2d(it->x, it->y); it++;
-            for ( ; it!= end; it++ ) {
-              p1 = cv::Point2d(it->x, it->y);
-              cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
-              p0 = p1;
-              if(++col_it == colors.end()) col_it = colors.begin();
-            }
-          }
+          drawLineStrip(marker, colors, col_it);
           break;
         }
         case image_view2::ImageMarker2::LINE_LIST: {
-          cv::Point2d p0, p1;
-          if ( blurry_mode_ ) {
-            int s0 = (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width);
-            std::vector<CvScalar>::iterator col_it = colors.begin();
-            CvScalar co = (*col_it);
-            for (int s1 = s0*10; s1 >= s0; s1--) {
-              double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
-              std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
-              std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
-              for ( ; it!= end; ) {
-                p0 = cv::Point2d(it->x, it->y); it++;
-                if ( it != end ) p1 = cv::Point2d(it->x, it->y);
-                cv::line(draw_, p0, p1, CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m), s1);
-                it++;
-                if(++col_it == colors.end()) col_it = colors.begin();
-              }
-            }
-          } else {
-            std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
-            std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
-            for ( ; it!= end; ) {
-              p0 = cv::Point2d(it->x, it->y); it++;
-              if ( it != end ) p1 = cv::Point2d(it->x, it->y);
-              cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
-              it++;
-              if(++col_it == colors.end()) col_it = colors.begin();
-            }
-          }
+          drawLineList(marker, colors, col_it);
           break;
         }
         case image_view2::ImageMarker2::POLYGON: {
-          cv::Point2d p0, p1;
-          if ( blurry_mode_ ) {
-            int s0 = (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width);
-            std::vector<CvScalar>::iterator col_it = colors.begin();
-            CvScalar co = (*col_it);
-            for (int s1 = s0*10; s1 >= s0; s1--) {
-              double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
-              std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
-              std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
-              p0 = cv::Point2d(it->x, it->y); it++;
-              for ( ; it!= end; it++ ) {
-                p1 = cv::Point2d(it->x, it->y);
-                cv::line(draw_, p0, p1, CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m), s1);
-                p0 = p1;
-                if(++col_it == colors.end()) col_it = colors.begin();
-              }
-              it = marker->points.begin();
-              p1 = cv::Point2d(it->x, it->y);
-              cv::line(draw_, p0, p1, CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m), s1);
-            }
-          } else {
-            std::vector<geometry_msgs::Point>::const_iterator it = marker->points.begin();
-            std::vector<geometry_msgs::Point>::const_iterator end = marker->points.end();
-            std::vector<cv::Point> points;
-
-            if (marker->filled) {
-              points.push_back(cv::Point(it->x, it->y));
-            }
-            p0 = cv::Point2d(it->x, it->y); it++;
-            for ( ; it!= end; it++ ) {
-              p1 = cv::Point2d(it->x, it->y);
-              if (marker->filled) {
-                points.push_back(cv::Point(it->x, it->y));
-              }
-              cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
-              p0 = p1;
-              if(++col_it == colors.end()) col_it = colors.begin();
-            }
-            it = marker->points.begin();
-            p1 = cv::Point2d(it->x, it->y);
-            cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
-            if (marker->filled) {
-              cv::fillConvexPoly(draw_, points.data(), points.size(), MsgToRGB(marker->fill_color));
-            }
-          }
+          drawPolygon(marker, colors, col_it);
           break;
         }
         case image_view2::ImageMarker2::POINTS: {
-          BOOST_FOREACH(geometry_msgs::Point p, marker->points) {
-            cv::Point2d uv = cv::Point2d(p.x, p.y);
-            if ( blurry_mode_ ) {
-              int s0 = (marker->scale == 0 ? 3 : marker->scale);
-              CvScalar co = (*col_it);
-              for (int s1 = s0*2; s1 >= s0; s1--) {
-                double m = pow((1.0-((double)(s1 - s0))/s0),2);
-                cv::circle(draw_, uv, s1,
-                           CV_RGB(co.val[2] * m,co.val[1] * m,co.val[0] * m),
-                           -1);
-              }
-            } else {
-              cv::circle(draw_, uv, (marker->scale == 0 ? 3 : marker->scale) , *col_it, -1);
-            }
-            if(++col_it == colors.end()) col_it = colors.begin();
-          }
+          drawPoints(marker, colors, col_it);
           break;
         }
         case image_view2::ImageMarker2::FRAMES: {
-          static std::map<std::string, int> tf_fail;
-          BOOST_FOREACH(std::string frame_id, marker->frames) {
-            tf::StampedTransform transform;
-            ros::Time acquisition_time = last_msg_->header.stamp;
-            ros::Duration timeout(tf_timeout_);
-            try {
-              ros::Time tm;
-              tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-              ros::Duration diff = ros::Time::now() - tm;
-              if ( diff > ros::Duration(1.0) ) { break; }
-
-              tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                            acquisition_time, timeout);
-              tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                           acquisition_time, transform);
-              tf_fail[frame_id]=0;
-            }
-            catch (tf::TransformException& ex) {
-              tf_fail[frame_id]++;
-              if ( tf_fail[frame_id] < 5 ) {
-                ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-              } else {
-                ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-              }
-              break;
-            }
-            // center point
-            tf::Point pt = transform.getOrigin();
-            cv::Point3d pt_cv(pt.x(), pt.y(), pt.z());
-            cv::Point2d uv;
-            uv = cam_model_.project3dToPixel(pt_cv);
-
-            static const int RADIUS = 3;
-            cv::circle(draw_, uv, RADIUS, DEFAULT_COLOR, -1);
-
-            // x, y, z
-            cv::Point2d uv0, uv1, uv2;
-            tf::Stamped<tf::Point> pin, pout;
-
-            // x
-            pin = tf::Stamped<tf::Point>(tf::Point(0.05, 0, 0), acquisition_time, frame_id);
-            tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-            uv0 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
-            // y
-            pin = tf::Stamped<tf::Point>(tf::Point(0, 0.05, 0), acquisition_time, frame_id);
-            tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-            uv1 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
-
-            // z
-            pin = tf::Stamped<tf::Point>(tf::Point(0, 0, 0.05), acquisition_time, frame_id);
-            tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-            uv2 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
-
-            // draw
-            if ( blurry_mode_ ) {
-              int s0 = 2;
-              CvScalar c0 = CV_RGB(255,0,0);
-              CvScalar c1 = CV_RGB(0,255,0);
-              CvScalar c2 = CV_RGB(0,0,255);
-              for (int s1 = s0*10; s1 >= s0; s1--) {
-                double m = pow((1.0-((double)(s1 - s0))/(s0*9)),2);
-                cv::line(draw_, uv, uv0,
-                         CV_RGB(c0.val[2] * m,c0.val[1] * m,c0.val[0] * m),
-                         s1);
-                cv::line(draw_, uv, uv1,
-                         CV_RGB(c1.val[2] * m,c1.val[1] * m,c1.val[0] * m),
-                         s1);
-                cv::line(draw_, uv, uv2,
-                         CV_RGB(c2.val[2] * m,c2.val[1] * m,c2.val[0] * m),
-                         s1);
-              }
-            } else {
-              cv::line(draw_, uv, uv0, CV_RGB(255,0,0), 2);
-              cv::line(draw_, uv, uv1, CV_RGB(0,255,0), 2);
-              cv::line(draw_, uv, uv2, CV_RGB(0,0,255), 2);
-            }
-
-            // index
-            cv::Size text_size;
-            int baseline;
-            text_size = cv::getTextSize(frame_id.c_str(), font_, 1.0, 1.0, &baseline);
-            cv::Point origin = cv::Point(uv.x - text_size.width / 2,
-                                         uv.y - RADIUS - baseline - 3);
-            cv::putText(draw_, frame_id.c_str(), origin, font_, 1.0, DEFAULT_COLOR, 1.5);
-          }
+          drawFrames(marker, colors, col_it);
           break;
         }
         case image_view2::ImageMarker2::TEXT: {
-          // draw text simply
-          cv::Size text_size;
-          int baseline;
-          float scale = marker->scale;
-          if ( scale == 0 ) scale = 1.0;
-          text_size = cv::getTextSize(marker->text.c_str(), font_,
-                                      scale, scale, &baseline);
-          cv::Point origin = cv::Point(marker->position.x - text_size.width/2,
-                                       marker->position.y - baseline-3);
-          cv::putText(draw_, marker->text.c_str(), origin, font_, scale, DEFAULT_COLOR);
+          drawText(marker, colors, col_it);
           break;
         }
-          // LINE_STRIP3D, LINE_LIST3D, POLYGON3D, POINTS3D, TEXT3D
         case image_view2::ImageMarker2::LINE_STRIP3D: {
-          static std::map<std::string, int> tf_fail;
-          std::string frame_id = marker->points3D.header.frame_id;
-          tf::StampedTransform transform;
-          ros::Time acquisition_time = last_msg_->header.stamp;
-          //ros::Time acquisition_time = msg->points3D.header.stamp;
-          ros::Duration timeout(tf_timeout_); // wait 0.5 sec
-          try {
-            ros::Time tm;
-            tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-            ros::Duration diff = ros::Time::now() - tm;
-            if ( diff > ros::Duration(1.0) ) { break; }
-            tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                          acquisition_time, timeout);
-            tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                         acquisition_time, transform);
-            tf_fail[frame_id]=0;
-          }
-          catch (tf::TransformException& ex) {
-            tf_fail[frame_id]++;
-            if ( tf_fail[frame_id] < 5 ) {
-              ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-            } else {
-              ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-            }
-            break;
-          }
-          std::vector<geometry_msgs::Point> points2D;
-          BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
-            tf::Point pt = transform.getOrigin();
-            geometry_msgs::PointStamped pt_cam, pt_;
-            pt_cam.header.frame_id = cam_model_.tfFrame();
-            pt_cam.header.stamp = acquisition_time;
-            pt_cam.point.x = pt.x();
-            pt_cam.point.y = pt.y();
-            pt_cam.point.z = pt.z();
-            tf_listener_.transformPoint(frame_id, pt_cam, pt_);
-
-            cv::Point2d uv;
-            tf::Stamped<tf::Point> pin, pout;
-            pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
-            tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-            uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
-            geometry_msgs::Point point2D;
-            point2D.x = uv.x;
-            point2D.y = uv.y;
-            points2D.push_back(point2D);
-          }
-          cv::Point2d p0, p1;
-          std::vector<geometry_msgs::Point>::const_iterator it = points2D.begin();
-          std::vector<geometry_msgs::Point>::const_iterator end = points2D.end();
-          p0 = cv::Point2d(it->x, it->y); it++;
-          for ( ; it!= end; it++ ) {
-            p1 = cv::Point2d(it->x, it->y);
-            cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
-            p0 = p1;
-            if(++col_it == colors.end()) col_it = colors.begin();
-          }
+          drawLineStrip3D(marker, colors, col_it);
           break;
         }
         case image_view2::ImageMarker2::LINE_LIST3D: {
-          static std::map<std::string, int> tf_fail;
-          std::string frame_id = marker->points3D.header.frame_id;
-          tf::StampedTransform transform;
-          ros::Time acquisition_time = last_msg_->header.stamp;
-          //ros::Time acquisition_time = msg->points3D.header.stamp;
-          ros::Duration timeout(tf_timeout_); // wait 0.5 sec
-          try {
-            ros::Time tm;
-            tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-            ros::Duration diff = ros::Time::now() - tm;
-            if ( diff > ros::Duration(1.0) ) { break; }
-            tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                          acquisition_time, timeout);
-            tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                         acquisition_time, transform);
-            tf_fail[frame_id]=0;
-          }
-          catch (tf::TransformException& ex) {
-            tf_fail[frame_id]++;
-            if ( tf_fail[frame_id] < 5 ) {
-              ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-            } else {
-              ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-            }
-            break;
-          }
-          std::vector<geometry_msgs::Point> points2D;
-          BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
-            tf::Point pt = transform.getOrigin();
-            geometry_msgs::PointStamped pt_cam, pt_;
-            pt_cam.header.frame_id = cam_model_.tfFrame();
-            pt_cam.header.stamp = acquisition_time;
-            pt_cam.point.x = pt.x();
-            pt_cam.point.y = pt.y();
-            pt_cam.point.z = pt.z();
-            tf_listener_.transformPoint(frame_id, pt_cam, pt_);
-
-            cv::Point2d uv;
-            tf::Stamped<tf::Point> pin, pout;
-            pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
-            tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-            uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
-            geometry_msgs::Point point2D;
-            point2D.x = uv.x;
-            point2D.y = uv.y;
-            points2D.push_back(point2D);
-          }
-          cv::Point2d p0, p1;
-          std::vector<geometry_msgs::Point>::const_iterator it = points2D.begin();
-          std::vector<geometry_msgs::Point>::const_iterator end = points2D.end();
-          for ( ; it!= end; ) {
-            p0 = cv::Point2d(it->x, it->y); it++;
-            if ( it != end ) p1 = cv::Point2d(it->x, it->y);
-            cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
-            it++;
-            if(++col_it == colors.end()) col_it = colors.begin();
-          }
+          drawLineList3D(marker, colors, col_it);
           break;
         }
         case image_view2::ImageMarker2::POLYGON3D: {
-          static std::map<std::string, int> tf_fail;
-          std::string frame_id = marker->points3D.header.frame_id;
-          tf::StampedTransform transform;
-          ros::Time acquisition_time = last_msg_->header.stamp;
-          //ros::Time acquisition_time = msg->points3D.header.stamp;
-          ros::Duration timeout(tf_timeout_); // wait 0.5 sec
-          try {
-            ros::Time tm;
-            tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-            // ros::Duration diff = ros::Time::now() - tm;
-            // if ( diff > ros::Duration(1.0) ) { break; }
-            tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                          acquisition_time, timeout);
-            tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                         acquisition_time, transform);
-            tf_fail[frame_id]=0;
-          }
-          catch (tf::TransformException& ex) {
-            tf_fail[frame_id]++;
-            if ( tf_fail[frame_id] < 5 ) {
-              ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-            } else {
-              ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-            }
-            break;
-          }
-          std::vector<geometry_msgs::Point> points2D;
-          BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
-            tf::Point pt = transform.getOrigin();
-            geometry_msgs::PointStamped pt_cam, pt_;
-            pt_cam.header.frame_id = cam_model_.tfFrame();
-            pt_cam.header.stamp = acquisition_time;
-            pt_cam.point.x = pt.x();
-            pt_cam.point.y = pt.y();
-            pt_cam.point.z = pt.z();
-            tf_listener_.transformPoint(frame_id, pt_cam, pt_);
-
-            cv::Point2d uv;
-            tf::Stamped<tf::Point> pin, pout;
-            pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
-            tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-            uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
-            geometry_msgs::Point point2D;
-            point2D.x = uv.x;
-            point2D.y = uv.y;
-            points2D.push_back(point2D);
-          }
-          cv::Point2d p0, p1;
-          std::vector<geometry_msgs::Point>::const_iterator it = points2D.begin();
-          std::vector<geometry_msgs::Point>::const_iterator end = points2D.end();
-          std::vector<cv::Point> points;
-
-          if (marker->filled) {
-            points.push_back(cv::Point(it->x, it->y));
-          }
-          p0 = cv::Point2d(it->x, it->y); it++;
-          for ( ; it!= end; it++ ) {
-            p1 = cv::Point2d(it->x, it->y);
-            if (marker->filled) {
-              points.push_back(cv::Point(it->x, it->y));
-            }
-            cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
-            p0 = p1;
-            if(++col_it == colors.end()) col_it = colors.begin();
-          }
-          it = points2D.begin();
-          p1 = cv::Point2d(it->x, it->y);
-          cv::line(draw_, p0, p1, *col_it, (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
-          if (marker->filled) {
-            cv::fillConvexPoly(draw_, points.data(), points.size(), MsgToRGB(marker->fill_color));
-          }
+          drawPolygon3D(marker, colors, col_it);
           break;
         }
         case image_view2::ImageMarker2::POINTS3D: {
-          static std::map<std::string, int> tf_fail;
-          std::string frame_id = marker->points3D.header.frame_id;
-          tf::StampedTransform transform;
-          ros::Time acquisition_time = last_msg_->header.stamp;
-          //ros::Time acquisition_time = msg->points3D.header.stamp;
-          ros::Duration timeout(tf_timeout_); // wait 0.5 sec
-          try {
-            ros::Time tm;
-            tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-            ros::Duration diff = ros::Time::now() - tm;
-            if ( diff > ros::Duration(1.0) ) { break; }
-            tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                          acquisition_time, timeout);
-            tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                         acquisition_time, transform);
-            tf_fail[frame_id]=0;
-          }
-          catch (tf::TransformException& ex) {
-            tf_fail[frame_id]++;
-            if ( tf_fail[frame_id] < 5 ) {
-              ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-            } else {
-              ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-            }
-            break;
-          }
-          BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
-            tf::Point pt = transform.getOrigin();
-            geometry_msgs::PointStamped pt_cam, pt_;
-            pt_cam.header.frame_id = cam_model_.tfFrame();
-            pt_cam.header.stamp = acquisition_time;
-            pt_cam.point.x = pt.x();
-            pt_cam.point.y = pt.y();
-            pt_cam.point.z = pt.z();
-            tf_listener_.transformPoint(frame_id, pt_cam, pt_);
-
-            cv::Point2d uv;
-            tf::Stamped<tf::Point> pin, pout;
-            pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
-            tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-            uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
-            cv::circle(draw_, uv, (marker->scale == 0 ? 3 : marker->scale) , *col_it, -1);
-          }
+          drawPoints3D(marker, colors, col_it);
           break;
         }
         case image_view2::ImageMarker2::TEXT3D: {
-          static std::map<std::string, int> tf_fail;
-          std::string frame_id = marker->position3D.header.frame_id;
-          tf::StampedTransform transform;
-          ros::Time acquisition_time = last_msg_->header.stamp;
-          //ros::Time acquisition_time = msg->position3D.header.stamp;
-          ros::Duration timeout(tf_timeout_); // wait 0.5 sec
-          try {
-            ros::Time tm;
-            tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-            ros::Duration diff = ros::Time::now() - tm;
-            if ( diff > ros::Duration(1.0) ) { break; }
-            tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                          acquisition_time, timeout);
-            tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                         acquisition_time, transform);
-            tf_fail[frame_id]=0;
-          }
-          catch (tf::TransformException& ex) {
-            tf_fail[frame_id]++;
-            if ( tf_fail[frame_id] < 5 ) {
-              ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-            } else {
-              ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-            }
-            break;
-          }
-          tf::Point pt = transform.getOrigin();
-          geometry_msgs::PointStamped pt_cam, pt_;
-          pt_cam.header.frame_id = cam_model_.tfFrame();
-          pt_cam.header.stamp = acquisition_time;
-          pt_cam.point.x = pt.x();
-          pt_cam.point.y = pt.y();
-          pt_cam.point.z = pt.z();
-          tf_listener_.transformPoint(frame_id, pt_cam, pt_);
-
-          cv::Point2d uv;
-          tf::Stamped<tf::Point> pin, pout;
-          pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + marker->position3D.point.x, pt_.point.y + marker->position3D.point.y, pt_.point.z + marker->position3D.point.z), acquisition_time, frame_id);
-          tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-          uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
-          cv::Size text_size;
-          int baseline;
-          float scale = marker->scale;
-          if ( scale == 0 ) scale = 1.0;
-          text_size = cv::getTextSize(marker->text.c_str(), font_,
-                                      scale, scale, &baseline);
-          cv::Point origin = cv::Point(uv.x - text_size.width/2,
-                                       uv.y - baseline-3);
-          cv::putText(draw_, marker->text.c_str(), origin, font_, scale, CV_RGB(0,255,0),3);
+          drawText3D(marker, colors, col_it);
           break;
         }
         case image_view2::ImageMarker2::CIRCLE3D: {
-          static std::map<std::string, int> tf_fail;
-          std::string frame_id = marker->pose.header.frame_id;
-          geometry_msgs::PoseStamped pose;
-          ros::Time acquisition_time = last_msg_->header.stamp;
-          ros::Duration timeout(tf_timeout_); // wait 0.5 sec
-          try {
-            ros::Time tm;
-            tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-            ros::Duration diff = ros::Time::now() - tm;
-            if ( diff > ros::Duration(1.0) ) { break; }
-            tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                          acquisition_time, timeout);
-            tf_listener_.transformPose(cam_model_.tfFrame(), acquisition_time, marker->pose, frame_id, pose);
-            tf_fail[frame_id]=0;
-          }
-          catch (tf::TransformException& ex) {
-            tf_fail[frame_id]++;
-            if ( tf_fail[frame_id] < 5 ) {
-              ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-            } else {
-              ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-            }
-            break;
-          }
-
-          tf::Quaternion q;
-          tf::quaternionMsgToTF(pose.pose.orientation, q);
-          tf::Matrix3x3 rot = tf::Matrix3x3(q);
-          double angle = (marker->arc == 0 ? 360.0 :marker->angle);
-          double scale = (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale);
-          int N = 100;
-          std::vector< std::vector<cv::Point2i> > ptss;
-          std::vector<cv::Point2i> pts;
-
-          for (int i=0; i<N; ++i) {
-            double th = angle * i / N * TFSIMD_RADS_PER_DEG;
-            tf::Vector3 v = rot * tf::Vector3(scale * tfCos(th), scale * tfSin(th),0);
-            cv::Point2d pt = cam_model_.project3dToPixel(cv::Point3d(pose.pose.position.x + v.getX(), pose.pose.position.y + v.getY(), pose.pose.position.z + v.getZ()));
-            pts.push_back(cv::Point2i((int)pt.x, (int)pt.y));
-          }
-          ptss.push_back(pts);
-
-          cv::polylines(draw_, ptss, (marker->arc == 0 ? true : false), MsgToRGB(marker->outline_color), (marker->width == 0 ? DEFAULT_LINE_WIDTH : marker->width));
-
-          if (marker->filled) {
-            if(marker->arc != 0){
-              cv::Point2d pt = cam_model_.project3dToPixel(cv::Point3d(pose.pose.position.x, pose.pose.position.y, pose.pose.position.z));
-              pts.push_back(cv::Point2i((int)pt.x, (int)pt.y));
-              ptss.clear();
-              ptss.push_back(pts);
-            }
-            cv::fillPoly(draw_, ptss, MsgToRGB(marker->fill_color));
-          }
+          drawCircle3D(marker, colors, col_it);
           break;
         }
         default: {
@@ -843,7 +900,11 @@ namespace image_view2{
         }
         }
       }
-    }
+    }    
+  }
+
+  void ImageView2::drawInteraction()
+  {
     if (mode_ == MODE_RECTANGLE) {
       cv::rectangle(draw_, cv::Point(window_selection_.x, window_selection_.y),
                     cv::Point(window_selection_.x + window_selection_.width,
@@ -861,14 +922,65 @@ namespace image_view2{
         }
       }
     }
+  }
+
+  void ImageView2::drawInfo(ros::Time& before_rendering)
+  {
+    static ros::Time last_time;
+    static std::string info_str_1, info_str_2;
+    // update info_str_1, info_str_2 if possible
+    if ( show_info_ && times_.size() > 0 && ( before_rendering.toSec() - last_time.toSec() > 2 ) ) {
+      int n = times_.size();
+      double mean = 0, rate = 1.0, std_dev = 0.0, max_delta, min_delta;
+
+      std::for_each( times_.begin(), times_.end(), (mean += boost::lambda::_1) );
+      mean /= n;
+      rate /= mean;
+
+      std::for_each( times_.begin(), times_.end(), (std_dev += (boost::lambda::_1 - mean)*(boost::lambda::_1 - mean) ) );
+      std_dev = sqrt(std_dev/n);
+      min_delta = *std::min_element(times_.begin(), times_.end());
+      max_delta = *std::max_element(times_.begin(), times_.end());
+
+      std::stringstream f1, f2;
+      f1.precision(3); f1 << std::fixed;
+      f2.precision(3); f2 << std::fixed;
+      f1 << "" << image_sub_.getTopic() << " : rate:" << rate;
+      f2 << "min:" << min_delta << "s max: " << max_delta << "s std_dev: " << std_dev << "s n: " << n;
+      info_str_1 = f1.str();
+      info_str_2 = f2.str();
+      ROS_INFO_STREAM(info_str_1 + " " + info_str_2);
+      times_.clear();
+      last_time = before_rendering;
+    }
+    if (!info_str_1.empty() && !info_str_2.empty()) {
+      cv::putText(image_, info_str_1.c_str(), cv::Point(10,image_.rows-34), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar::all(255), 2);
+      cv::putText(image_, info_str_2.c_str(), cv::Point(10,image_.rows-10), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar::all(255), 2);
+    }
+  }
+  
+  void ImageView2::redraw()
+  {
+    if (original_image_.empty()) {
+      ROS_WARN("no image is available yet");
+      return;
+    }
+    ros::Time before_rendering = ros::Time::now();
+    original_image_.copyTo(image_);
+    // Draw Section
+    if ( blurry_mode_ ) {
+      draw_ = cv::Mat(image_.size(), image_.type(), CV_RGB(0,0,0));
+    } else {
+      draw_ = image_;
+    }
+    drawMarkers();
+    drawInteraction();
 
     if ( blurry_mode_ ) cv::addWeighted(image_, 0.9, draw_, 1.0, 0.0, image_);
     if ( use_window ) {
       if (show_info_) {
-        cv::putText(image_, info_str_1.c_str(), cv::Point(10,image_.rows-34), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar::all(255), 2);
-        cv::putText(image_, info_str_2.c_str(), cv::Point(10,image_.rows-10), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar::all(255), 2);
+        drawInfo(before_rendering);
       }
-
       cv::imshow(window_name_.c_str(), image_);
     }
     cv_bridge::CvImage out_msg;
@@ -907,10 +1019,12 @@ namespace image_view2{
         return;
       }
     }
-    boost::lock_guard<boost::mutex> guard(image_mutex_);
-    // Hang on to message pointer for sake of mouseCb
-    last_msg_ = msg;
-    redraw();
+    {
+      boost::mutex::scoped_lock lock(image_mutex_);
+      // Hang on to message pointer for sake of mouseCb
+      last_msg_ = msg;
+      redraw();
+    }
   }
 
   void ImageView2::drawImage() {
@@ -1024,7 +1138,8 @@ namespace image_view2{
       left_buttondown_time.fromSec(0);
       break;
     case CV_EVENT_RBUTTONDOWN:
-      boost::lock_guard<boost::mutex> guard(iv->image_mutex_);
+    {
+      boost::mutex::scoped_lock lock(iv->image_mutex_);
       if (!iv->image_.empty()) {
         std::string filename = (iv->filename_format_ % iv->count_).str();
         cv::imwrite(filename.c_str(), iv->image_);
@@ -1034,6 +1149,7 @@ namespace image_view2{
         ROS_WARN("Couldn't save image, no data!");
       }
       break;
+    }
     }
     iv->drawImage();
     return;
