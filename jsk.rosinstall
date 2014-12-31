@@ -115,6 +115,11 @@
    uri: https://github.com/RethinkRobotics/baxter_examples.git
    local-name: RethinkRobotics/baxter_examples
 
+# moveit
+- git:
+    uri: https://github.com/ros-planning/moveit_robots.git
+    local-name: ros-planning/moveit_robots
+
 # rviz stuff
 - git:
     local-name: view_controller_msgs
