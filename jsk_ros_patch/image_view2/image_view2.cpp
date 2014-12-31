@@ -85,12 +85,12 @@ namespace image_view2{
     filename_format_.parse(format_string);
 
     if ( use_window ) {
-      cvNamedWindow(window_name_.c_str(), autosize ? CV_WINDOW_AUTOSIZE : 0);
-      cvSetMouseCallback(window_name_.c_str(), &ImageView2::mouseCb, this);
+      cv::namedWindow(window_name_.c_str(), autosize ? CV_WINDOW_AUTOSIZE : 0);
+      cv::setMouseCallback(window_name_.c_str(), &ImageView2::mouseCb, this);
       font_ = cv::FONT_HERSHEY_DUPLEX;
       window_selection_.x = window_selection_.y =
         window_selection_.height = window_selection_.width = 0;
-      cvStartWindowThread();
+      //cvStartWindowThread();
     }
 
     image_sub_ = it.subscribe(camera, 1, &ImageView2::imageCb, this, transport);
@@ -103,7 +103,7 @@ namespace image_view2{
   ImageView2::~ImageView2()
   {
     if ( use_window ) {
-      cvDestroyWindow(window_name_.c_str());
+      cv::destroyWindow(window_name_.c_str());
     }
   }
 
@@ -1103,7 +1103,12 @@ int main(int argc, char **argv)
   }
 
   image_view2::ImageView2 view(n);
-  ros::spin();
+  ros::Rate r(30);
+  while (ros::ok()) {
+    ros::spinOnce();
+    cv::waitKey(1);
+    r.sleep();
+  }
 
   return 0;
 }
