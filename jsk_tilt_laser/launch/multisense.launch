@@ -2,9 +2,12 @@
   <arg name="ip_address" default="10.66.171.21" />
   <arg name="namespace"  default="multisense" />
   <arg name="mtu"        default="7200" />
-
-  <param name="robot_description"     
-         textfile="$(find multisense_description)/urdf/multisenseSL.urdf"/>
+  <arg name="use_robot_description" default="true" />
+  
+  <group if="$(arg use_robot_description)">
+    <param name="robot_description"     
+           textfile="$(find multisense_description)/urdf/multisenseSL.urdf"/>
+  </group>
 
   <!-- Robot state publisher -->
   <node pkg="robot_state_publisher" type="state_publisher" name="$(arg namespace)_state_publisher">
@@ -15,8 +18,6 @@
 
   <!-- ROS Driver -->
    <node pkg="multisense_ros" ns="$(arg namespace)" type="ros_driver" name="multisense_driver" output="screen">
-     <param name="robot_description"     
-         textfile="$(find multisense_description)/urdf/multisenseSL.urdf"/>
      <param name="sensor_ip"   value="$(arg ip_address)" />
      <param name="sensor_mtu"  value="$(arg mtu)" />
      <param name="tf_prefix"   value="/$(arg namespace)" />
