@@ -84,6 +84,9 @@ namespace image_view2{
     else if (interaction_mode == "grabcut") {
       setMode(image_view2::ImageView2::MODE_SELECT_FORE_AND_BACK);
     }
+    else if (interaction_mode == "grabcut_rect") {
+      setMode(image_view2::ImageView2::MODE_SELECT_FORE_AND_BACK_RECT);
+    }
     
     resize_x_ = 1.0/xx;
     resize_y_ = 1.0/yy;
@@ -879,6 +882,15 @@ namespace image_view2{
         }
       }
     }
+    else if (mode_ == MODE_SELECT_FORE_AND_BACK_RECT) {
+      boost::mutex::scoped_lock lock(point_array_mutex_);
+      if (rect_fg_.width != 0 && rect_fg_.height != 0) {
+        cv::rectangle(draw_, rect_fg_, CV_RGB(255, 0, 0), 4);
+      }
+      if (rect_bg_.width != 0 && rect_bg_.height != 0) {
+        cv::rectangle(draw_, rect_bg_, CV_RGB(0, 255, 0), 4);
+      }
+    }
   }
 
   void ImageView2::drawInfo(ros::Time& before_rendering)
@@ -949,6 +961,7 @@ namespace image_view2{
   
   void ImageView2::imageCb(const sensor_msgs::ImageConstPtr& msg)
   {
+    ROS_DEBUG("imageCb");
     static int count = 0;
     if (count < skip_draw_rate_) {
       count++;
@@ -1002,6 +1015,34 @@ namespace image_view2{
     }
   }
 
+  void ImageView2::setRegionWindowPoint(int x, int y)
+  {
+    boost::mutex::scoped_lock lock(point_array_mutex_);
+    ROS_DEBUG("setRegionWindowPoint");
+    if (selecting_fg_) {
+      rect_fg_.x = x;
+      rect_fg_.y = y;
+    }
+    else {
+      rect_bg_.x = x;
+      rect_bg_.y = y;
+    }
+  }
+
+  void ImageView2::updateRegionWindowSize(int x, int y)
+  {
+    ROS_DEBUG("updateRegionWindowPoint");
+    boost::mutex::scoped_lock lock(point_array_mutex_);
+    if (selecting_fg_) {
+      rect_fg_.width = x - rect_fg_.x;
+      rect_fg_.height = y - rect_fg_.y;
+    }
+    else {
+      rect_bg_.width = x - rect_bg_.x;
+      rect_bg_.height = y - rect_bg_.y;
+    }
+  }
+  
   void ImageView2::addRegionPoint(int x, int y)
   {
     cv::Point2d p;
@@ -1085,20 +1126,26 @@ namespace image_view2{
   
   void ImageView2::publishForegroundBackgroundMask()
   {
-    boost::mutex::scoped_lock lock(image_mutex_);
     boost::mutex::scoped_lock lock2(point_array_mutex_);
     cv::Mat foreground_mask
       = cv::Mat::zeros(last_msg_->height, last_msg_->width, CV_8UC1);
     cv::Mat background_mask
       = cv::Mat::zeros(last_msg_->height, last_msg_->width, CV_8UC1);
-    pointArrayToMask(point_fg_array_, foreground_mask);
-    pointArrayToMask(point_bg_array_, background_mask);
+    if (getMode() == MODE_SELECT_FORE_AND_BACK) {
+      pointArrayToMask(point_fg_array_, foreground_mask);
+      pointArrayToMask(point_bg_array_, background_mask);
+    }
+    else if (getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
+      cv::rectangle(foreground_mask, rect_fg_, cv::Scalar(255), CV_FILLED);
+      cv::rectangle(background_mask, rect_bg_, cv::Scalar(255), CV_FILLED);
+    }
     publishMonoImage(foreground_mask_pub_, foreground_mask, last_msg_->header);
     publishMonoImage(background_mask_pub_, background_mask, last_msg_->header);
   }
   
   void ImageView2::mouseCb(int event, int x, int y, int flags, void* param)
   {
+    ROS_DEBUG("mouseCB");
     ImageView2 *iv = (ImageView2*)param;
     static ros::Time left_buttondown_time(0);
     switch (event){
@@ -1115,6 +1162,9 @@ namespace image_view2{
         else if (iv->getMode() == MODE_SELECT_FORE_AND_BACK) {
           iv->addRegionPoint(x, y);
         }
+        else if (iv->getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
+          iv->updateRegionWindowSize(x, y);
+        }
       }
       {
         // publish the points
@@ -1126,17 +1176,23 @@ namespace image_view2{
         iv->move_point_pub_.publish(move_point);
       }
       break;
-    case CV_EVENT_LBUTTONDOWN:
+    case CV_EVENT_LBUTTONDOWN:  // click
       left_buttondown_time = ros::Time::now();
-      window_selection_.x = x;
-      window_selection_.y = y;
+      if (iv->getMode() == MODE_RECTANGLE) {
+        window_selection_.x = x;
+        window_selection_.y = y;
+      }
+      else if (iv->getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
+        iv->setRegionWindowPoint(x, y);
+      }
       break;
     case CV_EVENT_LBUTTONUP:
       if (iv->getMode() == MODE_SERIES) {
         iv->publishPointArray();
         iv->clearPointArray();
       }
-      else if (iv->getMode() == MODE_SELECT_FORE_AND_BACK) {
+      else if (iv->getMode() == MODE_SELECT_FORE_AND_BACK ||
+               iv->getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
         bool fgp = iv->toggleSelection();
         if (fgp) {
           iv->publishForegroundBackgroundMask();
@@ -1201,6 +1257,18 @@ namespace image_view2{
           boost::mutex::scoped_lock lock(point_array_mutex_);
           point_fg_array_.clear();
           point_bg_array_.clear();
+          selecting_fg_ = true;
+          break;
+        }
+        }
+      }
+      if (getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
+        // only grabcut works here
+        switch (key) {
+        case 27: {
+          boost::mutex::scoped_lock lock(point_array_mutex_);
+          rect_fg_.width = rect_fg_.height = 0;
+          rect_bg_.width = rect_bg_.height = 0;
           selecting_fg_ = true;
           break;
         }
