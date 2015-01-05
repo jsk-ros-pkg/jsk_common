@@ -81,7 +81,8 @@ namespace image_view2
     enum KEY_MODE {
       MODE_RECTANGLE,
       MODE_SERIES,
-      MODE_SELECT_FORE_AND_BACK
+      MODE_SELECT_FORE_AND_BACK,
+      MODE_SELECT_FORE_AND_BACK_RECT
     };
       
     ImageView2();
@@ -95,6 +96,8 @@ namespace image_view2
     void drawImage();
     void addPoint(int x, int y);
     void addRegionPoint(int x, int y);
+    void updateRegionWindowSize(int x, int y);
+    void setRegionWindowPoint(int x, int y);
     void clearPointArray();
     void publishPointArray();
     void setMode(KEY_MODE mode);
@@ -187,7 +190,8 @@ namespace image_view2
     bool selecting_fg_;
     std::vector<cv::Point2d> point_bg_array_;
     std::vector<cv::Point2d> point_fg_array_;
-    
+    cv::Rect rect_bg_;
+    cv::Rect rect_fg_;
     std::string window_name_;
     boost::format filename_format_;
     int font_;
