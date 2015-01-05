@@ -36,7 +36,7 @@
 #include "image_view2.h"
 
 namespace image_view2{
-  ImageView2::ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100)
+  ImageView2::ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), window_initialized_(false)
   {
   }
   
@@ -46,7 +46,6 @@ namespace image_view2{
     std::string camera = nh.resolveName("image");
     std::string camera_info = nh.resolveName("camera_info");
     ros::NodeHandle local_nh("~");
-    bool autosize;
     std::string format_string;
     std::string transport;
     image_transport::ImageTransport it(nh);
@@ -59,7 +58,7 @@ namespace image_view2{
     background_mask_pub_ = nh.advertise<sensor_msgs::Image>(camera + "/background", 100);
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
     local_nh.param("skip_draw_rate", skip_draw_rate_, 0);
-    local_nh.param("autosize", autosize, false);
+    local_nh.param("autosize", autosize_, false);
     local_nh.param("image_transport", transport, std::string("raw"));
     local_nh.param("blurry", blurry_mode_, false);
 
@@ -93,12 +92,9 @@ namespace image_view2{
     filename_format_.parse(format_string);
 
     if ( use_window ) {
-      cv::namedWindow(window_name_.c_str(), autosize ? CV_WINDOW_AUTOSIZE : 0);
-      cv::setMouseCallback(window_name_.c_str(), &ImageView2::mouseCb, this);
       font_ = cv::FONT_HERSHEY_DUPLEX;
       window_selection_.x = window_selection_.y =
         window_selection_.height = window_selection_.width = 0;
-      //cvStartWindowThread();
     }
 
     image_sub_ = it.subscribe(camera, 1, &ImageView2::imageCb, this, transport);
@@ -950,7 +946,6 @@ namespace image_view2{
       if (show_info_) {
         drawInfo(before_rendering);
       }
-      cv::imshow(window_name_.c_str(), image_);
     }
     cv_bridge::CvImage out_msg;
     out_msg.header   = last_msg_->header;
@@ -977,20 +972,19 @@ namespace image_view2{
     if(old_time.toSec() - ros::Time::now().toSec() > 0) {
       ROS_WARN("TF Cleared for old time");
     }
-
-    if (msg->encoding.find("bayer") != std::string::npos) {
-      original_image_ = cv::Mat(msg->height, msg->width, CV_8UC1,
-                                const_cast<uint8_t*>(&msg->data[0]), msg->step);
-    } else {
-      try {
-        original_image_ = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
-      } catch (cv_bridge::Exception& e) {
-        ROS_ERROR("Unable to convert %s image to bgr8", msg->encoding.c_str());
-        return;
-      }
-    }
     {
       boost::mutex::scoped_lock lock(image_mutex_);
+      if (msg->encoding.find("bayer") != std::string::npos) {
+        original_image_ = cv::Mat(msg->height, msg->width, CV_8UC1,
+                                  const_cast<uint8_t*>(&msg->data[0]), msg->step);
+      } else {
+        try {
+          original_image_ = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
+        } catch (cv_bridge::Exception& e) {
+          ROS_ERROR("Unable to convert %s image to bgr8", msg->encoding.c_str());
+          return;
+        }
+      }
       // Hang on to message pointer for sake of mouseCb
       last_msg_ = msg;
       redraw();
@@ -1000,7 +994,6 @@ namespace image_view2{
   void ImageView2::drawImage() {
     if (image_.rows > 0 && image_.cols > 0) {
       redraw();
-      cv::imshow(window_name_.c_str(), image_);
     }
   }
 
@@ -1276,6 +1269,18 @@ namespace image_view2{
       }
     }
   }
+
+  void ImageView2::showImage()
+  {
+    if (use_window) {
+      if (!window_initialized_) {
+        cv::setMouseCallback(window_name_.c_str(), &ImageView2::mouseCb, this);
+        cv::namedWindow(window_name_.c_str(), autosize_ ? CV_WINDOW_AUTOSIZE : 0);
+        window_initialized_ = false;
+      }
+      cv::imshow(window_name_.c_str(), image_);
+    }
+  }
   
   CvRect ImageView2::window_selection_;
   double ImageView2::resize_x_, ImageView2::resize_y_;
@@ -1299,7 +1304,7 @@ int main(int argc, char **argv)
   while (ros::ok()) {
     int key = cv::waitKey(1000 / 30);
     view.pressKey(key);
+    view.showImage();
   }
-
   return 0;
 }

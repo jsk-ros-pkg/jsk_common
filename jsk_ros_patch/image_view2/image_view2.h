@@ -102,6 +102,7 @@ namespace image_view2
     void publishPointArray();
     void setMode(KEY_MODE mode);
     KEY_MODE getMode();
+    void showImage();
     static void mouseCb(int event, int x, int y, int flags, void* param);
     bool toggleSelection();
     void publishForegroundBackgroundMask();
@@ -209,6 +210,8 @@ namespace image_view2
     ros::Publisher foreground_mask_pub_;
     ros::Publisher background_mask_pub_;
     KEY_MODE mode_;
+    bool autosize_;
+    bool window_initialized_;
   };
 }
 
