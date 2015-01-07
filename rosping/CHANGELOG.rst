@@ -2,6 +2,11 @@
 Changelog for package rosping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [rosping] Do not test on indigo, it seems to be broken
+* Contributors: Ryohei Ueda
+
 1.0.57 (2014-12-23)
 -------------------
 

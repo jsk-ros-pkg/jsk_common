@@ -2,6 +2,16 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Indigo test seems to be broken,
+  so skip testing on indigo
+* [jsk_topic_tools] Do not implement updateDiagnostic
+  as pure virtual method
+* Reuse isMasterAlive function across scripts which
+  want to check master state
+* Contributors: Ryohei Ueda
+
 1.0.57 (2014-12-23)
 -------------------
 * Add function to compute heat color gradient

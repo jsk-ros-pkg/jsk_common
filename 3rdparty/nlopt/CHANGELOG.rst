@@ -2,6 +2,11 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [nlopt] Add LIBS='-stdc++' to avoid link error on saucy
+* Contributors: Ryohei Ueda
+
 1.0.57 (2014-12-23)
 -------------------
 

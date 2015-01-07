@@ -2,6 +2,28 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [image_view2] Call GUI functions from main thread
+* [image_view2] Add new interaction mode to image_view 2 to select
+  foreground and background by rectangular region
+* [image_view2] add mode to select foreground and background
+  for grabcut
+* [image_view2] Use opencv2 c++ function to handle window
+* [image_view2] add utility function to resolve tf
+* [image_view2] refactor to se smaller function
+* [image_view2] Use parameter to change mode to select rectangle or
+  freeform trajectory instad of "SHIFT KEY"
+* [image_view2] Use camel case for methods and functions
+* [image_view2] Separate header and cpp file for maintainance
+* [image_view2] fix variable name with _ suffix and untabify indents
+* [image_view2] Optimize image_view2 to decrease CPU load.
+  1) add ~skip_draw_rate to throttle redrawing.
+  2) use ros::spin if possible
+* Redraw image even though no new message is available
+* Add tab-width to image_view2.cpp
+* Contributors: Ryohei Ueda
+
 1.0.57 (2014-12-23)
 -------------------
 
@@ -230,4 +252,4 @@ Changelog for package image_view2
 * back to previous version, which is not using subscribeCamera, becouse of slow connection of pr2-network
 * rewrite using subscribeCamera
 * add image_view2/
-* Contributors: manabu, kazuto, Kei Okada, youhei, Ryohei Ueda, chen, mikita
+* Contributors: manabu, kazuto, Kei Okada, youhei, chen, Ryohei Ueda, mikita
