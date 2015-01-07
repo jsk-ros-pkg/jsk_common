@@ -16,17 +16,20 @@ args = parser.parse_args()
 print "connecting to ", (args.ip, args.port)
 tcpCliSock = socket(AF_INET, SOCK_STREAM)
 tcpCliSock.connect((args.ip, args.port))
-
+counter = 1
 while True:
-    data = "a" * args.size
+    packer = struct.Struct("!%ds" % args.size)
+    #packer = struct.Struct("!%ds" % size)
+    data = packer.pack(("%d" % (counter % 10)) * args.size)
     if not data:
         break
-    print "sending", sys.getsizeof(data), "bytes"
-    tcpCliSock.send(data)
+    print "sending", packer.size * 8, "bits"
+    tcpCliSock.sendall(data)
     
     if not data:
         break
     print data
+    counter = counter + 1
     time.sleep(1 / args.rate)
 
 tcpCliSock.close()
