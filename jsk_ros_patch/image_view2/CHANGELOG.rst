@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.58 (2015-01-07)
+-------------------
 * [image_view2] Call GUI functions from main thread
 * [image_view2] Add new interaction mode to image_view 2 to select
   foreground and background by rectangular region

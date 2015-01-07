@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.58 (2015-01-07)
+-------------------
 * Add more user replacing rules
 * Reuse isMasterAlive function across scripts which
   want to check master state

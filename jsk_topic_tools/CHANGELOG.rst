@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.58 (2015-01-07)
+-------------------
 * [jsk_topic_tools] Indigo test seems to be broken,
   so skip testing on indigo
 * [jsk_topic_tools] Do not implement updateDiagnostic

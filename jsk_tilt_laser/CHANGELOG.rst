@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.58 (2015-01-07)
+-------------------
 * [jsk_tilt_laser] Use jsk_pcl_ros/TiltLaserListener rather than
   jsk_tilt_laser's snapshotter.
 * [jsk_tilt_laser] Add use_robot_description argument to multsense.launch and removed robot_description private param in ros_driver, which is seemed to be unused in multisense_ros/src
