@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 generate_dynamic_reconfigure_options(
   cfg/RosClient.cfg
+  cfg/DRCEnvironment.cfg
 )
 
 #include_directories(${Boost_INCLUDE_DIRS})
