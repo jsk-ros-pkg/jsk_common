@@ -15,15 +15,6 @@ LANB_to_LANA = False
 
 class DRCEnvironment():
     def __init__(self):
-        # MM_REV = 12
-        # if MM_REV >= 12:
-        # # Read the current settings from the Mini Maxwell
-        #     try:
-        #         self.bnds = GetCurrentBands(mm2name)
-        #     except:
-        #         self.bnds = Bands()
-        # else: # MM_REV < 12
-        #     self.bnds = Bands()
         self.mm2name = rospy.get_param('~ip', '133.11.216.47')
         self.low_speed_name = "drc_low_speed"
         self.high_speed_name = "drc_high_speed"
@@ -50,14 +41,14 @@ class DRCEnvironment():
         rospy.spin()
     def updateBlackout(self, event):
         with self.lock:
-            now = rospy.Time.now()
-            if not self.blackoutp:
-                if (self.next_blackout - now).to_sec() < 0:
-                    self.blackout()
-            else:
-                if (self.next_whiteout - now).to_sec() < 0:
-                    self.whiteout()
-                    
+            if not self.disable_network_limitation:
+                now = rospy.Time.now()
+                if not self.blackoutp:
+                    if (self.next_blackout - now).to_sec() < 0:
+                        self.blackout()
+                else:
+                    if (self.next_whiteout - now).to_sec() < 0:
+                        self.whiteout()
     def reconfigure(self, config, level):
         with self.lock:
             self.disable_network_limitation = config["disable_network_limitation"]
@@ -88,20 +79,40 @@ class DRCEnvironment():
     def updateMM(self):
         self.bands.SetDelayAmount(self.LOW_SPEED_BAND_NUM, LANA_to_LANB, 0)
         self.bands.SetDelayAmount(self.LOW_SPEED_BAND_NUM, LANB_to_LANA, 0)
-        self.bands.SetRateLimit(self.LOW_SPEED_BAND_NUM, LANA_to_LANB,
-                                     self.low_speed_link_bandwidth)
-        self.bands.SetRateLimit(self.LOW_SPEED_BAND_NUM, LANB_to_LANA, 
-                                     self.low_speed_link_bandwidth)
+        if not self.disable_network_limitation:
+            self.bands.SetRateLimit(self.LOW_SPEED_BAND_NUM, LANA_to_LANB,
+                                    self.low_speed_link_bandwidth)
+            self.bands.SetRateLimit(self.LOW_SPEED_BAND_NUM, LANB_to_LANA, 
+                                    self.low_speed_link_bandwidth)
+        else:
+            self.bands.SetRateLimit(self.LOW_SPEED_BAND_NUM, LANA_to_LANB,
+                                    100 * 1000 * 1000)
+            self.bands.SetRateLimit(self.LOW_SPEED_BAND_NUM, LANB_to_LANA, 
+                                    100 * 1000 * 1000)
         self.bands.SetDelayReorder(self.LOW_SPEED_BAND_NUM, LANB_to_LANA, False)
         self.bands.SetDelayReorder(self.LOW_SPEED_BAND_NUM, LANA_to_LANB, False)
         self.bands.SetDelayAmount(self.HIGH_SPEED_BAND_NUM, LANA_to_LANB, 0)
         self.bands.SetDelayAmount(self.HIGH_SPEED_BAND_NUM, LANB_to_LANA, 0)
-        self.bands.SetRateLimit(self.HIGH_SPEED_BAND_NUM, LANA_to_LANB, 
-                                self.high_speed_link_bandwidth)
-        self.bands.SetRateLimit(self.HIGH_SPEED_BAND_NUM, LANB_to_LANA, 
-                                self.high_speed_link_bandwidth)
-        self.bands.SetDropAmount(self.HIGH_SPEED_BAND_NUM, LANB_to_LANA,
-                                 100)
+        if not self.disable_network_limitation:
+            self.bands.SetRateLimit(self.HIGH_SPEED_BAND_NUM, LANA_to_LANB, 
+                                    self.high_speed_link_bandwidth)
+            self.bands.SetRateLimit(self.HIGH_SPEED_BAND_NUM, LANB_to_LANA, 
+                                    self.high_speed_link_bandwidth)
+            self.bands.SetDropAmount(self.HIGH_SPEED_BAND_NUM, LANB_to_LANA,
+                                     100)
+            self.bands.SetDropAmount(5, LANB_to_LANA, 100)   #default: all drop
+            self.bands.SetDropAmount(5, LANA_to_LANB, 100)   #default: all drop
+        else:
+            self.bands.SetRateLimit(self.HIGH_SPEED_BAND_NUM, LANA_to_LANB, 
+                                    100 * 1000 * 1000)
+            self.bands.SetRateLimit(self.HIGH_SPEED_BAND_NUM, LANB_to_LANA, 
+                                    100 * 1000 * 1000)
+            self.bands.SetDropAmount(self.HIGH_SPEED_BAND_NUM, LANB_to_LANA,
+                                     0)
+            self.bands.SetDropAmount(self.HIGH_SPEED_BAND_NUM, LANA_to_LANB,
+                                     0)
+            self.bands.SetDropAmount(5, LANB_to_LANA, 0)
+            self.bands.SetDropAmount(5, LANA_to_LANB, 0)
         self.bands.SetDelayReorder(self.HIGH_SPEED_BAND_NUM, LANB_to_LANA, False)
         self.bands.SetDelayReorder(self.HIGH_SPEED_BAND_NUM, LANA_to_LANB, False)
         SetMM(self.mm2name, self.bands,

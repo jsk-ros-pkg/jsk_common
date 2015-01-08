@@ -1,0 +1,7 @@
+<launch>
+  <arg name="IP" default="133.11.216.47" />
+  <node pkg="mini_maxwell" type="drc_2015_environment.py" name="drc_2015_environment"
+        clear_params="true" output="screen">
+    <param name="ip" value="$(arg IP)" />
+  </node>
+</launch>
