@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from jsk_network_tools.msg import FC2OSC, OSC2FC
+from jsk_network_tools.msg import FC2OCS, OCS2FC
 from jsk_network_tools.silverhammer_util import *
 from threading import Lock, Thread
 from socket import *
@@ -29,11 +29,11 @@ class SilverHammerLowspeedGateway():
     def __init__(self):
         self.is_fc = rospy.get_param("~is_fc", True)
         if self.is_fc:
-            self.send_message = FC2OSC
-            self.receive_message = OSC2FC
+            self.send_message = FC2OCS
+            self.receive_message = OCS2FC
         else:
-            self.send_message = OSC2FC
-            self.receive_message = FC2OSC
+            self.send_message = OCS2FC
+            self.receive_message = FC2OCS
         self.lock = Lock()
         self.to_port = rospy.get_param("~to_port", 1024)
         self.to_ip = rospy.get_param("~to_ip", "127.0.0.1")
