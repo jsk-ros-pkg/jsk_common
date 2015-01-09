@@ -7,18 +7,18 @@
         to_port: 1024
         receive_port: 1025
       </rosparam>
-      <remap from="~input" to="fc2osc_original" />
+      <remap from="~input" to="fc2ocs_original" />
     </node>
     <node pkg="jsk_network_tools" type="silverhammer_lowspeed_gateway.py"
-          name="osc">
+          name="ocs">
       <rosparam>
         is_fc: false
         to_port: 1025
         receive_port: 1024
       </rosparam>
-      <remap from="~input" to="osc2fc_original" />
+      <remap from="~input" to="ocs2fc_original" />
     </node>
-    <node pkg="jsk_network_tools" type="fc2osc_publisher.py" name="fc2osc_original" />
-    <node pkg="jsk_network_tools" type="osc2fc_publisher.py" name="osc2fc_original" />
+    <node pkg="jsk_network_tools" type="fc2ocs_publisher.py" name="fc2ocs_original" />
+    <node pkg="jsk_network_tools" type="ocs2fc_publisher.py" name="ocs2fc_original" />
   </group>
 </launch>
