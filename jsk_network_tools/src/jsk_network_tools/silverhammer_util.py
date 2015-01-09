@@ -103,6 +103,25 @@ def unpackMessage(data, fmt, message_class):
             setattr(msg, slot, unpackValue(target_data[0], field_type))
         counter = counter + field_length
     return msg
+
+def publishersFromMessage(msg, prefix=""):
+    ret = []
+    for slot, slot_type in zip(msg.__slots__, msg._slot_types):
+        topic_name = prefix + "/" + slot.replace("__", "/")
+        try:
+            msg_class = roslib.message.get_message_class(slot_type)
+        except:
+            raise Exception("invalid topic type: %s"%slot_type)
+        ret.append(rospy.Publisher(topic_name, msg_class))
+    return ret
+
+def decomposeLargeMessage(msg, prefix=""):
+    ret = dict()
+    for slot, slot_type in zip(msg.__slots__, msg._slot_types):
+        topic_name = prefix + "/" + slot.replace("__", "/")
+        ret[topic_name] = getattr(msg, slot)
+    return ret
+        
     
 def subscribersFromMessage(msg):
     ret = []
@@ -117,15 +136,39 @@ def subscribersFromMessage(msg):
 
 #################################################w
 # Packet definition for Large Data
-# |FF(2bit)|NUM_PACKET(4byte)|ID(4byte)|data.... |
+# |SeqID(4byte)|ID(4byte)|NUM_PACKET(4byte)|data.... |
 #################################################w
 class LargeDataUDPPacket():
-    def __init__(self, flag, id, num, data):
-        self.flag = flag
+    def __init__(self, seq_id, id, num, data, packet_size):
         self.id = id
+        self.seq_id = seq_id
         self.num = num
-        self.data
+        self.data = data
+        self.packet_size = packet_size
     def pack(self):
+        return pack("!III%ds" % (len(self.data)),
+                    self.seq_id, self.id, self.num, self.data)
+    #def pack(self):
+    @classmethod
+    def headerSize(cls):
+        return 4 + 4 + 4
+    @classmethod
+    def fromData(cls, data, packet_size):
+        unpacked = unpack("!III%ds" % (len(data) - cls.headerSize()), data)
+        ret = cls(unpacked[0], unpacked[1], unpacked[2], unpacked[3], 
+                  packet_size)
+        #print "buffer length", len(unpacked[3])
+        return ret
         
-def separateBufferIntoPackets(buffer):
-    
+def separateBufferIntoPackets(seq_id, buffer, packet_size):
+    buffer_packet_size = packet_size - LargeDataUDPPacket.headerSize()
+    num_packet = len(buffer) / buffer_packet_size
+    if len(buffer) % buffer_packet_size != 0:
+        num_packet = num_packet + 1
+    packets = []
+    for i in range(num_packet):
+        packets.append(LargeDataUDPPacket(seq_id, i, num_packet, 
+                                          buffer[i*buffer_packet_size:(i+1)*buffer_packet_size],
+                                          packet_size))
+        #print "buffer length", len(buffer[i*num_packet:(i+1)*num_packet])
+    return packets
