@@ -9,7 +9,7 @@ UNPACK_CMD=tar xvzf
 include $(shell rospack find mk)/download_unpack_build.mk
 
 installed: $(SOURCE_DIR)/unpacked
-	cd $(SOURCE_DIR)/src && ./build_all
+	cd $(SOURCE_DIR)/src && ./build_all DOWNWARD_BITWIDTH=native
 	touch installed
 
 clean:
