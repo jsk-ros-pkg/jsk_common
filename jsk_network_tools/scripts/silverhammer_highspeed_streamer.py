@@ -8,15 +8,24 @@ from StringIO import StringIO
 from io import BytesIO
 from socket import *
 
+import roslib
+from roslib.message import get_message_class
+
 class SilverHammerStreamer:
     def __init__(self):
+        message_class_str = rospy.get_param("~message", 
+                                            "jsk_network_tools/FC2OCSLargeData")
+        try:
+            self.message_class = get_message_class(message_class_str)
+        except:
+            raise Exception("invalid topic type: %s"%message_class_str)
         self.lock = Lock()
-        self.send_port = rospy.get_param("~send_port", 16484)
-        self.send_ip = rospy.get_param("~send_ip", "localhost")
-        self.rate = rospy.get_param("~rate", 2)   #2Hz
+        self.send_port = rospy.get_param("~to_port", 16484)
+        self.send_ip = rospy.get_param("~to_ip", "localhost")
+        self.rate = rospy.get_param("~send_rate", 2)   #2Hz
         self.socket_client = socket(AF_INET, SOCK_DGRAM)
         self.packet_size = rospy.get_param("~packet_size", 1000)   #2Hz
-        subscriber_info = subscribersFromMessage(FC2OCSLargeData())
+        subscriber_info = subscribersFromMessage(self.message_class())
         self.messages = {}
         self.subscribe(subscriber_info)
         self.counter = 0
@@ -26,7 +35,7 @@ class SilverHammerStreamer:
     def sendTimerCallback(self, event):
         buffer = StringIO()
         with self.lock:
-            msg = FC2OCSLargeData()
+            msg = self.message_class()
             subscriber_info = subscribersFromMessage(msg)
             for topic, message_class in subscriber_info:
                 field_name = topic[1:].replace("/", "__")
