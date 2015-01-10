@@ -24,6 +24,8 @@ class SilverHammerReceiver:
         self.receive_port = rospy.get_param("~receive_port", 16484)
         self.receive_ip = rospy.get_param("~receive_ip", "localhost")
         self.topic_prefix = rospy.get_param("~topic_prefix", "/from_fc")
+        if not self.topic_prefix.startswith("/"):
+            self.topic_prefix = "/" + self.topic_prefix
         self.publishers = publishersFromMessage(self.message_class, self.topic_prefix)
         self.socket_server = socket(AF_INET, SOCK_DGRAM)
         self.socket_server.bind((self.receive_ip, self.receive_port))
@@ -36,7 +38,12 @@ class SilverHammerReceiver:
             self.packets.append(packet)
             if packet.num - 1 == packet.id:
                 # the end of packet
-                self.concatenatePackets()
+                try:
+                    self.concatenatePackets()
+                except Exception,e:
+                    rospy.logerr("failed to concatenate packets: %s", e.message)
+                finally:
+                    self.packets = []
             elif packet.seq_id != self.packets[-1].seq_id:
                 rospy.logerr("packet lossed!")
                 self.packets = [packet]   #reset packet
@@ -46,30 +53,43 @@ class SilverHammerReceiver:
             # all the packet has same seq_id
             if len([p for p in self.packets if p.seq_id == seq_id]) == len(self.packets):
                 # received in order
-                if [p.id for p in self.packets] == range(self.packets[0].num):
-                    b = StringIO()
-                    for p in self.packets:
-                        b.write(p.data)
-                    deserialized_data = []
-                    rospy.msg.deserialize_messages(b, deserialized_data,
-                                                   self.message_class)
-                    rospy.loginfo("received %d message" % len(deserialized_data))
-                    if len(deserialized_data) > 0:
-                        # publish data
-                        msg = deserialized_data[0]
-                        messages = decomposeLargeMessage(msg, self.topic_prefix)
-                        for pub in self.publishers:
-                            if pub.name in messages:
-                                pub.publish(messages[pub.name])
-                        #self.pub.publish(deserialized_data[0])
-                        
-                else:
-                    rospy.logerr("order is not correct")
+                # sort order
+                self.packets.sort(key=lambda p: p.id)
+                packet_data_length = len(self.packets[0].data)
+                packet_index = 0
+                b = StringIO()
+                if self.packets[0].num != len(self.packets):
+                    rospy.logwarn("%d packet is missed", self.packets[0].num - len(self.packets))
+                for i in range(self.packets[0].num):
+                    if self.packets[packet_index].id == i:
+                        packet = self.packets[packet_index]
+                        b.write(packet.data)
+                        packet_index = packet_index + 1
+                    else:
+                        # fill by dummy data
+                        b.write(chr(0) * packet_data_length)
+                deserialized_data = []
+                rospy.msg.deserialize_messages(b, deserialized_data,
+                                               self.message_class)
+                rospy.loginfo("received %d message" % len(deserialized_data))
+                if len(deserialized_data) > 0:
+                    # publish data
+                    msg = deserialized_data[0]
+                    messages = decomposeLargeMessage(msg, self.topic_prefix)
+                    for pub in self.publishers:
+                        if messages.has_key(pub.name):
+                            rospy.loginfo("publishing %s" % pub.name)
+                            pub.publish(messages[pub.name])
+                        else:
+                            rospy.logwarn("""cannot find '%s' in deserialized messages %s""" % (pub.name, messages.keys()))
+                # else:
+                #     rospy.logerr("order is not correct")
+                #     rospy.logerr("collected packets: %d, expected packets: %d", len(self.packets), self.packets[0].num)
             else:
                 rospy.logerr("missed some packets")
         else:
             rospy.logerr("failed to receive first packet")
-        self.packets = []
+        
 
 
 if __name__ == "__main__":

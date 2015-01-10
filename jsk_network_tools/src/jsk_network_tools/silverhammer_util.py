@@ -119,6 +119,7 @@ def decomposeLargeMessage(msg, prefix=""):
     ret = dict()
     for slot, slot_type in zip(msg.__slots__, msg._slot_types):
         topic_name = prefix + "/" + slot.replace("__", "/")
+        print topic_name
         ret[topic_name] = getattr(msg, slot)
     return ret
         

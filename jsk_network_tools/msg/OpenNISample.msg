@@ -1,0 +1,2 @@
+sensor_msgs/Image camera__rgb__image_rect_color
+sensor_msgs/PointCloud2 camera__depth_registered__points
