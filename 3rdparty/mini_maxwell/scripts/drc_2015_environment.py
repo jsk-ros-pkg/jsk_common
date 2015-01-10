@@ -8,7 +8,7 @@ from dynamic_reconfigure.server import Server as DynamicReconfigureServer
 from mini_maxwell.cfg import DRCEnvironmentConfig as ConfigType
 from threading import Lock
 from random import randint
-
+from std_msgs.msg import Bool, Time
 # constant variable for readability
 LANA_to_LANB = True
 LANB_to_LANA = False
@@ -23,6 +23,9 @@ class DRCEnvironment():
         self.LOW_SPEED_BAND_NUM = 1
         self.HIGH_SPEED_BAND_NUM = 2
 
+        self.pub_is_disabled = rospy.Publisher("~is_disabled", Bool)
+        self.pub_is_blackout = rospy.Publisher("~is_blackout", Bool)
+        self.pub_next_whiteout_time = rospy.Publisher("~next_whiteout_time", Time)
         # low speed -> 1
         # high speed -> 2
         self.all_filter_names = setfilters.GetAllFilterNames(self.mm2name)
@@ -37,8 +40,14 @@ class DRCEnvironment():
         self.next_blackout = rospy.Time.now()
         self.next_whiteout = rospy.Time.now()
         self.blackout()
+        self.timer = rospy.Timer(rospy.Duration(0.1), self.publishStatus)
         self.timer = rospy.Timer(rospy.Duration(1.0), self.updateBlackout)
         rospy.spin()
+    def publishStatus(self, event):
+        with self.lock:
+            self.pub_is_disabled.publish(Bool(data=self.disable_network_limitation))
+            self.pub_is_blackout.publish(Bool(data=self.blackoutp))
+            self.pub_next_whiteout_time.publish(Time(data=self.next_whiteout))
     def updateBlackout(self, event):
         with self.lock:
             if not self.disable_network_limitation:
@@ -61,7 +70,7 @@ class DRCEnvironment():
             self.updateMM()
             return config
     def blackout(self):
-        print "blackout"
+        rospy.loginfo("blackout")
         self.bands.SetDropAmount(self.HIGH_SPEED_BAND_NUM, LANA_to_LANB,
                                  100)
         SetMM(self.mm2name, self.bands,
@@ -69,7 +78,7 @@ class DRCEnvironment():
         self.blackoutp = True
         self.next_whiteout = rospy.Time.now() + rospy.Duration(randint(1, self.high_speed_link_blackout_duration))
     def whiteout(self):
-        print "whiteout"
+        rospy.loginfo("whiteout")
         self.bands.SetDropAmount(self.HIGH_SPEED_BAND_NUM, LANA_to_LANB,
                                  0)
         SetMM(self.mm2name, self.bands,
