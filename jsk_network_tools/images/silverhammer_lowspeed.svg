@@ -14,7 +14,10 @@
    id="svg3985"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="silverhammer_lowspeed.svg">
+   sodipodi:docname="silverhammer_lowspeed.svg"
+   inkscape:export-filename="/home/garaemon/ros/hydro/src/jsk-ros-pkg/jsk_common/jsk_network_tools/images/silverhammer_lowspeed.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs3987">
     <marker
@@ -258,7 +261,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
