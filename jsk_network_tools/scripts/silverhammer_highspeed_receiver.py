@@ -9,13 +9,22 @@ from io import BytesIO
 from socket import *
 from struct import pack
 
+import roslib
+from roslib.message import get_message_class
+
 class SilverHammerReceiver:
     def __init__(self):
+        message_class_str = rospy.get_param("~message", 
+                                            "jsk_network_tools/FC2OCSLargeData")
+        try:
+            self.message_class = get_message_class(message_class_str)
+        except:
+            raise Exception("invalid topic type: %s"%message_class_str)
         self.lock = Lock()
         self.receive_port = rospy.get_param("~receive_port", 16484)
         self.receive_ip = rospy.get_param("~receive_ip", "localhost")
         self.topic_prefix = rospy.get_param("~topic_prefix", "/from_fc")
-        self.publishers = publishersFromMessage(FC2OCSLargeData, self.topic_prefix)
+        self.publishers = publishersFromMessage(self.message_class, self.topic_prefix)
         self.socket_server = socket(AF_INET, SOCK_DGRAM)
         self.socket_server.bind((self.receive_ip, self.receive_port))
         self.packet_size = rospy.get_param("~packet_size", 1000)   #2Hz
@@ -43,7 +52,7 @@ class SilverHammerReceiver:
                         b.write(p.data)
                     deserialized_data = []
                     rospy.msg.deserialize_messages(b, deserialized_data,
-                                                   FC2OCSLargeData)
+                                                   self.message_class)
                     rospy.loginfo("received %d message" % len(deserialized_data))
                     if len(deserialized_data) > 0:
                         # publish data
