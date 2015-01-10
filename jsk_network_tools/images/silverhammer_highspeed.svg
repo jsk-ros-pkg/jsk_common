@@ -14,7 +14,7 @@
    id="svg8220"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="New document 47">
+   sodipodi:docname="silverhammer_highspeed.svg">
   <defs
      id="defs8222">
     <filter
@@ -193,7 +193,7 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1440"
+     inkscape:window-width="1600"
      inkscape:window-height="824"
      inkscape:window-x="0"
      inkscape:window-y="24"
@@ -284,14 +284,20 @@
        width="178.21811"
        height="64.207626"
        x="530.43201"
-       y="465.9249" />
+       y="465.9249"
+       inkscape:export-filename="/home/garaemon/ros/hydro/src/jsk-ros-pkg/jsk_common/jsk_network_tools/images/path9228.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        x="542.39526"
        y="508.88495"
        id="text4574-7"
-       sodipodi:linespacing="125%"><tspan
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/garaemon/ros/hydro/src/jsk-ros-pkg/jsk_common/jsk_network_tools/images/path9228.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan4576-5"
          x="542.39526"
@@ -603,21 +609,30 @@
        sodipodi:rx="30"
        sodipodi:ry="30"
        d="m 840.375,745.99182 a 30,30 0 1 1 -60,0 30,30 0 1 1 60,0 z"
-       transform="translate(-430.375,-243.62969)" />
+       transform="translate(-430.375,-243.62969)"
+       inkscape:export-filename="/home/garaemon/ros/hydro/src/jsk-ros-pkg/jsk_common/jsk_network_tools/images/path9228.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <rect
        style="fill:none;stroke:#8b7b8b;stroke-width:7.73590088;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect9212"
        width="320"
        height="320"
        x="340"
-       y="672.36212" />
+       y="672.36212"
+       inkscape:export-filename="/home/garaemon/ros/hydro/src/jsk-ros-pkg/jsk_common/jsk_network_tools/images/path9228.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        x="360"
        y="712.36212"
        id="text9214"
-       sodipodi:linespacing="125%"><tspan
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/garaemon/ros/hydro/src/jsk-ros-pkg/jsk_common/jsk_network_tools/images/path9228.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan9216"
          x="360"
@@ -647,6 +662,8 @@
        d="m 840.375,555.99182 60,140"
        id="path9228"
        inkscape:connector-curvature="0"
-       transform="translate(-460.375,-23.629688)" />
+       transform="translate(-460.375,-23.629688)"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
   </g>
 </svg>
