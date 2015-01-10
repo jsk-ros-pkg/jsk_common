@@ -100,8 +100,8 @@ class DRCEnvironment():
                                     self.high_speed_link_bandwidth)
             self.bands.SetDropAmount(self.HIGH_SPEED_BAND_NUM, LANB_to_LANA,
                                      100)
-            self.bands.SetDropAmount(5, LANB_to_LANA, 100)   #default: all drop
-            self.bands.SetDropAmount(5, LANA_to_LANB, 100)   #default: all drop
+            self.bands.SetDropAmount(5, LANB_to_LANA, 0)   #default: all drop
+            self.bands.SetDropAmount(5, LANA_to_LANB, 0)   #default: all drop
         else:
             self.bands.SetRateLimit(self.HIGH_SPEED_BAND_NUM, LANA_to_LANB, 
                                     100 * 1000 * 1000)
