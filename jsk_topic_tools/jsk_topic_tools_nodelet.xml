@@ -1,4 +1,9 @@
 <library path="lib/libjsk_topic_tools">
+  <class name="jsk_topic_tools/Snapshot" type="jsk_topic_tools::Snapshot"
+         base_class_type="nodelet::Nodelet">
+    <description>
+    </description>
+  </class>
   <class name="jsk_topic_tools/VitalCheckerNodelet" type="VitalCheckerNodelet"
          base_class_type="nodelet::Nodelet">
     <description>
