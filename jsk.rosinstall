@@ -57,6 +57,9 @@
     uri: https://github.com/tork-a/rwt_ros.git
     local-name : rwt_ros
 - git:
+    uri: https://github.com/tork-a/roswww.git
+    local-name : roswww
+- git:
     uri: https://github.com/tork-a/visualization_rwt.git
     local-name: visualization_rwt
 
