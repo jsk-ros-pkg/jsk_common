@@ -104,6 +104,9 @@ namespace image_view2
     KEY_MODE getMode();
     void showImage();
     static void mouseCb(int event, int x, int y, int flags, void* param);
+    static bool isValidMovement(const ros::Time& clicked_time,
+                                const cv::Point2f& start_point,
+                                const cv::Point2f& end_point);
     bool toggleSelection();
     void publishForegroundBackgroundMask();
     bool use_window;
