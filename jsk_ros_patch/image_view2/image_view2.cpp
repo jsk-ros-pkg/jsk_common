@@ -1135,6 +1135,14 @@ namespace image_view2{
     publishMonoImage(foreground_mask_pub_, foreground_mask, last_msg_->header);
     publishMonoImage(background_mask_pub_, background_mask, last_msg_->header);
   }
+
+  bool ImageView2::isValidMovement(const ros::Time& clicked_time,
+                                   const cv::Point2f& start_point,
+                                   const cv::Point2f& end_point)
+  {
+    double dist_px = cv::norm(cv::Mat(start_point), cv::Mat(end_point));
+    return clicked_time.toSec() > 0 && dist_px > 3.0;
+  }
   
   void ImageView2::mouseCb(int event, int x, int y, int flags, void* param)
   {
@@ -1142,9 +1150,10 @@ namespace image_view2{
     ImageView2 *iv = (ImageView2*)param;
     static ros::Time left_buttondown_time(0);
     switch (event){
-    case CV_EVENT_MOUSEMOVE:
-      if ( ( left_buttondown_time.toSec() > 0 &&
-             ros::Time::now().toSec() - left_buttondown_time.toSec() ) >= 1.0 ) {
+    case CV_EVENT_MOUSEMOVE: {
+      cv::Point2f Pt_1(window_selection_.x, window_selection_.y);
+      cv::Point2f Pt(x, y);
+      if (isValidMovement(left_buttondown_time, Pt_1, Pt)) {
         if (iv->getMode() == MODE_RECTANGLE) {
           window_selection_.width  = x - window_selection_.x;
           window_selection_.height = y - window_selection_.y;
@@ -1169,13 +1178,12 @@ namespace image_view2{
         iv->move_point_pub_.publish(move_point);
       }
       break;
+    }
     case CV_EVENT_LBUTTONDOWN:  // click
       left_buttondown_time = ros::Time::now();
-      if (iv->getMode() == MODE_RECTANGLE) {
-        window_selection_.x = x;
-        window_selection_.y = y;
-      }
-      else if (iv->getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
+      window_selection_.x = x;
+      window_selection_.y = y;
+      if (iv->getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
         iv->setRegionWindowPoint(x, y);
       }
       break;
@@ -1193,7 +1201,9 @@ namespace image_view2{
         }
       }
       else if (iv->getMode() == MODE_RECTANGLE) {
-        if ( ( ros::Time::now().toSec() - left_buttondown_time.toSec() ) < 0.5 ) {
+        cv::Point2f Pt_1(window_selection_.x, window_selection_.y);
+        cv::Point2f Pt(x, y);
+        if (!isValidMovement(left_buttondown_time, Pt_1, Pt)) {
           geometry_msgs::PointStamped screen_msg;
           screen_msg.point.x = window_selection_.x * resize_x_;
           screen_msg.point.y = window_selection_.y * resize_y_;
