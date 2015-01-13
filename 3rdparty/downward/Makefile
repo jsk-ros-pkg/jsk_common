@@ -1,8 +1,9 @@
 all: installed
 
 REV=f33d3b65601f
-TARBALL=${REV}.tar.gz
-TARBALL_URL=http://hg.fast-downward.org/archive/${TARBALL}
+TARBALL=Fast-Downward-${REV}.tar.gz
+# http://hg.fast-downward.org/archive/
+TARBALL_URL=https://github.com/jsk-ros-pkg/archives/raw/master/${TARBALL}
 SOURCE_DIR=build/downward
 INITIAL_DIR=build/Fast-Downward-${REV}
 UNPACK_CMD=tar xvzf
