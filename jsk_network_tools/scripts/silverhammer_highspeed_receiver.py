@@ -26,6 +26,8 @@ class SilverHammerReceiver:
         self.topic_prefix = rospy.get_param("~topic_prefix", "/from_fc")
         if not self.topic_prefix.startswith("/"):
             self.topic_prefix = "/" + self.topic_prefix
+        if self.topic_prefix == "/":
+            self.topic_prefix = ""
         self.publishers = publishersFromMessage(self.message_class, self.topic_prefix)
         self.socket_server = socket(AF_INET, SOCK_DGRAM)
         self.socket_server.bind((self.receive_ip, self.receive_port))
