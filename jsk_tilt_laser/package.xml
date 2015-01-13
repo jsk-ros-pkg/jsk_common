@@ -28,6 +28,8 @@
   <run_depend>dynamic_reconfigure</run_depend>
   <build_depend>sensor_msgs</build_depend>
   <run_depend>sensor_msgs</run_depend>
+  <build_depend>laser_filters</build_depend>
+  <run_depend>laser_filters</run_depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
   </export>
