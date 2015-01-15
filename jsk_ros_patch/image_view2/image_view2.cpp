@@ -1288,7 +1288,9 @@ namespace image_view2{
         cv::namedWindow(window_name_.c_str(), autosize_ ? CV_WINDOW_AUTOSIZE : 0);
         window_initialized_ = false;
       }
-      cv::imshow(window_name_.c_str(), image_);
+      if(!image_.empty()) {
+        cv::imshow(window_name_.c_str(), image_);
+      }
     }
   }
   
