@@ -6,12 +6,12 @@ from std_msgs.msg import Float32
 class Master():
     def __init__(self):
         rospy.init_node('heartbeat_master')
+        self.rate = rospy.get_param("~rate", 1.0)
         self.pub_request = rospy.Publisher("heartbeat/request", Heartbeat)
         self.pub_upload_time = rospy.Publisher("heartbeat/upload_time", Float32)
         self.pub_download_time = rospy.Publisher("heartbeat/download_time", Float32)
         self.pub_round_time = rospy.Publisher("heartbeat/round_time", Float32)
         rospy.Subscriber("heartbeat/response", HeartbeatResponse, self.callback)
-        self.rate = 1.0
 
         while not rospy.is_shutdown():
             msg = Heartbeat()
