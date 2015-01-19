@@ -197,6 +197,7 @@ namespace jsk_topic_tools
     color.r = r / 255.0;
     color.g = g / 255.0;
     color.b = b / 255.0;
+    return color;
   }
 
 }
