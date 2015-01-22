@@ -104,9 +104,8 @@ namespace image_view2
     KEY_MODE getMode();
     void showImage();
     static void mouseCb(int event, int x, int y, int flags, void* param);
-    static bool isValidMovement(const ros::Time& clicked_time,
-                                const cv::Point2f& start_point,
-                                const cv::Point2f& end_point);
+    bool isValidMovement(const cv::Point2f& start_point,
+                         const cv::Point2f& end_point);
     bool toggleSelection();
     void publishForegroundBackgroundMask();
     bool use_window;
@@ -165,7 +164,11 @@ namespace image_view2
       std::string frame_id, ros::Time& acquisition_time,
       std::map<std::string, int>& tf_fail,
       tf::StampedTransform &transform);
-    
+    void processMouseEvent(int event, int x, int y, int flags, void* param);
+    void processLeftButtonDown(int x, int y);
+    void processMove(int x, int y);
+    void processLeftButtonUp(int x, int y);
+    void publishMouseInteractionResult();
     V_ImageMarkerMessage local_queue_;
     image_transport::Subscriber image_sub_;
     ros::Subscriber info_sub_;
@@ -200,12 +203,16 @@ namespace image_view2
     boost::format filename_format_;
     int font_;
 
-    static double resize_x_, resize_y_;
-    static CvRect window_selection_;
+    double resize_x_, resize_y_;
+    CvRect window_selection_;
+    cv::Point2f button_up_pos_;
     int count_;
     bool blurry_mode_;
     bool show_info_;
     double tf_timeout_;
+    bool region_continuous_publish_;
+    bool continuous_ready_;
+    bool left_button_clicked_;
     ros::Publisher point_pub_;
     ros::Publisher point_array_pub_;
     ros::Publisher rectangle_pub_;

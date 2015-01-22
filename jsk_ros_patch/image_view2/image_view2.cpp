@@ -41,7 +41,8 @@ namespace image_view2{
   }
   
   ImageView2::ImageView2(ros::NodeHandle& nh)
-    : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), selecting_fg_(true)
+    : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), selecting_fg_(true),
+      left_button_clicked_(false), continuous_ready_(false), window_initialized_(false)
   {
     std::string camera = nh.resolveName("image");
     std::string camera_info = nh.resolveName("camera_info");
@@ -61,7 +62,7 @@ namespace image_view2{
     local_nh.param("autosize", autosize_, false);
     local_nh.param("image_transport", transport, std::string("raw"));
     local_nh.param("blurry", blurry_mode_, false);
-
+    local_nh.param("region_continuous_publish", region_continuous_publish_, false);
     local_nh.param("filename_format", format_string, std::string("frame%04i.jpg"));
     local_nh.param("use_window", use_window, true);
     local_nh.param("show_info", show_info_, false);
@@ -989,6 +990,9 @@ namespace image_view2{
       last_msg_ = msg;
       redraw();
     }
+    if (region_continuous_publish_ &&  continuous_ready_) {
+      publishMouseInteractionResult();
+    }
   }
 
   void ImageView2::drawImage() {
@@ -1136,107 +1140,144 @@ namespace image_view2{
     publishMonoImage(background_mask_pub_, background_mask, last_msg_->header);
   }
 
-  bool ImageView2::isValidMovement(const ros::Time& clicked_time,
-                                   const cv::Point2f& start_point,
+  void ImageView2::publishMouseInteractionResult()
+  {
+    if (getMode() == MODE_SERIES) {
+      publishPointArray();
+    }
+    else if (getMode() == MODE_SELECT_FORE_AND_BACK ||
+             getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
+      publishForegroundBackgroundMask();
+    }
+    else {
+      cv::Point2f Pt_1(window_selection_.x, window_selection_.y);
+      cv::Point2f Pt(button_up_pos_);
+      std::cout << "PT_1" << Pt_1 << std::endl;
+      std::cout << "Pt" << Pt << std::endl;
+      if (!isValidMovement(Pt_1, Pt)) {
+        geometry_msgs::PointStamped screen_msg;
+        screen_msg.point.x = window_selection_.x * resize_x_;
+        screen_msg.point.y = window_selection_.y * resize_y_;
+        screen_msg.point.z = 0;
+        screen_msg.header.stamp = last_msg_->header.stamp;
+        ROS_INFO("Publish screen point %s (%f %f)", point_pub_.getTopic().c_str(), screen_msg.point.x, screen_msg.point.y);
+        point_pub_.publish(screen_msg);
+      } else {
+        geometry_msgs::PolygonStamped screen_msg;
+        screen_msg.polygon.points.resize(2);
+        screen_msg.polygon.points[0].x = window_selection_.x * resize_x_;
+        screen_msg.polygon.points[0].y = window_selection_.y * resize_y_;
+        screen_msg.polygon.points[1].x = (window_selection_.x + window_selection_.width) * resize_x_;
+        screen_msg.polygon.points[1].y = (window_selection_.y + window_selection_.height) * resize_y_;
+        screen_msg.header.stamp = last_msg_->header.stamp;
+        ROS_INFO("Publish rectangle point %s (%f %f %f %f)", rectangle_pub_.getTopic().c_str(),
+                 screen_msg.polygon.points[0].x, screen_msg.polygon.points[0].y,
+                 screen_msg.polygon.points[1].x, screen_msg.polygon.points[1].y);
+        rectangle_pub_.publish(screen_msg);
+        continuous_ready_ = true;
+      }
+    }
+  }
+    
+  
+  bool ImageView2::isValidMovement(const cv::Point2f& start_point,
                                    const cv::Point2f& end_point)
   {
     double dist_px = cv::norm(cv::Mat(start_point), cv::Mat(end_point));
-    return clicked_time.toSec() > 0 && dist_px > 3.0;
+    return dist_px > 3.0;
   }
-  
-  void ImageView2::mouseCb(int event, int x, int y, int flags, void* param)
+
+  void ImageView2::processLeftButtonDown(int x, int y)
   {
-    ROS_DEBUG("mouseCB");
-    ImageView2 *iv = (ImageView2*)param;
-    static ros::Time left_buttondown_time(0);
-    switch (event){
-    case CV_EVENT_MOUSEMOVE: {
+    ROS_DEBUG("processLeftButtonDown");
+    left_button_clicked_ = true;
+    continuous_ready_ = false;
+    window_selection_.x = x;
+    window_selection_.y = y;
+    window_selection_.width = window_selection_.height = 0;
+    if (getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
+      setRegionWindowPoint(x, y);
+    }
+  }
+
+  void ImageView2::processMove(int x, int y)
+  {
+    if (left_button_clicked_) {
       cv::Point2f Pt_1(window_selection_.x, window_selection_.y);
       cv::Point2f Pt(x, y);
-      if (isValidMovement(left_buttondown_time, Pt_1, Pt)) {
-        if (iv->getMode() == MODE_RECTANGLE) {
+      if (isValidMovement(Pt_1, Pt)) {
+        if (getMode() == MODE_RECTANGLE) {
           window_selection_.width  = x - window_selection_.x;
           window_selection_.height = y - window_selection_.y;
         }
-        else if (iv->getMode() == MODE_SERIES) {
-          iv->addPoint(x, y);
+        else if (getMode() == MODE_SERIES) {
+          addPoint(x, y);
         }
-        else if (iv->getMode() == MODE_SELECT_FORE_AND_BACK) {
-          iv->addRegionPoint(x, y);
+        else if (getMode() == MODE_SELECT_FORE_AND_BACK) {
+          addRegionPoint(x, y);
         }
-        else if (iv->getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
-          iv->updateRegionWindowSize(x, y);
+        else if (getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
+          updateRegionWindowSize(x, y);
         }
       }
-      {
-        // publish the points
-        geometry_msgs::PointStamped move_point;
-        move_point.header.stamp = ros::Time::now();
-        move_point.point.x = x;
-        move_point.point.y = y;
-        move_point.point.z = 0;
-        iv->move_point_pub_.publish(move_point);
+      // publish the points
+      geometry_msgs::PointStamped move_point;
+      move_point.header.stamp = ros::Time::now();
+      move_point.point.x = x;
+      move_point.point.y = y;
+      move_point.point.z = 0;
+      move_point_pub_.publish(move_point);
+    }
+  }
+
+  void ImageView2::processLeftButtonUp(int x, int y)
+  {
+    if (!left_button_clicked_) {
+      return;
+    }
+    if (getMode() == MODE_SERIES) {
+      publishMouseInteractionResult();
+      clearPointArray();
+    }
+    else if (getMode() == MODE_SELECT_FORE_AND_BACK ||
+             getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
+      bool fgp = toggleSelection();
+      if (fgp) {
+        publishMouseInteractionResult();
+        continuous_ready_ = true;
+        //clearPointArray();
       }
+    }
+    else if (getMode() == MODE_RECTANGLE) {
+      // store x and y
+      button_up_pos_ = cv::Point2f(x, y);
+      publishMouseInteractionResult();
+      
+    }
+    left_button_clicked_ = false;
+  }
+  
+  void ImageView2::processMouseEvent(int event, int x, int y, int flags, void* param)
+  {
+    switch (event){
+    case CV_EVENT_MOUSEMOVE: {
+      processMove(x, y);
       break;
     }
     case CV_EVENT_LBUTTONDOWN:  // click
-      left_buttondown_time = ros::Time::now();
-      window_selection_.x = x;
-      window_selection_.y = y;
-      if (iv->getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
-        iv->setRegionWindowPoint(x, y);
-      }
+      processLeftButtonDown(x, y);
       break;
     case CV_EVENT_LBUTTONUP:
-      if (iv->getMode() == MODE_SERIES) {
-        iv->publishPointArray();
-        iv->clearPointArray();
-      }
-      else if (iv->getMode() == MODE_SELECT_FORE_AND_BACK ||
-               iv->getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
-        bool fgp = iv->toggleSelection();
-        if (fgp) {
-          iv->publishForegroundBackgroundMask();
-          //iv->clearPointArray();
-        }
-      }
-      else if (iv->getMode() == MODE_RECTANGLE) {
-        cv::Point2f Pt_1(window_selection_.x, window_selection_.y);
-        cv::Point2f Pt(x, y);
-        if (!isValidMovement(left_buttondown_time, Pt_1, Pt)) {
-          geometry_msgs::PointStamped screen_msg;
-          screen_msg.point.x = window_selection_.x * resize_x_;
-          screen_msg.point.y = window_selection_.y * resize_y_;
-          screen_msg.point.z = 0;
-          screen_msg.header.stamp = ros::Time::now();
-          ROS_INFO("Publish screen point %s (%f %f)", iv->point_pub_.getTopic().c_str(), screen_msg.point.x, screen_msg.point.y);
-          iv->point_pub_.publish(screen_msg);
-        } else {
-          geometry_msgs::PolygonStamped screen_msg;
-          screen_msg.polygon.points.resize(2);
-          screen_msg.polygon.points[0].x = window_selection_.x * resize_x_;
-          screen_msg.polygon.points[0].y = window_selection_.y * resize_y_;
-          screen_msg.polygon.points[1].x = (window_selection_.x + window_selection_.width) * resize_x_;
-          screen_msg.polygon.points[1].y = (window_selection_.y + window_selection_.height) * resize_y_;
-          screen_msg.header.stamp = ros::Time::now();
-          ROS_INFO("Publish rectangle point %s (%f %f %f %f)", iv->rectangle_pub_.getTopic().c_str(),
-                   screen_msg.polygon.points[0].x, screen_msg.polygon.points[0].y,
-                   screen_msg.polygon.points[1].x, screen_msg.polygon.points[1].y);
-          iv->rectangle_pub_.publish(screen_msg);
-        }
-      }
-      window_selection_.x = window_selection_.y =
-        window_selection_.width = window_selection_.height = 0;
-      left_buttondown_time.fromSec(0);
+      processLeftButtonUp(x, y);
       break;
     case CV_EVENT_RBUTTONDOWN:
     {
-      boost::mutex::scoped_lock lock(iv->image_mutex_);
-      if (!iv->image_.empty()) {
-        std::string filename = (iv->filename_format_ % iv->count_).str();
-        cv::imwrite(filename.c_str(), iv->image_);
+      boost::mutex::scoped_lock lock(image_mutex_);
+      if (!image_.empty()) {
+        std::string filename = (filename_format_ % count_).str();
+        cv::imwrite(filename.c_str(), image_);
         ROS_INFO("Saved image %s", filename.c_str());
-        iv->count_++;
+        count_++;
       } else {
         ROS_WARN("Couldn't save image, no data!");
       }
@@ -1244,9 +1285,17 @@ namespace image_view2{
     }
     }
     {
-      boost::mutex::scoped_lock lock2(iv->image_mutex_);
-      iv->drawImage();
+      boost::mutex::scoped_lock lock2(image_mutex_);
+      drawImage();
     }
+    return;
+  }
+  
+  void ImageView2::mouseCb(int event, int x, int y, int flags, void* param)
+  {
+    ROS_DEBUG("mouseCB");
+    ImageView2 *iv = (ImageView2*)param;
+    iv->processMouseEvent(event, x, y, flags, param);
     return;
   }
 
@@ -1293,9 +1342,6 @@ namespace image_view2{
       }
     }
   }
-  
-  CvRect ImageView2::window_selection_;
-  double ImageView2::resize_x_, ImageView2::resize_y_;
 }
 
 
