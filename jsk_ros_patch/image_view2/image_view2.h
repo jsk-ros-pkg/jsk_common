@@ -169,6 +169,7 @@ namespace image_view2
     void processMove(int x, int y);
     void processLeftButtonUp(int x, int y);
     void publishMouseInteractionResult();
+    void checkMousePos(int& x, int& y);
     V_ImageMarkerMessage local_queue_;
     image_transport::Subscriber image_sub_;
     ros::Subscriber info_sub_;

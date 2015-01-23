@@ -1259,6 +1259,7 @@ namespace image_view2{
   
   void ImageView2::processMouseEvent(int event, int x, int y, int flags, void* param)
   {
+    checkMousePos(x, y);
     switch (event){
     case CV_EVENT_MOUSEMOVE: {
       processMove(x, y);
@@ -1340,6 +1341,14 @@ namespace image_view2{
       if(!image_.empty()) {
         cv::imshow(window_name_.c_str(), image_);
       }
+    }
+  }
+
+  void ImageView2::checkMousePos(int& x, int& y)
+  {
+    if (last_msg_) {
+      x = std::max(std::min(x, (int)last_msg_->width), 0);
+      y = std::max(std::min(y, (int)last_msg_->height), 0);
     }
   }
 }
