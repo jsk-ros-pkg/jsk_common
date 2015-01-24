@@ -39,7 +39,6 @@
   <run_depend>downward</run_depend>
   <!-- <run_depend>depth_image_proc_jsk_patch</run_depend> -->
   <!-- <run_depend>laser_filters_jsk_patch</run_depend> -->
-  <!-- <run_depend>pr2_groovy_patches</run_depend> -->
   <!-- <run_depend>image_view_jsk_patch</run_depend> -->
   <run_depend>rostwitter</run_depend>
   <run_depend>virtual_force_publisher</run_depend>
