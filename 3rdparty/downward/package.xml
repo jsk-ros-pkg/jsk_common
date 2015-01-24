@@ -18,7 +18,6 @@
   <build_depend>flex</build_depend>
   <build_depend>bison</build_depend>
   <build_depend>gawk</build_depend>
-  <build_depend>g++-multilib</build_depend>
   <build_depend>rospack</build_depend>
   <build_depend>roslib</build_depend>
   <build_depend>mk</build_depend>
