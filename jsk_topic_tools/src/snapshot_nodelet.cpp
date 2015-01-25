@@ -83,6 +83,7 @@ namespace jsk_topic_tools
     sub_ = pnh_.subscribe<topic_tools::ShapeShifter>(
       "input", 1,
       &Snapshot::inputCallback, this);
+    return true;
   }
   
 }
