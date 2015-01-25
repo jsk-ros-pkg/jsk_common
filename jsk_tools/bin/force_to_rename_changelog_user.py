@@ -7,6 +7,8 @@ import re
 # $ ./force_to_rename_changelog_user.py CHANGELOG.rt
 # $ find . -name CHANGELOG.rst -exec rosrun jsk_tools force_to_rename_changelog_user.py {} \;
 
+# sudo apt-get install python-progressbar
+from progressbar import *
 
 REPLACE_RULES={
     "k-okada": "Kei Okada",
@@ -20,7 +22,9 @@ REPLACE_RULES={
     "pr2 application": "JSK Lab member",
     "terasawa": "Ryo Terasawa",
     "yuohara": "Yu Ohara",
-    "au@leus": "Chi Wun Au"}
+    "au@leus": "Chi Wun Au",
+    "hrp2": "JSK Lab Member",
+    "h-kamada": "Hitoshi Kamada"}
 
 def replaceContributors(line):
     match = re.match("\* Contributors: (.*)", line)
@@ -41,11 +45,16 @@ def replaceContributors(line):
 def main(file_name):
     replaced_str = StringIO.StringIO()
     with open(file_name, "r") as f:
-        for line in f.readlines():
+        widgets = ["%s: " % (file_name), Percentage(), Bar()]
+        lines = f.readlines()
+        pbar = ProgressBar(maxval=len(lines), widgets=widgets).start()
+        for line in lines:
             if line.startswith("* Contributors:"):
                 replaced_str.write(replaceContributors(line) + "\n")
             else:
                 replaced_str.write(line)
+            pbar.update(pbar.currval + 1)
+        pbar.finish()
     with open(file_name, "w") as f:
         f.write(replaced_str.getvalue())
 

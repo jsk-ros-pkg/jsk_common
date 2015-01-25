@@ -12,7 +12,7 @@ if(NOT USE_ROSBUILD)
     CFG_EXTRAS download_package.cmake
     )
 
-  install(DIRECTORY src test
+  install(DIRECTORY src test bin
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
     )
 
