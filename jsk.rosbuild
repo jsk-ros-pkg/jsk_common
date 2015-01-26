@@ -233,6 +233,8 @@ EOF
     else
         install-pkg /tmp/jsk.rosinstall.$$
     fi
+    # install euslisp
+    $ROS_INSTALLDIR_SRC/src/jsk-ros-pkg/jsk_roseus/setup.sh
     if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
         xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi || return 0
     fi
