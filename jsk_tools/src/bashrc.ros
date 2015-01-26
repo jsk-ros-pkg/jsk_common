@@ -10,10 +10,13 @@ function rossetmaster() { # 自分のよく使うロボットのhostnameを入�
     export PS1="\[\033[00;31m\][$ROS_MASTER_URI][$ROS_IP]\[\033[00m\] ${PS1}"
     echo -e "\e[1;31mset ROS_MASTER_URI to $ROS_MASTER_URI\e[m"
 }
-alias rossetrobot=rossetmaster
+function rossetrobot() {
+    echo -e "\e[1;31m *** rossetrobot is obsoleted, use rossetmaster ***\e[m"
+    rossetmaster $@
+}
 
 function rossetlocal() {
-    rossetrobot localhost
+    rossetmaster localhost
     if [[ "${PS1}" =~ \[http://.*:.*\]\ (.*)$ ]] ; then
         export PS1="${BASH_REMATCH[1]}"
     fi
@@ -57,7 +60,7 @@ function rossetip() {
   fi
   # update PS1
   if [[ "${ROS_MASTER_URI}" =~ ^http://(.*):(.*)$ ]] ; then
-      rossetrobot ${BASH_REMATCH[1]} ${BASH_REMATCH[2]}
+      rossetmaster ${BASH_REMATCH[1]} ${BASH_REMATCH[2]}
   fi
 }
 
