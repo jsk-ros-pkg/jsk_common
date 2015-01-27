@@ -42,7 +42,8 @@ namespace image_view2{
   
   ImageView2::ImageView2(ros::NodeHandle& nh)
     : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), selecting_fg_(true),
-      left_button_clicked_(false), continuous_ready_(false), window_initialized_(false)
+      left_button_clicked_(false), continuous_ready_(false), window_initialized_(false),
+      line_select_start_point_(true), line_selected_(false)
   {
     std::string camera = nh.resolveName("image");
     std::string camera_info = nh.resolveName("camera_info");
@@ -57,6 +58,7 @@ namespace image_view2{
     move_point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/movepoint", 100);
     foreground_mask_pub_ = nh.advertise<sensor_msgs::Image>(camera + "/foreground", 100);
     background_mask_pub_ = nh.advertise<sensor_msgs::Image>(camera + "/background", 100);
+    line_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/line", 100);
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
     local_nh.param("skip_draw_rate", skip_draw_rate_, 0);
     local_nh.param("autosize", autosize_, false);
@@ -87,7 +89,9 @@ namespace image_view2{
     else if (interaction_mode == "grabcut_rect") {
       setMode(image_view2::ImageView2::MODE_SELECT_FORE_AND_BACK_RECT);
     }
-    
+    else if (interaction_mode == "line") {
+      setMode(image_view2::ImageView2::MODE_LINE);
+    }
     resize_x_ = 1.0/xx;
     resize_y_ = 1.0/yy;
     filename_format_.parse(format_string);
@@ -888,6 +892,12 @@ namespace image_view2{
         cv::rectangle(draw_, rect_bg_, CV_RGB(0, 255, 0), 4);
       }
     }
+    else if (mode_ == MODE_LINE) {
+      boost::mutex::scoped_lock lock(line_point_mutex_);
+      if (line_selected_) {
+        cv::line(draw_, line_start_point_, line_end_point_, CV_RGB(0, 255, 0), 8, 8, 0);
+      }
+    }
   }
 
   void ImageView2::drawInfo(ros::Time& before_rendering)
@@ -1139,7 +1149,22 @@ namespace image_view2{
     publishMonoImage(foreground_mask_pub_, foreground_mask, last_msg_->header);
     publishMonoImage(background_mask_pub_, background_mask, last_msg_->header);
   }
-
+  
+  void ImageView2::publishLinePoints()
+  {
+    boost::mutex::scoped_lock lock(line_point_mutex_);
+    geometry_msgs::PolygonStamped ros_line;
+    ros_line.header = last_msg_->header;
+    geometry_msgs::Point32 ros_start_point, ros_end_point;
+    ros_start_point.x = line_start_point_.x;
+    ros_start_point.y = line_start_point_.y;
+    ros_end_point.x = line_end_point_.x;
+    ros_end_point.y = line_end_point_.y;
+    ros_line.polygon.points.push_back(ros_start_point);
+    ros_line.polygon.points.push_back(ros_end_point);
+    line_pub_.publish(ros_line);
+  }
+  
   void ImageView2::publishMouseInteractionResult()
   {
     if (getMode() == MODE_SERIES) {
@@ -1148,6 +1173,9 @@ namespace image_view2{
     else if (getMode() == MODE_SELECT_FORE_AND_BACK ||
              getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
       publishForegroundBackgroundMask();
+    }
+    else if (getMode() == MODE_LINE) {
+      publishLinePoints();
     }
     else {
       cv::Point2f Pt_1(window_selection_.x, window_selection_.y);
@@ -1187,6 +1215,53 @@ namespace image_view2{
     return dist_px > 3.0;
   }
 
+  void ImageView2::updateLineStartPoint(cv::Point p)
+  {
+    boost::mutex::scoped_lock lock(line_point_mutex_);
+    line_start_point_ = p;
+  }
+
+  void ImageView2::updateLineEndPoint(cv::Point p)
+  {
+    boost::mutex::scoped_lock lock(line_point_mutex_);
+    line_end_point_ = p;
+  }
+
+  cv::Point ImageView2::getLineStartPoint()
+  {
+    boost::mutex::scoped_lock lock(line_point_mutex_);
+    return cv::Point(line_start_point_);
+  }
+  
+  cv::Point ImageView2::getLineEndPoint()
+  {
+    boost::mutex::scoped_lock lock(line_point_mutex_);
+    return cv::Point(line_end_point_);
+  }
+
+  void ImageView2::updateLinePoint(cv::Point p)
+  {
+    
+    if (isSelectingLineStartPoint()) {
+      updateLineStartPoint(p);
+      updateLineEndPoint(p);
+    }
+    else {
+      updateLineEndPoint(p);
+    }
+    {
+      boost::mutex::scoped_lock lock(line_point_mutex_);
+      line_select_start_point_ = !line_select_start_point_;
+      line_selected_ = true;
+    }
+  }
+
+  bool ImageView2::isSelectingLineStartPoint()
+  {
+    boost::mutex::scoped_lock lock(line_point_mutex_);
+    return line_select_start_point_;
+  }
+  
   void ImageView2::processLeftButtonDown(int x, int y)
   {
     ROS_DEBUG("processLeftButtonDown");
@@ -1219,6 +1294,7 @@ namespace image_view2{
         else if (getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
           updateRegionWindowSize(x, y);
         }
+        
       }
       // publish the points
       geometry_msgs::PointStamped move_point;
@@ -1227,6 +1303,13 @@ namespace image_view2{
       move_point.point.y = y;
       move_point.point.z = 0;
       move_point_pub_.publish(move_point);
+    }
+    else {
+      if (getMode() == MODE_LINE) {
+        if (!isSelectingLineStartPoint()) {
+          updateLineEndPoint(cv::Point(x, y));
+        }
+      }
     }
   }
 
@@ -1252,7 +1335,12 @@ namespace image_view2{
       // store x and y
       button_up_pos_ = cv::Point2f(x, y);
       publishMouseInteractionResult();
-      
+    }
+    else if (getMode() == MODE_LINE) {
+      updateLinePoint(cv::Point(x, y));
+      if (!isSelectingLineStartPoint()) {
+        publishMouseInteractionResult();
+      }
     }
     left_button_clicked_ = false;
   }
@@ -1323,6 +1411,16 @@ namespace image_view2{
           rect_fg_.width = rect_fg_.height = 0;
           rect_bg_.width = rect_bg_.height = 0;
           selecting_fg_ = true;
+          break;
+        }
+        }
+      }
+      if (getMode() == MODE_LINE) {
+        switch (key) {
+        case 27: {
+          boost::mutex::scoped_lock lock(line_point_mutex_);
+          line_select_start_point_ = true;
+          line_selected_ = false;
           break;
         }
         }

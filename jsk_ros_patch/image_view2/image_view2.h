@@ -82,7 +82,8 @@ namespace image_view2
       MODE_RECTANGLE,
       MODE_SERIES,
       MODE_SELECT_FORE_AND_BACK,
-      MODE_SELECT_FORE_AND_BACK_RECT
+      MODE_SELECT_FORE_AND_BACK_RECT,
+      MODE_LINE
     };
       
     ImageView2();
@@ -220,9 +221,25 @@ namespace image_view2
     ros::Publisher move_point_pub_;
     ros::Publisher foreground_mask_pub_;
     ros::Publisher background_mask_pub_;
+    ros::Publisher line_pub_;
     KEY_MODE mode_;
     bool autosize_;
     bool window_initialized_;
+
+    // for line mode interaction
+    boost::mutex line_point_mutex_;
+    bool line_select_start_point_;
+    bool line_selected_;
+    cv::Point line_start_point_;
+    cv::Point line_end_point_;
+    // thread safe setter
+    void updateLineStartPoint(cv::Point p);
+    void updateLineEndPoint(cv::Point p);
+    cv::Point getLineStartPoint();
+    cv::Point getLineEndPoint();
+    void publishLinePoints();
+    void updateLinePoint(cv::Point p);
+    bool isSelectingLineStartPoint();
   };
 }
 
