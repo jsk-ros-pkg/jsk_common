@@ -1,8 +1,0 @@
-<launch>
-  <include file="$(find openni_launch)/launch/openni.launch"/>
-
-  <node name="rgb_image_saver" pkg="image_view_jsk_patch" type="image_saver" output="screen">
-    <remap from="image" to="/camera/rgb/image_rect_color"/>
-  </node>
-
-</launch>
