@@ -1338,7 +1338,7 @@ namespace image_view2{
     }
     else if (getMode() == MODE_LINE) {
       updateLinePoint(cv::Point(x, y));
-      if (!isSelectingLineStartPoint()) {
+      if (isSelectingLineStartPoint()) {
         publishMouseInteractionResult();
       }
     }
