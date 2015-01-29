@@ -1273,6 +1273,9 @@ namespace image_view2{
     if (getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
       setRegionWindowPoint(x, y);
     }
+    if (getMode() == MODE_LINE) {
+      continuous_ready_ = false;
+    }
   }
 
   void ImageView2::processMove(int x, int y)
@@ -1340,6 +1343,7 @@ namespace image_view2{
       updateLinePoint(cv::Point(x, y));
       if (isSelectingLineStartPoint()) {
         publishMouseInteractionResult();
+        continuous_ready_ = true;
       }
     }
     left_button_clicked_ = false;
@@ -1421,6 +1425,7 @@ namespace image_view2{
           boost::mutex::scoped_lock lock(line_point_mutex_);
           line_select_start_point_ = true;
           line_selected_ = false;
+          continuous_ready_ = false;
           break;
         }
         }
