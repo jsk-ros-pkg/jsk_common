@@ -20,6 +20,7 @@ REPLACE_RULES={
     "tarukosu": "Yusuke Furuta",
     "furuta": "Yusuke Furuta",
     "pr2 application": "JSK Lab member",
+    "pr2admin": "JSK Lab member",
     "terasawa": "Ryo Terasawa",
     "yuohara": "Yu Ohara",
     "au@leus": "Chi Wun Au",
