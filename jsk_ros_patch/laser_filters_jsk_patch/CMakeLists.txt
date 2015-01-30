@@ -1,41 +1,13 @@
-if(NOT USE_ROSBUILD)
-  include(catkin.cmake)
-  return()
-endif()
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+cmake_minimum_required(VERSION 2.8.3)
+project(laser_filters_jsk_patch)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+find_package(catkin REQUIRED COMPONENTS laser_filters filters)
+catkin_package(CATKIN_DEPENDS laser_filters filters)
+include_directories(include ${catkin_INCLUDE_DIRS})
+add_library(laser_scan_filters_jsk_patch SHARED src/laser_scan_filters.cpp)
+target_link_libraries(laser_scan_filters_jsk_patch ${catkin_LIBRARIES})
 
-rosbuild_find_ros_package(jsk_tools)
-include(${jsk_tools_PACKAGE_PATH}/cmake/download_package.cmake)
-download_package_for_groovy(filters       http://github.com/ros/filters                  groovy-devel)
-download_package_for_groovy(laser_filters http://github.com/ros-perception/laser_filters groovy_released)
-
-rosbuild_init()
-
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-
-#uncomment if you have defined messages
-#rosbuild_genmsg()
-#uncomment if you have defined services
-#rosbuild_gensrv()
-
-#common commands for building c++ executables and libraries
-rosbuild_add_library(laser_scan_filters_jsk_patch src/laser_scan_filters.cpp)
-rosbuild_link_boost(laser_scan_filters_jsk_patch system)
-
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-#rosbuild_add_executable(example examples/example.cpp)
-#target_link_libraries(example ${PROJECT_NAME})
+install(TARGETS laser_scan_filters_jsk_patch
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
