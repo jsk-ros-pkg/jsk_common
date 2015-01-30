@@ -34,7 +34,7 @@
  *********************************************************************/
 
 #include "image_view2.h"
-
+#include <exception>
 namespace image_view2{
   ImageView2::ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), window_initialized_(false)
   {
@@ -76,22 +76,7 @@ namespace image_view2{
     
     std::string interaction_mode;
     local_nh.param("interaction_mode", interaction_mode, std::string("rectangle"));
-    if (interaction_mode == "rectangle") {
-      setMode(image_view2::ImageView2::MODE_RECTANGLE);
-    }
-    else if (interaction_mode == "freeform" ||
-             interaction_mode == "series") {
-      setMode(image_view2::ImageView2::MODE_SERIES);
-    }
-    else if (interaction_mode == "grabcut") {
-      setMode(image_view2::ImageView2::MODE_SELECT_FORE_AND_BACK);
-    }
-    else if (interaction_mode == "grabcut_rect") {
-      setMode(image_view2::ImageView2::MODE_SELECT_FORE_AND_BACK_RECT);
-    }
-    else if (interaction_mode == "line") {
-      setMode(image_view2::ImageView2::MODE_LINE);
-    }
+    setMode(stringToMode(interaction_mode));
     resize_x_ = 1.0/xx;
     resize_y_ = 1.0/yy;
     filename_format_.parse(format_string);
@@ -107,6 +92,8 @@ namespace image_view2{
     marker_sub_ = nh.subscribe(marker_topic_, 10, &ImageView2::markerCb, this);
 
     image_pub_ = it.advertise("image_marked", 1);
+    change_mode_srv_ = local_nh.advertiseService(
+      "change_mode", &ImageView2::changeModeServiceCallback, this);
   }
 
   ImageView2::~ImageView2()
@@ -1273,6 +1260,9 @@ namespace image_view2{
     if (getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
       setRegionWindowPoint(x, y);
     }
+    if (getMode() == MODE_LINE) {
+      continuous_ready_ = false;
+    }
   }
 
   void ImageView2::processMove(int x, int y)
@@ -1340,6 +1330,7 @@ namespace image_view2{
       updateLinePoint(cv::Point(x, y));
       if (isSelectingLineStartPoint()) {
         publishMouseInteractionResult();
+        continuous_ready_ = true;
       }
     }
     left_button_clicked_ = false;
@@ -1391,39 +1382,11 @@ namespace image_view2{
   void ImageView2::pressKey(int key)
   {
     if (key != -1) {
-      if (getMode() == MODE_SELECT_FORE_AND_BACK) {
-        // only grabcut works here
-        switch (key) {
-        case 27: {
-          boost::mutex::scoped_lock lock(point_array_mutex_);
-          point_fg_array_.clear();
-          point_bg_array_.clear();
-          selecting_fg_ = true;
-          break;
-        }
-        }
+      switch (key) {
+      case 27: {
+        resetInteraction();
+        break;
       }
-      if (getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
-        // only grabcut works here
-        switch (key) {
-        case 27: {
-          boost::mutex::scoped_lock lock(point_array_mutex_);
-          rect_fg_.width = rect_fg_.height = 0;
-          rect_bg_.width = rect_bg_.height = 0;
-          selecting_fg_ = true;
-          break;
-        }
-        }
-      }
-      if (getMode() == MODE_LINE) {
-        switch (key) {
-        case 27: {
-          boost::mutex::scoped_lock lock(line_point_mutex_);
-          line_select_start_point_ = true;
-          line_selected_ = false;
-          break;
-        }
-        }
       }
     }
   }
@@ -1447,6 +1410,61 @@ namespace image_view2{
     if (last_msg_) {
       x = std::max(std::min(x, (int)last_msg_->width), 0);
       y = std::max(std::min(y, (int)last_msg_->height), 0);
+    }
+  }
+  void ImageView2::resetInteraction()
+  {
+    if (getMode() == MODE_SELECT_FORE_AND_BACK) {
+      boost::mutex::scoped_lock lock(point_array_mutex_);
+      point_fg_array_.clear();
+      point_bg_array_.clear();
+      selecting_fg_ = true;
+    }
+    else if (getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
+      boost::mutex::scoped_lock lock(point_array_mutex_);
+      rect_fg_.width = rect_fg_.height = 0;
+      rect_bg_.width = rect_bg_.height = 0;
+      selecting_fg_ = true;
+    }
+    else if (getMode() == MODE_LINE) {
+      boost::mutex::scoped_lock lock(line_point_mutex_);
+      line_select_start_point_ = true;
+      line_selected_ = false;
+      continuous_ready_ = false;
+    }
+  }
+
+  bool ImageView2::changeModeServiceCallback(
+    image_view2::ChangeModeRequest& req,
+    image_view2::ChangeModeResponse& res)
+  {
+    resetInteraction();
+    KEY_MODE next_mode = stringToMode(req.mode);
+    setMode(next_mode);
+    resetInteraction();
+    return true;
+  }
+
+  ImageView2::KEY_MODE ImageView2::stringToMode(const std::string& interaction_mode)
+  {
+    if (interaction_mode == "rectangle") {
+      return MODE_RECTANGLE;
+    }
+    else if (interaction_mode == "freeform" ||
+             interaction_mode == "series") {
+      return MODE_SERIES;
+    }
+    else if (interaction_mode == "grabcut") {
+      return MODE_SELECT_FORE_AND_BACK;
+    }
+    else if (interaction_mode == "grabcut_rect") {
+      return MODE_SELECT_FORE_AND_BACK_RECT;
+          }
+    else if (interaction_mode == "line") {
+      return MODE_LINE;
+    }
+    else {
+      throw std::string("Unknown mode");
     }
   }
 }

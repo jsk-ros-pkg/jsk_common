@@ -8,7 +8,9 @@ add_message_files(
   FILES ImageMarker2.msg PointArrayStamped.msg
 )
 
-
+add_service_files(
+  FILES ChangeMode.srv
+  )
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
