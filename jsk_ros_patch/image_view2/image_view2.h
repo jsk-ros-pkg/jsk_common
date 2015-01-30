@@ -51,7 +51,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include <geometry_msgs/PolygonStamped.h>
 #include <std_msgs/Empty.h>
-
+#include <image_view2/ChangeMode.h>
 #include <boost/thread.hpp>
 #include <boost/format.hpp>
 #include <boost/foreach.hpp>
@@ -240,6 +240,12 @@ namespace image_view2
     void publishLinePoints();
     void updateLinePoint(cv::Point p);
     bool isSelectingLineStartPoint();
+    void resetInteraction();
+    ros::ServiceServer change_mode_srv_;
+    bool changeModeServiceCallback(
+      image_view2::ChangeModeRequest& req,
+      image_view2::ChangeModeResponse& res);
+    KEY_MODE stringToMode(const std::string& str);
   };
 }
 
