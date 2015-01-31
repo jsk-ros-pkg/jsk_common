@@ -1,46 +1,54 @@
-if(NOT USE_ROSBUILD)
-  include(catkin.cmake)
-  return()
-endif()
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+# http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
+cmake_minimum_required(VERSION 2.8.3)
+project(jsk_topic_tools)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp rostest std_msgs
+  nodelet tf
+  geometry_msgs
+  eigen_conversions
+  topic_tools)
+catkin_python_setup()
+add_message_files(
+  FILES TopicInfo.msg
+)
 
-rosbuild_init()
+add_service_files(
+  FILES List.srv Update.srv
+)
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+generate_messages()
+catkin_package(
+    DEPENDS
+    CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs
+    INCLUDE_DIRS include
+    LIBRARIES jsk_topic_tools
+    CFG_EXTRAS nodelet.cmake
+)
 
-#uncomment if you have defined messages
-rosbuild_genmsg()
-#uncomment if you have defined services
-rosbuild_gensrv()
+include_directories(include ${catkin_INCLUDE_DIRS})
+#include_directories(${Boost_INCLUDE_DIRS})
+add_executable(topic_buffer_server src/topic_buffer_server.cpp)
+add_executable(topic_buffer_client src/topic_buffer_client.cpp)
+add_executable(transform_merger src/transform_merger.cpp)
+add_executable(static_transform_pose_stamped
+  src/static_transform_pose_stamped.cpp)
+target_link_libraries(transform_merger ${catkin_LIBRARIES})
+target_link_libraries(static_transform_pose_stamped ${catkin_LIBRARIES})
+add_dependencies(static_transform_pose_stamped ${PROJECT_NAME}_gencpp)
+add_dependencies(topic_buffer_server ${PROJECT_NAME}_gencpp)
+add_dependencies(topic_buffer_client ${PROJECT_NAME}_gencpp)
+target_link_libraries(topic_buffer_server ${catkin_LIBRARIES})
+target_link_libraries(topic_buffer_client ${catkin_LIBRARIES})
 
-#common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(topic_buffer_server src/topic_buffer_server.cpp)
-rosbuild_add_executable(topic_buffer_client src/topic_buffer_client.cpp)
-rosbuild_add_executable(specific_transform_publisher src/specific_transform_publisher.cpp)
-rosbuild_add_executable(specific_transform_subscriber src/specific_transform_subscriber.cpp)
-rosbuild_add_executable(transform_merger src/transform_merger.cpp)
+
 include(${PROJECT_SOURCE_DIR}/cmake/nodelet.cmake)
+
 macro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
   jsk_nodelet(${_nodelet_cpp} ${_nodelet_class} ${_single_nodelet_exec_name}
-    jsk_topic_tools_nodelet_sources)
+    jsk_topic_tools_nodelet_sources jsk_topic_tools_nodelet_executable_names)
 endmacro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
 
+# nodelet shared object
 jsk_topic_tools_nodelet(src/lightweight_throttle_nodelet.cpp
   "jsk_topic_tools/LightweightThrottle" "lightweight_throttle")
 jsk_topic_tools_nodelet(src/mux_nodelet.cpp
@@ -49,26 +57,56 @@ jsk_topic_tools_nodelet(src/relay_nodelet.cpp
   "jsk_topic_tools/Relay" "relay")
 jsk_topic_tools_nodelet(src/block_nodelet.cpp
   "jsk_topic_tools/Block" "block")
+jsk_topic_tools_nodelet(src/snapshot_nodelet.cpp
+  "jsk_topic_tools/Snapshot" "snapshot")
 jsk_topic_tools_nodelet(src/hz_measure_nodelet.cpp
   "jsk_topic_tools/HzMeasure" "hz_measure")
+jsk_topic_tools_nodelet(src/vital_checker_nodelet.cpp
+  "jsk_topic_tools/VitalCheckerNodelet" "vital_checker")
 
-
-rosbuild_add_library (jsk_topic_tools
+add_library(jsk_topic_tools SHARED
   ${jsk_topic_tools_nodelet_sources}
   src/timered_diagnostic_updater.cpp
   src/diagnostic_utils.cpp
   src/rosparam_utils.cpp
-  src/vital_checker.cpp
   src/time_accumulator.cpp
-  src/color_utils.cpp)
+  src/vital_checker.cpp
+  src/color_utils.cpp
+  src/connection_based_nodelet.cpp
+  src/diagnostic_nodelet.cpp
+  src/series_boolean.cpp
+  src/counter.cpp)
+  
+target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
+if (NOT $ENV{ROS_DISTRO} STREQUAL "indigo")
+  add_rostest(test/test_topic_buffer.test)
+  add_rostest(test/test_topic_buffer_close_wait.test)
+  add_rostest(test/test_topic_buffer_fixed_rate.test)
+  add_rostest(test/test_topic_buffer_fixed_rate_and_update_rate.test)
+  add_rostest(test/test_topic_buffer_update_rate.test)
+  add_rostest(test/test_lightweight_throttle.test)
+  add_rostest(test/test_topic_compare.test)
+  add_rostest(test/test_hz_measure.test)
+  add_rostest(test/test_block.test)
+endif(NOT $ENV{ROS_DISTRO} STREQUAL "indigo")
 
-#target_link_libraries(example ${PROJECT_NAME})
-rosbuild_add_rostest(test/test_topic_buffer.test)
-rosbuild_add_rostest(test/test_topic_buffer_fixed_rate.test)
-rosbuild_add_rostest(test/test_topic_buffer_update_rate.test)
-rosbuild_add_rostest(test/test_topic_buffer_fixed_rate_and_update_rate.test)
-rosbuild_add_rostest(test/test_topic_buffer_close_wait.test)
-rosbuild_add_rostest(test/test_lightweight_throttle.test)
-rosbuild_add_rostest(test/test_topic_compare.test)
-rosbuild_add_rostest(test/test_hz_measure.test)
-rosbuild_add_rostest(test/test_block.test)
+install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
+  ${jsk_topic_tools_nodelet_executable_names}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
+
+install(FILES jsk_topic_tools_nodelet.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+install(DIRECTORY include/${PROJECT_NAME}/ 
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+# install(DIRECTORY include
+#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+#   )
+
+install(DIRECTORY scripts launch test cmake DESTINATION
+  ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  USE_SOURCE_PERMISSIONS
+  )

@@ -1,9 +1,0 @@
-<stack>
-  <description brief="jsk_common">jsk_common</description>
-  <author>Maintained by Rosen Diankov</author>
-  <license>BSD</license>  
-  <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/jsk_common</url>
-  <depend stack="ros" />
-
-</stack>
