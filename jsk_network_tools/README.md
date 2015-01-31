@@ -129,6 +129,7 @@ Features of `silverhammer_lowspeed_{streamer,receiver}.py` are:
 * `~input`
 
   Type of `~input` topic is specified by `~message` parameter.
+
 ##### Parameters
 * `~message` (default: `jsk_network_tools/FC2OCS`)
 
@@ -147,6 +148,7 @@ Features of `silverhammer_lowspeed_{streamer,receiver}.py` are:
 * `~output`
 
   Type of `~output` topic is specified by `~message` parameter.
+
 ##### Parameters
 * `~message` (default: `jsk_network_tools/FC2OCS`)
 
@@ -182,6 +184,7 @@ by `~message` parameter.
 
   Packet size of UDP. ROS message will be splitted into the packets
   of `~packet_size`. Unit is byte.
+
 #### `silverhammer_highspeed_receiver.py`
 ##### Publishing Topics
 output topics are automatically determined by message definition specified
@@ -202,3 +205,7 @@ by `~message` parameter and `~topic_prefix` parameter.
 * `~topic_prefix` (default: `/from_fc`)
 
    Prefix added in front of output topics.
+
+* `~pesimistic` (dfeault: `False`)
+
+  Do not concatenate packets with 0 filling if this parameter is True.

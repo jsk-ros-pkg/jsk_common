@@ -21,6 +21,7 @@ class SilverHammerReceiver:
         except:
             raise Exception("invalid topic type: %s"%message_class_str)
         self.lock = Lock()
+        self.pesimistic = rospy.get_param("~pesimistic", False)
         self.receive_port = rospy.get_param("~receive_port", 16484)
         self.receive_ip = rospy.get_param("~receive_ip", "localhost")
         self.topic_prefix = rospy.get_param("~topic_prefix", "/from_fc")
@@ -62,6 +63,9 @@ class SilverHammerReceiver:
                 b = StringIO()
                 if self.packets[0].num != len(self.packets):
                     rospy.logwarn("%d packet is missed", self.packets[0].num - len(self.packets))
+                    if self.pesimistic:
+                        rospy.logerr("pesimistic mode, give up to reconstruct message")
+                        return
                 for i in range(self.packets[0].num):
                     if self.packets[packet_index].id == i:
                         packet = self.packets[packet_index]
