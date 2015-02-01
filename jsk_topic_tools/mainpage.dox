@@ -2,13 +2,11 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b jsk_topic_tools 
+\b jsk_topic_tools
 
-<!-- 
-Provide an overview of your package.
--->
+Source code is hosted here: https://github.com/jsk-ros-pkg/jsk_common/tree/master/jsk_topic_tools
 
--->
-
+\section Color
+Please see color_utils.h
 
 */
