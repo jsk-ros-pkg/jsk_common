@@ -102,7 +102,7 @@ function setup-ros {
     wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
     sudo apt-get update
     sudo apt-get upgrade -y --force-yes
-    sudo apt-get -qq -y install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools
+    sudo apt-get -qq -y install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools python-pip
     if [ "$USE_SOURCE" == "true" ]; then
         sudo apt-get -qq -y install python-rosinstall-generator
         sudo apt-get -qq -y install libftdi-dev libgstreamer0.10-dev libgst-dev libgstreamer-plugins-base0.10-dev
