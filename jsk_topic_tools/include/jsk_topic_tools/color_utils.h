@@ -39,19 +39,26 @@
 
 #include <std_msgs/ColorRGBA.h>
 
+/**
+ * @file color_utils.h
+ * @brief Provide color utility functions
+ */
+
 namespace jsk_topic_tools
 {
-  ////////////////////////////////////////////////////////
-  // colorCategory20
-  //   choose a color out of 20 good selected colors
-  ////////////////////////////////////////////////////////
+  /** @brief choose a color out of 20 good selected colors
+   *
+   * The color format is same as d3.js (https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20)
+   * @param[in] i index value
+   * @return return std_msgs::ColorRGBA and each value is in range between 0 and 1.
+   */
   std_msgs::ColorRGBA colorCategory20(int i);
-  
-  ////////////////////////////////////////////////////////
-  // heatColor
-  //   returns heat color gradation according to
-  //   v. v should be 0.0 ~ 1.0.
-  ////////////////////////////////////////////////////////
+
+  /** @brief returns heat-map color (http://en.wikipedia.org/wiki/Heat_map)
+   *
+   * @param[in] v Value to colorize. This should be in [0.0:1.0]
+   * @return return std_msgs::ColorRGBA and each value is in range between 0 and 1.
+   */
   std_msgs::ColorRGBA heatColor(double v);
 }
 
