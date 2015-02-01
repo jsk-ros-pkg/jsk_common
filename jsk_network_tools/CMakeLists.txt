@@ -6,6 +6,7 @@ catkin_python_setup()
 add_message_files(
   DIRECTORY msg
   FILES
+  CompressedAngleVectorPR2.msg
   Heartbeat.msg
   HeartbeatResponse.msg
   FC2OCS.msg

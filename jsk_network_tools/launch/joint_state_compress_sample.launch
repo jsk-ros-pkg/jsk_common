@@ -1,0 +1,17 @@
+<launch>
+  <node pkg="robot_state_publisher" name="robot_state_publisher" type="robot_state_publisher">
+  </node>
+  <node pkg="robot_state_publisher" name="robot_state_publisher_decompressed" type="robot_state_publisher">
+    <remap from="/joint_states" to="/joint_states_decompressed" />
+    <rosparam>
+      tf_prefix: decompressed
+    </rosparam>
+  </node>
+  <node pkg="joint_state_publisher" name="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="true" />
+  </node>
+  <node pkg="jsk_network_tools" type="joint-state-compressor.l" name="joint_state_compressor" output="screen"/>
+  <node pkg="jsk_network_tools" type="joint-state-decompressor.l" name="joint_state_decompressor" output="screen"/>
+  <node pkg="tf" type="static_transform_publisher" name="static_transform_publisher"
+        args="0 2 0 0 0 0 base_footprint decompressed/base_footprint 100" />
+</launch>
