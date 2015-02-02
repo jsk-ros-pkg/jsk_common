@@ -2,6 +2,11 @@
 Changelog for package jsk_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [pr2_groovy_patches] Remove pr2_groovy_patches, it's no longer needed
+* Contributors: Ryohei Ueda
+
 1.0.58 (2015-01-07)
 -------------------
 

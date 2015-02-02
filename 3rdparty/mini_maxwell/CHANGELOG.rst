@@ -2,6 +2,19 @@
 Changelog for package mini_maxwell
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove rosbuild files
+* [mini_maxwell] Publish status of mini maxwell in drc_2015_environment.py
+* [mini_maxwell] Fix minimaxwell configuration not to drop all the
+  packets :)
+* [mini_maxwell] Support 'disable_network_limitation' and add launch file
+* [mini_maxwell] Add udp mode to simple test server
+* [mini_maxwell] Add script to test like DRC-final-2015
+* [mini_maxwell] Use struct module to make message with fixed size
+* [mini_maxwell] Add simple echo server to debug mini maxwell settings
+* Contributors: Ryohei Ueda
+
 1.0.58 (2015-01-07)
 -------------------
 

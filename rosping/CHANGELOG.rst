@@ -2,6 +2,11 @@
 Changelog for package rosping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove rosbuild files
+* Contributors: Ryohei Ueda
+
 1.0.58 (2015-01-07)
 -------------------
 * [rosping] Do not test on indigo, it seems to be broken

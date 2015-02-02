@@ -2,6 +2,11 @@
 Changelog for package posedetection_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove rosbuild files
+* Contributors: Ryohei Ueda
+
 1.0.58 (2015-01-07)
 -------------------
 

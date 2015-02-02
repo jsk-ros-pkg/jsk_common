@@ -2,6 +2,11 @@
 Changelog for package bayesian_belief_networks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove rosbuild files
+* Contributors: Ryohei Ueda
+
 1.0.58 (2015-01-07)
 -------------------
 * check debian_version to see site/dist packages

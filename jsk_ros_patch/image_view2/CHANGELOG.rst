@@ -2,6 +2,20 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove rosbuild files
+* [image_view2] Add service to change interaction mode
+* [image_view2] Support continuous publishing in line selection mode
+* [image_view2] Fix timing to publish points selected in line mode
+* [image_view2] Add new interaction mode to select line
+* [image_view2] Do not publish region outside of the image
+* [image_view2] Add ~region_continuous_publish parameter and if it's true,
+  image_view2 will keep publishing region selected by user
+* [image_view2] Do not show image if no image is available
+* [image_view2] Do not use time difference to detect point or rectangle
+* Contributors: Ryohei Ueda
+
 1.0.58 (2015-01-07)
 -------------------
 * [image_view2] Call GUI functions from main thread
@@ -252,4 +266,4 @@ Changelog for package image_view2
 * back to previous version, which is not using subscribeCamera, becouse of slow connection of pr2-network
 * rewrite using subscribeCamera
 * add image_view2/
-* Contributors: manabu, kazuto, Kei Okada, youhei, chen, Ryohei Ueda, mikita
+* Contributors: manabu, kazuto, Kei Okada, youhei, Ryohei Ueda, chen, mikita
