@@ -2,8 +2,8 @@
 Changelog for package mini_maxwell
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.59 (2015-02-03)
+-------------------
 * Remove rosbuild files
 * [mini_maxwell] Publish status of mini maxwell in drc_2015_environment.py
 * [mini_maxwell] Fix minimaxwell configuration not to drop all the

@@ -2,8 +2,8 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.59 (2015-02-03)
+-------------------
 * Remove rosbuild files
 * Contributors: Ryohei Ueda
 

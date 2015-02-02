@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.59 (2015-02-03)
+-------------------
 * Remove rosbuild files
 * [image_view2] Add service to change interaction mode
 * [image_view2] Support continuous publishing in line selection mode

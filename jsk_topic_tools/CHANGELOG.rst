@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.59 (2015-02-03)
+-------------------
 * [jsk_topic_tools] Add document about nodelet utility classes
 * [jsk_topic_tools] Fix license: WillowGarage -> JSK Lab
 * [jsk_topic_tools] Add documentation about color_utils.h

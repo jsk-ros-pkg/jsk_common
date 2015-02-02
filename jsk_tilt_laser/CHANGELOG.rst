@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.59 (2015-02-03)
+-------------------
 * [jsk_tilt_laser] Update multisense.launch according to the latest update
   1) use multisense.launch, it support launch_robot_state_publisher argument
   2) fix name to change speed of spindle laser

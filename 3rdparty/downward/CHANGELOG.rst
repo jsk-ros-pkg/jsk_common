@@ -2,8 +2,8 @@
 Changelog for package downward
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.59 (2015-02-03)
+-------------------
 * Remove rosbuild files
 * [downward] Remove multilib from it's dependency
 * use jsk-ros-pkg/archives for download tgz

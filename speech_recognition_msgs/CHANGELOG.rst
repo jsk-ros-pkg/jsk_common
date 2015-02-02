@@ -2,8 +2,8 @@
 Changelog for package speech_recognition_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.59 (2015-02-03)
+-------------------
 * Remove rosbuild files
 * Contributors: Ryohei Ueda
 
