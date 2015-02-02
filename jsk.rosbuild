@@ -243,7 +243,7 @@ function compile-jsk-ros-pkg {
     compile-pkg elevator_move_base_pr2 detect_cans_in_fridge_201202 jsk_2013_04_pr2_610
 }
 function test-jsk-ros-pkg {
-    test-pkg euslisp roseus pr2eus euscollada jsk_pcl_ros kinect_near_mode_calibration elevator_move_base_pr2 detect_cans_in_fridge_201202 jsk_2013_04_pr2_610
+    test-pkg roseus pr2eus euscollada jsk_pcl_ros elevator_move_base_pr2 detect_cans_in_fridge_201202 jsk_2013_04_pr2_610 #kinect_near_mode_calibration
 }
 
 # show-* option
