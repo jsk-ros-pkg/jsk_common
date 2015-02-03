@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.60 (2015-02-03)
+-------------------
 * [jsk_topic_tools] add std_srvs
 
 1.0.59 (2015-02-03)
