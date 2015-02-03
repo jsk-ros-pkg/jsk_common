@@ -10,7 +10,7 @@
                                        (- (send jt :max-angle)
                                           (send jt :min-angle)))
                                     255))
-                        (round (* (/ (abs (mod v 360)) 360.0) 255))))
+                        (round (* (/ (360-mod v) 360.0) 255))))
                   (coerce av cons) (send robot :joint-list))
           integer-vector))
 
@@ -32,5 +32,10 @@
 (defun infinite-joint-p (jt)
   (or (> (send jt :max-angle) 360)
       (< (send jt :min-angle) -360)))
+
+(defun 360-mod (v)
+  (if (> v 0)
+      (mod v 360)
+    (+ 360 (mod v 360)))))
 
 (provide :compressed-angle-vector)
