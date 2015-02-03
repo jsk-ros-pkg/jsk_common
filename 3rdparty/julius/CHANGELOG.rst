@@ -2,6 +2,9 @@
 Changelog for package julius
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.59 (2015-02-03)
 -------------------
 * Remove rosbuild files

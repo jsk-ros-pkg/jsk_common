@@ -2,6 +2,9 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.59 (2015-02-03)
 -------------------
 * [jsk_network_tools] Add euslisp script to compress/decompres joint
