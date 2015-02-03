@@ -15,7 +15,7 @@ function usage {
 function error {
     echo "export ROS_HOME=$ROS_HOME"
     echo "source $ROS_INSTALLDIR/devel/setup.bash"
-    (cd $ROS_INSTALLDIR; catkin_test_results --all; echo "done")
+    (cd $ROS_INSTALLDIR/build; catkin_test_results --all; echo "done")
     exit 1
 }
 trap error ERR
