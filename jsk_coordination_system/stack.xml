@@ -1,9 +1,0 @@
-<stack>
-  <description brief="jsk_coordination_system">jsk_coordination_system</description>
-  <author>Ryohei Ueda(ueda@jsk.t.u-tokyo.ac.jp)</author>
-  <license>BSD</license>  
-  <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/jsk_coordination_system</url>
-  <depend stack="ros" />
-
-</stack>
