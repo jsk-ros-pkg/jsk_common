@@ -263,7 +263,7 @@ else
     install-jsk-ros-pkg
     # setup-android
     compile-jsk-ros-pkg
-    test-jsk-ros-pkg
+    # test-jsk-ros-pkg
 fi
 
 #
