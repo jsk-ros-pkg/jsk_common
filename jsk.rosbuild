@@ -6,9 +6,9 @@ function usage {
     echo >&2 "          [-i|--show-install] show how to install "
     echo >&2 "          [-p|--show-package] display packages to install"
     echo >&2 "          [-e|--environment] display environment variables"
-    echo >&2 "          [-d|--use-deb] use debian package if they are already released"
     echo >&2 "          [--rtm|--start-jsk|--rtm-ros-robotics] merge .rosinstall for rtm-ros stuff"
-    echo >&2 "          [--from-source] install whole ros system using source code"
+    echo >&2 "          [--from-source] install jsk and related packages from source code"
+    echo >&2 "          [--from-full-source] install whole ros system using source code"
     exit 0
 }
 
@@ -21,7 +21,7 @@ function error {
 trap error ERR
 
 # command line parse
-OPT=`getopt -o hiped -l help,show-install,show-package,show-environment,use-deb,rtm,start-jsk,rtm-ros-robotics,from-source -- $*`
+OPT=`getopt -o hiped -l help,show-install,show-package,show-environment,rtm,start-jsk,from-source,from-full-source -- $*`
 if [ $? != 0 ]; then
     usage
 fi
@@ -33,9 +33,8 @@ while [ -n "$1" ] ; do
 	-i|--show-install) SHOW="install"; shift;;
 	-p|--show-package) SHOW="package"; shift;;
 	-e|--show-environment) SHOW="environment"; shift;;
-	-d|--use-deb) USE_DEB=true; shift;;
-  --rtm|--start-jsk|--rtm-ros-robotics) RTM_ROS_ROBOTICS=true; shift;;
-  --from-source) USE_SOURCE=true; shift;;
+        --from-source) USE_SOURCE=true; shift;;
+        --from-full-source) USE_SOURCE=full; shift;;
 	--) shift; break;;
 	*) echo "Unknown option($1)"; usage;;
     esac
@@ -103,7 +102,7 @@ function setup-ros {
     sudo apt-get update
     sudo apt-get upgrade -y --force-yes
     sudo apt-get -qq -y install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools python-pip
-    if [ "$USE_SOURCE" == "true" ]; then
+    if [ "$USE_SOURCE" == "full" ]; then
         sudo apt-get -qq -y install python-rosinstall-generator
         sudo apt-get -qq -y install libftdi-dev libgstreamer0.10-dev libgst-dev libgstreamer-plugins-base0.10-dev
     fi
@@ -124,8 +123,8 @@ function install-pkg {
     ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR/src;
     (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( wstool init ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" wstool merge $ROSINSTALL -r -y ; done  )
 
-    # for use deb package mode
-    if [ "$USE_DEB" == true ]; then
+    # if use_source is not true of full, for use deb package mode
+    if [ "$USE_SOURCE" == "" ]; then
         for repo in jsk-ros-pkg rtm-ros-robotics ros-naoqi roboticsgroup pal-robotics RethinkRobotics PR2; do
             for pkg in `find $ROS_INSTALLDIR/$repo/ -maxdepth 2 -name .rosinstall -exec dirname {} \; | xargs -n 1 -i basename {} `; do
                 pkg2=$(echo $pkg | sed s@_@-@g)
@@ -139,7 +138,7 @@ function install-pkg {
         done
     fi
     #
-    if [ "$USE_SOURCE" == "true" ]; then
+    if [ "$USE_SOURCE" == "full" ]; then
         rosinstall_generator --from-path $ROS_INSTALLDIR_SRC --deps --deps-only --flat --exclude rosjava_bootstrap rosjava_build_tools rosjava_messages rwt_speech_recognition --wet-only --tar > /tmp/parent.rosinstall.$$
         rosinstall_generator openni_launch openni2_launch rospack --deps --flat --wet-only --tar > /tmp/parent_direct.rosinstall.$$
         (cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( wstool init ) ) \
