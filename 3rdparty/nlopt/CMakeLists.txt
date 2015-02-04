@@ -11,7 +11,7 @@ catkin_package(
     DEPENDS
     CATKIN_DEPENDS
     INCLUDE_DIRS
-    LIBRARIES
+    LIBRARIES nlopt_cxx
 )
 
 # set(NLOPTDIR ${CATKIN_PACKAGE_SHARE_DESTINATION}/jskeus/eus)
