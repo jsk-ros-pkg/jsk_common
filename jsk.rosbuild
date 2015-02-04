@@ -126,15 +126,16 @@ function install-pkg {
 
     # for use deb package mode
     if [ "$USE_DEB" == true ]; then
-        for pkg in `find $ROS_INSTALLDIR/jsk-ros-pkg/ -maxdepth 2 -name .rosinstall -exec dirname {} \; | xargs -n 1 -i basename {} `; do
-            ROS_DISTRO=hydro
-            pkg2=$(echo $pkg | sed s@_@-@g)
-            aptitude show ros-$ROS_DISTRO-$pkg2
-            if [ $? == 0 ]; then
-                echo "install ros-$ROS_DISTRO-$pkg2 and rmeove $pkg from .rosinstall"
-                apt-get -y install ros-$ROS_DISTRO-$pkg2
-                (cd $ROS_INSTALLDIR_SRC; wstool rm jsk-ros-pkg/$pkg)
-            fi
+        for repo in jsk-ros-pkg rtm-ros-robotics ros-naoqi roboticsgroup pal-robotics RethinkRobotics PR2; do
+            for pkg in `find $ROS_INSTALLDIR/$repo/ -maxdepth 2 -name .rosinstall -exec dirname {} \; | xargs -n 1 -i basename {} `; do
+                pkg2=$(echo $pkg | sed s@_@-@g)
+                aptitude show ros-$DISTRIBUTION-$pkg2
+                if [ $? == 0 ]; then
+                    echo "install ros-$DISTRIBUTION-$pkg2 and rmeove $pkg from .rosinstall"
+                    apt-get -y install ros-$DISTRIBUTION-$pkg2
+                    (cd $ROS_INSTALLDIR_SRC; wstool rm $repo/$pkg)
+                fi
+            done
         done
     fi
     #
