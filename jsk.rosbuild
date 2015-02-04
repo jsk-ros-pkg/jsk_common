@@ -193,7 +193,7 @@ function test-pkg {
     . $ROS_INSTALLDIR/devel/setup.sh
     # test
     export DISPLAY=
-    (cd $ROS_INSTALLDIR && LC_ALL=C catkin test --no-status $PACKAGES)
+    (cd $ROS_INSTALLDIR && LC_ALL=C catkin test -p 1 --no-status $PACKAGES)
     (cd $ROS_INSTALLDIR && LC_ALL=C catkin_test_results --all)
 }
 
