@@ -123,20 +123,6 @@ function install-pkg {
     ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR/src;
     (mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( wstool init ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" wstool merge $ROSINSTALL -r -y ; done  )
 
-    # if use_source is not true of full, for use deb package mode
-    if [ "$USE_SOURCE" == "" ]; then
-        for repo in jsk-ros-pkg rtm-ros-robotics ros-naoqi roboticsgroup pal-robotics RethinkRobotics PR2; do
-            for pkg in `find $ROS_INSTALLDIR/$repo/ -maxdepth 2 -name .rosinstall -exec dirname {} \; | xargs -n 1 -i basename {} `; do
-                pkg2=$(echo $pkg | sed s@_@-@g)
-                aptitude show ros-$DISTRIBUTION-$pkg2
-                if [ $? == 0 ]; then
-                    echo "install ros-$DISTRIBUTION-$pkg2 and rmeove $pkg from .rosinstall"
-                    apt-get -y install ros-$DISTRIBUTION-$pkg2
-                    (cd $ROS_INSTALLDIR_SRC; wstool rm $repo/$pkg)
-                fi
-            done
-        done
-    fi
     #
     if [ "$USE_SOURCE" == "full" ]; then
         rosinstall_generator --from-path $ROS_INSTALLDIR_SRC --deps --deps-only --flat --exclude rosjava_bootstrap rosjava_build_tools rosjava_messages rwt_speech_recognition --wet-only --tar > /tmp/parent.rosinstall.$$
@@ -145,6 +131,27 @@ function install-pkg {
             && wstool merge /tmp/parent.rosinstall.$$ \
             && wstool merge /tmp/parent_direct.rosinstall.$$)
     fi
+
+    # if use_source is not true of full, for use deb package mode
+    if [ "$USE_SOURCE" == "" ]; then
+        wget https://raw.github.com/ros/rosdistro/master/$DISTRIBUTION/distribution.yaml -O /tmp/distribution.yaml.$$
+        for repo in jsk-ros-pkg rtm-ros-robotics ros-naoqi roboticsgroup pal-robotics RethinkRobotics PR2; do
+            echo "repository -- $repo"
+            for pkg in `grep $repo/ $ROS_INSTALLDIR_SRC/.rosinstall | sed "s@^.*uri:.*/$repo/\([a-zA-Z0-9_-]*\).*\\$@\1@"`; do
+                echo -n "  package -- $pkg"
+                grep -c $pkg\: /tmp/distribution.yaml.$$ > /dev/null
+                if [ $? == 0 ]; then
+                    name=`grep $repo/$pkg[^a-zA-Z0-9_-] $ROS_INSTALLDIR_SRC/.rosinstall | sed "s@^.*local-name: \([a-zA-Z0-9_/-]*\),.*\\$@\1@"`
+                    echo ".. remove $name ($repo/$pkg) from .rosinstall"
+                    (cd $ROS_INSTALLDIR_SRC; wstool rm $name)
+                else
+                    echo ""
+                fi
+            done
+        done
+        (cd $ROS_INSTALLDIR_SRC; wstool info)
+    fi
+
     # wstool update
     success=0
     retry=0
@@ -153,9 +160,8 @@ function install-pkg {
         retry=`expr $retry + 1`
     done
 
-    echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
-
     # rosdep install
+    echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
     (cd $ROS_INSTALLDIR_SRC &&
         wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION bash)
     return 0
