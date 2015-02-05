@@ -104,4 +104,8 @@ if __name__ == '__main__':
                       help="end time of bagfile", type="float")
     (options, args) = parser.parse_args()
 
+    if len(args) != 1:
+        parser.print_help()
+        exit(0)
+
     bag_to_csv(options, args)
