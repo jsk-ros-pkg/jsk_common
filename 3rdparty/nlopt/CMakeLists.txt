@@ -4,14 +4,20 @@ cmake_minimum_required(VERSION 2.4.6)
 
 find_package(catkin REQUIRED COMPONENTS mk)
 
-execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile DSTDIR=${PROJECT_SOURCE_DIR}
-  MK_DIR=${mk_PREFIX}/share/mk)
+add_custom_target(libnlopt_cxx ALL
+  DEPENDS ${PROJECT_SOURCE_DIR}/lib/libnlopt_cxx.so)
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/lib/libnlopt_cxx.so
+  COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile DSTDIR=${PROJECT_SOURCE_DIR}
+  MK_DIR=${mk_PREFIX}/share/mk
+  COMMAND cp ${PROJECT_SOURCE_DIR}/lib/libnlopt* ${CATKIN_DEVEL_PREFIX}/lib
+  DEPENDS Makefile)
 
 catkin_package(
     DEPENDS
     CATKIN_DEPENDS
     INCLUDE_DIRS
     LIBRARIES nlopt_cxx
+    EXPORTED_TARGETS libnlopt_cxx
 )
 
 # set(NLOPTDIR ${CATKIN_PACKAGE_SHARE_DESTINATION}/jskeus/eus)
