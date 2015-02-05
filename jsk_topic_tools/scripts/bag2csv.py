@@ -11,7 +11,7 @@ from datetime import datetime
 import uuid
 
 
-def message_to_csv(stream, msg):
+def message_to_csv(stream, msg, flatten=False):
     """
     stream: StringIO
     msg: message
@@ -19,11 +19,16 @@ def message_to_csv(stream, msg):
     try:
         for s in type(msg).__slots__:
             val = msg.__getattribute__(s)
-            message_to_csv(stream, val)
+            message_to_csv(stream, val, flatten)
     except:
         msg_str = str(msg)
         if msg_str.find(",") is not -1:
-            msg_str = "\"" + msg_str + "\""
+            if flatten:
+                msg_str = msg_str.strip("(")
+                msg_str = msg_str.strip(")")
+                msg_str = msg_str.strip(" ")
+            else:
+                msg_str = "\"" + msg_str + "\""
         stream.write("," + msg_str)
 
 def message_type_to_csv(stream, msg, parent_content_name=""):
@@ -74,12 +79,13 @@ def bag_to_csv(options, args):
                 stream = open(format_csv_filename(options.output_file_format, topic),'w')
                 streamdict[topic] = stream
                 # header
-                stream.write("time")
-                message_type_to_csv(stream, msg)
-                stream.write('\n')
+                if options.header:
+                    stream.write("time")
+                    message_type_to_csv(stream, msg)
+                    stream.write('\n')
 
-            stream.write(str(time))
-            message_to_csv(stream, msg)
+            stream.write(datetime.fromtimestamp(time.to_time()).strftime('%Y/%m/%d/%H:%M:%S.%f'))
+            message_to_csv(stream, msg, flatten=not options.header)
             stream.write('\n')
         [s.close for s in streamdict.values()]
     except Exception as e:
@@ -102,6 +108,9 @@ if __name__ == '__main__':
                       help="start time of bagfile", type="float")
     parser.add_option("-e", "--end-time", dest="end_time",
                       help="end time of bagfile", type="float")
+    parser.add_option("-n", "--no-header", dest="header",
+                      action="store_false", default=True,
+                      help="no header / flatten array value")
     (options, args) = parser.parse_args()
 
     if len(args) != 1:
