@@ -1,7 +1,0 @@
-<package>
-  <description brief="a simple script to generate alias command">
-    a simple script to generate alias command for many ROS_MASTER_URI
-  </description>
-  <author>Ryohei Ueda(ueda@jsk.t.u-tokyo.ac.jp)</author>
-  <license>Apache License 2.0</license>
-</package>

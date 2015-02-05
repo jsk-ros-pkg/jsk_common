@@ -2,6 +2,19 @@
 Changelog for package downward
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.60 (2015-02-03)
+-------------------
+
+1.0.59 (2015-02-03)
+-------------------
+* Remove rosbuild files
+* [downward] Remove multilib from it's dependency
+* use jsk-ros-pkg/archives for download tgz
+* downward: Use native bitwidth when compiling
+  Previous behavior is to always compile 32-bit binaries
+* [downward] Ignore error when building downward.
+* Contributors: Ryohei Ueda, Scott K Logan, Kei Okada
+
 1.0.58 (2015-01-07)
 -------------------
 

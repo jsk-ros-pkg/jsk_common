@@ -2,6 +2,25 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.60 (2015-02-03)
+-------------------
+
+1.0.59 (2015-02-03)
+-------------------
+* [jsk_tilt_laser] Update multisense.launch according to the latest update
+  1) use multisense.launch, it support launch_robot_state_publisher argument
+  2) fix name to change speed of spindle laser
+* Remove rosbuild files
+* [jsk_tilt_laser] Add ~overwrap_angle parameter to multisense.launch
+* [jsk_tilt_laser] Add scan_to_cloud_chain to multisense.launch to get
+  one-scan pointcloud. We use ~high_fidelity=true in order to avoid
+  laser_geometry's bug to produce large sphere pointcloud
+* Merge pull request `#691 <https://github.com/jsk-ros-pkg/jsk_common/issues/691>`_ from garaemon/laser-filter
+  [jsk_tilt_laser] Add laser_filters to multisense
+* [jsk_tilt_laser] Add laser_filters to multisense
+* update multisense launch for using with real robot
+* Contributors: Ryohei Ueda, Yohei Kakiuchi
+
 1.0.58 (2015-01-07)
 -------------------
 * [jsk_tilt_laser] Use jsk_pcl_ros/TiltLaserListener rather than

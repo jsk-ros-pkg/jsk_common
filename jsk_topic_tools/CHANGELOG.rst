@@ -2,6 +2,21 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.60 (2015-02-03)
+-------------------
+* [jsk_topic_tools] add std_srvs
+
+1.0.59 (2015-02-03)
+-------------------
+* [jsk_topic_tools] Add document about nodelet utility classes
+* [jsk_topic_tools] Fix license: WillowGarage -> JSK Lab
+* [jsk_topic_tools] Add documentation about color_utils.h
+* Remove rosbuild files
+* [jsk_topic_tools] Return true in service callback of snapshot nodelet
+* [jsk_topci_tools] Fix heatColor function to return std_msgs::ColorRGBA
+* [jsk_topic_tools] Add new utility to take snapshot of topic
+* Contributors: Ryohei Ueda
+
 1.0.58 (2015-01-07)
 -------------------
 * [jsk_topic_tools] Indigo test seems to be broken,

@@ -1,0 +1,26 @@
+<launch>
+  <arg name="Y_DIFF" default="0" />
+  <node pkg="robot_state_publisher" name="robot_state_publisher" type="robot_state_publisher">
+  </node>
+  <node pkg="robot_state_publisher" name="robot_state_publisher_decompressed" type="robot_state_publisher">
+    <remap from="/joint_states" to="/joint_states_decompressed" />
+    <rosparam>
+      tf_prefix: decompressed
+    </rosparam>
+  </node>
+  <node pkg="joint_state_publisher" name="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="true" />
+  </node>
+  <node pkg="jsk_network_tools" type="joint-state-compressor.l" name="joint_state_compressor" output="screen"/>
+  <node pkg="jsk_network_tools" type="joint-state-decompressor.l" name="joint_state_decompressor" output="screen"/>
+  <node pkg="tf" type="static_transform_publisher" name="static_transform_publisher"
+        args="0 $(arg Y_DIFF) 0 0 0 0 base_footprint decompressed/base_footprint 100" />
+  <node pkg="jsk_rviz_plugins" type="tf_diff_text.py" name="endeffector_diff">
+    <rosparam>
+      src1: l_gripper_palm_link
+      src2: decompressed/l_gripper_palm_link
+    </rosparam>
+  </node>
+  <node pkg="rviz" type="rviz" name="rviz"
+        args="-d $(find jsk_network_tools)/launch/joint_state_compress_sample.rviz" />
+</launch>

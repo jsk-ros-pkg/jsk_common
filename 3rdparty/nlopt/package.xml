@@ -4,7 +4,7 @@
   <description>
     nlopt
   </description>
-  <version>1.0.58</version>
+  <version>1.0.60</version>
   <maintainer email="s-noda@jsk.t.u-tokyo.ac.jp">Noda Shintaro</maintainer>
   <license>BSD</license>
   <export>

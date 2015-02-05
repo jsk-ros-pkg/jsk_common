@@ -4,23 +4,12 @@
   <arg name="mtu"        default="7200" />
   <arg name="use_robot_description" default="true" />
 
-  <group if="$(arg use_robot_description)"> <!-- original -->
-    <param name="robot_description"
-           textfile="$(find multisense_description)/urdf/multisenseSL.urdf"/>
-    <!-- Robot state publisher -->
-    <node pkg="robot_state_publisher" type="state_publisher" name="$(arg namespace)_state_publisher">
-      <param name="publish_frequency" type="double" value="50.0" />
-      <remap from="joint_states" to="/$(arg namespace)/joint_states" />
-      <param name="tf_prefix" value="/$(arg namespace)" />
-    </node>
-    <!-- ROS Driver -->
-    <node pkg="multisense_ros" ns="$(arg namespace)" type="ros_driver" name="multisense_driver" output="screen">
-      <param name="sensor_ip"   value="$(arg ip_address)" />
-      <param name="sensor_mtu"  value="$(arg mtu)" />
-      <param name="tf_prefix"   value="/$(arg namespace)" />
-      <param name="use_organized_pointcloud" value="true"/>
-    </node>
-  </group>
+  <include file="$(find multisense_bringup)/multisense.launch">
+    <arg name="ip_address" value="$(arg ip_address)" />
+    <arg name="namespace" value="$(arg namespace)" />
+    <arg name="mtu" value="$(arg mtu)" />
+    <arg name="launch_robot_state_publisher" value="$(arg use_robot_description)" />    
+  </include>
 
   <group unless="$(arg use_robot_description)" ns="$(arg namespace)">
     <!-- using robot description under name space -->
@@ -30,13 +19,6 @@
     <node pkg="robot_state_publisher" type="state_publisher" name="state_publisher">
       <param name="publish_frequency" type="double" value="50.0" />
       <param name="tf_prefix" value="/$(arg namespace)" />
-    </node>
-    <!-- ROS Driver -->
-    <node pkg="multisense_ros" type="ros_driver" name="multisense_driver" output="screen">
-      <param name="sensor_ip"   value="$(arg ip_address)" />
-      <param name="sensor_mtu"  value="$(arg mtu)" />
-      <param name="tf_prefix"   value="/$(arg namespace)" />
-      <param name="use_organized_pointcloud" value="true"/>
     </node>
   </group>
 
@@ -116,7 +98,7 @@
    </node>
    
    <!-- modify multisense parameters -->
-   <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense spindle_speed 1.0" name="set_multisense_spindle_speed" />
+   <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense motor_speed 0.5" name="set_multisense_spindle_speed" />
    <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense fps 30.0" name="set_multisense_fps" />
 
    <include file="$(find jsk_pcl_ros)/launch/multi_resolution_organized_pointcloud.launch">

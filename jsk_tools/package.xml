@@ -1,6 +1,6 @@
 <package>
   <name>jsk_tools</name>
-  <version>1.0.58</version>
+  <version>1.0.60</version>
   <description>Includes emacs scripts, ros tool alias generator, and launch doc generator.</description>
 
   <maintainer email="ueda@jsk.t.u-tokyo.ac.jp">Ryohei Ueda</maintainer>
@@ -16,6 +16,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>git</build_depend>
+  <run_depend>python-percol</run_depend>
   <!-- <build_depend>mjpeg_server</build_depend> -->
   <!-- <run_depend>mjpeg_server</run_depend> -->
   <!-- <test_depend>mjpeg_server</test_depend> -->

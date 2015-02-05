@@ -2,6 +2,21 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.60 (2015-02-03)
+-------------------
+
+1.0.59 (2015-02-03)
+-------------------
+* Remove rosbuild files
+* [jsk_tools] Add new replace rule to force_to_rename_changelog_user.py
+* add error message when percol is not installed
+* [jsk_tools] Add percol utility
+* update to use rossetmaster in functions
+* [jsk_tools] Add progress bar to force_to_rename_changelog_user.py
+* [jsk_tools] Add more name conevrsion rule to force_to_rename_changelog_user.py
+* [jsk_tools] install bin directory
+* Contributors: Ryohei Ueda, Kei Okada
+
 1.0.58 (2015-01-07)
 -------------------
 * Add more user replacing rules

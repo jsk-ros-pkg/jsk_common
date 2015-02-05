@@ -2,6 +2,14 @@
 Changelog for package ffha
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.60 (2015-02-03)
+-------------------
+
+1.0.59 (2015-02-03)
+-------------------
+* Remove rosbuild files
+* Contributors: Ryohei Ueda
+
 1.0.58 (2015-01-07)
 -------------------
 
@@ -187,4 +195,4 @@ Changelog for package ffha
 * add patch for parse.c, segv if last condition of inititial state is 'not-condition' in problem
 * remove strange exit(-1) for use non DNF preconditions
 * put jsk tools in jsk_common stack
-* Contributors: Yuki Furuta, manabu, rosen
+* Contributors: Yuki Furuta, rosen, manabu
