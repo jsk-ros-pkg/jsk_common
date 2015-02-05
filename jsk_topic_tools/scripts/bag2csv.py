@@ -94,7 +94,7 @@ def bag_to_csv(options, args):
         bag.close()
 
 if __name__ == '__main__':
-    rospy.init_node('bag2csv')
+    rospy.init_node('bag2csv', anonymous=True)
     parser = OptionParser(usage="%prog [options] bagfile")
     parser.add_option("-a", "--all", dest="all_topics",
                       action="store_true",
