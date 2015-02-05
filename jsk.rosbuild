@@ -204,41 +204,43 @@ function test-pkg {
 }
 
 function install-jsk-ros-pkg {
-    wget  'https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosinstall' -O /tmp/jsk.rosinstall.$$
-    if [ "$RTM_ROS_ROBOTICS" = "true" ]; then
-        cat <<EOF > /tmp/rtm-ros-robotics.rosinstall.$$
+    # default only install demo packages
+    if [ "$USE_SOURCE" == "" ]; then
+        cat <<EOF > /tmp/rosinstall.$$
 - git:
-    uri: https://github.com/start-jsk/openrtm_aist_core.git
-    local-name: rtm-ros-robotics/openrtm_common/openrtm_aist_core
-- git:
-    uri: https://github.com/start-jsk/openhrp3.git
-    local-name: rtm-ros-robotics/openrtm_common/openhrp3
-- git:
-    uri: https://github.com/start-jsk/hrpsys.git
-    local-name: rtm-ros-robotics/openrtm_common/hrpsys
-- git:
-    uri: https://github.com/start-jsk/rtshell_core.git
-    local-name: rtm-ros-robotics/openrtm_common/rtshell_core
-- git:
-    uri: https://github.com/start-jsk/rtmros_common.git
-    local-name: rtm-ros-robotics/rtmros_common
+    uri: https://github.com/jsk-ros-pkg/jsk_demos.git
+    local-name: jsk-ros-pkg/jsk_demos
+EOF
+        if [ "$RTM_ROS_ROBOTICS" = "true" ]; then
+            cat <<EOF >> /tmp/rosinstall.$$
 - git:
     uri: https://github.com/start-jsk/rtmros_tutorials.git
     local-name: rtm-ros-robotics/rtmros_tutorials
+- git:
+    uri: https://github.com/start-jsk/rtmros_gazebo.git
+    local-name: rtm-ros-robotics/rtmros_gazebo
+EOF
+        fi
+    else #  [ "$USE_SOURCE" != "" ]
+        wget  'https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosinstall' -O /tmp/rosinstall.$$
+        if [ "$RTM_ROS_ROBOTICS" = "true" ]; then
+            cat <<EOF > /tmp/rtm-ros-robotics.rosinstall.$$
+- git:
+    uri: https://github.com/start-jsk/rtmros_common.git
+    local-name: rtm-ros-robotics/rtmros_common
 - git:
     uri: https://github.com/start-jsk/rtmros_hironx.git
     local-name: rtm-ros-robotics/rtmros_hironx
 - git:
     uri: https://github.com/tork-a/rtmros_nextage.git
     local-name: rtm-ros-robotics/rtmros_nextage
-- git:
-    uri: https://github.com/start-jsk/rtmros_gazebo.git
-    local-name: rtm-ros-robotics/rtmros_gazebo
 EOF
-        install-pkg /tmp/jsk.rosinstall.$$ /tmp/rtm-ros-robotics.rosinstall.$$
-    else
-        install-pkg /tmp/jsk.rosinstall.$$
+            cat /tmp/rtm-ros-robotics.rosinstall.$$ >> /tmp/rosinstall.$$
+        fi
     fi
+    echo "*** cat rosinstall files..."
+    cat /tmp/rosinstall.$$
+    install-pkg /tmp/rosinstall.$$
     # install euslisp
     $ROS_INSTALLDIR_SRC/src/jsk-ros-pkg/jsk_roseus/setup.sh
     if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
