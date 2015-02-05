@@ -273,7 +273,10 @@ EOF
     cat /tmp/rosinstall.$$
     install-pkg /tmp/rosinstall.$$
     # install euslisp
-    $COMMAND $ROS_INSTALLDIR_SRC/src/jsk-ros-pkg/jsk_roseus/setup.sh
+    if [ "$USE_SOURCE" != "" ]; then
+        $COMMAND $ROS_INSTALLDIR_SRC/jsk-ros-pkg/jsk_roseus/setup.sh
+        $COMMAND $ROS_INSTALLDIR_SRC/rtm-ros-robotics/rtmros_common/setup.sh
+    fi
     if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
         $COMMAND xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi || return 0
     fi
