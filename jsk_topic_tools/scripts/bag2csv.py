@@ -24,7 +24,7 @@ def message_to_csv(stream, msg):
         msg_str = str(msg)
         if msg_str.find(",") is not -1:
             msg_str = "\"" + msg_str + "\""
-        stream.write(", " + msg_str)
+        stream.write("," + msg_str)
 
 def message_type_to_csv(stream, msg, parent_content_name=""):
     """
@@ -36,7 +36,7 @@ def message_type_to_csv(stream, msg, parent_content_name=""):
             val = msg.__getattribute__(s)
             message_type_to_csv(stream, val, ".".join([parent_content_name,s]))
     except:
-        stream.write(", " + parent_content_name)
+        stream.write("," + parent_content_name)
 
 seq = 0
 nowtime = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -97,7 +97,7 @@ if __name__ == '__main__':
                       action="append",
                       help="white list topic names", metavar="TOPIC_NAME")
     parser.add_option("-O", "--output", dest="output_file_format",
-                      help="output file names format\n%t: topic name\n%s: sequential number\n%d: datetime (now)\n%u: uuid\ne.g.: -O $t-$d.csv", metavar="DESTINATION")
+                      help="output file names format\n%t: topic name\n%s: sequential number\n%d: datetime (now)\n%u: uuid\ne.g.: -O jskbag-$t-$d.csv", metavar="DESTINATION")
     parser.add_option("-s", "--start-time", dest="start_time",
                       help="start time of bagfile", type="float")
     parser.add_option("-e", "--end-time", dest="end_time",
