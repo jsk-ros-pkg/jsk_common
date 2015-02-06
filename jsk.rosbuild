@@ -191,10 +191,6 @@ function install-pkg {
         retry=`expr $retry + 1`
     done
 
-    # rosdep install
-    echo "hddtemp hddtemp/daemon boolean false" | $COMMAND sudo debconf-set-selections
-    (cd $ROS_INSTALLDIR_SRC &&
-        $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION $COMMAND bash)
     return 0
 }
 
@@ -215,6 +211,11 @@ function setup-android {
 function compile-pkg {
     trap error ERR
     local PACKAGES=$@
+
+    # rosdep install
+    echo "hddtemp hddtemp/daemon boolean false" | $COMMAND sudo debconf-set-selections
+    (cd $ROS_INSTALLDIR_SRC &&
+        $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION $COMMAND bash)
 
     ## do compile
     $COMMAND . /opt/ros/$DISTRIBUTION/setup.sh
