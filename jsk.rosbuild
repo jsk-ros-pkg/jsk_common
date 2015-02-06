@@ -47,7 +47,7 @@ while [ -n "$1" ] ; do
 	*) echo "Unknown option($1)"; usage;;
     esac
 done
-
+echo USE_SOURCE="$USE_SOURCE"
 # set environment variables
 # set distribution
 case $1 in
@@ -131,7 +131,7 @@ function setup-ros {
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         $COMMAND sudo apt-get update
     fi
-    $COMMAND sudo apt-get upgrade $YES 
+    $COMMAND sudo apt-get upgrade $YES
     $COMMAND sudo apt-get -qq $YES install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools python-pip
     if [ "$USE_SOURCE" == "full" ]; then
         $COMMAND sudo apt-get -qq $YES install python-rosinstall-generator
@@ -190,7 +190,13 @@ function install-pkg {
         (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" $COMMAND wstool update -j10 --delete-changed-uris) && success=1 || sleep 120
         retry=`expr $retry + 1`
     done
-
+    # install euslisp
+    if [ "$USE_SOURCE" != "" ]; then
+        $COMMAND $ROS_INSTALLDIR/src/jsk-ros-pkg/jsk_roseus/setup.sh
+        # Please enable following line after use
+        # hrpsys/openrtm without ros package wrapper
+        # $COMMAND $ROS_INSTALLDIR_SRC/rtm-ros-robotics/rtmros_common/setup.sh
+    fi
     # rosdep install
     echo "hddtemp hddtemp/daemon boolean false" | $COMMAND sudo debconf-set-selections
     (cd $ROS_INSTALLDIR_SRC &&
@@ -265,6 +271,20 @@ EOF
 - git:
     uri: https://github.com/tork-a/rtmros_nextage.git
     local-name: rtm-ros-robotics/rtmros_nextage
+# Please remove following repositories after use
+# hrpsys/openrtm without ros package wrapper
+- git:
+    uri: https://github.com/start-jsk/openrtm_aist_core.git
+    local-name: rtm-ros-robotics/openrtm_common/openrtm_aist_core
+- git:
+    uri: https://github.com/start-jsk/openhrp3.git
+    local-name: rtm-ros-robotics/openrtm_common/openhrp3
+- git:
+    uri: https://github.com/start-jsk/hrpsys.git
+    local-name: rtm-ros-robotics/openrtm_common/hrpsys
+- git:
+    uri: https://github.com/start-jsk/rtshell_core.git
+    local-name: rtm-ros-robotics/openrtm_common/rtshell_core
 EOF
             cat /tmp/rtm-ros-robotics.rosinstall.$$ >> /tmp/rosinstall.$$
         fi
@@ -272,11 +292,6 @@ EOF
     echo "*** cat rosinstall files..."
     cat /tmp/rosinstall.$$
     install-pkg /tmp/rosinstall.$$
-    # install euslisp
-    if [ "$USE_SOURCE" != "" ]; then
-        $COMMAND $ROS_INSTALLDIR_SRC/jsk-ros-pkg/jsk_roseus/setup.sh
-        $COMMAND $ROS_INSTALLDIR_SRC/rtm-ros-robotics/rtmros_common/setup.sh
-    fi
     if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
         $COMMAND xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi || return 0
     fi
@@ -315,4 +330,3 @@ else
 fi
 
 #
-
