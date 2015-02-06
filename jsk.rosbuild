@@ -212,19 +212,26 @@ function compile-pkg {
     trap error ERR
     local PACKAGES=$@
 
-    # rosdep install
     echo "hddtemp hddtemp/daemon boolean false" | $COMMAND sudo debconf-set-selections
-    (cd $ROS_INSTALLDIR_SRC &&
-        $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION $COMMAND bash)
 
-    ## do compile
+    ## do compile for upstream
     $COMMAND . /opt/ros/$DISTRIBUTION/setup.sh
     if [ -e ${ROS_INSTALLDIR}_parent/src ]; then
-        rm ${ROS_INSTALLDIR}_parent/devel/setup.sh
+        rm -f ${ROS_INSTALLDIR}_parent/devel/setup.sh
+        # rosdep install
+        (cd ${ROS_INSTALLDIR}_parent/src &&
+            $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION $COMMAND bash)
+        #
         (cd ${ROS_INSTALLDIR}_parent && LC_ALL=C $COMMAND catkin build --no-status $PACKAGES)
         $COMMAND . ${ROS_INSTALLDIR}_parent/devel/setup.sh
         echo "export ROS_PACKAGE_PATH=\"${ROS_INSTALLDIR}_parent/devel/share:\$ROS_PACKAGE_PATH\"" > ${ROS_INSTALLDIR}_parent/devel/setup.sh
     fi
+
+    # rosdep install
+    (cd $ROS_INSTALLDIR_SRC &&
+        $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION $COMMAND bash)
+
+    # do compile
     (cd $ROS_INSTALLDIR && LC_ALL=C $COMMAND catkin build --no-status $PACKAGES)
     ## load setup.sh
     $COMMAND . ${ROS_INSTALLDIR}/devel/setup.sh
