@@ -3,13 +3,25 @@
   <arg name="namespace"  default="multisense" />
   <arg name="mtu"        default="7200" />
   <arg name="use_robot_description" default="true" />
-
+  <arg name="sensor_tf_prefix" default="$(arg namespace)" />
+  <arg name="not_use_sensor_tf_prefix" default="false" />
   <include file="$(find multisense_bringup)/multisense.launch">
     <arg name="ip_address" value="$(arg ip_address)" />
     <arg name="namespace" value="$(arg namespace)" />
     <arg name="mtu" value="$(arg mtu)" />
     <arg name="launch_robot_state_publisher" value="$(arg use_robot_description)" />    
   </include>
+
+  <!--
+      Overwrite multisense/multisense_driver/tf_prefix parameter.
+      Because this parameter affects frame_id of images, lasers.
+  -->
+  <group ns="multisense">
+    <group ns="multisense_driver">
+      <param name="tf_prefix" value="/$(arg sensor_tf_prefix)" unless="$(arg not_use_sensor_tf_prefix)"/>
+      <param name="tf_prefix" value="" if="$(arg not_use_sensor_tf_prefix)"/>
+    </group>
+  </group>
 
   <group unless="$(arg use_robot_description)" ns="$(arg namespace)">
     <!-- using robot description under name space -->
