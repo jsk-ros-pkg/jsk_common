@@ -284,7 +284,6 @@ EOF
         for pkg in jsk-ros-pkg/jsk_roseus rtm-ros-robotics/rtmros_common; do
             pkg2=$(echo $pkg | sed s@/@-@g)
             if [ -e $ROS_INSTALLDIR_SRC/$pkg/setup.sh -a ! -e ${ROS_INSTALLDIR}_parent/src/$pkg2-setup.sh ]; then
-                $COMMAND $ROS_INSTALLDIR_SRC/jsk-ros-pkg/jsk_roseus/setup.sh
                 $COMMAND mkdir -p ${ROS_INSTALLDIR}_parent/src
                 $COMMAND cp $ROS_INSTALLDIR_SRC/$pkg/setup.sh ${ROS_INSTALLDIR}_parent/src/$pkg2-setup.sh
                 $COMMAND ${ROS_INSTALLDIR}_parent/src/$pkg2-setup.sh
