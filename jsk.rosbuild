@@ -156,8 +156,8 @@ function install-pkg {
 
     #
     if [ "$USE_SOURCE" == "full" ]; then
-        $COMMAND rosinstall_generator --from-path $ROS_INSTALLDIR_SRC --deps --deps-only --flat --exclude rosjava_bootstrap rosjava_build_tools rosjava_messages rwt_speech_recognition --wet-only --tar > /tmp/parent.rosinstall.$$
-        $COMMAND rosinstall_generator openni_launch openni2_launch rospack --deps --flat --wet-only --tar > /tmp/parent_direct.rosinstall.$$
+        $COMMAND rosinstall_generator --rosdistro $DISTRIBUTION --from-path $ROS_INSTALLDIR_SRC --deps --deps-only --flat --exclude rosjava_bootstrap rosjava_build_tools rosjava_messages rwt_speech_recognition --wet-only --tar > /tmp/parent.rosinstall.$$
+        $COMMAND rosinstall_generator --rosdistro $DISTRIBUTION -openni_launch openni2_launch rospack --deps --flat --wet-only --tar > /tmp/parent_direct.rosinstall.$$
         (cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( $COMMAND wstool init ) ) \
             && $COMMAND wstool merge /tmp/parent.rosinstall.$$ \
             && $COMMAND wstool merge /tmp/parent_direct.rosinstall.$$)
