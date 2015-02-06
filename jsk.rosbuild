@@ -218,6 +218,12 @@ function compile-pkg {
 
     ## do compile
     $COMMAND . /opt/ros/$DISTRIBUTION/setup.sh
+    if [ -e ${ROS_INSTALLDIR}_parent/src ]; then
+        rm ${ROS_INSTALLDIR}_parent/devel/setup.sh
+        (cd ${ROS_INSTALLDIR}_parent && LC_ALL=C $COMMAND catkin build --no-status $PACKAGES)
+        $COMMAND . ${ROS_INSTALLDIR}_parent/devel/setup.sh
+        echo "export ROS_PACKAGE_PATH=\"${ROS_INSTALLDIR}_parent/src:\$ROS_PACKAGE_PATH\"" > ${ROS_INSTALLDIR}_parent/devel/setup.sh
+    fi
     (cd $ROS_INSTALLDIR && LC_ALL=C $COMMAND catkin build --no-status $PACKAGES)
     ## load setup.sh
     $COMMAND . ${ROS_INSTALLDIR}/devel/setup.sh
@@ -272,10 +278,17 @@ EOF
     echo "*** cat rosinstall files..."
     cat /tmp/rosinstall.$$
     install-pkg /tmp/rosinstall.$$
-    # install euslisp
+    # install euslisp / openhrp
     if [ "$USE_SOURCE" != "" ]; then
-        $COMMAND $ROS_INSTALLDIR_SRC/jsk-ros-pkg/jsk_roseus/setup.sh
-        $COMMAND $ROS_INSTALLDIR_SRC/rtm-ros-robotics/rtmros_common/setup.sh
+        for pkg in jsk-ros-pkg/jsk_roseus rtm-ros-robotics/rtmros_common; do
+            pkg2=$(echo $pkg | sed s@/@-@g)
+            if [ -e $ROS_INSTALLDIR_SRC/$pkg/setup.sh -a ! -e ${ROS_INSTALLDIR}_parent/src/$pkg2-setup.sh ]; then
+                $COMMAND $ROS_INSTALLDIR_SRC/jsk-ros-pkg/jsk_roseus/setup.sh
+                $COMMAND mkdir -p ${ROS_INSTALLDIR}_parent/src
+                $COMMAND cp $ROS_INSTALLDIR_SRC/$pkg/setup.sh ${ROS_INSTALLDIR}_parent/src/$pkg2-setup.sh
+                $COMMAND ${ROS_INSTALLDIR}_parent/src/$pkg2-setup.sh
+            fi
+        done
     fi
     if [ "$DISPLAY" != "" ] && [ "`xset -q fp | grep /usr/share/fonts/X11/100dpi`" == "" ]; then
         $COMMAND xset +fp /usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi || return 0
