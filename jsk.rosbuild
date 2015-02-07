@@ -224,7 +224,7 @@ function compile-pkg {
         #
         (cd ${ROS_INSTALLDIR}_parent && LC_ALL=C $COMMAND catkin build --no-status $PACKAGES)
         $COMMAND . ${ROS_INSTALLDIR}_parent/devel/setup.sh
-        echo "export ROS_PACKAGE_PATH=\"${ROS_INSTALLDIR}_parent/devel/share:\$ROS_PACKAGE_PATH\"" > ${ROS_INSTALLDIR}_parent/devel/setup.sh
+        echo "export ROS_PACKAGE_PATH=\"${ROS_INSTALLDIR}_parent/devel/share:\$ROS_PACKAGE_PATH\"" >> ${ROS_INSTALLDIR}_parent/devel/setup.sh
     fi
 
     # rosdep install
