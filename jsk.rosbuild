@@ -87,6 +87,7 @@ if [ "$WORKSPACE" == "" ]; then # if not jenkins
     export WORKSPACE=$HOME
 fi
 export ROS_INSTALLDIR=$WORKSPACE/ros/$DISTRIBUTION
+export ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR/src;
 export PATH=$PATH:/usr/sbin:/usr/bin:/sbin:/bin
 
 # set environment variables
@@ -151,7 +152,6 @@ function install-pkg {
 
     ($COMMAND rosdep update; true)
     ## hydro and up, use catkin
-    ROS_INSTALLDIR_SRC=$ROS_INSTALLDIR/src;
     ($COMMAND mkdir -p $ROS_INSTALLDIR_SRC && cd $ROS_INSTALLDIR_SRC && ( [ -f .rosinstall ] || ( $COMMAND wstool init ) ) && for ROSINSTALL in $@; do ROS_WORKSPACE="" $COMMAND wstool merge $ROSINSTALL -r $YES ; done  )
 
     #
