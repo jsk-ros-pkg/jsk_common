@@ -190,4 +190,4 @@
     version: hydro-devel
 - hg:
     local-name: multisense
-    uri: 'https://garaemon@bitbucket.org/crl/multisense_ros'
+    uri: 'https://bitbucket.org/crl/multisense_ros'
