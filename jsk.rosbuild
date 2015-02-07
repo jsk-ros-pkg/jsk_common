@@ -223,8 +223,9 @@ function compile-pkg {
             $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION $COMMAND bash)
         #
         (cd ${ROS_INSTALLDIR}_parent && LC_ALL=C $COMMAND catkin build --no-status $PACKAGES)
-        $COMMAND . ${ROS_INSTALLDIR}_parent/devel/setup.sh
         echo "export ROS_PACKAGE_PATH=\"${ROS_INSTALLDIR}_parent/devel/share:\$ROS_PACKAGE_PATH\"" >> ${ROS_INSTALLDIR}_parent/devel/setup.sh
+
+        $COMMAND . ${ROS_INSTALLDIR}_parent/devel/setup.sh
     fi
 
     # rosdep install
