@@ -217,14 +217,15 @@ function compile-pkg {
     ## do compile for upstream
     $COMMAND . /opt/ros/$DISTRIBUTION/setup.sh
     if [ -e ${ROS_INSTALLDIR}_parent/src ]; then
-        rm -f ${ROS_INSTALLDIR}_parent/devel/setup.sh
         # rosdep install
         (cd ${ROS_INSTALLDIR}_parent/src &&
             $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION $COMMAND bash)
         #
-        (cd ${ROS_INSTALLDIR}_parent && LC_ALL=C $COMMAND catkin build --no-status $PACKAGES)
-        echo "export ROS_PACKAGE_PATH=\"${ROS_INSTALLDIR}_parent/devel/share:\$ROS_PACKAGE_PATH\"" >> ${ROS_INSTALLDIR}_parent/devel/setup.sh
-
+        (cd ${ROS_INSTALLDIR}_parent && LC_ALL=C $COMMAND catkin build --no-status)
+        if [ "`grep -c ${ROS_INSTALLDIR}_parent/devel/share ${ROS_INSTALLDIR}_parent/devel/.catkin`" == 0 ] ; then
+            echo -n ";${ROS_INSTALLDIR}_parent/devel/share" >> ${ROS_INSTALLDIR}_parent/devel/.catkin
+            echo "** force add ${ROS_INSTALLDIR}_parent/devel/share to ROS_PACKAGE_PATH"
+        fi
         $COMMAND . ${ROS_INSTALLDIR}_parent/devel/setup.sh
     fi
 
