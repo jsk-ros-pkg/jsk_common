@@ -61,6 +61,8 @@
 #include <pcl/point_types.h>
 #include <pcl_ros/publisher.h>
 
+#include <image_view2/MouseEvent.h>
+
 #define DEFAULT_COLOR  CV_RGB(255,0,0)
 #define USER_ROI_COLOR CV_RGB(255,0,0)
 #define DEFAULT_CIRCLE_SCALE  20
@@ -113,6 +115,8 @@ namespace image_view2
     bool use_window;
   protected:
   private:
+    void eventCb(
+      const image_view2::MouseEvent::ConstPtr& event_msg);
     void pointArrayToMask(std::vector<cv::Point2d>& points,
                           cv::Mat& mask);
     void publishMonoImage(ros::Publisher& pub,
@@ -174,6 +178,7 @@ namespace image_view2
     void checkMousePos(int& x, int& y);
     V_ImageMarkerMessage local_queue_;
     image_transport::Subscriber image_sub_;
+    ros::Subscriber event_sub_;
     ros::Subscriber info_sub_;
     ros::Subscriber marker_sub_;
     std::string marker_topic_;
