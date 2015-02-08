@@ -94,6 +94,14 @@ namespace image_view2{
     image_pub_ = it.advertise("image_marked", 1);
     change_mode_srv_ = local_nh.advertiseService(
       "change_mode", &ImageView2::changeModeServiceCallback, this);
+    rectangle_mode_srv_ = local_nh.advertiseService(
+      "rectangle_mode", &ImageView2::rectangleModeServiceCallback, this);
+    grabcut_mode_srv_ = local_nh.advertiseService(
+      "grabcut_mode", &ImageView2::grabcutModeServiceCallback, this);
+    grabcut_rect_mode_srv_ = local_nh.advertiseService(
+      "grabcut_rect_mode", &ImageView2::grabcutRectModeServiceCallback, this);
+    line_mode_srv_ = local_nh.advertiseService(
+      "line_mode", &ImageView2::lineModeServiceCallback, this);
   }
 
   ImageView2::~ImageView2()
@@ -1434,6 +1442,56 @@ namespace image_view2{
     }
   }
 
+  bool ImageView2::rectangleModeServiceCallback(
+      std_srvs::EmptyRequest& req,
+      std_srvs::EmptyResponse& res)
+  {
+    resetInteraction();
+    setMode(MODE_RECTANGLE);
+    resetInteraction();
+    return true;
+  }
+  
+  bool ImageView2::seriesModeServiceCallback(
+      std_srvs::EmptyRequest& req,
+      std_srvs::EmptyResponse& res)
+  {
+    resetInteraction();
+    setMode(MODE_SERIES);
+    resetInteraction();
+    return true;
+  }
+  
+  bool ImageView2::grabcutModeServiceCallback(
+      std_srvs::EmptyRequest& req,
+      std_srvs::EmptyResponse& res)
+  {
+    resetInteraction();
+    setMode(MODE_SELECT_FORE_AND_BACK);
+    resetInteraction();
+    return true;
+  }
+  
+  bool ImageView2::grabcutRectModeServiceCallback(
+      std_srvs::EmptyRequest& req,
+      std_srvs::EmptyResponse& res)
+  {
+    resetInteraction();
+    setMode(MODE_SELECT_FORE_AND_BACK_RECT);
+    resetInteraction();
+    return true;
+  }
+  
+  bool ImageView2::lineModeServiceCallback(
+    std_srvs::EmptyRequest& req,
+    std_srvs::EmptyResponse& res)
+  {
+    resetInteraction();
+    setMode(MODE_LINE);
+    resetInteraction();
+    return true;
+  }
+  
   bool ImageView2::changeModeServiceCallback(
     image_view2::ChangeModeRequest& req,
     image_view2::ChangeModeResponse& res)

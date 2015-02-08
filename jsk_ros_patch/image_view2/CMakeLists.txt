@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(image_view2)
 
-find_package(catkin REQUIRED COMPONENTS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_generation)
+find_package(catkin REQUIRED COMPONENTS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_generation std_srvs)
 
 add_message_files(
   FILES ImageMarker2.msg PointArrayStamped.msg
@@ -43,4 +43,3 @@ install(TARGETS image_view2 points_rectangle_extractor
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-

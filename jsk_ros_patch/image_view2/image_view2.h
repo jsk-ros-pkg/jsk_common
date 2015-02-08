@@ -51,6 +51,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include <geometry_msgs/PolygonStamped.h>
 #include <std_msgs/Empty.h>
+#include <std_srvs/Empty.h>
 #include <image_view2/ChangeMode.h>
 #include <boost/thread.hpp>
 #include <boost/format.hpp>
@@ -241,10 +242,30 @@ namespace image_view2
     void updateLinePoint(cv::Point p);
     bool isSelectingLineStartPoint();
     void resetInteraction();
+    ros::ServiceServer rectangle_mode_srv_;
+    ros::ServiceServer series_mode_srv_;
+    ros::ServiceServer grabcut_mode_srv_;
+    ros::ServiceServer grabcut_rect_mode_srv_;
+    ros::ServiceServer line_mode_srv_;
     ros::ServiceServer change_mode_srv_;
     bool changeModeServiceCallback(
       image_view2::ChangeModeRequest& req,
       image_view2::ChangeModeResponse& res);
+    bool rectangleModeServiceCallback(
+      std_srvs::EmptyRequest& req,
+      std_srvs::EmptyResponse& res);
+    bool seriesModeServiceCallback(
+      std_srvs::EmptyRequest& req,
+      std_srvs::EmptyResponse& res);
+    bool grabcutModeServiceCallback(
+      std_srvs::EmptyRequest& req,
+      std_srvs::EmptyResponse& res);
+    bool grabcutRectModeServiceCallback(
+      std_srvs::EmptyRequest& req,
+      std_srvs::EmptyResponse& res);
+    bool lineModeServiceCallback(
+      std_srvs::EmptyRequest& req,
+      std_srvs::EmptyResponse& res);
     KEY_MODE stringToMode(const std::string& str);
   };
 }
