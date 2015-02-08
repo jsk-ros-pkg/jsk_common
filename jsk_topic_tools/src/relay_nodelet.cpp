@@ -39,11 +39,15 @@ namespace jsk_topic_tools
 
   void Relay::onInit()
   {
+    output_topic_name_ = "output";
     advertised_ = false;
     subscribing_ = false;
     pnh_ = getPrivateNodeHandle();
-    sub_ = pnh_.subscribe<topic_tools::ShapeShifter>("input", 1,
-                                                     &Relay::inputCallback, this, th_);
+    sub_ = pnh_.subscribe<topic_tools::ShapeShifter>(
+      "input", 1,
+      &Relay::inputCallback, this, th_);
+    change_output_topic_srv_ = pnh_.advertiseService(
+      "change_output_topic", &Relay::changeOutputTopicCallback, this);
   }
   
   void Relay::inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
@@ -54,21 +58,11 @@ namespace jsk_topic_tools
       // in order to advertise topic.
       // we need to subscribe at least one message
       // in order to detect message definition.
-      ros::SubscriberStatusCallback connect_cb
-        = boost::bind( &Relay::connectCb, this);
-      ros::SubscriberStatusCallback disconnect_cb
-        = boost::bind( &Relay::disconnectCb, this);
-      ros::AdvertiseOptions opts("output", 1,
-                                 msg->getMD5Sum(),
-                                 msg->getDataType(),
-                                 msg->getMessageDefinition(),
-                                 connect_cb,
-                                 disconnect_cb);
-      opts.latch = false;
-      pub_ = pnh_.advertise(opts);
+      pub_ = advertise(msg, output_topic_name_);
       advertised_ = true;
       // shutdown subscriber
       sub_.shutdown();
+      sample_msg_ = msg;
     }
     else if (pub_.getNumSubscribers() > 0) {
       pub_.publish(msg);
@@ -105,7 +99,36 @@ namespace jsk_topic_tools
       }
     }
   }
+
+  ros::Publisher Relay::advertise(
+    boost::shared_ptr<topic_tools::ShapeShifter const> msg,
+    const std::string& topic)
+  {
+    ros::SubscriberStatusCallback connect_cb
+      = boost::bind( &Relay::connectCb, this);
+    ros::SubscriberStatusCallback disconnect_cb
+      = boost::bind( &Relay::disconnectCb, this);
+    ros::AdvertiseOptions opts(topic, 1,
+                               msg->getMD5Sum(),
+                               msg->getDataType(),
+                               msg->getMessageDefinition(),
+                               connect_cb,
+                               disconnect_cb);
+    opts.latch = false;
+    return pnh_.advertise(opts);
+  }
   
+  bool Relay::changeOutputTopicCallback(
+    jsk_topic_tools::ChangeTopic::Request &req,
+    jsk_topic_tools::ChangeTopic::Response &res)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    output_topic_name_ = req.topic;
+    if (sample_msg_) {          // we can advertise it!
+      pub_ = advertise(sample_msg_, output_topic_name_);
+    }
+    return true;
+  }
 }
 
 typedef jsk_topic_tools::Relay Relay;
