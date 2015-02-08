@@ -1528,24 +1528,3 @@ namespace image_view2{
 }
 
 
-
-int main(int argc, char **argv)
-{
-  //ros::init(argc, argv, "image_view2", ros::init_options::AnonymousName);
-  ros::init(argc, argv, "image_view2");
-  ros::NodeHandle n;
-
-  if ( n.resolveName("image") == "/image") {
-    ROS_WARN("image_view: image has not been remapped! Typical command-line usage:\n"
-             "\t$ ./image_view image:=<image topic> [transport]");
-  }
-  ros::AsyncSpinner spinner(1);
-  image_view2::ImageView2 view(n);
-  spinner.start();
-  while (ros::ok()) {
-    int key = cv::waitKey(1000 / 30);
-    view.pressKey(key);
-    view.showImage();
-  }
-  return 0;
-}
