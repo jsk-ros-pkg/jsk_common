@@ -87,11 +87,13 @@ namespace image_view2{
         window_selection_.height = window_selection_.width = 0;
     }
 
+    image_pub_ = it.advertise("image_marked", 1);
+    
     image_sub_ = it.subscribe(camera, 1, &ImageView2::imageCb, this, transport);
     info_sub_ = nh.subscribe(camera_info, 1, &ImageView2::infoCb, this);
     marker_sub_ = nh.subscribe(marker_topic_, 10, &ImageView2::markerCb, this);
-
-    image_pub_ = it.advertise("image_marked", 1);
+    event_sub_ = local_nh.subscribe("event", 1, &ImageView2::eventCb, this);
+    
     change_mode_srv_ = local_nh.advertiseService(
       "change_mode", &ImageView2::changeModeServiceCallback, this);
     rectangle_mode_srv_ = local_nh.advertiseService(
@@ -1523,6 +1525,45 @@ namespace image_view2{
     }
     else {
       throw std::string("Unknown mode");
+    }
+  }
+
+  void ImageView2::eventCb(
+    const image_view2::MouseEvent::ConstPtr& event_msg)
+  {
+    //ROS_INFO("eventCb");
+    if (event_msg->type == image_view2::MouseEvent::KEY_PRESSED) {
+      pressKey(event_msg->key);
+    }
+    else {
+      // scale x, y according to width/height
+      int x, y;
+      {
+        boost::mutex::scoped_lock lock(image_mutex_);
+        if (!last_msg_) {
+          ROS_WARN("Image is not yet available");
+          return;
+        }
+        x = ((float)last_msg_->width / event_msg->width) * event_msg->x;
+        y = ((float)last_msg_->height / event_msg->height) * event_msg->y;
+      }
+      // scale
+      if (event_msg->type == image_view2::MouseEvent::MOUSE_LEFT_UP) {
+        //ROS_INFO("mouse_left_up");
+        processMouseEvent(CV_EVENT_LBUTTONUP, x, y, 0, NULL);
+      }
+      else if (event_msg->type == image_view2::MouseEvent::MOUSE_LEFT_DOWN) {
+        //ROS_INFO("mouse_left_down");
+        processMouseEvent(CV_EVENT_LBUTTONDOWN, x, y, 0, NULL);
+      }
+      else if (event_msg->type == image_view2::MouseEvent::MOUSE_MOVE) {
+        //ROS_INFO("mouse_move");
+        processMouseEvent(CV_EVENT_MOUSEMOVE, x, y, 0, NULL);
+      }
+      else if (event_msg->type == image_view2::MouseEvent::MOUSE_RIGHT_DOWN) {
+        //ROS_INFO("mouse_right_down");
+        processMouseEvent(CV_EVENT_RBUTTONDOWN, x, y, 0, NULL);
+      }
     }
   }
 }
