@@ -62,6 +62,10 @@ namespace jsk_topic_tools
       opts.latch = false;
       pub_ = pnh_.advertise(opts);
       advertised_ = true;
+      if (requested_) {
+        pub_.publish(msg);
+        requested_ = false;
+      }
       sub_.shutdown();
     }
     else {
