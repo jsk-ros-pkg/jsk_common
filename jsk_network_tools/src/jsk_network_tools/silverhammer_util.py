@@ -56,7 +56,7 @@ def msgToStructFormat(msg):
     return fmt_stream.getvalue()
 
 def packableValue(value, value_type):
-    if value_type == "bool":
+    if value_type == "bool" or value_type == "uint32":
         return value
     else:
         return ord(value)
