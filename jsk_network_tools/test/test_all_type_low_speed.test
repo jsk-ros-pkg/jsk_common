@@ -1,0 +1,27 @@
+<launch>
+  <node pkg="jsk_network_tools"
+        type="silverhammer_lowspeed_streamer.py"
+        output="screen"
+        name="streamer">
+    <remap from="~input" to="original" />
+    <rosparam>
+      message: jsk_network_tools/AllTypeTest
+      to_ip: "localhost"
+      to_port: 1234
+    </rosparam>
+  </node>
+  <node pkg="jsk_network_tools"
+        type="silverhammer_lowspeed_receiver.py"
+        output="screen"
+        name="receiver">
+    <remap from="~output" to="relayed" />
+    <rosparam>
+      message: jsk_network_tools/AllTypeTest
+      receive_ip: "localhost"
+      receive_port: 1234
+    </rosparam>
+  </node>
+  <test test-name="test_all_type_low_speed"
+        pkg="jsk_network_tools" type="test_all_type_low_speed.py"
+        />
+</launch>

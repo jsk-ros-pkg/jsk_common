@@ -13,6 +13,7 @@ add_message_files(
   OCS2FC.msg
   FC2OCSLargeData.msg
   OpenNISample.msg
+  AllTypeTest.msg
 )
 
 ## Generate added messages and services with any dependencies listed here

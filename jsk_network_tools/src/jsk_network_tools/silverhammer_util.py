@@ -56,11 +56,11 @@ def msgToStructFormat(msg):
     return fmt_stream.getvalue()
 
 def packableValue(value, value_type):
-    if value_type == "bool" or value_type == "uint32":
-        return value
-    else:
+    if value_type == "uint8":
         return ord(value)
-    
+    else:
+        return value
+
 def packMessage(msg, fmt):
     data = []
     for slot, slot_type in zip(msg.__slots__, msg._slot_types):
@@ -78,13 +78,13 @@ def packMessage(msg, fmt):
 
 def unpackArrayValue(array, field_type):
     if field_type == "bool":
-        return [ord(v) for v in value]
+        return [v == 1 for v in array]
     else:
         return array
 
 def unpackValue(val, field_type):
     if field_type == "bool":
-        return ord(val) == 1
+        return val == 1
     else:
         return val
     
@@ -120,7 +120,6 @@ def decomposeLargeMessage(msg, prefix=""):
     ret = dict()
     for slot, slot_type in zip(msg.__slots__, msg._slot_types):
         topic_name = prefix + "/" + slot.replace("__", "/")
-        print topic_name
         ret[topic_name] = getattr(msg, slot)
     return ret
         
