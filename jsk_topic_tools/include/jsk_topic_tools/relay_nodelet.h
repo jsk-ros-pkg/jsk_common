@@ -2,7 +2,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2013, Ryohei Ueda and JSK Lab
+ *  Copyright (c) 2013, JSK Lab
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@
 #include <topic_tools/shape_shifter.h>
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
+#include <jsk_topic_tools/ChangeTopic.h>
 
 namespace jsk_topic_tools
 {
@@ -52,6 +53,15 @@ namespace jsk_topic_tools
   protected:
     virtual void connectCb();
     virtual void disconnectCb();
+    virtual bool changeOutputTopicCallback(
+      jsk_topic_tools::ChangeTopic::Request &req,
+      jsk_topic_tools::ChangeTopic::Response &res);
+    virtual ros::Publisher advertise(
+      boost::shared_ptr<topic_tools::ShapeShifter const> msg,
+      const std::string& topic);
+
+    boost::shared_ptr<topic_tools::ShapeShifter const> sample_msg_;
+    std::string output_topic_name_;
     boost::mutex mutex_;
     ros::Publisher pub_;
     ros::Subscriber sub_;
@@ -59,6 +69,7 @@ namespace jsk_topic_tools
     bool subscribing_;
     ros::NodeHandle pnh_;
     ros::TransportHints th_;
+    ros::ServiceServer change_output_topic_srv_;
   };
 }
 

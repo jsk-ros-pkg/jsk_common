@@ -13,7 +13,7 @@ add_message_files(
 )
 
 add_service_files(
-  FILES List.srv Update.srv
+  FILES List.srv Update.srv ChangeTopic.srv
 )
 
 generate_messages()
@@ -76,8 +76,9 @@ add_library(jsk_topic_tools SHARED
   src/diagnostic_nodelet.cpp
   src/series_boolean.cpp
   src/counter.cpp)
-  
+add_dependencies(jsk_topic_tools ${PROJECT_NAME}_gencpp)
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
+
 if (NOT $ENV{ROS_DISTRO} STREQUAL "indigo")
   add_rostest(test/test_topic_buffer.test)
   add_rostest(test/test_topic_buffer_close_wait.test)
@@ -100,7 +101,7 @@ install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
 install(FILES jsk_topic_tools_nodelet.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(DIRECTORY include/${PROJECT_NAME}/ 
+install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 # install(DIRECTORY include
 #   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
