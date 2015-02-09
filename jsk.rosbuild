@@ -115,7 +115,7 @@ function setup-ros {
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         $COMMAND sudo dpkg --configure -a
     fi
-    $COMMAND sudo apt-get $YES install build-essential python-yaml cmake subversion wget python-setuptools pip git-core mercurial aptitude oracle-java7
+    $COMMAND sudo apt-get $YES install build-essential python-yaml cmake subversion wget python-setuptools git-core mercurial aptitude oracle-java7
     REPLY="Y"
     if [ "$YES" != "-y" -a -e /etc/apt/sources.list.d/ros-latest.list ] ; then
         read -p "Are you sure? to overwrite /etc/apt/sources.list.d/ros-latest.list [y/N] " -n 1 -r
