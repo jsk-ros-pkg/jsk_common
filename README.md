@@ -8,6 +8,27 @@ wget -q -O /tmp/jsk.rosbuild https://raw.github.com/jsk-ros-pkg/jsk_common/maste
 bash /tmp/jsk.rosbuild hydro
 ```
 
+For hacker
+
+```sh
+wget -q -O /tmp/jsk.rosbuild https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosbuild
+bash /tmp/jsk.rosbuild --from-source hydro
+```
+
+For hrpsys user
+
+```sh
+wget -q -O /tmp/jsk.rosbuild https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosbuild
+bash /tmp/jsk.rosbuild --rtm hydro
+```
+
+For hrpsys hacker
+
+```sh
+wget -q -O /tmp/jsk.rosbuild https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosbuild
+bash /tmp/jsk.rosbuild --from-source --rtm hydro
+```
+
 Watch all the jsk github repositories.
 ===
 Please use [this](http://jsk-github-watcher.herokuapp.com/)
