@@ -71,7 +71,8 @@ def packMessage(msg, fmt):
             for i in range(len(slot_value)):
                 data.append(packableValue(slot_value[i], field_type))
         else:
-            data.append(packableValue(slot_value, field_type))
+            #data.append(packableValue(slot_value, field_type))
+            data.append(slot_value)
     packed = pack(fmt, *data)
     return packed
 
@@ -96,7 +97,7 @@ def unpackMessage(data, fmt, message_class):
         parsed_type = parseMessageType(slot_type)
         field_type = parsed_type[0]
         field_length = parsed_type[1]
-        target_data = data[counter:counter + field_length]
+        target_data = unpacked_data[counter:counter + field_length]
         if hasattr(slot_value, "__len__"):   #array
             setattr(msg, slot, unpackArrayValue(target_data, field_type))
         else:
