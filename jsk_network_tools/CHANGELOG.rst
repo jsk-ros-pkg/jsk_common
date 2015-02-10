@@ -2,8 +2,8 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.61 (2015-02-11)
+-------------------
 * [jsk_network_tools] Enable unit test
 * [jsk_network_tools] Add unittest about ROS<-->UDP message conversion
 * [jsk_network_tools] Fix for uint32 data

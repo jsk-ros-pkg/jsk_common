@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.61 (2015-02-11)
+-------------------
 * [image_view2] Add topic interface to emulate mouse event
 * [image_view2] Separate main function to another cpp file
 * [image_view2] Add std_srvs/Empty interface to change interaction mode

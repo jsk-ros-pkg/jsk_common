@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.61 (2015-02-11)
+-------------------
 * [jsk_topic_tools] Fix snapshot to publish first message correctly
 * [jsk_topic_tools] Add service interface to change output topic of relay node
 * anonymous node

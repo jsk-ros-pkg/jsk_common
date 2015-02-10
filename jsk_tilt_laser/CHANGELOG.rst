@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.61 (2015-02-11)
+-------------------
 * [jsk_tilt_laser] Add sensor_tf_prefix and not_use_sensor_tf_prefix for the
   robots which has '/left/image_rect_color' sensor frame instead of
   '/multisense/left/image_rect_clor'

@@ -2,8 +2,8 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.61 (2015-02-11)
+-------------------
 * install devel files into catkin package destination
 * remove install functions,
 * change build current directroy to catkin/build, and install lib files to devel/lib
