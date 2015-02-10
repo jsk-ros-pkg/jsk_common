@@ -2,6 +2,18 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* install devel files into catkin package destination
+* remove install functions,
+* change build current directroy to catkin/build, and install lib files to devel/lib
+* change build current directroy to catkin/build, and install lib files to devel/lib
+* [nlopt] Fix nlopt compilation to export nlopt_cxx correctly.
+  * compile libraries under source directory and after that copy to devel space.
+  * Use add_custom_command instead of execute_process
+* added nlopt_cxx library to catkin_package so that the library will be included by packages that depend on nlopt
+* Contributors: Ryohei Ueda, Shintaro Noda, Barrett
+
 1.0.60 (2015-02-03)
 -------------------
 
@@ -200,4 +212,4 @@ Changelog for package nlopt
 1.0.0 (2014-03-05)
 ------------------
 * initial commit, nlopt add
-* Contributors: s-noda
+* Contributors: Shintaro Noda

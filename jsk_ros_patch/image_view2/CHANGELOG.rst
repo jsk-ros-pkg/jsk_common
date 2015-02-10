@@ -2,6 +2,13 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [image_view2] Add topic interface to emulate mouse event
+* [image_view2] Separate main function to another cpp file
+* [image_view2] Add std_srvs/Empty interface to change interaction mode
+* Contributors: Ryohei Ueda
+
 1.0.60 (2015-02-03)
 -------------------
 
@@ -269,4 +276,4 @@ Changelog for package image_view2
 * back to previous version, which is not using subscribeCamera, becouse of slow connection of pr2-network
 * rewrite using subscribeCamera
 * add image_view2/
-* Contributors: manabu, kazuto, Kei Okada, youhei, Ryohei Ueda, chen, mikita
+* Contributors: manabu, kazuto, Kei Okada, youhei, chen, Ryohei Ueda, mikita

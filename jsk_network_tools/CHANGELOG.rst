@@ -2,6 +2,16 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_network_tools] Enable unit test
+* [jsk_network_tools] Add unittest about ROS<-->UDP message conversion
+* [jsk_network_tools] Fix for uint32 data
+* [jsk_network_tools] Fix how to resolve uint8 array
+* [jsk_network_tools] Update sample of joint states compressor
+* [jsk_network_tools] Fix compressing joint-angles of infinite joint
+* Contributors: Ryohei Ueda
+
 1.0.60 (2015-02-03)
 -------------------
 

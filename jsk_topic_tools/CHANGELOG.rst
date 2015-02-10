@@ -2,6 +2,17 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Fix snapshot to publish first message correctly
+* [jsk_topic_tools] Add service interface to change output topic of relay node
+* anonymous node
+* add flatten mode for array type message
+* remove space after ,
+* add argument exception handler
+* add csv exporter for rosbag
+* Contributors: Yuki Furuta, Ryohei Ueda
+
 1.0.60 (2015-02-03)
 -------------------
 * [jsk_topic_tools] add std_srvs

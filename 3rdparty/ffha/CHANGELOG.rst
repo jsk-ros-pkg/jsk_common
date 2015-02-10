@@ -2,6 +2,9 @@
 Changelog for package ffha
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.60 (2015-02-03)
 -------------------
 
@@ -195,4 +198,4 @@ Changelog for package ffha
 * add patch for parse.c, segv if last condition of inititial state is 'not-condition' in problem
 * remove strange exit(-1) for use non DNF preconditions
 * put jsk tools in jsk_common stack
-* Contributors: Yuki Furuta, rosen, manabu
+* Contributors: Yuki Furuta, manabu, rosen
