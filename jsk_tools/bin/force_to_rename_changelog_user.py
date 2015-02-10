@@ -25,7 +25,8 @@ REPLACE_RULES={
     "yuohara": "Yu Ohara",
     "au@leus": "Chi Wun Au",
     "hrp2": "JSK Lab Member",
-    "h-kamada": "Hitoshi Kamada"}
+    "h-kamada": "Hitoshi Kamada",
+    "s-noda": "Shintaro Noda"}
 
 def replaceContributors(line):
     match = re.match("\* Contributors: (.*)", line)
