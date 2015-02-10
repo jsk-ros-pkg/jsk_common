@@ -42,6 +42,7 @@ namespace jsk_topic_tools
     advertised_ = false;
     subscribing_ = false;
     pnh_ = getPrivateNodeHandle();
+    pnh_.param("latch", latch_, false);
     sub_ = pnh_.subscribe<topic_tools::ShapeShifter>(
       "input", 1,
       &Snapshot::inputCallback, this);
@@ -59,7 +60,7 @@ namespace jsk_topic_tools
                                  msg->getMD5Sum(),
                                  msg->getDataType(),
                                  msg->getMessageDefinition());
-      opts.latch = false;
+      opts.latch = latch_;
       pub_ = pnh_.advertise(opts);
       advertised_ = true;
       if (requested_) {
