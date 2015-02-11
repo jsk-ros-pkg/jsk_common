@@ -3,6 +3,7 @@
   <arg name="namespace"  default="multisense" />
   <arg name="mtu"        default="7200" />
   <arg name="use_robot_description" default="true" />
+  <arg name="not_use_robot_state_publisher" default="false" />
   <arg name="sensor_tf_prefix" default="$(arg namespace)" />
   <arg name="not_use_sensor_tf_prefix" default="false" />
   <include file="$(find multisense_bringup)/multisense.launch">
@@ -22,16 +23,18 @@
       <param name="tf_prefix" value="" if="$(arg not_use_sensor_tf_prefix)"/>
     </group>
   </group>
-
-  <group unless="$(arg use_robot_description)" ns="$(arg namespace)">
-    <!-- using robot description under name space -->
-    <param name="robot_description"
-           textfile="$(find multisense_description)/urdf/multisenseSL.urdf"/>
-    <!-- Robot state publisher -->
-    <node pkg="robot_state_publisher" type="state_publisher" name="state_publisher">
-      <param name="publish_frequency" type="double" value="50.0" />
-      <param name="tf_prefix" value="/$(arg namespace)" />
-    </node>
+  
+  <group unless="$(arg not_use_robot_state_publisher)">
+    <group unless="$(arg use_robot_description)" ns="$(arg namespace)">
+      <!-- using robot description under name space -->
+      <param name="robot_description"
+             textfile="$(find multisense_description)/urdf/multisenseSL.urdf"/>
+      <!-- Robot state publisher -->
+      <node pkg="robot_state_publisher" type="state_publisher" name="state_publisher">
+        <param name="publish_frequency" type="double" value="50.0" />
+        <param name="tf_prefix" value="/$(arg namespace)" />
+      </node>
+    </group>
   </group>
 
    <!-- pointcloud pipeline -->
