@@ -271,6 +271,7 @@ namespace image_view2
     bool lineModeServiceCallback(
       std_srvs::EmptyRequest& req,
       std_srvs::EmptyResponse& res);
+    cv::Point ratioPoint(double x, double y);
     KEY_MODE stringToMode(const std::string& str);
   };
 }

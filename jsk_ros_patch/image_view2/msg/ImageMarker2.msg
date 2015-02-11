@@ -41,3 +41,4 @@ std_msgs/ColorRGBA[] outline_colors # a color for each line, point, etc.
 string[] frames # used for FRAMES, tf names
 string text             # used for TEXT, draw size of text is scale
 bool left_up_origin     # draw text from left up origin
+bool ratio_scale        #Use ratio respected to original image to specify scale and position
