@@ -400,6 +400,17 @@ namespace image_view2{
       cv::putText(draw_, frame_id.c_str(), origin, font_, 1.0, DEFAULT_COLOR, 1.5);
     }
   }
+
+  cv::Point ImageView2::ratioPoint(double x, double y)
+  {
+    if (last_msg_) {
+      return cv::Point(last_msg_->width * x,
+                       last_msg_->height * y);
+    }
+    else {
+      return cv::Point(0, 0);
+    }
+  }
   
   void ImageView2::drawText(const image_view2::ImageMarker2::ConstPtr& marker,
                             std::vector<CvScalar>& colors,
@@ -411,15 +422,37 @@ namespace image_view2{
     if ( scale == 0 ) scale = 1.0;
     text_size = cv::getTextSize(marker->text.c_str(), font_,
                                 scale, scale, &baseline);
+    // fix scale
+    if (marker->ratio_scale) {
+      cv::Size a_size = cv::getTextSize("A", font_, 1.0, 1.0, &baseline);
+      int height_size = a_size.height;
+      double desired_size = last_msg_->height * scale;
+      scale = desired_size / height_size;
+    }
+      
     cv::Point origin;
     if (marker->left_up_origin) {
-      origin = cv::Point(marker->position.x,
-                         marker->position.y);
+      if (marker->ratio_scale) {
+        origin = ratioPoint(marker->position.x,
+                            marker->position.y);
+      }
+      else {
+        origin = cv::Point(marker->position.x,
+                           marker->position.y);
+      }
     }
     else {
-      origin = cv::Point(marker->position.x - text_size.width/2,
-                         marker->position.y - baseline-3);
+      if (marker->ratio_scale) {
+        cv::Point p = ratioPoint(marker->position.x, marker->position.y);
+        origin = cv::Point(p.x - text_size.width/2,
+                           p.y + baseline+3);
+      }
+      else {
+        origin = cv::Point(marker->position.x - text_size.width/2,
+                           marker->position.y + baseline+3);
+      }
     }
+    
     if (marker->filled) {
       cv::putText(draw_, marker->text.c_str(), origin, font_, scale, DEFAULT_COLOR, marker->filled);
       
