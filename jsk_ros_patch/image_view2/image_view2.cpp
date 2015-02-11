@@ -411,9 +411,22 @@ namespace image_view2{
     if ( scale == 0 ) scale = 1.0;
     text_size = cv::getTextSize(marker->text.c_str(), font_,
                                 scale, scale, &baseline);
-    cv::Point origin = cv::Point(marker->position.x - text_size.width/2,
-                                 marker->position.y - baseline-3);
-    cv::putText(draw_, marker->text.c_str(), origin, font_, scale, DEFAULT_COLOR);
+    cv::Point origin;
+    if (marker->left_up_origin) {
+      origin = cv::Point(marker->position.x,
+                         marker->position.y);
+    }
+    else {
+      origin = cv::Point(marker->position.x - text_size.width/2,
+                         marker->position.y - baseline-3);
+    }
+    if (marker->filled) {
+      cv::putText(draw_, marker->text.c_str(), origin, font_, scale, DEFAULT_COLOR, marker->filled);
+      
+    }
+    else {
+      cv::putText(draw_, marker->text.c_str(), origin, font_, scale, DEFAULT_COLOR);
+    }
   }
 
   void ImageView2::drawLineStrip3D(const image_view2::ImageMarker2::ConstPtr& marker,
