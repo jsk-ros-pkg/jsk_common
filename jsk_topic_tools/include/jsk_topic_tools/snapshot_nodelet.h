@@ -65,6 +65,7 @@ namespace jsk_topic_tools
     bool subscribing_;
     bool advertised_;
     bool requested_;
+    bool latch_;
   private:
     
   };
