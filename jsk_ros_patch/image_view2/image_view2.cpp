@@ -104,6 +104,8 @@ namespace image_view2{
       "grabcut_rect_mode", &ImageView2::grabcutRectModeServiceCallback, this);
     line_mode_srv_ = local_nh.advertiseService(
       "line_mode", &ImageView2::lineModeServiceCallback, this);
+    none_mode_srv_ = local_nh.advertiseService(
+      "none_mode", &ImageView2::noneModeServiceCallback, this);
   }
 
   ImageView2::~ImageView2()
@@ -1539,6 +1541,16 @@ namespace image_view2{
     resetInteraction();
     return true;
   }
+
+  bool ImageView2::noneModeServiceCallback(
+    std_srvs::EmptyRequest& req,
+    std_srvs::EmptyResponse& res)
+  {
+    resetInteraction();
+    setMode(MODE_NONE);
+    resetInteraction();
+    return true;
+  }
   
   bool ImageView2::changeModeServiceCallback(
     image_view2::ChangeModeRequest& req,
@@ -1568,6 +1580,9 @@ namespace image_view2{
           }
     else if (interaction_mode == "line") {
       return MODE_LINE;
+    }
+    else if (interaction_mode == "none") {
+      return MODE_NONE;
     }
     else {
       throw std::string("Unknown mode");
