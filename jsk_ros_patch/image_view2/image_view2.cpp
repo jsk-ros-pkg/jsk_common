@@ -430,6 +430,7 @@ namespace image_view2{
       int height_size = a_size.height;
       double desired_size = last_msg_->height * scale;
       scale = desired_size / height_size;
+      ROS_INFO("scale: %f", scale);
     }
       
     cv::Point origin;
@@ -1489,6 +1490,11 @@ namespace image_view2{
       line_select_start_point_ = true;
       line_selected_ = false;
       continuous_ready_ = false;
+    }
+    else if (getMode() == MODE_RECTANGLE) {
+      button_up_pos_ = cv::Point2f(0, 0);
+      window_selection_.width = 0;
+      window_selection_.height = 0;
     }
   }
 
