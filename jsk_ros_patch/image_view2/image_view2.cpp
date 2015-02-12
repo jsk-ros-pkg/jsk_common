@@ -58,6 +58,8 @@ namespace image_view2{
     move_point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/movepoint", 100);
     foreground_mask_pub_ = nh.advertise<sensor_msgs::Image>(camera + "/foreground", 100);
     background_mask_pub_ = nh.advertise<sensor_msgs::Image>(camera + "/background", 100);
+    foreground_rect_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/foreground_rect", 100);
+    background_rect_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/background_rect", 100);
     line_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/line", 100);
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
     local_nh.param("skip_draw_rate", skip_draw_rate_, 0);
@@ -430,7 +432,7 @@ namespace image_view2{
       int height_size = a_size.height;
       double desired_size = last_msg_->height * scale;
       scale = desired_size / height_size;
-      ROS_INFO("scale: %f", scale);
+      ROS_DEBUG("text scale: %f", scale);
     }
       
     cv::Point origin;
@@ -1194,8 +1196,41 @@ namespace image_view2{
     }
     publishMonoImage(foreground_mask_pub_, foreground_mask, last_msg_->header);
     publishMonoImage(background_mask_pub_, background_mask, last_msg_->header);
+    publishRectFromMaskImage(foreground_rect_pub_, foreground_mask, last_msg_->header);
+    publishRectFromMaskImage(background_rect_pub_, background_mask, last_msg_->header);
   }
   
+  void ImageView2::publishRectFromMaskImage(
+    ros::Publisher& pub,
+    cv::Mat& image,
+    const std_msgs::Header& header)
+  {
+    int min_x = image.cols;
+    int min_y = image.rows;
+    int max_x = 0;
+    int max_y = 0;
+    for (int j = 0; j < image.rows; j++) {
+      for (int i = 0; i < image.cols; i++) {
+        if (image.at<uchar>(j, i) != 0) {
+          min_x = std::min(min_x, i);
+          min_y = std::min(min_y, j);
+          max_x = std::max(max_x, i);
+          max_y = std::max(max_y, j);
+        }
+      }
+    }
+    geometry_msgs::PolygonStamped poly;
+    poly.header = header;
+    geometry_msgs::Point32 min_pt, max_pt;
+    min_pt.x = min_x; 
+    min_pt.y = min_y;
+    max_pt.x = max_x; 
+    max_pt.y = max_y;
+    poly.polygon.points.push_back(min_pt);
+    poly.polygon.points.push_back(max_pt);
+    pub.publish(poly);
+  }
+
   void ImageView2::publishLinePoints()
   {
     boost::mutex::scoped_lock lock(line_point_mutex_);
