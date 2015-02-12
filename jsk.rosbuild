@@ -120,6 +120,8 @@ function setup-ros {
     if [ "$YES" != "-y" -a -e /etc/apt/sources.list.d/ros-latest.list ] ; then
         read -p "Are you sure? to overwrite /etc/apt/sources.list.d/ros-latest.list [y/N] " -n 1 -r
         echo
+    elif [ "$YES" == "-y" -a -e /etc/apt/sources.list.d/ros-latest.list ] ; then # do not overwrite existing ros-latest.list
+	REPLY="N"
     fi
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         $COMMAND sudo sh -c "echo \"deb $DEBIAN_REPOSITORY `lsb_release -cs` main\" > /etc/apt/sources.list.d/ros-latest.list"
