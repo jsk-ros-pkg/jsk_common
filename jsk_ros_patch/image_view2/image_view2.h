@@ -123,6 +123,9 @@ namespace image_view2
     void publishMonoImage(ros::Publisher& pub,
                           cv::Mat& image,
                           const std_msgs::Header& header);
+    void publishRectFromMaskImage(ros::Publisher& pub,
+                                  cv::Mat& image,
+                                  const std_msgs::Header& header);
     ////////////////////////////////////////////////////////
     // drawing helper methods
     ////////////////////////////////////////////////////////
@@ -228,6 +231,8 @@ namespace image_view2
     ros::Publisher move_point_pub_;
     ros::Publisher foreground_mask_pub_;
     ros::Publisher background_mask_pub_;
+    ros::Publisher foreground_rect_pub_;
+    ros::Publisher background_rect_pub_;
     ros::Publisher line_pub_;
     KEY_MODE mode_;
     bool autosize_;
