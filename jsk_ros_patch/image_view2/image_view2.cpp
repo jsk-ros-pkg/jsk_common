@@ -83,11 +83,9 @@ namespace image_view2{
     resize_y_ = 1.0/yy;
     filename_format_.parse(format_string);
 
-    if ( use_window ) {
-      font_ = cv::FONT_HERSHEY_DUPLEX;
-      window_selection_.x = window_selection_.y =
-        window_selection_.height = window_selection_.width = 0;
-    }
+    font_ = cv::FONT_HERSHEY_DUPLEX;
+    window_selection_.x = window_selection_.y =
+      window_selection_.height = window_selection_.width = 0;
 
     image_pub_ = it.advertise("image_marked", 1);
     
