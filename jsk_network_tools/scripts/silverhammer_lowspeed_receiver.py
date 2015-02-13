@@ -11,6 +11,7 @@ import signal
 import sys
 import roslib
 from roslib.message import get_message_class
+from std_msgs.msg import Time
 
 class SilverHammerUDPListener():
     def __init__(self, server, buffer_size, format, message, pub):
@@ -33,6 +34,7 @@ class SilverHammerLowspeedReceiver():
             self.receive_message = get_message_class(message_class_str)
         except:
             raise Exception("invalid topic type: %s"%message_class_str)
+        self.lock = Lock()
         self.receive_port = rospy.get_param("~receive_port", 1024)
         self.receive_ip = rospy.get_param("~receive_ip", "127.0.0.1")
         self.receive_buffer = rospy.get_param("~receive_buffer_size", 250)
@@ -40,25 +42,39 @@ class SilverHammerLowspeedReceiver():
         self.socket_server.bind((self.receive_ip, self.receive_port))
         self.receive_format = msgToStructFormat(self.receive_message())
         self.pub = rospy.Publisher("~output", self.receive_message)
-    def messageCallback(self, msg):
+        self.last_received_time = None
+        self.last_received_time_pub = rospy.Publisher(
+            "~last_received_time", Time)
+        self.last_publish_output_time = None
+        self.last_publish_output_time_pub = rospy.Publisher(
+            "~last_publish_output_time", Time)
+        self.update_time_pub_timer = rospy.Timer(rospy.Duration(1.0 / 10),
+                                                 self.timeTimerCallback)
+    def timeTimerCallback(self, event):
         with self.lock:
-            self.latest_message = msg
-    def sendTimerCallback(self, event):
-        with self.lock:
-            if self.latest_message:
-                rospy.loginfo("sending message")
-                packed_data = packMessage(self.latest_message, self.send_format)
-                self.socket_client.sendto(packed_data, (self.to_ip, self.to_port))
-                self.latest_message = None
+            if self.last_received_time:
+                self.last_received_time_pub.publish(
+                    Time(data=self.last_received_time))
             else:
-                rospy.loginfo("no message is available")
+                self.last_received_time_pub.publish(
+                    Time(data=rospy.Time(0)))
+            if self.last_publish_output_time:
+                self.last_publish_output_time_pub.publish(
+                    Time(data=self.last_publish_output_time))
+            else:
+                self.last_publish_output_time_pub.publish(
+                    Time(data=rospy.Time(0)))
     def run(self):
         while not rospy.is_shutdown():
             recv_data, addr = self.socket_server.recvfrom(self.receive_buffer)
             msg = unpackMessage(recv_data, self.receive_format, 
                                 self.receive_message)
+            with self.lock:
+                self.last_received_time = rospy.Time.now()
             self.pub.publish(msg)
-            print "received:", msg
+            with self.lock:
+                self.last_publish_output_time = rospy.Time.now()
+            rospy.logdebug("received:", msg)
 
 if __name__ == "__main__":
     rospy.init_node("silverhammer_lowspeed_receiver")
