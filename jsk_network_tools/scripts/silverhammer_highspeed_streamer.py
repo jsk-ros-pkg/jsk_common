@@ -10,6 +10,7 @@ from socket import *
 
 import roslib
 from roslib.message import get_message_class
+from std_msgs.msg import Time
 
 class SilverHammerStreamer:
     def __init__(self):
@@ -22,6 +23,11 @@ class SilverHammerStreamer:
         self.lock = Lock()
         self.send_port = rospy.get_param("~to_port", 16484)
         self.send_ip = rospy.get_param("~to_ip", "localhost")
+        self.last_send_time = None
+        self.last_input_received_time = None
+        self.last_send_time_pub = rospy.Publisher("~last_send_time", Time)
+        self.last_input_received_time_pub = rospy.Publisher(
+            "~last_input_received_time", Time)
         self.rate = rospy.get_param("~send_rate", 2)   #2Hz
         self.socket_client = socket(AF_INET, SOCK_DGRAM)
         self.packet_size = rospy.get_param("~packet_size", 1000)   #2Hz
@@ -31,7 +37,20 @@ class SilverHammerStreamer:
         self.counter = 0
         self.send_timer = rospy.Timer(rospy.Duration(1.0 / self.rate),
                                       self.sendTimerCallback)
-        
+        self.update_time_pub_timer = rospy.Timer(rospy.Duration(1.0 / 10),
+                                                 self.timeTimerCallback)
+    def timeTimerCallback(self, event):
+        with self.lock:
+            if self.last_send_time:
+                self.last_send_time_pub.publish(self.last_send_time)
+            else:
+                self.last_send_time_pub.publish(Time(data=rospy.Time(0)))
+            if self.last_input_received_time:
+                self.last_input_received_time_pub.publish(
+                    self.last_input_received_time)
+            else:
+                self.last_input_received_time_pub.publish(
+                    Time(data=rospy.Time(0)))
     def sendTimerCallback(self, event):
         buffer = StringIO()
         with self.lock:
@@ -42,11 +61,12 @@ class SilverHammerStreamer:
                 if topic in self.messages:
                     setattr(msg, field_name, self.messages[topic])
             rospy.msg.serialize_message(buffer, 0, msg)
+            self.last_send_time = rospy.Time.now()
         # send buffer as UDP
         self.sendBuffer(buffer.getvalue())
     def sendBuffer(self, buffer):
         packets = separateBufferIntoPackets(self.counter, buffer, self.packet_size)
-        rospy.loginfo("sending %d packets", len(packets))
+        rospy.logdebug("sending %d packets", len(packets))
         for p in packets:
             self.socket_client.sendto(p.pack(), (self.send_ip, self.send_port))
         self.counter = self.counter + 1
@@ -60,6 +80,7 @@ class SilverHammerStreamer:
     def messageCallback(self, msg, topic):
         with self.lock:
             self.messages[topic] = msg
+            self.last_input_received_time = rospy.Time.now()
     def genMessageCallback(self, topic):
         return lambda msg: self.messageCallback(msg, topic)
 
