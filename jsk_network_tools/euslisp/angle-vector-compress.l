@@ -25,7 +25,7 @@
                                 (- (send jt :max-angle)
                                    (send jt :min-angle))))
                         (* (/ v 255.0) 360.0)))
-                  (coerce av cons)
+                  (subseq (coerce av cons) 0 (length (send robot :joint-list)))
                   (send robot :joint-list))
           float-vector))
 
