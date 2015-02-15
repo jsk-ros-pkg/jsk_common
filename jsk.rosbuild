@@ -235,6 +235,7 @@ function compile-pkg {
     (cd $ROS_INSTALLDIR_SRC &&
         $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION $COMMAND bash)
 
+    $COMMAND source /opt/ros/$DISTRIBUTION/setup.sh
     env | grep ROS
     # do compile
     (cd $ROS_INSTALLDIR && LC_ALL=C $COMMAND catkin build --no-status $PACKAGES)
