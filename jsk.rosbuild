@@ -328,6 +328,7 @@ if [ "$DRY" == true ]; then
     COMMAND="dummy_command"
 else
     COMMAND=""
+    set -x
 fi
 if [ $# -gt 0 ]; then ## if we have arguments, check functions
     $@
