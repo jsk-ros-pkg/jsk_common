@@ -47,6 +47,7 @@
     (let ((avs (coerce (decompress-angle-vector
                         *robot* (send inmsg :angles))
                        cons)))
+      (setq avs (subseq avs 0 (length (send *robot* :joint-list))))
       (send msg :position (mapcar #'(lambda (v j)
                                       (if (derivedp j linear-joint)
                                           (* 0.001 v)
@@ -55,7 +56,7 @@
     (send msg :header :stamp (ros::time-now))
     (ros::publish "/joint_states_decompressed" msg)))
 
-(ros::advertise "/joint_states_decompressed" sensor_msgs::JointState)
+(ros::advertise "/joint_states_decompressed" sensor_msgs::JointState 1 t)
 (ros::subscribe "/joint_states_compressed" *message-type*
   #'joint-state-compressed-callback)
 
