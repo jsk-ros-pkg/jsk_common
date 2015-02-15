@@ -256,14 +256,16 @@ function test-pkg {
 
 function install-jsk-ros-pkg {
     # default only install demo packages
-    if [ "$USE_SOURCE" == "" ]; then
-        cat <<EOF > /tmp/rosinstall.$$
+    echo "#\n" > /tmp/rosinstall.$$
+    if [ "$USE_SOURCE" == "" ]; then # jsk_demos is also listed in jsk.rosinstall
+        cat <<EOF >> /tmp/rosinstall.$$
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_demos.git
     local-name: jsk-ros-pkg/jsk_demos
 EOF
-        if [ "$RTM_ROS_ROBOTICS" = "true" ]; then
-            cat <<EOF >> /tmp/rosinstall.$$
+    fi
+    if [ "$RTM_ROS_ROBOTICS" = "true" ]; then # we always need rtmros_gazebo
+        cat <<EOF >> /tmp/rosinstall.$$
 - git:
     uri: https://github.com/start-jsk/rtmros_tutorials.git
     local-name: rtm-ros-robotics/rtmros_tutorials
@@ -271,9 +273,10 @@ EOF
     uri: https://github.com/start-jsk/rtmros_gazebo.git
     local-name: rtm-ros-robotics/rtmros_gazebo
 EOF
-        fi
-    else #  [ "$USE_SOURCE" != "" ]
-        wget  'https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosinstall' -O /tmp/rosinstall.$$
+    fi
+    if [ "$USE_SOURCE" != "" ]; then
+        wget  'https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosinstall' -O /tmp/jsk.rosinstall.$$
+        cat /tmp/jsk.rosinstall.$$ >> /tmp/rosinstall.$$
         if [ "$RTM_ROS_ROBOTICS" = "true" ]; then
             cat <<EOF > /tmp/rtm-ros-robotics.rosinstall.$$
 - git:
