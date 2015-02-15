@@ -185,6 +185,10 @@ by `~message` parameter.
   Packet size of UDP. ROS message will be splitted into the packets
   of `~packet_size`. Unit is byte.
 
+* `~packet_interval` (default: `0.001`)
+
+  Interval between sending each packet to avoid consume large amount of bandwidth.
+
 #### `silverhammer_highspeed_receiver.py`
 ##### Publishing Topics
 output topics are automatically determined by message definition specified

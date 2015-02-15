@@ -28,6 +28,7 @@ class SilverHammerStreamer:
         self.last_send_time_pub = rospy.Publisher("~last_send_time", Time)
         self.last_input_received_time_pub = rospy.Publisher(
             "~last_input_received_time", Time)
+        self.packet_interval = rospy.get_param("~packet_interval", 0.001)
         self.rate = rospy.get_param("~send_rate", 2)   #2Hz
         self.socket_client = socket(AF_INET, SOCK_DGRAM)
         self.packet_size = rospy.get_param("~packet_size", 1000)   #2Hz
@@ -66,9 +67,11 @@ class SilverHammerStreamer:
         self.sendBuffer(buffer.getvalue())
     def sendBuffer(self, buffer):
         packets = separateBufferIntoPackets(self.counter, buffer, self.packet_size)
-        rospy.logdebug("sending %d packets", len(packets))
+        rospy.loginfo("sending %d packets", len(packets))
+        r = rospy.Rate(1 / self.packet_interval)
         for p in packets:
             self.socket_client.sendto(p.pack(), (self.send_ip, self.send_port))
+            r.sleep()
         self.counter = self.counter + 1
         if self.counter > 65535:
             self.counter = 0
