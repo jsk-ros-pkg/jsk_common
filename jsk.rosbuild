@@ -217,7 +217,7 @@ function compile-pkg {
     echo "hddtemp hddtemp/daemon boolean false" | $COMMAND sudo debconf-set-selections
 
     ## do compile for upstream
-    $COMMAND . /opt/ros/$DISTRIBUTION/setup.sh
+    $COMMAND source /opt/ros/$DISTRIBUTION/setup.sh
     if [ -e ${ROS_INSTALLDIR}_parent/src ]; then
         # rosdep install
         (cd ${ROS_INSTALLDIR}_parent/src &&
@@ -228,7 +228,7 @@ function compile-pkg {
             echo -n ";${ROS_INSTALLDIR}_parent/devel/share" >> ${ROS_INSTALLDIR}_parent/devel/.catkin
             echo "** force add ${ROS_INSTALLDIR}_parent/devel/share to ROS_PACKAGE_PATH"
         fi
-        $COMMAND . ${ROS_INSTALLDIR}_parent/devel/setup.sh
+        $COMMAND source ${ROS_INSTALLDIR}_parent/devel/setup.sh
     fi
 
     # rosdep install
@@ -238,14 +238,14 @@ function compile-pkg {
     # do compile
     (cd $ROS_INSTALLDIR && LC_ALL=C $COMMAND catkin build --no-status $PACKAGES)
     ## load setup.sh
-    $COMMAND . ${ROS_INSTALLDIR}/devel/setup.sh
+    $COMMAND source ${ROS_INSTALLDIR}/devel/setup.sh
     $COMMAND rospack profile
 }
 
 function test-pkg {
     trap error ERR
     local PACKAGES=$@
-    $COMMAND . $ROS_INSTALLDIR/devel/setup.sh
+    $COMMAND source $ROS_INSTALLDIR/devel/setup.sh
     # test
     export DISPLAY=
     (cd $ROS_INSTALLDIR && LC_ALL=C $COMMAND catkin test -p 1 --no-status $PACKAGES)
