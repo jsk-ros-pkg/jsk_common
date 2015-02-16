@@ -2,8 +2,8 @@
 Changelog for package bayesian_belief_networks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.62 (2015-02-17)
+-------------------
 * [bayesian_belief_networks] Fix setup.py for install python
 * Contributors: Yuto Inagaki
 

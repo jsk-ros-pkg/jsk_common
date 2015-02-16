@@ -2,8 +2,8 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.62 (2015-02-17)
+-------------------
 * corrected install locations
 * flipped lib and include on install directive
 * include files weren't properly included and the pattern matching for nlopt libraries needed to be fixed

@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.62 (2015-02-17)
+-------------------
 * [jsk_tools] Add script to see rosout in terminal
   Fix syntax
 * [jsk_tools] Add more user to rename

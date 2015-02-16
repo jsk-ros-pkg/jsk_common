@@ -2,8 +2,8 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.62 (2015-02-17)
+-------------------
 * [jsk_network_tools] Add ~packet_interval to highspeed streamer to avoid
   consuming too much bandwidth
 * [jsk_network_tools] latch output of joint-state-decompressor.l

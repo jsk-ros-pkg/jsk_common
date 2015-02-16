@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.62 (2015-02-17)
+-------------------
 * [jsk_topic_tools] Add ~latch option to snapshot nodelet
 * Contributors: Ryohei Ueda
 

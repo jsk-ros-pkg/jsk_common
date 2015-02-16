@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.62 (2015-02-17)
+-------------------
 * [image_view2] Add utility script to scale mouse event from image_view2
   for resized image
 * [image_view2] Initialize window_selection_ and font_ variable even in
