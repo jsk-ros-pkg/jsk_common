@@ -13,13 +13,19 @@ lock = Lock()
 def widthScallCallback(msg):
     global width_scale
     with lock:
-        width_scale = msg.data
+        if msg.data == 0:
+            rospy.logwarn("scale is 0!, we skip it")
+        else:
+            width_scale = msg.data
         updateForPendingData()
     
 def heightScallCallback(msg):
     global height_scale
     with lock:
-        height_scale = msg.data
+        if msg.data == 0:
+            rospy.logwarn("scale is 0!, we skip it")
+        else:
+            height_scale = msg.data
         updateForPendingData()
     
 def polygonCallback(msg):
@@ -31,8 +37,9 @@ def polygonCallback(msg):
             pending_polygon = msg
 
 def updateForPendingData():
-    global pending_polygon
-    if pending_polygon:
+    global pending_polygon, width_scale, height_scale
+    if (pending_polygon and width_scale and height_scale
+        and width_scale != 0 and height_scale != 0):
         publishResizedPolygon(pending_polygon)
         pending_polygon = None
         
