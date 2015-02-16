@@ -2,6 +2,12 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [collada_urdf_jsk_patch] Remove urdf and urdfdom from package.xml
+  because it should be resolved via collada_urdf package
+* Contributors: Ryohei Ueda
+
 1.0.61 (2015-02-11)
 -------------------
 

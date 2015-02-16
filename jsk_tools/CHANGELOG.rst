@@ -2,6 +2,14 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tools] Add script to see rosout in terminal
+  Fix syntax
+* [jsk_tools] Add more user to rename
+* [jsk_tools] Install bin directory to lib directory
+* Contributors: Ryohei Ueda
+
 1.0.61 (2015-02-11)
 -------------------
 

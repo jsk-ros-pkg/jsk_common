@@ -2,6 +2,11 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Add ~latch option to snapshot nodelet
+* Contributors: Ryohei Ueda
+
 1.0.61 (2015-02-11)
 -------------------
 * [jsk_topic_tools] Fix snapshot to publish first message correctly

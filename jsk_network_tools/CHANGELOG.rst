@@ -2,6 +2,15 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_network_tools] Add ~packet_interval to highspeed streamer to avoid
+  consuming too much bandwidth
+* [jsk_network_tools] latch output of joint-state-decompressor.l
+* [jsk_network_tools] Support messages which has longer joints than robot model
+* [jsk_network_tools] Publish the last time to send/receive messages
+* Contributors: Ryohei Ueda
+
 1.0.61 (2015-02-11)
 -------------------
 * [jsk_network_tools] Enable unit test

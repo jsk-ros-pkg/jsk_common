@@ -2,6 +2,12 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tilt_laser] Add another argument to disable robot_state_publisher and
+  robot_description perfectly
+* Contributors: Ryohei Ueda
+
 1.0.61 (2015-02-11)
 -------------------
 * [jsk_tilt_laser] Add sensor_tf_prefix and not_use_sensor_tf_prefix for the
