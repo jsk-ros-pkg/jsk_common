@@ -217,7 +217,7 @@ function compile-pkg {
     echo "hddtemp hddtemp/daemon boolean false" | $COMMAND sudo debconf-set-selections
 
     ## do compile for upstream
-    $COMMAND . /opt/ros/$DISTRIBUTION/setup.sh
+    $COMMAND source /opt/ros/$DISTRIBUTION/setup.sh
     if [ -e ${ROS_INSTALLDIR}_parent/src ]; then
         # rosdep install
         (cd ${ROS_INSTALLDIR}_parent/src &&
@@ -228,24 +228,26 @@ function compile-pkg {
             echo -n ";${ROS_INSTALLDIR}_parent/devel/share" >> ${ROS_INSTALLDIR}_parent/devel/.catkin
             echo "** force add ${ROS_INSTALLDIR}_parent/devel/share to ROS_PACKAGE_PATH"
         fi
-        $COMMAND . ${ROS_INSTALLDIR}_parent/devel/setup.sh
+        $COMMAND source ${ROS_INSTALLDIR}_parent/devel/setup.sh
     fi
 
     # rosdep install
     (cd $ROS_INSTALLDIR_SRC &&
         $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION $COMMAND bash)
 
+    $COMMAND source /opt/ros/$DISTRIBUTION/setup.sh
+    env | grep ROS
     # do compile
     (cd $ROS_INSTALLDIR && LC_ALL=C $COMMAND catkin build --no-status $PACKAGES)
     ## load setup.sh
-    $COMMAND . ${ROS_INSTALLDIR}/devel/setup.sh
+    $COMMAND source ${ROS_INSTALLDIR}/devel/setup.sh
     $COMMAND rospack profile
 }
 
 function test-pkg {
     trap error ERR
     local PACKAGES=$@
-    $COMMAND . $ROS_INSTALLDIR/devel/setup.sh
+    $COMMAND source $ROS_INSTALLDIR/devel/setup.sh
     # test
     export DISPLAY=
     (cd $ROS_INSTALLDIR && LC_ALL=C $COMMAND catkin test -p 1 --no-status $PACKAGES)
@@ -254,14 +256,16 @@ function test-pkg {
 
 function install-jsk-ros-pkg {
     # default only install demo packages
-    if [ "$USE_SOURCE" == "" ]; then
-        cat <<EOF > /tmp/rosinstall.$$
+    echo "#\n" > /tmp/rosinstall.$$
+    if [ "$USE_SOURCE" == "" ]; then # jsk_demos is also listed in jsk.rosinstall
+        cat <<EOF >> /tmp/rosinstall.$$
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_demos.git
     local-name: jsk-ros-pkg/jsk_demos
 EOF
-        if [ "$RTM_ROS_ROBOTICS" = "true" ]; then
-            cat <<EOF >> /tmp/rosinstall.$$
+    fi
+    if [ "$RTM_ROS_ROBOTICS" = "true" ]; then # we always need rtmros_gazebo
+        cat <<EOF >> /tmp/rosinstall.$$
 - git:
     uri: https://github.com/start-jsk/rtmros_tutorials.git
     local-name: rtm-ros-robotics/rtmros_tutorials
@@ -269,9 +273,10 @@ EOF
     uri: https://github.com/start-jsk/rtmros_gazebo.git
     local-name: rtm-ros-robotics/rtmros_gazebo
 EOF
-        fi
-    else #  [ "$USE_SOURCE" != "" ]
-        wget  'https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosinstall' -O /tmp/rosinstall.$$
+    fi
+    if [ "$USE_SOURCE" != "" ]; then
+        wget  'https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosinstall' -O /tmp/jsk.rosinstall.$$
+        cat /tmp/jsk.rosinstall.$$ >> /tmp/rosinstall.$$
         if [ "$RTM_ROS_ROBOTICS" = "true" ]; then
             cat <<EOF > /tmp/rtm-ros-robotics.rosinstall.$$
 - git:
@@ -327,6 +332,7 @@ if [ "$DRY" == true ]; then
     COMMAND="dummy_command"
 else
     COMMAND=""
+    set -x
 fi
 if [ $# -gt 0 ]; then ## if we have arguments, check functions
     $@
