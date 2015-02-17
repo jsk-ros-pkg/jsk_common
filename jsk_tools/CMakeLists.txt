@@ -19,5 +19,10 @@ install(DIRECTORY bin
   USE_SOURCE_PERMISSIONS
   )
 
+add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_BIN_DESTINATION}/ros_console.py
+  COMMAND cmake -E make_directory ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_BIN_DESTINATION}
+  COMMAND cmake -E copy ${PROJECT_SOURCE_DIR}/bin/ros_console.py ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_BIN_DESTINATION}/
+  DEPENDS ${PROJECT_SOURCE_DIR}/bin/ros_console.py)
+add_custom_target(install_ros_console ALL DEPENDS ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_BIN_DESTINATION}/ros_console.py)
 install(PROGRAMS bin/ros_console.py
   DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
