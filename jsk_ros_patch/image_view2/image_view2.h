@@ -188,6 +188,7 @@ namespace image_view2
     std::string marker_topic_;
     boost::circular_buffer<double> times_;
     image_transport::Publisher image_pub_;
+    image_transport::Publisher local_image_pub_;
 
     V_ImageMarkerMessage marker_queue_;
     boost::mutex queue_mutex_;
