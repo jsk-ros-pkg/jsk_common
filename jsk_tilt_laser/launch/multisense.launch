@@ -109,7 +109,6 @@
      <param name="tf_cache_time_secs" value="20" />
      <param name="max_scans" type="int" value="1000" />
      <param name="fixed_frame" type="string" value="multisense/head_root"/>
-     <rosparam command="load" file="$(find jsk_tilt_laser)/config/multisense_laser_filter.yaml" />
    </node>
    
    <!-- modify multisense parameters -->
