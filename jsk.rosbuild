@@ -299,12 +299,13 @@ EOF
     install-pkg /tmp/rosinstall.$$
     # install euslisp / openhrp
     if [ "$USE_SOURCE" != "" ]; then
+        $COMMAND mkdir -p ${ROS_INSTALLDIR}_parent/src
+        $COMMAND wstool init ${ROS_INSTALLDIR}_parent/src
         for pkg in jsk-ros-pkg/jsk_roseus rtm-ros-robotics/rtmros_common; do
             pkg2=$(echo $pkg | sed s@/@-@g)
             if [ -e $ROS_INSTALLDIR_SRC/$pkg/setup_upstream.sh -a ! -e ${ROS_INSTALLDIR}_parent/src/$pkg2-setup.sh ]; then
-                $COMMAND mkdir -p ${ROS_INSTALLDIR}_parent/src
-                $COMMAND cp $ROS_INSTALLDIR_SRC/$pkg/setup_upstream.sh ${ROS_INSTALLDIR}_parent/src/$pkg2-setup.sh
-                $COMMAND ${ROS_INSTALLDIR}_parent/src/$pkg2-setup.sh
+                $COMMAND cp $ROS_INSTALLDIR_SRC/$pkg/setup_upstream.sh ${ROS_INSTALLDIR}_parent/src/$pkg2-setup_upstream.sh
+                $COMMAND ${ROS_INSTALLDIR}_parent/src/$pkg2-setup_upstream.sh -w ${ROS_INSTALLDIR}_parent/
             fi
         done
     fi
