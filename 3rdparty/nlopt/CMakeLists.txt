@@ -6,15 +6,27 @@ find_package(catkin REQUIRED COMPONENTS mk)
 
 add_custom_target(libnlopt_cxx ALL
   DEPENDS ${CATKIN_DEVEL_PREFIX}/lib/libnlopt_cxx.so)
-add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/lib/libnlopt_cxx.so
+add_custom_command(OUTPUT
+  ${CATKIN_DEVEL_PREFIX}/lib/libnlopt_cxx.so
+  ${CATKIN_DEVEL_PREFIX}/include/nlopt
   COMMAND cp ${PROJECT_SOURCE_DIR}/nlopt-2.3.tar.gz.md5sum ${CMAKE_CURRENT_BINARY_DIR}
-  COMMAND cmake -E chdir ${CMAKE_CURRENT_BINARY_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile DSTDIR=${CATKIN_DEVEL_PREFIX} MK_DIR=${mk_PREFIX}/share/mk
-  DEPENDS Makefile)
+  COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/tmp
+  COMMAND cmake -E chdir ${CMAKE_CURRENT_BINARY_DIR} make -f ${PROJECT_SOURCE_DIR}/Makefile DSTDIR=${CMAKE_CURRENT_BINARY_DIR}/tmp MK_DIR=${mk_PREFIX}/share/mk
+  # copy nlopt.h and nlopt.hpp
+  COMMAND cp -r ${CMAKE_CURRENT_BINARY_DIR}/tmp/include ${CATKIN_DEVEL_PREFIX}/include/nlopt
+  # copy libnlopt
+  COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/tmp/lib/*.so ${CATKIN_DEVEL_PREFIX}/lib/
+  COMMAND cp -r ${CMAKE_CURRENT_BINARY_DIR}/tmp/share ${CATKIN_DEVEL_PREFIX}/share/
+  DEPENDS Makefile ${CATKIN_DEVEL_PREFIX}/include
+  ${CATKIN_DEVEL_PREFIX}/lib ${CATKIN_DEVEL_PREFIX}/share)
+
+add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/include
+  COMMAND mkdir -p ${CATKIN_DEVEL_PREFIX}/include)
 
 catkin_package(
     DEPENDS
     CATKIN_DEPENDS
-    INCLUDE_DIRS  ${CATKIN_DEVEL_PREFIX}/include
+    INCLUDE_DIRS
     LIBRARIES nlopt_cxx
     EXPORTED_TARGETS libnlopt_cxx
 )
@@ -32,13 +44,12 @@ catkin_package(
 #   USE_SOURCE_PERMISSIONS
 #   )
 
-install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/include/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN ".svn" EXCLUDE)
+install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/include/nlopt/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
 install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/lib/
   DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  FILES_MATCHING PATTERN "*nlopt*" PATTERN ".svn" EXCLUDE)
+  FILES_MATCHING PATTERN "*nlopt*")
 
-install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/share/nlopt
+install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/share/nlopt/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
