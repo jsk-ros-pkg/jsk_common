@@ -41,6 +41,12 @@
       relay a topic message from ~input to ~output.
     </description>
   </class>
+  <class name="jsk_topic_tools/Passthrough" type="Passthrough"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      passthrough a topic message from ~input to ~output during specified time.
+    </description>
+  </class>
   <class name="jsk_topic_tools/Block" type="Block"
          base_class_type="nodelet::Nodelet">
     <description>
