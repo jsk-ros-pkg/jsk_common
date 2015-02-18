@@ -51,6 +51,7 @@ namespace image_view2{
     std::string format_string;
     std::string transport;
     image_transport::ImageTransport it(nh);
+    image_transport::ImageTransport local_it(camera);
 
     point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/screenpoint",100);
     point_array_pub_ = nh.advertise<sensor_msgs::PointCloud2>(camera + "/screenpoint_array",100);
@@ -88,11 +89,12 @@ namespace image_view2{
       window_selection_.height = window_selection_.width = 0;
 
     image_pub_ = it.advertise("image_marked", 1);
+    local_image_pub_ = local_it.advertise("marked", 1);
     
     image_sub_ = it.subscribe(camera, 1, &ImageView2::imageCb, this, transport);
     info_sub_ = nh.subscribe(camera_info, 1, &ImageView2::infoCb, this);
     marker_sub_ = nh.subscribe(marker_topic_, 10, &ImageView2::markerCb, this);
-    event_sub_ = local_nh.subscribe("event", 1, &ImageView2::eventCb, this);
+    event_sub_ = local_nh.subscribe(camera + "/event", 1, &ImageView2::eventCb, this);
     
     change_mode_srv_ = local_nh.advertiseService(
       "change_mode", &ImageView2::changeModeServiceCallback, this);
@@ -1009,6 +1011,7 @@ namespace image_view2{
     out_msg.encoding = "bgr8";
     out_msg.image    = image_;
     image_pub_.publish(out_msg.toImageMsg());
+    local_image_pub_.publish(out_msg.toImageMsg());
   }
   
   void ImageView2::imageCb(const sensor_msgs::ImageConstPtr& msg)
