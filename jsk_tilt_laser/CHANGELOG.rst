@@ -2,6 +2,12 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tilt_laser, jsk_data] Add multisense_play.launch to play multisene bag file
+* [jsk_tilt_laser] Do not use filters in laser assmble node
+* Contributors: Ryohei Ueda
+
 1.0.62 (2015-02-17)
 -------------------
 * [jsk_tilt_laser] Add another argument to disable robot_state_publisher and

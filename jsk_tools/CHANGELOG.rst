@@ -2,6 +2,12 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* need to copy global_bin for devel config too
+* [jsk_tools] Install jsk_tools/ros_console.py into global bin directory
+* Contributors: Ryohei Ueda, Kei Okada
+
 1.0.62 (2015-02-17)
 -------------------
 * [jsk_tools] Add script to see rosout in terminal

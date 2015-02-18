@@ -2,6 +2,9 @@
 Changelog for package collada_urdf_jsk_patch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.62 (2015-02-17)
 -------------------
 * [collada_urdf_jsk_patch] Remove urdf and urdfdom from package.xml

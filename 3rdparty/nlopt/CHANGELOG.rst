@@ -2,6 +2,11 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [nlopt] Fix nlopt compilation and instlation
+* Contributors: Ryohei Ueda
+
 1.0.62 (2015-02-17)
 -------------------
 * corrected install locations

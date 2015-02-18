@@ -2,6 +2,12 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [image_view2] Publish marked image in local namespace
+* [image_view2] Ignore scale=0 data in scale_interaction.py
+* Contributors: Ryohei Ueda
+
 1.0.62 (2015-02-17)
 -------------------
 * [image_view2] Add utility script to scale mouse event from image_view2
@@ -290,4 +296,4 @@ Changelog for package image_view2
 * back to previous version, which is not using subscribeCamera, becouse of slow connection of pr2-network
 * rewrite using subscribeCamera
 * add image_view2/
-* Contributors: manabu, kazuto, Kei Okada, youhei, Ryohei Ueda, chen, mikita
+* Contributors: manabu, kazuto, Kei Okada, youhei, chen, Ryohei Ueda, mikita

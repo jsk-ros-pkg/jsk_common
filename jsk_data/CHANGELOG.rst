@@ -2,6 +2,11 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tilt_laser, jsk_data] Add multisense_play.launch to play multisene bag file
+* Contributors: Ryohei Ueda
+
 1.0.62 (2015-02-17)
 -------------------
 

@@ -2,6 +2,12 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Add Passthrough nodelet to relay topics during
+  specified duration
+* Contributors: Ryohei Ueda
+
 1.0.62 (2015-02-17)
 -------------------
 * [jsk_topic_tools] Add ~latch option to snapshot nodelet
