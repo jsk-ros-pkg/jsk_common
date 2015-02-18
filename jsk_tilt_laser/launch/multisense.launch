@@ -6,7 +6,9 @@
   <arg name="not_use_robot_state_publisher" default="false" />
   <arg name="sensor_tf_prefix" default="$(arg namespace)" />
   <arg name="not_use_sensor_tf_prefix" default="false" />
-  <include file="$(find multisense_bringup)/multisense.launch">
+  <arg name="run_driver" default="true" />
+  
+  <include file="$(find multisense_bringup)/multisense.launch" if="$(arg run_driver)">
     <arg name="ip_address" value="$(arg ip_address)" />
     <arg name="namespace" value="$(arg namespace)" />
     <arg name="mtu" value="$(arg mtu)" />

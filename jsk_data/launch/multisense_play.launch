@@ -1,0 +1,25 @@
+<launch>
+  <arg name="INPUT" />
+  <node pkg="rosbag" type="play" args="$(arg INPUT)" name="rosbag" />
+  <node pkg="nodelet" type="nodelet" name="stereo_pointcloud"
+        args="standalone stereo_image_proc/point_cloud2">
+    <remap from="left/image_rect_color" to="/multisense/left/image_rect_color" />
+    <remap from="left/camera_info" to="/multisense/left/camera_info" />
+    <remap from="right/camera_info" to="/multisense/right/camera_info" />
+    <remap from="disparity" to="/multisense/left/disparity_image" />
+    <remap from="points2" to="/multisense/organized_point_cloud2_colored" />
+  </node>
+  <include file="$(find jsk_tilt_laser)/launch/multisense.launch">
+    <arg name="run_driver" value="false" />
+  </include>
+  
+  <!-- viewer -->
+  <group ns="viewer">
+    <node pkg="image_view" type="image_view" name="color_image_viewer">
+      <remap from="image" to="/multisense/left/image_rect_color" />
+    </node>
+    <node pkg="image_view" type="disparity_view" name="disparity_image_viewer">
+      <remap from="image" to="/multisense/left/disparity_image" />
+    </node>
+  </group>
+</launch>
