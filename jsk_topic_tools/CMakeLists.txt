@@ -13,7 +13,7 @@ add_message_files(
 )
 
 add_service_files(
-  FILES List.srv Update.srv ChangeTopic.srv
+  FILES List.srv Update.srv ChangeTopic.srv PassthroughDuration.srv
 )
 
 generate_messages()
@@ -55,6 +55,8 @@ jsk_topic_tools_nodelet(src/mux_nodelet.cpp
   "jsk_topic_tools/MUX" "mux")
 jsk_topic_tools_nodelet(src/relay_nodelet.cpp
   "jsk_topic_tools/Relay" "relay")
+jsk_topic_tools_nodelet(src/passthrough_nodelet.cpp
+  "jsk_topic_tools/Passthrough" "passthrough")
 jsk_topic_tools_nodelet(src/block_nodelet.cpp
   "jsk_topic_tools/Block" "block")
 jsk_topic_tools_nodelet(src/snapshot_nodelet.cpp
