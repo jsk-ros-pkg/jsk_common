@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.63 (2015-02-19)
+-------------------
 * [jsk_tilt_laser, jsk_data] Add multisense_play.launch to play multisene bag file
 * [jsk_tilt_laser] Do not use filters in laser assmble node
 * Contributors: Ryohei Ueda

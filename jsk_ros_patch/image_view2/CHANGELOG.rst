@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.63 (2015-02-19)
+-------------------
 * [image_view2] Publish marked image in local namespace
 * [image_view2] Ignore scale=0 data in scale_interaction.py
 * Contributors: Ryohei Ueda

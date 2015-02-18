@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.63 (2015-02-19)
+-------------------
 * need to copy global_bin for devel config too
 * [jsk_tools] Install jsk_tools/ros_console.py into global bin directory
 * Contributors: Ryohei Ueda, Kei Okada

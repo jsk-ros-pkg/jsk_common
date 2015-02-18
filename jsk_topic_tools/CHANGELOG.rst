@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.63 (2015-02-19)
+-------------------
 * [jsk_topic_tools] Add Passthrough nodelet to relay topics during
   specified duration
 * Contributors: Ryohei Ueda
