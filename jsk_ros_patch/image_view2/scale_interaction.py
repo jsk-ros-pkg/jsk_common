@@ -14,7 +14,7 @@ def widthScallCallback(msg):
     global width_scale
     with lock:
         if msg.data == 0:
-            rospy.logwarn("scale is 0!, we skip it")
+            rospy.logdebug("scale is 0!, we skip it")
         else:
             width_scale = msg.data
         updateForPendingData()
@@ -23,7 +23,7 @@ def heightScallCallback(msg):
     global height_scale
     with lock:
         if msg.data == 0:
-            rospy.logwarn("scale is 0!, we skip it")
+            rospy.logdebug("scale is 0!, we skip it")
         else:
             height_scale = msg.data
         updateForPendingData()
