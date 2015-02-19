@@ -31,13 +31,15 @@ class SilverHammerLowspeedStreamer():
         self.to_port = rospy.get_param("~to_port", 1024)
         self.to_ip = rospy.get_param("~to_ip", "127.0.0.1")
         self.send_rate = rospy.get_param("~send_rate", 1)
+        self.event_driven = rospy.get_param("~event_driven", True)
         self.latest_message = None
         self.socket_client = socket(AF_INET, SOCK_DGRAM)
         self.send_format = msgToStructFormat(self.send_message())
         self.sub = rospy.Subscriber("~input", 
                                     self.send_message, self.messageCallback)
-        self.send_timer = rospy.Timer(rospy.Duration(1 / self.send_rate),
-                                      self.sendTimerCallback)
+        if not self.event_driven:
+            self.send_timer = rospy.Timer(rospy.Duration(1 / self.send_rate),
+                                          self.sendTimerCallback)
         self.update_time_pub_timer = rospy.Timer(rospy.Duration(1.0 / 10),
                                                  self.timeTimerCallback)
     def timeTimerCallback(self, event):
@@ -56,14 +58,18 @@ class SilverHammerLowspeedStreamer():
         with self.lock:
             self.latest_message = msg
             self.last_input_received_time = rospy.Time.now()
+            if self.event_driven:
+                self.sendMessage(msg)
+    def sendMessage(self, msg):
+        packed_data = packMessage(msg, self.send_format)
+        self.socket_client.sendto(packed_data, (self.to_ip, self.to_port))
+        self.last_send_time = rospy.Time.now()
     def sendTimerCallback(self, event):
         with self.lock:
             if self.latest_message:
                 rospy.logdebug("sending message")
-                packed_data = packMessage(self.latest_message, self.send_format)
-                self.socket_client.sendto(packed_data, (self.to_ip, self.to_port))
+                self.sendMessage(self.latest_message)
                 self.latest_message = None
-                self.last_send_time = rospy.Time.now()
             else:
                 rospy.loginfo("no message is available")
 
