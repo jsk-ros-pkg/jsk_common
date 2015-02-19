@@ -142,7 +142,9 @@ Features of `silverhammer_lowspeed_{streamer,receiver}.py` are:
 * `~send_rate` (default: `1`)
 
   Fixed rate in Hz to send message.
+* `~event_driven` (default: `False`)
 
+  Streamer sends UDP packet immediately `~input` topic is published.
 #### `silverhammer_lowspeed_receiver.py`
 ##### Publishing Topics
 * `~output`

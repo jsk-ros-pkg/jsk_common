@@ -31,7 +31,7 @@ class SilverHammerLowspeedStreamer():
         self.to_port = rospy.get_param("~to_port", 1024)
         self.to_ip = rospy.get_param("~to_ip", "127.0.0.1")
         self.send_rate = rospy.get_param("~send_rate", 1)
-        self.event_driven = rospy.get_param("~event_driven", True)
+        self.event_driven = rospy.get_param("~event_driven", False)
         self.latest_message = None
         self.socket_client = socket(AF_INET, SOCK_DGRAM)
         self.send_format = msgToStructFormat(self.send_message())
