@@ -8,7 +8,8 @@ from StringIO import StringIO
 from io import BytesIO
 from socket import *
 from struct import pack
-
+import diagnostic_updater
+from diagnostic_msgs.msg import DiagnosticStatus
 import roslib
 from roslib.message import get_message_class
 
@@ -21,6 +22,10 @@ class SilverHammerReceiver:
         except:
             raise Exception("invalid topic type: %s"%message_class_str)
         self.lock = Lock()
+        self.diagnostic_updater = diagnostic_updater.Updater()
+        self.diagnostic_updater.setHardwareID("none")
+        self.diagnostic_updater.add("Diagnostics", self.diagnosticCallback)
+        
         self.pesimistic = rospy.get_param("~pesimistic", False)
         self.receive_port = rospy.get_param("~receive_port", 16484)
         self.receive_ip = rospy.get_param("~receive_ip", "localhost")
@@ -34,12 +39,31 @@ class SilverHammerReceiver:
         self.socket_server.bind((self.receive_ip, self.receive_port))
         self.packet_size = rospy.get_param("~packet_size", 1000)   #2Hz
         self.packets = []
+        self.launched_time = rospy.Time.now()
+        self.last_received_time = rospy.Time(0)
+        self.diagnostic_timer = rospy.Timer(rospy.Duration(1.0 / 10),
+                                            self.diagnosticTimerCallback)
+    def diagnosticCallback(self, stat):
+        # always OK
+        stat.summary(DiagnosticStatus.OK, "OK")
+        with self.lock:
+            now = rospy.Time.now()
+            stat.add("Uptime [sec]",
+                     (now - self.launched_time).to_sec())
+            stat.add("Time from last input [sec]", 
+                     (now - self.last_received_time).to_sec())
+            stat.add("UDP address", self.receive_ip)
+            stat.add("UDP port", self.receive_port)
+        return stat
+    def diagnosticTimerCallback(self, event):
+        self.diagnostic_updater.update()
     def run(self):
         while not rospy.is_shutdown():
             recv_data, addr = self.socket_server.recvfrom(self.packet_size)
             packet = LargeDataUDPPacket.fromData(recv_data, self.packet_size)
             self.packets.append(packet)
             if packet.num - 1 == packet.id:
+                self.last_received_time = rospy.Time.now()
                 # the end of packet
                 try:
                     self.concatenatePackets()
