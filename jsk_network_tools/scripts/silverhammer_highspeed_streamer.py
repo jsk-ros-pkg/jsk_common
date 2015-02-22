@@ -7,7 +7,8 @@ from threading import Lock
 from StringIO import StringIO
 from io import BytesIO
 from socket import *
-
+import diagnostic_updater
+from diagnostic_msgs.msg import DiagnosticStatus
 import roslib
 from roslib.message import get_message_class
 from std_msgs.msg import Time
@@ -21,13 +22,19 @@ class SilverHammerStreamer:
         except:
             raise Exception("invalid topic type: %s"%message_class_str)
         self.lock = Lock()
+        self.launched_time = rospy.Time.now()
+        self.diagnostic_updater = diagnostic_updater.Updater()
+        self.diagnostic_updater.setHardwareID("none")
+        # register function to publish diagnostic
+        self.diagnostic_updater.add("Diagnostics", self.diagnosticCallback)
         self.send_port = rospy.get_param("~to_port", 16484)
         self.send_ip = rospy.get_param("~to_ip", "localhost")
-        self.last_send_time = None
-        self.last_input_received_time = None
+        self.last_send_time = rospy.Time(0)
+        self.last_input_received_time = rospy.Time(0)
         self.last_send_time_pub = rospy.Publisher("~last_send_time", Time)
         self.last_input_received_time_pub = rospy.Publisher(
             "~last_input_received_time", Time)
+        self.send_num = 0
         self.packet_interval = rospy.get_param("~packet_interval", 0.001)
         self.rate = rospy.get_param("~send_rate", 2)   #2Hz
         self.socket_client = socket(AF_INET, SOCK_DGRAM)
@@ -38,8 +45,30 @@ class SilverHammerStreamer:
         self.counter = 0
         self.send_timer = rospy.Timer(rospy.Duration(1.0 / self.rate),
                                       self.sendTimerCallback)
-        self.update_time_pub_timer = rospy.Timer(rospy.Duration(1.0 / 10),
-                                                 self.timeTimerCallback)
+        self.diagnostic_timer = rospy.Timer(rospy.Duration(1.0 / 10),
+                                            self.diagnosticTimerCallback)
+    def diagnosticCallback(self, stat):
+        # always OK
+        stat.summary(DiagnosticStatus.OK, "OK")
+        with self.lock:
+            now = rospy.Time.now()
+            stat.add("Uptime [sec]",
+                     (now - self.launched_time).to_sec())
+            stat.add("Time from the last sending [sec]",
+                     (now - self.last_send_time).to_sec())
+            stat.add("Number of transmission", self.send_num)
+            stat.add("Time from the last input [sec]",
+                     (now - self.last_input_received_time).to_sec())
+            # properties
+            stat.add("UDP address", self.send_ip)
+            stat.add("UDP port", self.send_port)
+            stat.add("Expected Hz to send", "%f Hz" % self.rate)
+            stat.add("Packet size", "%d bit" % self.packet_size)
+            stat.add("Interval duration between packets",
+                     self.packet_interval)
+        return stat
+    def diagnosticTimerCallback(self, event):
+        self.diagnostic_updater.update()
     def timeTimerCallback(self, event):
         with self.lock:
             if self.last_send_time:
@@ -66,6 +95,7 @@ class SilverHammerStreamer:
         # send buffer as UDP
         self.sendBuffer(buffer.getvalue())
     def sendBuffer(self, buffer):
+        self.send_num = self.send_num + 1
         packets = separateBufferIntoPackets(self.counter, buffer, self.packet_size)
         rospy.loginfo("sending %d packets", len(packets))
         r = rospy.Rate(1 / self.packet_interval)
@@ -78,7 +108,8 @@ class SilverHammerStreamer:
     def subscribe(self, subscriber_infos):
         self.subscribers = []
         for topic, message_class in subscriber_infos:
-            sub = rospy.Subscriber(topic, message_class, self.genMessageCallback(topic))
+            sub = rospy.Subscriber(topic, message_class, 
+                                   self.genMessageCallback(topic))
             self.subscribers.append(sub)
     def messageCallback(self, msg, topic):
         with self.lock:
