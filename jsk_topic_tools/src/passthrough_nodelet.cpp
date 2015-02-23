@@ -47,8 +47,23 @@ namespace jsk_topic_tools
       &Passthrough::inputCallback, this);
     request_duration_srv_ = pnh_.advertiseService(
       "request_duration", &Passthrough::requestDurationCallback, this);
+    stop_srv_ = pnh_.advertiseService(
+      "stop", &Passthrough::stopCallback, this);
   }
 
+  bool Passthrough::stopCallback(
+    std_srvs::Empty::Request &req,
+    std_srvs::Empty::Response &res)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    // force to stop publishing
+    if (!publish_requested_) {
+      NODELET_DEBUG("already stoppped");
+    }
+    publish_requested_ = false;
+    return true;
+  }
+  
   bool Passthrough::requestDurationCallback(
     jsk_topic_tools::PassthroughDuration::Request &req,
     jsk_topic_tools::PassthroughDuration::Response &res)

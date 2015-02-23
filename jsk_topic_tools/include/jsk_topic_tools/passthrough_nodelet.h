@@ -41,6 +41,7 @@
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <jsk_topic_tools/PassthroughDuration.h>
+#include <std_srvs/Empty.h>
 
 namespace jsk_topic_tools
 {
@@ -80,10 +81,21 @@ namespace jsk_topic_tools
     virtual bool requestDurationCallback(
       jsk_topic_tools::PassthroughDuration::Request &req,
       jsk_topic_tools::PassthroughDuration::Response &res);
-    
+
+    /** @brief
+     * Advertise a topic according to a specific message instance.
+     */
     virtual ros::Publisher advertise(
       boost::shared_ptr<topic_tools::ShapeShifter const> msg,
       const std::string& topic);
+
+    /** @brief
+     * Callback function of ~stop service.
+     * Force to stop publishing messages.
+     */
+    virtual bool stopCallback(
+      std_srvs::Empty::Request& req,
+      std_srvs::Empty::Response& res);
     
     ros::Time finish_time_;
     bool publish_requested_;
@@ -94,6 +106,7 @@ namespace jsk_topic_tools
     ros::NodeHandle pnh_;
     ros::Time end_time_;
     ros::ServiceServer request_duration_srv_;
+    ros::ServiceServer stop_srv_;
   };
 }
 
