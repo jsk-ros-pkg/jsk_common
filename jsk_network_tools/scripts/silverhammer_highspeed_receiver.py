@@ -24,7 +24,7 @@ class SilverHammerReceiver:
         self.lock = Lock()
         self.diagnostic_updater = diagnostic_updater.Updater()
         self.diagnostic_updater.setHardwareID("none")
-        self.diagnostic_updater.add("Diagnostics", self.diagnosticCallback)
+        self.diagnostic_updater.add("HighspeedReceiver", self.diagnosticCallback)
         
         self.pesimistic = rospy.get_param("~pesimistic", False)
         self.receive_port = rospy.get_param("~receive_port", 16484)

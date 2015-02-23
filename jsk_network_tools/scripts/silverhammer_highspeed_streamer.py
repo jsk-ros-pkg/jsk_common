@@ -26,7 +26,7 @@ class SilverHammerStreamer:
         self.diagnostic_updater = diagnostic_updater.Updater()
         self.diagnostic_updater.setHardwareID("none")
         # register function to publish diagnostic
-        self.diagnostic_updater.add("Diagnostics", self.diagnosticCallback)
+        self.diagnostic_updater.add("HighspeedStreamer", self.diagnosticCallback)
         self.send_port = rospy.get_param("~to_port", 16484)
         self.send_ip = rospy.get_param("~to_ip", "localhost")
         self.last_send_time = rospy.Time(0)

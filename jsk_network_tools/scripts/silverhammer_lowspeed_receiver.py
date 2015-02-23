@@ -12,6 +12,8 @@ import sys
 import roslib
 from roslib.message import get_message_class
 from std_msgs.msg import Time
+import diagnostic_updater
+from diagnostic_msgs.msg import DiagnosticStatus
 
 class SilverHammerUDPListener():
     def __init__(self, server, buffer_size, format, message, pub):
@@ -35,6 +37,11 @@ class SilverHammerLowspeedReceiver():
         except:
             raise Exception("invalid topic type: %s"%message_class_str)
         self.lock = Lock()
+        self.launched_time = rospy.Time.now()
+        self.diagnostic_updater = diagnostic_updater.Updater()
+        self.diagnostic_updater.setHardwareID("none")
+        self.diagnostic_updater.add("LowspeedReceiver", self.diagnosticCallback)
+        self.received_num = 0
         self.receive_port = rospy.get_param("~receive_port", 1024)
         self.receive_ip = rospy.get_param("~receive_ip", "127.0.0.1")
         self.receive_buffer = rospy.get_param("~receive_buffer_size", 250)
@@ -42,28 +49,30 @@ class SilverHammerLowspeedReceiver():
         self.socket_server.bind((self.receive_ip, self.receive_port))
         self.receive_format = msgToStructFormat(self.receive_message())
         self.pub = rospy.Publisher("~output", self.receive_message)
-        self.last_received_time = None
+        self.last_received_time = rospy.Time(0)
         self.last_received_time_pub = rospy.Publisher(
             "~last_received_time", Time)
-        self.last_publish_output_time = None
+        self.last_publish_output_time = rospy.Time(0)
         self.last_publish_output_time_pub = rospy.Publisher(
             "~last_publish_output_time", Time)
-        self.update_time_pub_timer = rospy.Timer(rospy.Duration(1.0 / 10),
-                                                 self.timeTimerCallback)
-    def timeTimerCallback(self, event):
+        self.diagnostic_timer = rospy.Timer(rospy.Duration(1.0 / 10),
+                                            self.diagnosticTimerCallback)
+    def diagnosticTimerCallback(self, event):
+        self.diagnostic_updater.update()
+    def diagnosticCallback(self, stat):
+        # always OK
+        stat.summary(DiagnosticStatus.OK, "OK")
         with self.lock:
-            if self.last_received_time:
-                self.last_received_time_pub.publish(
-                    Time(data=self.last_received_time))
-            else:
-                self.last_received_time_pub.publish(
-                    Time(data=rospy.Time(0)))
-            if self.last_publish_output_time:
-                self.last_publish_output_time_pub.publish(
-                    Time(data=self.last_publish_output_time))
-            else:
-                self.last_publish_output_time_pub.publish(
-                    Time(data=rospy.Time(0)))
+            now = rospy.Time.now()
+            stat.add("Uptime [sec]",
+                     (now - self.launched_time).to_sec())
+            stat.add("Time from the last reception [sec]",
+                     (now - self.last_received_time).to_sec())
+            stat.add("Time from the last publish ~output [sec]",
+                     (now - self.last_publish_output_time).to_sec())
+            stat.add("UDP address", self.receive_ip)
+            stat.add("UDP port", self.receive_port)
+        return stat
     def run(self):
         while not rospy.is_shutdown():
             recv_data, addr = self.socket_server.recvfrom(self.receive_buffer)
