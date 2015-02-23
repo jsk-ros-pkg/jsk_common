@@ -2,7 +2,7 @@ all: installed
 # ff
 FILENAME = seq-sat-ffha.tar.bz2
 TARBALL = build/$(FILENAME)
-TARBALL_URL = "http://ipc.informatik.uni-freiburg.de/Planners?action=AttachFile&do=get&target=$(FILENAME)"
+TARBALL_URL = https://github.com/jsk-ros-pkg/archives/raw/master/$(FILENAME)
 SOURCE_DIR = build/seq-sat-ffha
 UNPACK_CMD = tar jxf
 MD5SUM_DIR = $(CURDIR)
