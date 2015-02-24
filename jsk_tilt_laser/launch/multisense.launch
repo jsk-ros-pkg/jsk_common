@@ -110,7 +110,8 @@
      <remap from="scan" to="/multisense/lidar_scan_filtered"/>
      <param name="tf_cache_time_secs" value="20" />
      <param name="max_scans" type="int" value="1000" />
-     <param name="fixed_frame" type="string" value="multisense/head_root"/>
+     <param name="fixed_frame" type="string" value="multisense/head_root" unless="$(arg not_use_sensor_tf_prefix)"/>
+     <param name="fixed_frame" type="string" value="head_root" if="$(arg not_use_sensor_tf_prefix)"/>
    </node>
    
    <!-- modify multisense parameters -->
