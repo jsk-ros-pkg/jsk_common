@@ -138,6 +138,9 @@ function setup-ros {
     fi
     $COMMAND sudo apt-get upgrade $YES
     $COMMAND sudo apt-get -qq $YES install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools python-pip
+    if [ "$USE_SOURCE" != "" ]; then
+        $COMMAND sudo apt-get -qq $YES install autoconf # for openrtm_aist
+    fi
     if [ "$USE_SOURCE" == "full" ]; then
         $COMMAND sudo apt-get -qq $YES install python-rosinstall-generator
         $COMMAND sudo apt-get -qq $YES install libftdi-dev libgstreamer0.10-dev libgst-dev libgstreamer-plugins-base0.10-dev
