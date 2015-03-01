@@ -225,6 +225,8 @@ function compile-pkg {
         (cd ${ROS_INSTALLDIR}_parent/src &&
             $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION $COMMAND bash)
         #
+        $COMMAND source /opt/ros/$DISTRIBUTION/setup.sh
+        #
         (cd ${ROS_INSTALLDIR}_parent && LC_ALL=C $COMMAND catkin build --no-status)
         if [ "`grep -c ${ROS_INSTALLDIR}_parent/devel/share ${ROS_INSTALLDIR}_parent/devel/.catkin`" == 0 ] ; then
             echo -n ";${ROS_INSTALLDIR}_parent/devel/share" >> ${ROS_INSTALLDIR}_parent/devel/.catkin
@@ -236,6 +238,11 @@ function compile-pkg {
     # rosdep install
     (cd $ROS_INSTALLDIR_SRC &&
         $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION $COMMAND bash)
+    # need to resource setup.sh for loading configuratoin of newly installed package by rosdep
+    $COMMAND source /opt/ros/$DISTRIBUTION/setup.sh
+    if [ -e ${ROS_INSTALLDIR}_parent/src ]; then
+        $COMMAND source ${ROS_INSTALLDIR}_parent/devel/setup.sh
+    fi
 
     env | grep ROS
     # do compile
