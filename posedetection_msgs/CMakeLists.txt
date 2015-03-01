@@ -8,14 +8,6 @@ find_package(OpenCV REQUIRED)
 include_directories(SYSTEM ${catkin_INCLUDE_DIRS}
                            ${OpenCV_INCLUDE_DIRS})
 
-# to compatible with fuerte directories
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-
-add_executable(feature0d_view src/feature0d_view.cpp)
-target_link_libraries(feature0d_view ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(feature0d_view posedetection_msgs_gencpp)
-
-
 add_message_files(FILES
   Curve1D.msg
   Feature0D.msg
@@ -45,9 +37,12 @@ catkin_package(
     LIBRARIES # TODO
 )
 
+add_executable(feature0d_view src/feature0d_view.cpp)
+target_link_libraries(feature0d_view ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(feature0d_view posedetection_msgs_gencpp)
+
 install(TARGETS feature0d_view
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
-
