@@ -5,6 +5,7 @@ from jsk_network_tools.msg import FC2OCSLargeData
 from jsk_network_tools.silverhammer_util import *
 from threading import Lock
 from StringIO import StringIO
+from std_msgs.msg import Time
 from io import BytesIO
 from socket import *
 from struct import pack
@@ -41,6 +42,7 @@ class SilverHammerReceiver:
         self.packets = []
         self.launched_time = rospy.Time.now()
         self.last_received_time = rospy.Time(0)
+        self.last_received_time_pub = rospy.Publisher("~last_received_time", Time)
         self.diagnostic_timer = rospy.Timer(rospy.Duration(1.0 / 10),
                                             self.diagnosticTimerCallback)
     def diagnosticCallback(self, stat):
@@ -57,6 +59,8 @@ class SilverHammerReceiver:
         return stat
     def diagnosticTimerCallback(self, event):
         self.diagnostic_updater.update()
+        with self.lock:
+            self.last_received_time_pub.publish(self.last_received_time)
     def run(self):
         while not rospy.is_shutdown():
             recv_data, addr = self.socket_server.recvfrom(self.packet_size)

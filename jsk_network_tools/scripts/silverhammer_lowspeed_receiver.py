@@ -59,6 +59,10 @@ class SilverHammerLowspeedReceiver():
                                             self.diagnosticTimerCallback)
     def diagnosticTimerCallback(self, event):
         self.diagnostic_updater.update()
+        # and publish time
+        with self.lock:
+            self.last_publish_output_time_pub.publish(self.last_publish_output_time)
+            self.last_received_time_pub.publish(self.last_received_time)
     def diagnosticCallback(self, stat):
         # always OK
         stat.summary(DiagnosticStatus.OK, "OK")
