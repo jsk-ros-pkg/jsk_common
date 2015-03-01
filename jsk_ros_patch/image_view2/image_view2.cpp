@@ -1016,7 +1016,10 @@ namespace image_view2{
   
   void ImageView2::imageCb(const sensor_msgs::ImageConstPtr& msg)
   {
-    ROS_DEBUG("imageCb");
+    if (msg->width == 0 && msg->height == 0) {
+      ROS_DEBUG("invalid image");
+      return;
+    }
     static int count = 0;
     if (count < skip_draw_rate_) {
       count++;
