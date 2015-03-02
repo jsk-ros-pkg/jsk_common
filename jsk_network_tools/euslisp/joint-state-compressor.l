@@ -25,20 +25,7 @@
 (unless *robot-name*
   (error "Please specify ~~robot_name"))
 ;; load robot files... it's not so good
-(setq *robot-model-files*
-      (list "package://pr2eus/pr2.l"
-            "package://hrpsys_ros_bridge_tutorials/models/hrp2jsk.l"
-            "package://hrpsys_ros_bridge_tutorials/models/hrp2jsknt.l"
-            "package://hrpsys_ros_bridge_tutorials/models/hrp2jsknts.l"
-            "package://hrpsys_ros_bridge_tutorials/models/staro.l"
-            "package://hrpsys_ros_bridge_tutorials/models/urataleg.l"
-            "package://hrpsys_ros_bridge_tutorials/models/samplerobot.l"
-            "package://hrpsys_ros_bridge_tutorials/models/hrp2w.l"))
-
-(dolist (f *robot-model-files*)
-  (if (probe-file (ros::resolve-ros-path f))
-      (load f)))
-
+(load-robot-model *robot-name*)
 (setq *robot* (make-robot-model-from-name *robot-name*))
 
 (defun joint-state-callback (inmsg)
