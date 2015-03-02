@@ -1621,6 +1621,9 @@ namespace image_view2{
       window_selection_.width = 0;
       window_selection_.height = 0;
     }
+    else if (getMode() == MODE_POLY) {
+      clearPolyPoints();
+    }
   }
 
   bool ImageView2::rectangleModeServiceCallback(
