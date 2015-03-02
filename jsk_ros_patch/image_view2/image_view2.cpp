@@ -43,7 +43,7 @@ namespace image_view2{
   ImageView2::ImageView2(ros::NodeHandle& nh)
     : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), selecting_fg_(true),
       left_button_clicked_(false), continuous_ready_(false), window_initialized_(false),
-      line_select_start_point_(true), line_selected_(false)
+      line_select_start_point_(true), line_selected_(false), poly_selecting_done_(true)
   {
     std::string camera = nh.resolveName("image");
     std::string camera_info = nh.resolveName("camera_info");
@@ -62,6 +62,7 @@ namespace image_view2{
     foreground_rect_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/foreground_rect", 100);
     background_rect_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/background_rect", 100);
     line_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/line", 100);
+    poly_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/poly", 100);
     local_nh.param("window_name", window_name_, std::string("image_view2 [")+camera+std::string("]"));
     local_nh.param("skip_draw_rate", skip_draw_rate_, 0);
     local_nh.param("autosize", autosize_, false);
@@ -106,6 +107,8 @@ namespace image_view2{
       "grabcut_rect_mode", &ImageView2::grabcutRectModeServiceCallback, this);
     line_mode_srv_ = local_nh.advertiseService(
       "line_mode", &ImageView2::lineModeServiceCallback, this);
+    poly_mode_srv_ = local_nh.advertiseService(
+      "poly_mode", &ImageView2::polyModeServiceCallback, this);
     none_mode_srv_ = local_nh.advertiseService(
       "none_mode", &ImageView2::noneModeServiceCallback, this);
   }
@@ -946,6 +949,26 @@ namespace image_view2{
         cv::line(draw_, line_start_point_, line_end_point_, CV_RGB(0, 255, 0), 8, 8, 0);
       }
     }
+    else if (mode_ == MODE_POLY) {
+      boost::mutex::scoped_lock lock(poly_point_mutex_);
+      if (poly_points_.size() > 0) {
+        // draw selected points
+        for (size_t i = 0; i < poly_points_.size() - 1; i++) {
+          cv::line(draw_, poly_points_[i], poly_points_[i + 1], CV_RGB(255, 0, 0), 8, 8, 0);
+        }
+        // draw selecting points
+        if (poly_selecting_done_) {
+           cv::line(draw_, poly_points_[poly_points_.size() - 1],
+                    poly_points_[0],
+                    CV_RGB(255, 0, 0), 8, 8, 0);
+        }
+        else {
+          cv::line(draw_, poly_points_[poly_points_.size() - 1],
+                   poly_selecting_point_,
+                   CV_RGB(0, 255, 0), 8, 8, 0);
+        }
+      }
+    }
   }
 
   void ImageView2::drawInfo(ros::Time& before_rendering)
@@ -1382,7 +1405,6 @@ namespace image_view2{
         else if (getMode() == MODE_SELECT_FORE_AND_BACK_RECT) {
           updateRegionWindowSize(x, y);
         }
-        
       }
       // publish the points
       geometry_msgs::PointStamped move_point;
@@ -1397,6 +1419,9 @@ namespace image_view2{
         if (!isSelectingLineStartPoint()) {
           updateLineEndPoint(cv::Point(x, y));
         }
+      }
+      else if (getMode() == MODE_POLY) {
+        updatePolySelectingPoint(cv::Point(x, y));
       }
     }
   }
@@ -1431,9 +1456,62 @@ namespace image_view2{
         continuous_ready_ = true;
       }
     }
+    else if (getMode() == MODE_POLY) {
+      if (isPolySelectingFirstTime()) {
+        continuous_ready_ = false;
+        clearPolyPoints();
+      }
+      updatePolyPoint(cv::Point(x, y));
+    }
     left_button_clicked_ = false;
   }
   
+  void ImageView2::updatePolyPoint(cv::Point p)
+  {
+    boost::mutex::scoped_lock lock(poly_point_mutex_);
+    poly_points_.push_back(p);
+  }
+
+  void ImageView2::publishPolyPoints()
+  {
+    boost::mutex::scoped_lock lock(poly_point_mutex_);
+    geometry_msgs::PolygonStamped poly;
+    poly.header = last_msg_->header;
+    for (size_t i = 0; i < poly_points_.size(); i++) {
+      geometry_msgs::Point32 p;
+      p.x = poly_points_[i].x;
+      p.y = poly_points_[i].y;
+      p.z = 0;
+      poly.polygon.points.push_back(p);
+    }
+    poly_pub_.publish(poly);
+  }
+
+  void ImageView2::updatePolySelectingPoint(cv::Point p)
+  {
+    boost::mutex::scoped_lock lock(poly_point_mutex_);
+    poly_selecting_point_ = p;
+  }
+
+  void ImageView2::finishSelectingPoly()
+  {
+    boost::mutex::scoped_lock lock(poly_point_mutex_);
+    poly_selecting_done_ = true;
+  }
+
+  bool ImageView2::isPolySelectingFirstTime()
+  {
+    boost::mutex::scoped_lock lock(poly_point_mutex_);
+    return poly_selecting_done_;
+  }
+
+  void ImageView2::clearPolyPoints()
+  {
+    boost::mutex::scoped_lock lock(poly_point_mutex_);
+    poly_selecting_done_ = false;
+    poly_points_.clear();
+  }
+
   void ImageView2::processMouseEvent(int event, int x, int y, int flags, void* param)
   {
     checkMousePos(x, y);
@@ -1450,14 +1528,22 @@ namespace image_view2{
       break;
     case CV_EVENT_RBUTTONDOWN:
     {
-      boost::mutex::scoped_lock lock(image_mutex_);
-      if (!image_.empty()) {
-        std::string filename = (filename_format_ % count_).str();
-        cv::imwrite(filename.c_str(), image_);
-        ROS_INFO("Saved image %s", filename.c_str());
-        count_++;
-      } else {
-        ROS_WARN("Couldn't save image, no data!");
+      if (getMode() == MODE_POLY) {
+        // close the polygon
+        finishSelectingPoly();
+        publishPolyPoints();
+        continuous_ready_ = true;
+      }
+      else {
+        boost::mutex::scoped_lock lock(image_mutex_);
+        if (!image_.empty()) {
+          std::string filename = (filename_format_ % count_).str();
+          cv::imwrite(filename.c_str(), image_);
+          ROS_INFO("Saved image %s", filename.c_str());
+          count_++;
+        } else {
+          ROS_WARN("Couldn't save image, no data!");
+        }
       }
       break;
     }
@@ -1587,6 +1673,16 @@ namespace image_view2{
     return true;
   }
 
+  bool ImageView2::polyModeServiceCallback(
+    std_srvs::EmptyRequest& req,
+    std_srvs::EmptyResponse& res)
+  {
+    resetInteraction();
+    setMode(MODE_POLY);
+    resetInteraction();
+    return true;
+  }
+
   bool ImageView2::noneModeServiceCallback(
     std_srvs::EmptyRequest& req,
     std_srvs::EmptyResponse& res)
@@ -1625,6 +1721,9 @@ namespace image_view2{
           }
     else if (interaction_mode == "line") {
       return MODE_LINE;
+    }
+    else if (interaction_mode == "poly") {
+      return MODE_POLY;
     }
     else if (interaction_mode == "none") {
       return MODE_NONE;
