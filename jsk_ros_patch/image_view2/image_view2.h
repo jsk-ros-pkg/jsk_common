@@ -87,6 +87,7 @@ namespace image_view2
       MODE_SELECT_FORE_AND_BACK,
       MODE_SELECT_FORE_AND_BACK_RECT,
       MODE_LINE,
+      MODE_POLY,
       MODE_NONE
     };
       
@@ -210,6 +211,9 @@ namespace image_view2
     bool selecting_fg_;
     std::vector<cv::Point2d> point_bg_array_;
     std::vector<cv::Point2d> point_fg_array_;
+    std::vector<cv::Point2d> poly_points_;
+    cv::Point poly_selecting_point_;
+    bool poly_selecting_done_;
     cv::Rect rect_bg_;
     cv::Rect rect_fg_;
     std::string window_name_;
@@ -235,11 +239,13 @@ namespace image_view2
     ros::Publisher foreground_rect_pub_;
     ros::Publisher background_rect_pub_;
     ros::Publisher line_pub_;
+    ros::Publisher poly_pub_;
     KEY_MODE mode_;
     bool autosize_;
     bool window_initialized_;
 
     // for line mode interaction
+    boost::mutex poly_point_mutex_;
     boost::mutex line_point_mutex_;
     bool line_select_start_point_;
     bool line_selected_;
@@ -252,6 +258,12 @@ namespace image_view2
     cv::Point getLineEndPoint();
     void publishLinePoints();
     void updateLinePoint(cv::Point p);
+    void updatePolyPoint(cv::Point p);
+    void updatePolySelectingPoint(cv::Point p);
+    void clearPolyPoints();
+    void publishPolyPoints();
+    void finishSelectingPoly();
+    bool isPolySelectingFirstTime();
     bool isSelectingLineStartPoint();
     void resetInteraction();
     ros::ServiceServer rectangle_mode_srv_;
@@ -260,6 +272,7 @@ namespace image_view2
     ros::ServiceServer grabcut_rect_mode_srv_;
     ros::ServiceServer line_mode_srv_;
     ros::ServiceServer none_mode_srv_;
+    ros::ServiceServer poly_mode_srv_;
     ros::ServiceServer change_mode_srv_;
     bool changeModeServiceCallback(
       image_view2::ChangeModeRequest& req,
@@ -277,6 +290,9 @@ namespace image_view2
       std_srvs::EmptyRequest& req,
       std_srvs::EmptyResponse& res);
     bool lineModeServiceCallback(
+      std_srvs::EmptyRequest& req,
+      std_srvs::EmptyResponse& res);
+    bool polyModeServiceCallback(
       std_srvs::EmptyRequest& req,
       std_srvs::EmptyResponse& res);
     bool noneModeServiceCallback(
