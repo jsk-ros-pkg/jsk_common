@@ -23,6 +23,7 @@ class SilverHammerStreamer:
             raise Exception("invalid topic type: %s"%message_class_str)
         self.lock = Lock()
         self.launched_time = rospy.Time.now()
+        self.packet_interval = None
         self.diagnostic_updater = diagnostic_updater.Updater()
         self.diagnostic_updater.setHardwareID("none")
         # register function to publish diagnostic
@@ -35,7 +36,8 @@ class SilverHammerStreamer:
         self.last_input_received_time_pub = rospy.Publisher(
             "~last_input_received_time", Time)
         self.send_num = 0
-        self.packet_interval = rospy.get_param("~packet_interval", 0.001)
+        #self.packet_interval = rospy.get_param("~packet_interval", 0.001)
+        self.bandwidth = rospy.get_param("~bandwidth", 300 * 1000 * 1000)
         self.rate = rospy.get_param("~send_rate", 2)   #2Hz
         self.socket_client = socket(AF_INET, SOCK_DGRAM)
         self.packet_size = rospy.get_param("~packet_size", 1000)   #2Hz
@@ -64,8 +66,9 @@ class SilverHammerStreamer:
             stat.add("UDP port", self.send_port)
             stat.add("Expected Hz to send", "%f Hz" % self.rate)
             stat.add("Packet size", "%d bit" % self.packet_size)
-            stat.add("Interval duration between packets",
-                     self.packet_interval)
+            if self.packet_interval:
+                stat.add("Latest nterval duration between packets",
+                         self.packet_interval)
         return stat
     def diagnosticTimerCallback(self, event):
         self.diagnostic_updater.update()
@@ -93,12 +96,19 @@ class SilverHammerStreamer:
             rospy.msg.serialize_message(buffer, 0, msg)
             self.last_send_time = rospy.Time.now()
         # send buffer as UDP
-        self.sendBuffer(buffer.getvalue())
-    def sendBuffer(self, buffer):
+        self.sendBuffer(buffer.getvalue(), buffer.len * 8)
+    def sendBuffer(self, buffer, buffer_size):
         self.send_num = self.send_num + 1
-        packets = separateBufferIntoPackets(self.counter, buffer, self.packet_size)
+        packets = separateBufferIntoPackets(
+            self.counter, buffer, self.packet_size)
+        total_sec = float(buffer_size) / self.bandwidth
+        packet_interval = total_sec / len(packets)
+        self.packet_interval = packet_interval
         rospy.loginfo("sending %d packets", len(packets))
-        r = rospy.Rate(1 / self.packet_interval)
+        rospy.loginfo("sending %d bits with %f interval" 
+                      % (buffer_size, packet_interval))
+        rospy.loginfo("total time to send is %f sec" % total_sec)
+        r = rospy.Rate(1 / packet_interval)
         for p in packets:
             self.socket_client.sendto(p.pack(), (self.send_ip, self.send_port))
             r.sleep()
