@@ -37,7 +37,7 @@ class SilverHammerStreamer:
             "~last_input_received_time", Time)
         self.send_num = 0
         #self.packet_interval = rospy.get_param("~packet_interval", 0.001)
-        self.bandwidth = rospy.get_param("~bandwidth", 300 * 1000 * 1000)
+        self.bandwidth = rospy.get_param("~bandwidth", 280 * 1000 * 1000)
         self.rate = rospy.get_param("~send_rate", 2)   #2Hz
         self.socket_client = socket(AF_INET, SOCK_DGRAM)
         self.packet_size = rospy.get_param("~packet_size", 1000)   #2Hz
