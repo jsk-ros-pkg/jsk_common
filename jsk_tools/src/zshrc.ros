@@ -7,10 +7,12 @@ function rossetmaster() { # 自分のよく使うロボットのhostnameを入�
     local hostname=${1-"pr1040"}
     local ros_port=${2-"11311"}
     export ROS_MASTER_URI=http://$hostname:$ros_port
-    if [[ "${PS1}" =~ .{4}\[http://.*:.*\].*$ ]] ; then
-        export PS1="${ZSH_REMATCH}"
+    if [ "$NO_ROS_PROMPT" = "" ]; then
+        if [[ "${PS1}" =~ .{4}\[http://.*:.*\].*$ ]] ; then
+            export PS1="${ZSH_REMATCH}"
+        fi
+        export PS1="%{$fg[yellow]%}[$ROS_MASTER_URI]%{$reset_color%} ${PS1}"
     fi
-    export PS1="%{$fg[yellow]%}[$ROS_MASTER_URI]%{$reset_color%} ${PS1}"
     echo -e "\e[1;31mset ROS_MASTER_URI to $ROS_MASTER_URI\e[m"
 }
 function rossetrobot() {
@@ -20,8 +22,10 @@ function rossetrobot() {
 
 function rossetlocal() {
     rossetmaster localhost
-    if [[ "${PS1}" =~ .{4}\[http://.*:.*\].*$ ]] ; then
-        export PS1="${ZSH_REMATCH}"
+    if [ "$NO_ROS_PROMPT" = "" ]; then
+        if [[ "${PS1}" =~ .{4}\[http://.*:.*\].*$ ]] ; then
+            export PS1="${ZSH_REMATCH}"
+        fi
     fi
 }
 
