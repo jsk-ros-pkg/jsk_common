@@ -307,7 +307,7 @@ EOF
             pkg2=$(echo $pkg | sed s@/@-@g)
             if [ -e $ROS_INSTALLDIR_SRC/$pkg/setup_upstream.sh -a ! -e ${ROS_INSTALLDIR}_parent/src/$pkg2-setup.sh ]; then
                 $COMMAND cp $ROS_INSTALLDIR_SRC/$pkg/setup_upstream.sh ${ROS_INSTALLDIR}_parent/src/$pkg2-setup_upstream.sh
-                $COMMAND ${ROS_INSTALLDIR}_parent/src/$pkg2-setup_upstream.sh -w ${ROS_INSTALLDIR}_parent/
+                ROS_DISTRO=$DISTRIBUTION $COMMAND ${ROS_INSTALLDIR}_parent/src/$pkg2-setup_upstream.sh -w ${ROS_INSTALLDIR}_parent/
             fi
         done
     fi
