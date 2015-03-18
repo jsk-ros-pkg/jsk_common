@@ -34,6 +34,7 @@ private:
   typedef dynamic_reconfigure::Server<opt_camera::OptNM33CameraConfig> ReconfigureServer;
   ReconfigureServer reconfigure_server_;
   opt_camera::OptNM33CameraConfig config_;
+  int pan;
 
 public:
   OptCamNode(ros::NodeHandle &node) : node_(node)
@@ -158,12 +159,36 @@ public:
       if(config_.mode == 2) { // mode = panorama(2)
         IplImage* tmp_img_ = cvCreateImage(cvSize(frame->width*2,frame->height/2),frame->depth,frame->nChannels);
         // lower -> left, upper -> right
-        cvSetImageROI(frame,cvRect(0,frame->height/2,frame->width,frame->height/2));
-        cvSetImageROI(tmp_img_,cvRect(0,0,frame->width,frame->height/2));
-        cvCopy(frame,tmp_img_);
-        cvSetImageROI(frame,cvRect(0,0,frame->width,frame->height/2));
-        cvSetImageROI(tmp_img_,cvRect(frame->width,0,frame->width,frame->height/2));
-        cvCopy(frame,tmp_img_);
+        if ( 0 < pan && pan < 180 ) {
+          int offset = frame->width * pan / 180;
+          cvSetImageROI(frame,cvRect(0,frame->height/2,frame->width,frame->height/2));
+          cvSetImageROI(tmp_img_,cvRect(offset,0,frame->width,frame->height/2));
+          cvCopy(frame,tmp_img_);
+          cvSetImageROI(frame,cvRect(frame->width-offset,0,offset,frame->height/2));
+          cvSetImageROI(tmp_img_,cvRect(0,0,offset,frame->height/2));
+          cvCopy(frame,tmp_img_);
+          cvSetImageROI(frame,cvRect(0,0,frame->width-offset,frame->height/2));
+          cvSetImageROI(tmp_img_,cvRect(frame->width+offset,0,frame->width-offset,frame->height/2));
+          cvCopy(frame,tmp_img_);
+        } else if ( -180 < pan && pan < 0 ) {
+          int offset = frame->width * pan / -180;
+          cvSetImageROI(frame,cvRect(0,0,frame->width,frame->height/2));
+          cvSetImageROI(tmp_img_,cvRect(frame->width-offset,0,frame->width,frame->height/2));
+          cvCopy(frame,tmp_img_);
+          cvSetImageROI(frame,cvRect(offset,frame->height/2,frame->width-offset,frame->height/2));
+          cvSetImageROI(tmp_img_,cvRect(0,0,frame->width-offset,frame->height/2));
+          cvCopy(frame,tmp_img_);
+          cvSetImageROI(frame,cvRect(0,frame->height/2,offset,frame->height/2));
+          cvSetImageROI(tmp_img_,cvRect(frame->width*2-offset,0,offset,frame->height/2));
+          cvCopy(frame,tmp_img_);
+        } else { // ( pan == 0 )
+          cvSetImageROI(frame,cvRect(0,frame->height/2,frame->width,frame->height/2));
+          cvSetImageROI(tmp_img_,cvRect(0,0,frame->width,frame->height/2));
+          cvCopy(frame,tmp_img_);
+          cvSetImageROI(frame,cvRect(0,0,frame->width,frame->height/2));
+          cvSetImageROI(tmp_img_,cvRect(frame->width,0,frame->width,frame->height/2));
+          cvCopy(frame,tmp_img_);
+        }
         fillImage(img_panorama_, "bgr8", tmp_img_->height, tmp_img_->width, tmp_img_->width * tmp_img_->nChannels, tmp_img_->imageData);
         img_panorama_pub_.publish(img_panorama_, info_panorama_);
         cvResetImageROI(frame);
@@ -192,6 +217,7 @@ public:
       SET_CAMERA(setIris, iris);
     }
     if ( config.mode != 4 && config.mode != 0 ) {
+      pan = config.pan;
       SET_CAMERA(setPanAbsolute,  pan);
       SET_CAMERA(setTiltAbsolute, tilt);
       SET_CAMERA(setRollAbsolute, roll);
