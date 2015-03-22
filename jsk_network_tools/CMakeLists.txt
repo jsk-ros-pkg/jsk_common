@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(jsk_network_tools)
 
-find_package(catkin REQUIRED COMPONENTS message_generation std_msgs sensor_msgs rostest)
+find_package(catkin REQUIRED COMPONENTS
+  message_generation std_msgs sensor_msgs rostest
+  dynamic_reconfigure)
 catkin_python_setup()
 add_message_files(
   DIRECTORY msg
@@ -15,7 +17,9 @@ add_message_files(
   OpenNISample.msg
   AllTypeTest.msg
 )
-
+generate_dynamic_reconfigure_options(
+  cfg/SilverhammerHighspeedStreamer.cfg
+  )
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES

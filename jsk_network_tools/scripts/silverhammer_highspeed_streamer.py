@@ -12,6 +12,8 @@ from diagnostic_msgs.msg import DiagnosticStatus
 import roslib
 from roslib.message import get_message_class
 from std_msgs.msg import Time
+from dynamic_reconfigure.server import Server
+from jsk_network_tools.cfg import SilverHammerStreamerConfig
 
 class SilverHammerStreamer:
     def __init__(self):
@@ -22,6 +24,7 @@ class SilverHammerStreamer:
         except:
             raise Exception("invalid topic type: %s"%message_class_str)
         self.lock = Lock()
+        self.dynamic_reconfigure = Server(SilverHammerStreamerConfig, self.dynamicReconfigureCallback)
         self.launched_time = rospy.Time.now()
         self.packet_interval = None
         self.diagnostic_updater = diagnostic_updater.Updater()
@@ -36,8 +39,6 @@ class SilverHammerStreamer:
         self.last_input_received_time_pub = rospy.Publisher(
             "~last_input_received_time", Time)
         self.send_num = 0
-        #self.packet_interval = rospy.get_param("~packet_interval", 0.001)
-        self.bandwidth = rospy.get_param("~bandwidth", 280 * 1000 * 1000)
         self.rate = rospy.get_param("~send_rate", 2)   #2Hz
         self.socket_client = socket(AF_INET, SOCK_DGRAM)
         self.packet_size = rospy.get_param("~packet_size", 1000)   #2Hz
@@ -49,6 +50,9 @@ class SilverHammerStreamer:
                                       self.sendTimerCallback)
         self.diagnostic_timer = rospy.Timer(rospy.Duration(1.0 / 10),
                                             self.diagnosticTimerCallback)
+    def dynamicReconfigureCallback(self, config, level):
+        with self.lock:
+            self.bandwidth = config.bandwidth
     def diagnosticCallback(self, stat):
         # always OK
         stat.summary(DiagnosticStatus.OK, "OK")
