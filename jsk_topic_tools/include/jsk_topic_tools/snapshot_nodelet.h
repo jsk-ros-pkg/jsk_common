@@ -60,6 +60,7 @@ namespace jsk_topic_tools
     ros::ServiceServer request_service_;
     boost::mutex mutex_;
     ros::Publisher pub_;
+    ros::Publisher pub_timestamp_;
     ros::Subscriber sub_;
     ros::NodeHandle pnh_;
     bool subscribing_;

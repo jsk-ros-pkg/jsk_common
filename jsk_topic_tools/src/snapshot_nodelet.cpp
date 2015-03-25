@@ -34,6 +34,7 @@
  *********************************************************************/
 
 #include "jsk_topic_tools/snapshot_nodelet.h"
+#include <std_msgs/Time.h>
 
 namespace jsk_topic_tools
 {
@@ -43,6 +44,7 @@ namespace jsk_topic_tools
     subscribing_ = false;
     pnh_ = getPrivateNodeHandle();
     pnh_.param("latch", latch_, false);
+    pub_timestamp_ = pnh_.advertise<std_msgs::Time>("output/stamp", 1);
     sub_ = pnh_.subscribe<topic_tools::ShapeShifter>(
       "input", 1,
       &Snapshot::inputCallback, this);
@@ -65,6 +67,9 @@ namespace jsk_topic_tools
       advertised_ = true;
       if (requested_) {
         pub_.publish(msg);
+        std_msgs::Time timestamp;
+        timestamp.data = ros::Time::now();
+        pub_timestamp_.publish(timestamp);
         requested_ = false;
       }
       sub_.shutdown();
@@ -72,6 +77,9 @@ namespace jsk_topic_tools
     else {
       if (requested_) {
         pub_.publish(msg);
+        std_msgs::Time timestamp;
+        timestamp.data = ros::Time::now();
+        pub_timestamp_.publish(timestamp);
         requested_ = false;
         sub_.shutdown();
       }
