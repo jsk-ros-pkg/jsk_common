@@ -2,6 +2,9 @@
 Changelog for package jsk_gui_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.63 (2015-02-19)
 -------------------
 
@@ -179,4 +182,4 @@ Changelog for package jsk_gui_msgs
 * added query srv for getting name of sound
 * changed voice name form words to texts
 * added tablet msg definition
-* Contributors: chen, Kei Okada, Shintaro Noda, kazuto
+* Contributors: Kei Okada, Shintaro Noda, kazuto, Xiangyu Chen

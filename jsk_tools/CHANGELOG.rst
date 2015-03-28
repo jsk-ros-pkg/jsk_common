@@ -2,6 +2,16 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tools] check NO_ROS_PROMPT environmental variable when updating
+  prompt in order not to change prompt by rossetmaster and rossetip
+* [jsk_tools] Add rqt_reconfigure to run_depend
+* [jsk_tools] Add new rule to replace handle to name
+* [jsk_tools] Fix dependency of jsk_tools
+* rename rossetrobot -> rossetmaster, keep rossetrobot for backword compatibility
+* Contributors: Ryohei Ueda, Kentaro Wada
+
 1.0.63 (2015-02-19)
 -------------------
 * need to copy global_bin for devel config too
@@ -316,4 +326,4 @@ Changelog for package jsk_tools
 * updated launch doc
 * updated launch doc
 * updated launch doc
-* Contributors: nozawa, manabu, Kei Okada, youhei, rosen, chen, y-tnaka
+* Contributors: nozawa, manabu, Kei Okada, youhei, rosen, Xiangyu Chen, y-tnaka

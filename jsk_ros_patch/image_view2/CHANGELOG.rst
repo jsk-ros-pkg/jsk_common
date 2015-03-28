@@ -2,6 +2,14 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [image_view2] Clear poly mode caches when image_view2 is resetted
+* [image_view2] Support poly mode to select polygonal region on image
+* [image_view2] Check if input image is valid and skip if the input is invalid
+* [image_view2] Do not show warning message when scale is 0
+* Contributors: Ryohei Ueda
+
 1.0.63 (2015-02-19)
 -------------------
 * [image_view2] Publish marked image in local namespace
@@ -296,4 +304,4 @@ Changelog for package image_view2
 * back to previous version, which is not using subscribeCamera, becouse of slow connection of pr2-network
 * rewrite using subscribeCamera
 * add image_view2/
-* Contributors: manabu, kazuto, Kei Okada, youhei, chen, Ryohei Ueda, mikita
+* Contributors: manabu, kazuto, Kei Okada, youhei, Xiangyu Chen, Ryohei Ueda, mikita

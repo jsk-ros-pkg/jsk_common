@@ -2,6 +2,11 @@
 Changelog for package ffha
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* use jsk-ros-pkg/archives for downloading ffha source
+* Contributors: Yuki Furuta
+
 1.0.63 (2015-02-19)
 -------------------
 
@@ -204,4 +209,4 @@ Changelog for package ffha
 * add patch for parse.c, segv if last condition of inititial state is 'not-condition' in problem
 * remove strange exit(-1) for use non DNF preconditions
 * put jsk tools in jsk_common stack
-* Contributors: Yuki Furuta, manabu, rosen
+* Contributors: Yuki Furuta, rosen, manabu

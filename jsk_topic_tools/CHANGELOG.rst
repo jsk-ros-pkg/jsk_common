@@ -2,6 +2,12 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Publish timestamp from snapshot as it publishes ~output
+* [jsk_topic_tools] Add ~stop service to force to stop publishing messages
+* Contributors: Ryohei Ueda
+
 1.0.63 (2015-02-19)
 -------------------
 * [jsk_topic_tools] Add Passthrough nodelet to relay topics during

@@ -2,6 +2,9 @@
 Changelog for package nlopt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.63 (2015-02-19)
 -------------------
 * [nlopt] Fix nlopt compilation and instlation
