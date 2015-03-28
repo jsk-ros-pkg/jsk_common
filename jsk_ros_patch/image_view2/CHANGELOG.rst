@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.64 (2015-03-29)
+-------------------
 * [image_view2] Clear poly mode caches when image_view2 is resetted
 * [image_view2] Support poly mode to select polygonal region on image
 * [image_view2] Check if input image is valid and skip if the input is invalid

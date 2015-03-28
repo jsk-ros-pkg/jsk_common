@@ -2,8 +2,8 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.64 (2015-03-29)
+-------------------
 * [jsk_network_tools] Fix typos
 * [jsk_network_tools] Add dynamic_reconfigure interface to specify
   bandwidth of highspeed streamer

@@ -2,8 +2,8 @@
 Changelog for package mini_maxwell
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.64 (2015-03-29)
+-------------------
 * [mini_maxwell] Add script to launch official script
 * [mini_maxwell] Add script to download maxwell pro's script
 * Contributors: Ryohei Ueda

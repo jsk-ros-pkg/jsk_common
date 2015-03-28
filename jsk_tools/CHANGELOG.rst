@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.64 (2015-03-29)
+-------------------
 * [jsk_tools] check NO_ROS_PROMPT environmental variable when updating
   prompt in order not to change prompt by rossetmaster and rossetip
 * [jsk_tools] Add rqt_reconfigure to run_depend

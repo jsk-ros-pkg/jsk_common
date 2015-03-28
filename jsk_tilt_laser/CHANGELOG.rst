@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.64 (2015-03-29)
+-------------------
 * [jsk_tilt_laser] Support multisense sensors without 'multisense/' prefix
 * Contributors: Ryohei Ueda
 

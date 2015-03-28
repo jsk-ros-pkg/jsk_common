@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.64 (2015-03-29)
+-------------------
 * [jsk_topic_tools] Publish timestamp from snapshot as it publishes ~output
 * [jsk_topic_tools] Add ~stop service to force to stop publishing messages
 * Contributors: Ryohei Ueda
