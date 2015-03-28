@@ -1,4 +1,12 @@
 # setup minimuxwell for DRC final setting
+
+## Maxwell Pro setting
+Run following command on your maxwell pro and you will have desktop icon to launch official script.
+
+```
+wget -q https://raw.githubusercontent.com/jsk-ros-pkg/jsk_common/master/3rdparty/mini_maxwell/scripts/download_maxwell_pro_scripts.sh -O - | bash
+```
+
 ## Set up Filter Inventory
 Please click 'Flter Inventory' and create twe filters:
 * `drc_high_speed`

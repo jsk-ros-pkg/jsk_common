@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=DRC Maxwell Pro
+Type=Application
+Exec=bash -c 'cd ~/maxwell && bash starttrack.sh -m red'
+TryExec=
+Icon=/usr/share/icons/gnome/256x256/categories/gnome-system.png
+X-GNOME-DocPath=
+Terminal=true
+GenericName=
+Comment=
