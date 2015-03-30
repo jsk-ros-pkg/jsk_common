@@ -7,7 +7,7 @@ catkin_package()
 
 add_custom_command(
   OUTPUT installed
-  COMMAND make -f ${PROJECT_SOURCE_DIR}/Makefile
+  COMMAND \$\(MAKE\) -f ${PROJECT_SOURCE_DIR}/Makefile
 )
 add_custom_command(
   OUTPUT ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts
