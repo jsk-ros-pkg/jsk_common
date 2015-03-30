@@ -53,6 +53,7 @@ class SilverHammerStreamer:
     def dynamicReconfigureCallback(self, config, level):
         with self.lock:
             self.bandwidth = config.bandwidth
+            self.packet_sleep_sum = config.packet_sleep_sum
             return config
     def diagnosticCallback(self, stat):
         # always OK
@@ -113,10 +114,11 @@ class SilverHammerStreamer:
         rospy.loginfo("sending %d bits with %f interval" 
                       % (buffer_size, packet_interval))
         rospy.loginfo("total time to send is %f sec" % total_sec)
-        r = rospy.Rate(1 / packet_interval)
-        for p in packets:
+        r = rospy.Rate(1 / packet_interval / self.packet_sleep_sum)
+        for p, i in zip(packets, range(len(packets))):
             self.socket_client.sendto(p.pack(), (self.send_ip, self.send_port))
-            r.sleep()
+            if i % self.packet_sleep_sum == 0:
+                r.sleep()
         self.counter = self.counter + 1
         if self.counter > 65535:
             self.counter = 0
