@@ -90,7 +90,7 @@ class SilverHammerReceiver:
                 packet_index = 0
                 b = StringIO()
                 if self.packets[0].num != len(self.packets):
-                    rospy.logwarn("%d packet is missed", self.packets[0].num - len(self.packets))
+                    rospy.logwarn("%d/%d packet are missed", self.packets[0].num - len(self.packets), self.packets[0].num)
                     if self.pesimistic:
                         rospy.logerr("pesimistic mode, give up to reconstruct message")
                         return
