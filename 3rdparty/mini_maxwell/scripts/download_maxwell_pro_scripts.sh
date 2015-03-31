@@ -16,7 +16,7 @@ done
 ln -sf $TARGET_DIR/maxwell_pro.desktop ~/Desktop/
 
 # install depending software
-sudo apt-get install python-wx
+sudo apt-get install python-wxgtk2.8 python-yaml
 
 echo "========================================================"
 echo You may need to edit starttrack.sh to specify
