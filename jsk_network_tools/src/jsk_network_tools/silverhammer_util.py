@@ -105,7 +105,7 @@ def unpackMessage(data, fmt, message_class):
         counter = counter + field_length
     return msg
 
-def publishersFromMessage(msg, prefix=""):
+def publishersFromMessage(msg, prefix="", latch=False):
     ret = []
     for slot, slot_type in zip(msg.__slots__, msg._slot_types):
         topic_name = prefix + "/" + slot.replace("__", "/")
@@ -113,7 +113,7 @@ def publishersFromMessage(msg, prefix=""):
             msg_class = roslib.message.get_message_class(slot_type)
         except:
             raise Exception("invalid topic type: %s"%slot_type)
-        ret.append(rospy.Publisher(topic_name, msg_class))
+        ret.append(rospy.Publisher(topic_name, msg_class, latch=latch))
     return ret
 
 def decomposeLargeMessage(msg, prefix=""):
