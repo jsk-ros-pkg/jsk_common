@@ -30,7 +30,8 @@
 
 (defun joint-state-callback (inmsg)
   (let ((msg (instance *message-type* :init))
-        (avs nil))
+        (avs nil)
+        (effort-vector nil))
     ;; update robot-model
     (dolist (j (send *robot* :joint-list))
       ;; lookup msg
@@ -44,6 +45,20 @@
     (let ((angle-vector (compress-angle-vector *robot* avs)))
       (dotimes (i (length angle-vector))
         (setf (elt (send msg :angles) i) (elt angle-vector i))))
+    ;; Check if effort is supported
+    (when (and (find-method msg :effort) (> (length (send inmsg :effort)) 0))
+      (dolist (j (send *robot* :joint-list))
+        (dotimes (i (length (send inmsg :name)))
+          (let ((n (elt (send inmsg :name) i)))
+            (when (string= n (send j :name))
+              (setq effort-vector (append effort-vector
+                                          (list
+                                           (round (min 255
+                                                       (max (* 255
+                                                               (/ (abs (elt (send inmsg :effort) i))
+                                                                  (send j :max-joint-torque)))))))))))))
+      (dotimes (i (length effort-vector))
+        (setf (elt (send msg :effort) i) (elt effort-vector i))))
     (ros::publish "/joint_states_compressed" msg)
     ))
 (ros::advertise "/joint_states_compressed" *message-type*)
