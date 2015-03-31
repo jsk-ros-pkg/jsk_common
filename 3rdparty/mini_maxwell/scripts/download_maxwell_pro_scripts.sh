@@ -13,7 +13,10 @@ do
 done
 
 (cd $TARGET_DIR && chmod +x starttrack.sh download_maxwell_pro_scripts.sh maxwell_pro.desktop)
-ln -sf TARGET_DIR/maxwell_pro.desktop ~/Desktop/
+ln -sf $TARGET_DIR/maxwell_pro.desktop ~/Desktop/
+
+# install depending software
+sudo apt-get install python-wx
 
 echo "========================================================"
 echo You may need to edit starttrack.sh to specify
