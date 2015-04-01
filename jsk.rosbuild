@@ -115,7 +115,7 @@ function setup-ros {
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         $COMMAND sudo dpkg --configure -a
     fi
-    $COMMAND sudo add-apt-repository ppa:webupd8team/java
+    $COMMAND sudo add-apt-repository ppa:webupd8team/java -y
     $COMMAND sudo apt-get update
     $COMMAND sudo apt-get $YES install build-essential python-yaml cmake subversion wget python-setuptools git-core mercurial aptitude oracle-java7-installer
     REPLY="Y"
