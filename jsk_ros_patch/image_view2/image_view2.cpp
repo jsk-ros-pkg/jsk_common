@@ -95,7 +95,7 @@ namespace image_view2{
     image_sub_ = it.subscribe(camera, 1, &ImageView2::imageCb, this, transport);
     info_sub_ = nh.subscribe(camera_info, 1, &ImageView2::infoCb, this);
     marker_sub_ = nh.subscribe(marker_topic_, 10, &ImageView2::markerCb, this);
-    event_sub_ = local_nh.subscribe(camera + "/event", 1, &ImageView2::eventCb, this);
+    event_sub_ = local_nh.subscribe(camera + "/event", 100, &ImageView2::eventCb, this);
     
     change_mode_srv_ = local_nh.advertiseService(
       "change_mode", &ImageView2::changeModeServiceCallback, this);
