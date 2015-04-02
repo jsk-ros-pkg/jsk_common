@@ -2,6 +2,12 @@
 Changelog for package downward
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Correct recursive call to make in downward
+* Add build_depend on g++-static for downward
+* Contributors: Scott K Logan
+
 1.0.64 (2015-03-29)
 -------------------
 

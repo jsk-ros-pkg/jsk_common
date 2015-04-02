@@ -2,6 +2,11 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [image_view2] Use loner queue for event callback in order not to miss event topics
+* Contributors: Ryohei Ueda
+
 1.0.64 (2015-03-29)
 -------------------
 * [image_view2] Clear poly mode caches when image_view2 is resetted

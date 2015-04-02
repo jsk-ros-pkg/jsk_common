@@ -2,6 +2,9 @@
 Changelog for package opt_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.64 (2015-03-29)
 -------------------
 * [opt_camera] support pan control of panorama view, use enum for flip/small in reconfigure gui

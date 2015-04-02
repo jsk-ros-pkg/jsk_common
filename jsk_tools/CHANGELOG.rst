@@ -2,6 +2,12 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tools/bashrc.ros] remove android settings from bashrc.ros
+* [jsk_tools/bashrc.ros] use env-hooks to store contets of bashrc.ros
+* Contributors: Kei Okada
+
 1.0.64 (2015-03-29)
 -------------------
 * [jsk_tools] check NO_ROS_PROMPT environmental variable when updating

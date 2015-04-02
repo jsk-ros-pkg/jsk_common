@@ -2,6 +2,14 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_network_tools] Support effort in joint state compressor/decompressor
+* [jsk_network_tools] Latch output topic of highspeed receiver
+* [jsk_network_tools] More readable warning about packet miss
+* [jsk_network_tools] Add new parameter ~packet_sleep_sum not to sleep per one packet but several packets
+* Contributors: Ryohei Ueda
+
 1.0.64 (2015-03-29)
 -------------------
 * [jsk_network_tools] Fix typos

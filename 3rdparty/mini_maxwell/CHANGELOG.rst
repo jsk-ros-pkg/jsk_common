@@ -2,6 +2,12 @@
 Changelog for package mini_maxwell
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [drc_network] launch maxwell pro without gui
+* [mini_maxwell] Fix utility script for maxwell pro
+* Contributors: Ryohei Ueda
+
 1.0.64 (2015-03-29)
 -------------------
 * [mini_maxwell] Add script to launch official script
