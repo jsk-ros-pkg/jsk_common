@@ -10,6 +10,7 @@ catkin_package(
   DEPENDS #
   CFG_EXTRAS download_package.cmake
   )
+catkin_add_env_hooks(99.jsk_tools SHELLS bash DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
 
 install(DIRECTORY src test bin
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
