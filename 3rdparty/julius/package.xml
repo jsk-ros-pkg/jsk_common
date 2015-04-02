@@ -1,6 +1,6 @@
 <package>
   <name>julius</name>
-  <version>1.0.64</version>
+  <version>1.0.65</version>
   <description>julius: Open-Source Large Vocabulary CSR Engine (http://julius.sourceforge.jp/index.php)</description>
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
 

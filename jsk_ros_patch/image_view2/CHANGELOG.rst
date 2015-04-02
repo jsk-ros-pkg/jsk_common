@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.65 (2015-04-02)
+-------------------
 * [image_view2] Use loner queue for event callback in order not to miss event topics
 * Contributors: Ryohei Ueda
 
