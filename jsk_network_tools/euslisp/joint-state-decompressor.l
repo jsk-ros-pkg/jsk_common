@@ -40,6 +40,14 @@
                                           (* 0.001 v)
                                         (deg2rad v)))
                                   avs (send *robot* :joint-list))))
+    ;; Check if inmsg support :effort or not
+    (when (find-method inmsg :effort)
+      (let ((evs nil))
+        (dotimes (i (length (send *robot* :joint-list)))
+          (let ((j (elt (send *robot* :joint-list) i)))
+            (setq evs (append evs (list (* (/ (elt (send inmsg :effort) i) 255.0)
+                                           (send j :max-joint-torque)))))))
+        (send msg :effort evs)))
     (send msg :header :stamp (ros::time-now))
     (ros::publish "/joint_states_decompressed" msg)))
 
