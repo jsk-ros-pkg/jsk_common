@@ -94,6 +94,3 @@ function rost() {
     fi
 }
 
-
-export ANDROID_HOME=$HOME/android-sdk-linux
-export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
