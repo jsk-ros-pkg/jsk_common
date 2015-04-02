@@ -7,6 +7,7 @@
   <arg name="sensor_tf_prefix" default="$(arg namespace)" />
   <arg name="not_use_sensor_tf_prefix" default="false" />
   <arg name="run_driver" default="true" />
+  <arg name="fixed_frame_id" default="head_root" />
   
   <include file="$(find multisense_bringup)/multisense.launch" if="$(arg run_driver)">
     <arg name="ip_address" value="$(arg ip_address)" />
@@ -54,8 +55,8 @@
          type: laser_filters/ScanShadowsFilter
          params:
            min_angle: 0
-           max_angle: 170
-           neighbors: 5
+           max_angle: 175
+           neighbors: 3
            window: 1
        - name: dark_shadows
          type: LaserScanIntensityFilter
@@ -76,9 +77,10 @@
          output="screen">
      <remap from="scan" to="/multisense/lidar_scan_filtered" />
      <rosparam>
-       target_frame: multisense/spindle
        high_fidelity: true
      </rosparam>
+     <param name="target_frame" value="multisense/spindle" unless="$(arg not_use_sensor_tf_prefix)"/>
+     <param name="target_frame" value="spindle" if="$(arg not_use_sensor_tf_prefix)"/>
      <remap from="cloud_filtered" to="/multisense/lidar_scan_cloud_filtered" />
    </node>
    <node pkg="nodelet" type="nodelet" name="multisense_laser_manager"
@@ -110,8 +112,8 @@
      <remap from="scan" to="/multisense/lidar_scan_filtered"/>
      <param name="tf_cache_time_secs" value="20" />
      <param name="max_scans" type="int" value="1000" />
-     <param name="fixed_frame" type="string" value="multisense/head_root" unless="$(arg not_use_sensor_tf_prefix)"/>
-     <param name="fixed_frame" type="string" value="head_root" if="$(arg not_use_sensor_tf_prefix)"/>
+     <param name="fixed_frame" type="string" value="multisense/$(arg fixed_frame_id)" unless="$(arg not_use_sensor_tf_prefix)"/>
+     <param name="fixed_frame" type="string" value="$(arg fixed_frame_id)" if="$(arg not_use_sensor_tf_prefix)"/>
    </node>
    
    <!-- modify multisense parameters -->
