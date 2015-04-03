@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.66 (2015-04-03)
+-------------------
 * [jsk_tools/zshrc.ros] use env-hooks to store contents of zshrc.ros
 * Contributors: Kentaro Wada
 
