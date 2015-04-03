@@ -2,6 +2,11 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tools/zshrc.ros] use env-hooks to store contents of zshrc.ros
+* Contributors: Kentaro Wada
+
 1.0.65 (2015-04-02)
 -------------------
 * [jsk_tools/bashrc.ros] remove android settings from bashrc.ros

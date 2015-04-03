@@ -2,6 +2,11 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tilt_laser] Add fixed_frame_id argument to multisense.launch
+* Contributors: Ryohei Ueda
+
 1.0.65 (2015-04-02)
 -------------------
 
