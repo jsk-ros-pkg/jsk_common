@@ -58,6 +58,8 @@
                  "package://hrpsys_ros_bridge_tutorials/models/urataleg.l")
                 ((string= lrobot-name "samplerobot")
                  "package://hrpsys_ros_bridge_tutorials/models/samplerobot.l")
+                ((string= lrobot-name "jaxon")
+                 "package://hrpsys_ros_bridge_tutorials/models/jaxon.l")
                 ((string= lrobot-name "hrp2w")
                  "package://hrpsys_ros_bridge_tutorials/models/hrp2w.l")))))
 
