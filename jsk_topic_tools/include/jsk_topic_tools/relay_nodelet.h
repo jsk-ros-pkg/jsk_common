@@ -68,7 +68,6 @@ namespace jsk_topic_tools
     bool advertised_;
     bool subscribing_;
     ros::NodeHandle pnh_;
-    ros::TransportHints th_;
     ros::ServiceServer change_output_topic_srv_;
   };
 }

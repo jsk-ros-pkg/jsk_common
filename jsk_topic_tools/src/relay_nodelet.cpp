@@ -45,7 +45,7 @@ namespace jsk_topic_tools
     pnh_ = getPrivateNodeHandle();
     sub_ = pnh_.subscribe<topic_tools::ShapeShifter>(
       "input", 1,
-      &Relay::inputCallback, this, th_);
+      &Relay::inputCallback, this);
     change_output_topic_srv_ = pnh_.advertiseService(
       "change_output_topic", &Relay::changeOutputTopicCallback, this);
   }
@@ -78,7 +78,7 @@ namespace jsk_topic_tools
         if (!subscribing_) {
           NODELET_DEBUG("suscribe");
           sub_ = pnh_.subscribe<topic_tools::ShapeShifter>("input", 1,
-                                                           &Relay::inputCallback, this, th_);
+                                                           &Relay::inputCallback, this);
           subscribing_ = true;
         }
       }
