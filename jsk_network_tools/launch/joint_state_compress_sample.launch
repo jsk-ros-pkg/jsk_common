@@ -1,5 +1,6 @@
 <launch>
   <arg name="Y_DIFF" default="0" />
+  <include file="$(find pr2_description)/robots/upload_pr2.launch" />
   <node pkg="robot_state_publisher" name="robot_state_publisher" type="robot_state_publisher">
   </node>
   <node pkg="robot_state_publisher" name="robot_state_publisher_decompressed" type="robot_state_publisher">
