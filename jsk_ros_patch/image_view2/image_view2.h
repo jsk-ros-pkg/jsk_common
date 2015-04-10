@@ -169,6 +169,7 @@ namespace image_view2
     void drawCircle(const image_view2::ImageMarker2::ConstPtr& marker);
     void drawMarkers();
     void drawInteraction();
+    void drawGrid();
     void drawInfo(ros::Time& before_rendering);
     void resolveLocalMarkerQueue();
     bool lookupTransformation(
@@ -224,6 +225,7 @@ namespace image_view2
     CvRect window_selection_;
     cv::Point2f button_up_pos_;
     int count_;
+    bool draw_grid_;
     bool blurry_mode_;
     bool show_info_;
     double tf_timeout_;
