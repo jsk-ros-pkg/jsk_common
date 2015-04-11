@@ -1,0 +1,8 @@
+- git:
+    local-name: perception_pcl
+    uri: 'https://github.com/garaemon/perception_pcl.git'
+    version: hydro-devel
+- git:
+    local-name: pcl_conversions
+    uri: 'https://github.com/garaemon/pcl_conversions.git'
+    version: hydro-devel

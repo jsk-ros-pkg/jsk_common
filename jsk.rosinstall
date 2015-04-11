@@ -192,10 +192,6 @@
     local-name: multisense
     uri: 'https://bitbucket.org/crl/multisense_ros'
 - git:
-    local-name: perception_pcl
-    uri: 'https://github.com/garaemon/perception_pcl.git'
-    version: hydro-devel
-- git:
     local-name: ar_tools
     uri: 'https://github.com/ar-tools/ar_tools.git'
     version: master
