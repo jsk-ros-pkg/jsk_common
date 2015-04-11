@@ -2,7 +2,11 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(image_view2)
 
-find_package(catkin REQUIRED COMPONENTS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_generation std_srvs)
+find_package(catkin REQUIRED COMPONENTS roscpp dynamic_reconfigure  cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_generation std_srvs)
+
+generate_dynamic_reconfigure_options(
+  cfg/ImageView2.cfg
+)
 
 add_message_files(
   FILES ImageMarker2.msg PointArrayStamped.msg MouseEvent.msg

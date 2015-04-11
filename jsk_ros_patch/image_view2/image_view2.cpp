@@ -112,6 +112,11 @@ namespace image_view2{
       "poly_mode", &ImageView2::polyModeServiceCallback, this);
     none_mode_srv_ = local_nh.advertiseService(
       "none_mode", &ImageView2::noneModeServiceCallback, this);
+
+    srv_ = boost::make_shared <dynamic_reconfigure::Server<Config> >(local_nh);
+    dynamic_reconfigure::Server<Config>::CallbackType f =
+      boost::bind(&ImageView2::config_callback, this, _1, _2);
+    srv_->setCallback(f);
   }
 
   ImageView2::~ImageView2()
@@ -119,6 +124,13 @@ namespace image_view2{
     if ( use_window ) {
       cv::destroyWindow(window_name_.c_str());
     }
+  }
+
+  void ImageView2::config_callback(Config &config, uint32_t level)
+  {
+    draw_grid_ = config.grid;
+    div_u_ = config.div_u;
+    div_v_ = config.div_v;
   }
 
   void ImageView2::markerCb(const image_view2::ImageMarker2ConstPtr& marker)
@@ -1041,6 +1053,7 @@ namespace image_view2{
   
   void ImageView2::drawGrid()
   {
+    //Main Center Lines
     cv::Point2d p0 = cv::Point2d(0, last_msg_->height/2.0);
     cv::Point2d p1 = cv::Point2d(last_msg_->width, last_msg_->height/2.0);
     cv::line(draw_, p0, p1, CV_RGB(255,0,0), DEFAULT_LINE_WIDTH);
@@ -1049,17 +1062,15 @@ namespace image_view2{
     cv::Point2d p3 = cv::Point2d(last_msg_->width/2.0, last_msg_->height);
     cv::line(draw_, p2, p3, CV_RGB(255,0,0), DEFAULT_LINE_WIDTH);
 
-    int div_u = 10;
-    int div_v = 10;
-    for(int i = 1; i < div_u - 1 ;i ++){
-      cv::Point2d u0 = cv::Point2d(0, last_msg_->height * i * 1.0 / div_u);
-      cv::Point2d u1 = cv::Point2d(last_msg_->width, last_msg_->height * i * 1.0 / div_u);
+    for(int i = 1; i < div_u_ ;i ++){
+      cv::Point2d u0 = cv::Point2d(0, last_msg_->height * i * 1.0 / div_u_);
+      cv::Point2d u1 = cv::Point2d(last_msg_->width, last_msg_->height * i * 1.0 / div_u_);
       cv::line(draw_, u0, u1, CV_RGB(255,0,0), 1);
     }
 
-    for(int i = 1; i < div_v - 1 ;i ++){
-      cv::Point2d v0 = cv::Point2d(last_msg_->width * i * 1.0 / div_v, 0);
-      cv::Point2d v1 = cv::Point2d(last_msg_->width * i * 1.0 / div_v, last_msg_->height);
+    for(int i = 1; i < div_v_ ;i ++){
+      cv::Point2d v0 = cv::Point2d(last_msg_->width * i * 1.0 / div_v_, 0);
+      cv::Point2d v1 = cv::Point2d(last_msg_->width * i * 1.0 / div_v_, last_msg_->height);
       cv::line(draw_, v0, v1, CV_RGB(255,0,0), 1);
     }
 
