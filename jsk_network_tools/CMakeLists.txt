@@ -35,6 +35,8 @@ catkin_package(
 )
 
 add_rostest(test/test_all_type_low_speed.test)
+add_rostest(test/angle_vector_compress.test)
+add_rostest(test/joint_state_compressor.test)
 
 install(DIRECTORY scripts
   DESTINATION
