@@ -26,7 +26,7 @@ class SilverHammerReceiver:
         self.diagnostic_updater = diagnostic_updater.Updater()
         self.diagnostic_updater.setHardwareID("none")
         self.diagnostic_updater.add("HighspeedReceiver", self.diagnosticCallback)
-        
+        self.latch = rospy.get_param("~latch", True)
         self.pesimistic = rospy.get_param("~pesimistic", False)
         self.receive_port = rospy.get_param("~receive_port", 16484)
         self.receive_ip = rospy.get_param("~receive_ip", "localhost")
@@ -35,7 +35,9 @@ class SilverHammerReceiver:
             self.topic_prefix = "/" + self.topic_prefix
         if self.topic_prefix == "/":
             self.topic_prefix = ""
-        self.publishers = publishersFromMessage(self.message_class, self.topic_prefix)
+        self.publishers = publishersFromMessage(self.message_class,
+                                                self.topic_prefix, 
+                                                latch=self.latch)
         self.socket_server = socket(AF_INET, SOCK_DGRAM)
         self.socket_server.bind((self.receive_ip, self.receive_port))
         self.packet_size = rospy.get_param("~packet_size", 1000)   #2Hz
@@ -90,7 +92,7 @@ class SilverHammerReceiver:
                 packet_index = 0
                 b = StringIO()
                 if self.packets[0].num != len(self.packets):
-                    rospy.logwarn("%d packet is missed", self.packets[0].num - len(self.packets))
+                    rospy.logwarn("%d/%d packet are missed", self.packets[0].num - len(self.packets), self.packets[0].num)
                     if self.pesimistic:
                         rospy.logerr("pesimistic mode, give up to reconstruct message")
                         return

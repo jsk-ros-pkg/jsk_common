@@ -67,6 +67,7 @@ namespace image_view2{
     local_nh.param("skip_draw_rate", skip_draw_rate_, 0);
     local_nh.param("autosize", autosize_, false);
     local_nh.param("image_transport", transport, std::string("raw"));
+    local_nh.param("draw_grid", draw_grid_, false);
     local_nh.param("blurry", blurry_mode_, false);
     local_nh.param("region_continuous_publish", region_continuous_publish_, false);
     local_nh.param("filename_format", format_string, std::string("frame%04i.jpg"));
@@ -95,7 +96,7 @@ namespace image_view2{
     image_sub_ = it.subscribe(camera, 1, &ImageView2::imageCb, this, transport);
     info_sub_ = nh.subscribe(camera_info, 1, &ImageView2::infoCb, this);
     marker_sub_ = nh.subscribe(marker_topic_, 10, &ImageView2::markerCb, this);
-    event_sub_ = local_nh.subscribe(camera + "/event", 1, &ImageView2::eventCb, this);
+    event_sub_ = local_nh.subscribe(camera + "/event", 100, &ImageView2::eventCb, this);
     
     change_mode_srv_ = local_nh.advertiseService(
       "change_mode", &ImageView2::changeModeServiceCallback, this);
@@ -1023,6 +1024,7 @@ namespace image_view2{
     drawMarkers();
     drawInteraction();
 
+    if ( draw_grid_ ) drawGrid();
     if ( blurry_mode_ ) cv::addWeighted(image_, 0.9, draw_, 1.0, 0.0, image_);
     if ( use_window ) {
       if (show_info_) {
@@ -1037,6 +1039,32 @@ namespace image_view2{
     local_image_pub_.publish(out_msg.toImageMsg());
   }
   
+  void ImageView2::drawGrid()
+  {
+    cv::Point2d p0 = cv::Point2d(0, last_msg_->height/2.0);
+    cv::Point2d p1 = cv::Point2d(last_msg_->width, last_msg_->height/2.0);
+    cv::line(draw_, p0, p1, CV_RGB(255,0,0), DEFAULT_LINE_WIDTH);
+
+    cv::Point2d p2 = cv::Point2d(last_msg_->width/2.0, 0);
+    cv::Point2d p3 = cv::Point2d(last_msg_->width/2.0, last_msg_->height);
+    cv::line(draw_, p2, p3, CV_RGB(255,0,0), DEFAULT_LINE_WIDTH);
+
+    int div_u = 10;
+    int div_v = 10;
+    for(int i = 1; i < div_u - 1 ;i ++){
+      cv::Point2d u0 = cv::Point2d(0, last_msg_->height * i * 1.0 / div_u);
+      cv::Point2d u1 = cv::Point2d(last_msg_->width, last_msg_->height * i * 1.0 / div_u);
+      cv::line(draw_, u0, u1, CV_RGB(255,0,0), 1);
+    }
+
+    for(int i = 1; i < div_v - 1 ;i ++){
+      cv::Point2d v0 = cv::Point2d(last_msg_->width * i * 1.0 / div_v, 0);
+      cv::Point2d v1 = cv::Point2d(last_msg_->width * i * 1.0 / div_v, last_msg_->height);
+      cv::line(draw_, v0, v1, CV_RGB(255,0,0), 1);
+    }
+
+  }
+
   void ImageView2::imageCb(const sensor_msgs::ImageConstPtr& msg)
   {
     if (msg->width == 0 && msg->height == 0) {

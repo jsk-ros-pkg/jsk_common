@@ -2,6 +2,18 @@
 Changelog for package opt_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.66 (2015-04-03)
+-------------------
+
+1.0.65 (2015-04-02)
+-------------------
+
+1.0.64 (2015-03-29)
+-------------------
+* [opt_camera] support pan control of panorama view, use enum for flip/small in reconfigure gui
+* [opt_camera] use argument to pass camera_index
+* Contributors: JSK Lab member, Kei Okada
+
 1.0.63 (2015-02-19)
 -------------------
 

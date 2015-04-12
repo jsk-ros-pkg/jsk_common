@@ -2,6 +2,27 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.66 (2015-04-03)
+-------------------
+* [jsk_tools/zshrc.ros] use env-hooks to store contents of zshrc.ros
+* Contributors: Kentaro Wada
+
+1.0.65 (2015-04-02)
+-------------------
+* [jsk_tools/bashrc.ros] remove android settings from bashrc.ros
+* [jsk_tools/bashrc.ros] use env-hooks to store contets of bashrc.ros
+* Contributors: Kei Okada
+
+1.0.64 (2015-03-29)
+-------------------
+* [jsk_tools] check NO_ROS_PROMPT environmental variable when updating
+  prompt in order not to change prompt by rossetmaster and rossetip
+* [jsk_tools] Add rqt_reconfigure to run_depend
+* [jsk_tools] Add new rule to replace handle to name
+* [jsk_tools] Fix dependency of jsk_tools
+* rename rossetrobot -> rossetmaster, keep rossetrobot for backword compatibility
+* Contributors: Ryohei Ueda, Kentaro Wada
+
 1.0.63 (2015-02-19)
 -------------------
 * need to copy global_bin for devel config too
@@ -316,4 +337,4 @@ Changelog for package jsk_tools
 * updated launch doc
 * updated launch doc
 * updated launch doc
-* Contributors: nozawa, manabu, Kei Okada, youhei, rosen, chen, y-tnaka
+* Contributors: nozawa, manabu, Kei Okada, youhei, rosen, Xiangyu Chen, y-tnaka

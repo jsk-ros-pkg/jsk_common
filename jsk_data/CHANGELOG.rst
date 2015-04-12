@@ -2,6 +2,17 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.66 (2015-04-03)
+-------------------
+
+1.0.65 (2015-04-02)
+-------------------
+
+1.0.64 (2015-03-29)
+-------------------
+* [jsk_data] Utility script to save/load robot_description
+* Contributors: Ryohei Ueda
+
 1.0.63 (2015-02-19)
 -------------------
 * [jsk_tilt_laser, jsk_data] Add multisense_play.launch to play multisene bag file

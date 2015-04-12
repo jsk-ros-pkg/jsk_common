@@ -2,6 +2,34 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.66 (2015-04-03)
+-------------------
+
+1.0.65 (2015-04-02)
+-------------------
+* [jsk_network_tools] Support effort in joint state compressor/decompressor
+* [jsk_network_tools] Latch output topic of highspeed receiver
+* [jsk_network_tools] More readable warning about packet miss
+* [jsk_network_tools] Add new parameter ~packet_sleep_sum not to sleep per one packet but several packets
+* Contributors: Ryohei Ueda
+
+1.0.64 (2015-03-29)
+-------------------
+* [jsk_network_tools] Fix typos
+* [jsk_network_tools] Add dynamic_reconfigure interface to specify
+  bandwidth of highspeed streamer
+* [jsk_network_tools] Defaults to 280 Mbps
+* [jsk_network_tools] Decide interval between sending packets based on bandwidth
+* [jsk_network_tools] Do not load unused robot models when
+  compress/decompress joint_states
+* [jsk_network_tools] Publish the last received time as std_msgs/Time from silverhammer receivers
+* [jsk_network_tools] Force to be within 0-255 when compressing joint angles
+* [jsk_network_tools] Add diagnostics information to lowspeed streamer and receiver
+* [jsk_network_tools] Add diagnostics information to highspeed streamer/receiver
+* [jsk_network_tools] Add event_driven mode to lowspeed streamer
+* [jsk_network_tools] Add event-driven mode to lowspeed streamer
+* Contributors: Ryohei Ueda
+
 1.0.63 (2015-02-19)
 -------------------
 
