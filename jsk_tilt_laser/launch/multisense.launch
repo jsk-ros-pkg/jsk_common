@@ -7,14 +7,27 @@
   <arg name="sensor_tf_prefix" default="$(arg namespace)" />
   <arg name="not_use_sensor_tf_prefix" default="false" />
   <arg name="run_driver" default="true" />
-  
-  <include file="$(find multisense_bringup)/multisense.launch" if="$(arg run_driver)">
-    <arg name="ip_address" value="$(arg ip_address)" />
-    <arg name="namespace" value="$(arg namespace)" />
-    <arg name="mtu" value="$(arg mtu)" />
-    <arg name="launch_robot_state_publisher" value="$(arg use_robot_description)" />    
-  </include>
-
+  <!-- if 'use_resize' is true, run nodelets to publish resized stereo pointcloud-->
+  <arg name="use_resize" default="true" />
+  <!-- 
+       If 'local' argument is true, remapping stereo pointcloud 
+       from multisense/foo to multisense_local/foo.
+       If you use with local true, we recommend to set use_resize false.
+  -->
+  <arg name="local" default="false" />
+  <group>
+    <!-- Remapping for 'local:=true' -->
+    <remap from="/multisense/left/image_rect_color" to="/multisense_local/left/image_rect_color" if="$(arg local)"/>
+    <remap from="/multisense/image_points2_color" to="/multisense_local/image_points2_color" if="$(arg local)"/>
+    <remap from="/multisense/organized_image_points2" to="/multisense_local/organized_image_points2" if="$(arg local)"/>
+    <remap from="/multisense/organized_image_points2_color" to="/multisense_local/organized_image_points2_color" if="$(arg local)"/>
+    <include file="$(find multisense_bringup)/multisense.launch" if="$(arg run_driver)">
+      <arg name="ip_address" value="$(arg ip_address)" />
+      <arg name="namespace" value="$(arg namespace)" />
+      <arg name="mtu" value="$(arg mtu)" />
+      <arg name="launch_robot_state_publisher" value="$(arg use_robot_description)" />    
+    </include>
+  </group>
   <!--
       Overwrite multisense/multisense_driver/tf_prefix parameter.
       Because this parameter affects frame_id of images, lasers.
@@ -118,7 +131,7 @@
    <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense motor_speed 0.5" name="set_multisense_spindle_speed" />
    <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense fps 30.0" name="set_multisense_fps" />
 
-   <include file="$(find jsk_pcl_ros)/launch/multi_resolution_organized_pointcloud.launch">
+   <include file="$(find jsk_pcl_ros)/launch/multi_resolution_organized_pointcloud.launch" if="$(arg use_resize)">
      <arg name="NAMESPACE" value="multisense" />
      <arg name="INPUT" value="/multisense/organized_image_points2_color" />
    </include>
