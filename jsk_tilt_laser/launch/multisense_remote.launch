@@ -1,0 +1,35 @@
+<launch>
+  <arg name="namespace"  default="multisense" />
+  <arg name="use_resize" default="true" />
+  <!-- Run stereo_image_proc -->
+  
+  <group ns="$(arg namespace)">
+    <node pkg="nodelet" type="nodelet" name="stereo_manager"
+          args="manager" />
+    <node pkg="nodelet" type="nodelet" name="left_image_rect_color_relay"
+          args="load jsk_topic_tools/Relay stereo_manager">
+      <remap from="~input" to="/$(arg namespace)_local/left/image_rect_color" />
+      <remap from="~output" to="/$(arg namespace)/left/image_rect_color" />
+    </node>
+    <node pkg="nodelet" type="nodelet" name="point_cloud_xyz"
+          args="load depth_image_proc/point_cloud_xyz stereo_manager">
+      <remap from="camera_info" to="depth/camera_info" />
+      <remap from="image_rect" to="depth" />
+      <remap from="points" to="organized_image_points2" />
+    </node>
+    <node pkg="nodelet" type="nodelet" name="point_cloud_xyzrgb"
+          args="load depth_image_proc/point_cloud_xyzrgb stereo_manager">
+      <remap from="rgb/camera_info" to="/$(arg namespace)_local/left/camera_info" />
+      <remap from="rgb/image_rect_color" to="left/image_rect_color" />
+      <remap from="depth_registered/image_rect" to="depth" />
+      <remap from="depth_registered/points" to="organized_image_points2_color" />
+    </node> 
+  </group>
+  <include file="$(find jsk_pcl_ros)/launch/multi_resolution_organized_pointcloud.launch" if="$(arg use_resize)">
+    <arg name="NAMESPACE" value="multisense" />
+    <arg name="INPUT" value="/multisense/organized_image_points2_color" />
+    <arg name="RUN_MANAGER" value="false" />
+    <arg name="MANAGER" value="/$(arg namespace)/stereo_manager" />
+  </include>
+
+</launch>
