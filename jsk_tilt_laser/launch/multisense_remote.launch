@@ -5,6 +5,7 @@
   <arg name="use_theora" default="false" />
   <arg name="run_laser_pipeline" default="false" />
   <arg name="fixed_frame_id" default="head_root" />
+  <arg name="not_use_sensor_tf_prefix" default="false" />
   <!-- Run stereo_image_proc -->
   
   <group ns="$(arg namespace)">
@@ -70,5 +71,6 @@
   <include file="$(find jsk_tilt_laser)/launch/multisense_laser_pipeline.launch" if="$(arg run_laser_pipeline)">
     <arg name="namespace" value="$(arg namespace)" />
     <arg name="fixed_frame_id" value="$(arg fixed_frame_id)" />
+    <arg name="not_use_sensor_tf_prefix" value="$(arg not_use_sensor_tf_prefix)" />
   </include>
 </launch>
