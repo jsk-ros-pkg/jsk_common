@@ -9,23 +9,23 @@
     <rosparam subst_value="true">
       scan_filter_chain:
       - name: shadows
-      type: laser_filters/ScanShadowsFilter
-      params:
-      min_angle: 0
-      max_angle: 175
-      neighbors: 3
-      window: 1
+        type: laser_filters/ScanShadowsFilter
+        params:
+        min_angle: 0
+        max_angle: 175
+        neighbors: 3
+        window: 1
       - name: dark_shadows
-      type: LaserScanIntensityFilter
-      params: 
-      lower_threshold: 100
-      upper_threshold: 10000
-      disp_histogram: 0
+        type: LaserScanIntensityFilter
+        params: 
+        lower_threshold: 100
+        upper_threshold: 10000
+        disp_histogram: 0
       - name: range
-      type: laser_filters/LaserScanRangeFilter
-      params:
-      lower_threshold: 0.2 # 0.5
-      upper_threshold: 30
+        type: laser_filters/LaserScanRangeFilter
+        params:
+        lower_threshold: 0.2 # 0.5
+        upper_threshold: 30
     </rosparam>
     <remap from="scan_filtered" to="/multisense/lidar_scan_filtered" />
   </node>
