@@ -8,6 +8,7 @@
   <arg name="not_use_sensor_tf_prefix" default="false" />
   <arg name="run_driver" default="true" />
   <arg name="fixed_frame_id" default="head_root" />
+  <arg name="run_laser_pipeline" default="true" />
   <!-- if 'use_resize' is true, run nodelets to publish resized stereo pointcloud-->
   <arg name="use_resize" default="true" />
   <!-- 
@@ -57,77 +58,11 @@
    <!-- run spindle -->
    <node pkg="dynamic_reconfigure" type="dynparam" name="set_multisense_spindle"
          args="set multisense motor_speed 1.57" />
-
-   <node name="tilt_scan_to_scan"
-         pkg="laser_filters" type="scan_to_scan_filter_chain"
-         output="screen">
-     <remap from="scan" to="/multisense/lidar_scan" />
-     <rosparam subst_value="true">
-       scan_filter_chain:
-       - name: shadows
-         type: laser_filters/ScanShadowsFilter
-         params:
-           min_angle: 0
-           max_angle: 175
-           neighbors: 3
-           window: 1
-       - name: dark_shadows
-         type: LaserScanIntensityFilter
-         params: 
-           lower_threshold: 100
-           upper_threshold: 10000
-           disp_histogram: 0
-       - name: range
-         type: laser_filters/LaserScanRangeFilter
-         params:
-           lower_threshold: 0.2 # 0.5
-           upper_threshold: 30
-     </rosparam>
-     <remap from="scan_filtered" to="/multisense/lidar_scan_filtered" />
-   </node>
-   <node name="tilt_scan_to_cloud"
-         pkg="laser_filters" type="scan_to_cloud_filter_chain"
-         output="screen">
-     <remap from="scan" to="/multisense/lidar_scan_filtered" />
-     <rosparam>
-       high_fidelity: true
-     </rosparam>
-     <param name="target_frame" value="multisense/spindle" unless="$(arg not_use_sensor_tf_prefix)"/>
-     <param name="target_frame" value="spindle" if="$(arg not_use_sensor_tf_prefix)"/>
-     <remap from="cloud_filtered" to="/multisense/lidar_scan_cloud_filtered" />
-   </node>
-   <node pkg="nodelet" type="nodelet" name="multisense_laser_manager"
-         args="manager" output="screen"/>
-   <node pkg="nodelet" type="nodelet"
-         name="tilt_laser_listener"
-         args="load jsk_pcl/TiltLaserListener multisense_laser_manager"
-         output="screen">
-     <remap from="~input" to="/$(arg namespace)/joint_states" />
-     <rosparam>
-       laser_type: infinite_spindle_half
-       joint_name: motor_joint
-       use_laser_assembler: true
-       overwrap_angle: 0.1
-     </rosparam>
-     <remap from="~assemble_scans2" to="/assemble_scans2" />
-   </node>
-   <!-- for backward compatibility -->
-   <node pkg="nodelet" type="nodelet"
-         name="multisense_laser_relay"
-         args="load jsk_topic_tools/Relay multisense_laser_manager">
-     <remap from="~input" to="tilt_laser_listener/output_cloud" />
-     <remap from="~output" to="/full_cloud2" />
-   </node>
-   <!-- full_cloud2 -->
-   <node pkg="laser_assembler" type="laser_scan_assembler"
-         name="laser_scan_assembler_node"
-         output="screen" >
-     <remap from="scan" to="/multisense/lidar_scan_filtered"/>
-     <param name="tf_cache_time_secs" value="20" />
-     <param name="max_scans" type="int" value="1000" />
-     <param name="fixed_frame" type="string" value="multisense/$(arg fixed_frame_id)" unless="$(arg not_use_sensor_tf_prefix)"/>
-     <param name="fixed_frame" type="string" value="$(arg fixed_frame_id)" if="$(arg not_use_sensor_tf_prefix)"/>
-   </node>
+   <include file="$(find jsk_tilt_laser)/launch/multisense_laser_pipeline.launch" if="$(arg run_laser_pipeline)">
+     <arg name="not_use_sensor_tf_prefix" value="$(arg not_use_sensor_tf_prefix)" />
+     <arg name="namespace"  value="$(arg namespace)" />
+     <arg name="fixed_frame_id" value="$(arg fixed_frame_id)" />
+   </include>
    
    <!-- modify multisense parameters -->
    <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense motor_speed 0.5" name="set_multisense_spindle_speed" />
