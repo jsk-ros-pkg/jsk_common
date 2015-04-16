@@ -40,8 +40,11 @@ catkin_package(
 add_executable(feature0d_view src/feature0d_view.cpp)
 target_link_libraries(feature0d_view ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 add_dependencies(feature0d_view posedetection_msgs_gencpp)
+add_executable(feature0d_to_image src/feature0d_to_image.cpp)
+target_link_libraries(feature0d_to_image ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(feature0d_to_image posedetection_msgs_gencpp)
 
-install(TARGETS feature0d_view
+install(TARGETS feature0d_view feature0d_to_image
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
