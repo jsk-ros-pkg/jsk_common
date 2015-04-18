@@ -36,7 +36,7 @@
 #include "image_view2.h"
 #include <exception>
 namespace image_view2{
-  ImageView2::ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), window_initialized_(false)
+  ImageView2::ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), window_initialized_(false),space_(10)
   {
   }
   
@@ -129,8 +129,15 @@ namespace image_view2{
   void ImageView2::config_callback(Config &config, uint32_t level)
   {
     draw_grid_ = config.grid;
+    fisheye_mode_ = config.fisheye_mode;
     div_u_ = config.div_u;
     div_v_ = config.div_v;
+
+    grid_red_ = config.grid_red;
+    grid_blue_ = config.grid_blue;
+    grid_green_ = config.grid_green;
+    grid_thickness_ = config.grid_thickness;
+    space_  = config.grid_space;
   }
 
   void ImageView2::markerCb(const image_view2::ImageMarker2ConstPtr& marker)
@@ -1051,29 +1058,68 @@ namespace image_view2{
     local_image_pub_.publish(out_msg.toImageMsg());
   }
   
+  void ImageView2::createDistortGridImage()
+  {
+    distort_grid_mask_.setTo(cv::Scalar(0,0,0));
+    cv::Mat distort_grid_mask(draw_.size(), CV_8UC1);
+    distort_grid_mask.setTo(cv::Scalar(0));
+    const float K = 341.0;
+    float R_divier = (1.0/(draw_.cols/2)), center_x = distort_grid_mask.rows/2, center_y = distort_grid_mask.cols/2;
+    for(int degree = -80; degree<=80; degree+=space_){
+      double C = draw_.cols/2.0 * tan(degree * 3.14159265/180);
+      for(float theta = -1.57; theta <= 1.57; theta+=0.001){
+        double sin_phi = C * R_divier / tan(theta);
+        if (sin_phi > 1.0 || sin_phi < -1.0)
+          continue;
+        int x1 = K * theta * sqrt(1-sin_phi * sin_phi) + center_x;
+        int y1 = K * theta * sin_phi + center_y;
+        int x2 = K * theta * sin_phi + center_x;
+        int y2 = K * theta * sqrt(1-sin_phi * sin_phi) + center_y;
+        cv::circle(distort_grid_mask, cvPoint(y1, x1), 2, 1, grid_thickness_);
+        cv::circle(distort_grid_mask, cvPoint(y2, x2), 2, 1, grid_thickness_);
+      }
+    }
+    cv::Mat red(draw_.size(), draw_.type(), CV_8UC3);
+    red = cv::Scalar(grid_blue_, grid_green_, grid_red_);
+    red.copyTo(distort_grid_mask_, distort_grid_mask);
+  }
+
   void ImageView2::drawGrid()
   {
-    //Main Center Lines
-    cv::Point2d p0 = cv::Point2d(0, last_msg_->height/2.0);
-    cv::Point2d p1 = cv::Point2d(last_msg_->width, last_msg_->height/2.0);
-    cv::line(draw_, p0, p1, CV_RGB(255,0,0), DEFAULT_LINE_WIDTH);
+    if(fisheye_mode_){
+      if(space_ != prev_space_ || prev_red_ != grid_red_
+         || prev_green_ != grid_green_ || prev_blue_ != grid_blue_
+         || prev_thickness_ != grid_thickness_){
+        createDistortGridImage();
+        prev_space_ = space_;
+        prev_red_ = grid_red_;
+        prev_green_ = grid_green_;
+        prev_blue_ = grid_blue_;
+        prev_thickness_ = grid_thickness_;
+      }
+      cv::add(draw_, distort_grid_mask_, draw_);
+    }else{
+      //Main Center Lines
+      cv::Point2d p0 = cv::Point2d(0, last_msg_->height/2.0);
+      cv::Point2d p1 = cv::Point2d(last_msg_->width, last_msg_->height/2.0);
+      cv::line(draw_, p0, p1, CV_RGB(255,0,0), DEFAULT_LINE_WIDTH);
 
-    cv::Point2d p2 = cv::Point2d(last_msg_->width/2.0, 0);
-    cv::Point2d p3 = cv::Point2d(last_msg_->width/2.0, last_msg_->height);
-    cv::line(draw_, p2, p3, CV_RGB(255,0,0), DEFAULT_LINE_WIDTH);
+      cv::Point2d p2 = cv::Point2d(last_msg_->width/2.0, 0);
+      cv::Point2d p3 = cv::Point2d(last_msg_->width/2.0, last_msg_->height);
+      cv::line(draw_, p2, p3, CV_RGB(255,0,0), DEFAULT_LINE_WIDTH);
 
-    for(int i = 1; i < div_u_ ;i ++){
-      cv::Point2d u0 = cv::Point2d(0, last_msg_->height * i * 1.0 / div_u_);
-      cv::Point2d u1 = cv::Point2d(last_msg_->width, last_msg_->height * i * 1.0 / div_u_);
-      cv::line(draw_, u0, u1, CV_RGB(255,0,0), 1);
+      for(int i = 1; i < div_u_ ;i ++){
+        cv::Point2d u0 = cv::Point2d(0, last_msg_->height * i * 1.0 / div_u_);
+        cv::Point2d u1 = cv::Point2d(last_msg_->width, last_msg_->height * i * 1.0 / div_u_);
+        cv::line(draw_, u0, u1, CV_RGB(255,0,0), 1);
+      }
+
+      for(int i = 1; i < div_v_ ;i ++){
+        cv::Point2d v0 = cv::Point2d(last_msg_->width * i * 1.0 / div_v_, 0);
+        cv::Point2d v1 = cv::Point2d(last_msg_->width * i * 1.0 / div_v_, last_msg_->height);
+        cv::line(draw_, v0, v1, CV_RGB(255,0,0), 1);
+      }
     }
-
-    for(int i = 1; i < div_v_ ;i ++){
-      cv::Point2d v0 = cv::Point2d(last_msg_->width * i * 1.0 / div_v_, 0);
-      cv::Point2d v1 = cv::Point2d(last_msg_->width * i * 1.0 / div_v_, last_msg_->height);
-      cv::line(draw_, v0, v1, CV_RGB(255,0,0), 1);
-    }
-
   }
 
   void ImageView2::imageCb(const sensor_msgs::ImageConstPtr& msg)
