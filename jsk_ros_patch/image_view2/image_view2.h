@@ -186,6 +186,7 @@ namespace image_view2
     void processLeftButtonUp(int x, int y);
     void publishMouseInteractionResult();
     void checkMousePos(int& x, int& y);
+    void createDistortGridImage();
     V_ImageMarkerMessage local_queue_;
     image_transport::Subscriber image_sub_;
     ros::Subscriber event_sub_;
@@ -206,7 +207,12 @@ namespace image_view2
     boost::mutex image_mutex_;
     int skip_draw_rate_;
     cv::Mat original_image_, image_, draw_;
+    cv::Mat distort_grid_mask_;
     int div_u_, div_v_;
+    int space_,prev_space_;
+    int grid_red_, grid_green_, grid_blue_, prev_red_, prev_green_, prev_blue_;
+    int grid_thickness_, prev_thickness_;
+    bool fisheye_mode_;
 
     tf::TransformListener tf_listener_;
     image_geometry::PinholeCameraModel cam_model_;
