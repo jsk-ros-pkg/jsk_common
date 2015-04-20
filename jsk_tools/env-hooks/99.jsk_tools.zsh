@@ -12,7 +12,7 @@ function rossetmaster() { # 自分のよく使うロボットのhostnameを入�
         if [[ "${PS1}" =~ .{4}\[http://.*:.*\].*$ ]] ; then
             export PS1="${ZSH_REMATCH}"
         fi
-        export PS1="%{$fg[yellow]%}[$ROS_MASTER_URI]%{$reset_color%} ${PS1}"
+        export PS1="%{$fg[yellow]%}[$ROS_MASTER_URI][$ROS_IP]%{$reset_color%} ${PS1}"
     fi
     echo -e "\e[1;31mset ROS_MASTER_URI to $ROS_MASTER_URI\e[m"
 }
