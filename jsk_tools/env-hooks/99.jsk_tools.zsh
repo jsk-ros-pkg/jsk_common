@@ -1,7 +1,7 @@
 #!/bin/zsh
 # -*- mode: shell-script -*-
 
-function rossetmaster() { # 自分のよく使うロボットのhostnameを入れる
+function rossetmaster() {
     if [ "${ZSH_REMATCH}" = "" ]; then
         export ZSH_REMATCH="${PS1}"
     fi
