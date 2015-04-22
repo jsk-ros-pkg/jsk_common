@@ -1,6 +1,27 @@
 #!/bin/bash
 # -*- mode: Shell-script; -*-
 
+function rossetdefault() {
+    local hostname=${1-"local"}
+    local ros_port=${2-"11311"}
+    echo "$hostname\n$ros_port" > ~/.rosdefault
+    rosdefault
+}
+function rosdefault() {
+    if [ -f ~/.rosdefault ]; then
+        local hostname="$(sed -n 1p ~/.rosdefault)"
+        local ros_port="$(sed -n 2p ~/.rosdefault)"
+    else
+        local hostname="local"
+        local ros_port="11311"
+    fi
+    if [ "$hostname" = "local" ]; then
+        rossetlocal $ros_port
+    else
+        rossetmaster $hostname $ros_port
+    fi
+}
+
 function rossetmaster() { # 自分のよく使うロボットのhostnameを入れる
     local hostname=${1-"pr1040"}
     local ros_port=${2-"11311"}
