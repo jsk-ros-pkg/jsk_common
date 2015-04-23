@@ -43,6 +43,16 @@
   <node pkg="nodelet" type="nodelet" name="multisense_laser_manager"
         args="manager" output="screen"/>
   <node pkg="nodelet" type="nodelet"
+        name="laser_downsampler"
+        args="load pcl/VoxelGrid multisense_laser_manager">
+    <remap from="~input" to="tilt_laser_listener/output_cloud" />
+    <rosparam>
+      leaf_size: 0.02
+      filter_limit_min: -100
+      filter_limit_max: 100
+    </rosparam>
+  </node>
+  <node pkg="nodelet" type="nodelet"
         name="tilt_laser_listener"
         args="load jsk_pcl/TiltLaserListener multisense_laser_manager"
         output="screen">
@@ -55,6 +65,7 @@
     </rosparam>
     <remap from="~assemble_scans2" to="/assemble_scans2" />
   </node>
+  
   <!-- for backward compatibility -->
   <node pkg="nodelet" type="nodelet"
         name="multisense_laser_relay"
