@@ -6,7 +6,7 @@ TARBALL=Fast-Downward-${REV}.tar.gz
 TARBALL_URL=https://github.com/jsk-ros-pkg/archives/raw/master/${TARBALL}
 SOURCE_DIR=build/downward
 INITIAL_DIR=build/Fast-Downward-${REV}
-UNPACK_CMD=tar xvzf
+UNPACK_CMD=tar xzf
 include $(shell rospack find mk)/download_unpack_build.mk
 
 installed: $(SOURCE_DIR)/unpacked
