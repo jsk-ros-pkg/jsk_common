@@ -21,7 +21,8 @@
                               (string-upcase *message-package*))))
 ;; load robot model
 
-(setq *robot-name* (string-upcase (unix::getenv "ROBOT")))
+(setq *robot-name* (ros::get-param "~robot"
+                     (string-upcase (unix::getenv "ROBOT"))))
 (unless *robot-name*
   (error "Please specify environment variable \"ROBOT\""))
 ;; load robot files... it's not so good
