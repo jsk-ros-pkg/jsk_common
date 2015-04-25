@@ -44,7 +44,7 @@
       (< (send jt :min-angle) -360)))
 
 (defun 360-mod (v)
-  (if (> v 0)
+  (if (>= v 0)   ;; input 0 should return 0
       (mod v 360)
     (+ 360 (mod v 360)))))
 
