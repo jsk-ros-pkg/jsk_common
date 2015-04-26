@@ -6,3 +6,7 @@
     local-name: pcl_conversions
     uri: 'https://github.com/garaemon/pcl_conversions.git'
     version: hydro-devel
+- git:
+    local-name: image_pipeline
+    uri: https://github.com/ros-perception/image_pipeline.git
+    version: hydro-devel
