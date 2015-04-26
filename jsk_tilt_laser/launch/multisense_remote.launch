@@ -53,6 +53,9 @@
       <remap from="camera_info" to="depth/camera_info" />
       <remap from="image_rect" to="depth" />
       <remap from="points" to="organized_image_points2" />
+      <rosparam>
+        queue_size: 100
+      </rosparam>
     </node>
     <node pkg="nodelet" type="nodelet" name="point_cloud_xyzrgb"
           args="load depth_image_proc/point_cloud_xyzrgb stereo_manager">
@@ -60,7 +63,10 @@
       <remap from="rgb/image_rect_color" to="left/image_rect_color" />
       <remap from="depth_registered/image_rect" to="depth" />
       <remap from="depth_registered/points" to="organized_image_points2_color" />
-    </node> 
+      <rosparam>
+        queue_size: 100
+      </rosparam>
+    </node>
   </group>
   <include file="$(find jsk_pcl_ros)/launch/multi_resolution_organized_pointcloud.launch" if="$(arg use_resize)">
     <arg name="NAMESPACE" value="$(arg namespace)" />
