@@ -4,13 +4,24 @@
 rossetdefault() {
     local hostname=${1-"local"}
     local ros_port=${2-"11311"}
-    echo "$hostname\n$ros_port" > ~/.rosdefault
+    if [ "$ROS_HOME" != "" ]; then
+        local ros_home=$ROS_HOME
+    else
+        local ros_home="$HOME/.ros"
+    fi
+    mkdir -p $ros_home/jsk_tools
+    echo "$hostname\n$ros_port" > $ros_home/jsk_tools/rosdefault
     rosdefault
 }
 rosdefault() {
-    if [ -f ~/.rosdefault ]; then
-        local hostname="$(sed -n 1p ~/.rosdefault)"
-        local ros_port="$(sed -n 2p ~/.rosdefault)"
+    if [ "$ROS_HOME" != "" ]; then
+        local ros_home=$ROS_HOME
+    else
+        local ros_home="$HOME/.ros"
+    fi
+    if [ -f $ros_home/jsk_tools/rosdefault ]; then
+        local hostname="$(sed -n 1p $ros_home/jsk_tools/rosdefault)"
+        local ros_port="$(sed -n 2p $ros_home/jsk_tools/rosdefault)"
     else
         local hostname="local"
         local ros_port="11311"
