@@ -1,15 +1,8 @@
 #!/usr/bin/env python
 
 # Generate commit aliases for jsk-ros-pkg developers
-import sys
 import subprocess
-try:
-    from pygithub3 import Github
-except:
-    print """Install pygithub3 via
-    sudo pip install pygithub3
-    """
-    sys.exit(1)
+from pygithub3 import Github
 
 from getpass import getpass
 user = raw_input('User name: ')
