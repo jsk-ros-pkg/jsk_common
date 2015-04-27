@@ -10,7 +10,7 @@
   <arg name="save_all_image" default="true" />
   <arg name="camera_namespace" default="openni"/>
   
-  <arg name="save_dir" default="/tmp"/>
+  <arg name="save_dir" default="$(env HOME)/.ros"/>
   <!--                          -->
   <!--       Conditions         -->
   <!--                          -->
