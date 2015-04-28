@@ -39,7 +39,7 @@ def coloredMessage(msg):
         return Fore.RED + msg.msg
 
 def stampString(msg):
-    return "[%d]" % (msg.header.stamp.secs)
+    return "[{:10.2f}]".format(msg.header.stamp.to_sec())
 
 # from http://stackoverflow.com/questions/566746/how-to-get-console-window-width-in-python
 def getTerminalSize():
