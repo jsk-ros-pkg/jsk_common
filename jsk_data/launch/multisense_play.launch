@@ -1,24 +1,72 @@
 <launch>
   <arg name="INPUT" />
+  <arg name="use_depth_image_proc" default="true" />
+  <arg name="namespace"  default="multisense" />
+  <arg name="fixed_frame_id" default="head_root" />
+  <arg name="not_use_sensor_tf_prefix" default="false" />
+  <arg name="use_resize" default="true" />
+  <arg name="run_laser_pipeline" default="false" />
+
   <node pkg="rosbag" type="play" args="$(arg INPUT)" name="rosbag" />
-  <node pkg="nodelet" type="nodelet" name="stereo_pointcloud"
-        args="standalone stereo_image_proc/point_cloud2">
-    <remap from="left/image_rect_color" to="/multisense/left/image_rect_color" />
-    <remap from="left/camera_info" to="/multisense/left/camera_info" />
-    <remap from="right/camera_info" to="/multisense/right/camera_info" />
-    <remap from="disparity" to="/multisense/left/disparity_image" />
-    <remap from="points2" to="/multisense/organized_point_cloud2_colored" />
-  </node>
-  <include file="$(find jsk_tilt_laser)/launch/multisense.launch">
-    <arg name="run_driver" value="false" />
-  </include>
-  
+  <group unless="$(arg use_depth_image_proc)">
+    <node pkg="nodelet" type="nodelet" name="stereo_pointcloud"
+          args="standalone stereo_image_proc/point_cloud2">
+      <remap from="left/image_rect_color" to="/multisense/left/image_rect_color" />
+      <remap from="left/camera_info" to="/multisense/left/camera_info" />
+      <remap from="right/camera_info" to="/multisense/right/camera_info" />
+      <remap from="disparity" to="/multisense/left/disparity_image" />
+      <remap from="points2" to="/multisense/organized_point_cloud2_colored" />
+    </node>
+    <include file="$(find jsk_tilt_laser)/launch/multisense.launch">
+      <arg name="run_driver" value="false" />
+    </include>
+  </group>
+
+  <group if="$(arg use_depth_image_proc)">
+    <group ns="$(arg namespace)">
+      <node pkg="nodelet" type="nodelet" name="stereo_manager"
+            args="manager" />
+      <node pkg="nodelet" type="nodelet" name="point_cloud_xyz"
+            args="load depth_image_proc/point_cloud_xyz stereo_manager">
+        <remap from="camera_info" to="depth/camera_info" />
+        <remap from="image_rect" to="depth" />
+        <remap from="points" to="organized_image_points2" />
+        <rosparam>
+          queue_size: 100
+        </rosparam>
+      </node>
+      <node pkg="nodelet" type="nodelet" name="point_cloud_xyzrgb"
+            args="load depth_image_proc/point_cloud_xyzrgb stereo_manager">
+        <remap from="rgb/camera_info" to="/$(arg namespace)/left/camera_info" />
+        <remap from="rgb/image_rect_color" to="left/image_rect_color" />
+        <remap from="depth_registered/image_rect" to="depth" />
+        <remap from="depth_registered/points" to="organized_image_points2_color" />
+        <rosparam>
+          queue_size: 100
+        </rosparam>
+      </node>
+    </group>
+    <include file="$(find jsk_pcl_ros)/launch/multi_resolution_organized_pointcloud.launch" if="$(arg use_resize)">
+      <arg name="NAMESPACE" value="$(arg namespace)" />
+      <arg name="INPUT" value="/$(arg namespace)/organized_image_points2_color" />
+      <arg name="RUN_MANAGER" value="false" />
+      <arg name="MANAGER" value="/$(arg namespace)/stereo_manager" />
+    </include>
+    <!-- <include file="$(find jsk_tilt_laser)/launch/multisense_laser_pipeline.launch" if="$(arg run_laser_pipeline)"> -->
+    <!--   <arg name="namespace" value="$(arg namespace)" /> -->
+    <!--   <arg name="fixed_frame_id" value="$(arg fixed_frame_id)" /> -->
+    <!--   <arg name="not_use_sensor_tf_prefix" value="$(arg not_use_sensor_tf_prefix)" /> -->
+    <!-- </include> -->
+  </group>
+
+
   <!-- viewer -->
   <group ns="viewer">
     <node pkg="image_view" type="image_view" name="color_image_viewer">
       <remap from="image" to="/multisense/left/image_rect_color" />
     </node>
-    <node pkg="image_view" type="disparity_view" name="disparity_image_viewer">
+    <node pkg="image_view" type="disparity_view" name="disparity_image_viewer"
+          unless="$(arg use_depth_image_proc)">
       <remap from="image" to="/multisense/left/disparity_image" />
     </node>
   </group>

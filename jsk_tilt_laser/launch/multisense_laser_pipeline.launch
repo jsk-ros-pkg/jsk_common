@@ -58,10 +58,11 @@
         output="screen">
     <remap from="~input" to="/$(arg namespace)/joint_states" />
     <rosparam>
-      laser_type: infinite_spindle_half
+#      laser_type: infinite_spindle_half
+      laser_type: infinite_spindle
       joint_name: motor_joint
       use_laser_assembler: true
-      overwrap_angle: 0.1
+      overwrap_angle: 0.0
     </rosparam>
     <remap from="~assemble_scans2" to="/assemble_scans2" />
   </node>

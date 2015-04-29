@@ -36,12 +36,26 @@
 
 namespace jsk_topic_tools
 {
-
+  /**
+   * senario 1.
+   *   1-1 subscribe input
+   *   1-2 message
+   *   1-3 advertise output
+   *   1-4 unsubscribe input
+   *   1-5 prepare for request
+   * senario 2.
+   *   1-1 subscribe input
+   *   1-2 request
+   *   1-3 message
+   *   1-4 advertise
+   *   1-5 unsubscribe at the end of request
+   */
   void Passthrough::onInit()
   {
     advertised_ = false;
     publish_requested_ = false;
     pnh_ = getPrivateNodeHandle();
+    subscribing_ = true;
     sub_ = pnh_.subscribe<topic_tools::ShapeShifter>(
       "input", 1,
       &Passthrough::inputCallback, this);
@@ -87,6 +101,13 @@ namespace jsk_topic_tools
         end_time_ = now + req.duration;
       }
     }
+    if (!subscribing_) {
+      NODELET_DEBUG("suscribe");
+      sub_ = pnh_.subscribe<topic_tools::ShapeShifter>(
+        "input", 1,
+        &Passthrough::inputCallback, this);
+      subscribing_ = true;
+    }
     return true;
   }
   
@@ -102,30 +123,65 @@ namespace jsk_topic_tools
       pub_ = advertise(msg, "output");
       advertised_ = true;
     }
-    else {
-      if (publish_requested_) {
-        // check time
-        ros::Time now = ros::Time::now();
-        if (end_time_ == ros::Time(0) || // ros::Time(0) means eternal publishing
-            end_time_ > now) {
-          pub_.publish(msg);
-        }
-        // check it goes over end_time_ 
-        if (end_time_ != ros::Time(0) && end_time_ < now) {
-          publish_requested_ = false;
+    if (publish_requested_) {
+      ros::Time now = ros::Time::now();
+      if (end_time_ == ros::Time(0) || // ros::Time(0) means eternal publishing
+          end_time_ > now) {
+        pub_.publish(msg);
+      }
+      // check it goes over end_time_ 
+      if (end_time_ != ros::Time(0) && end_time_ < now) {
+        publish_requested_ = false;
+      }
+    }
+    if (!publish_requested_) {
+      // Unsubscribe input anyway
+      sub_.shutdown();
+      subscribing_ = false;
+    }
+  }
+
+  void Passthrough::connectCb()
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    NODELET_DEBUG("connectCB");
+    if (advertised_) {
+      if (pub_.getNumSubscribers() > 0) {
+        if (!subscribing_ && publish_requested_) {
+          NODELET_DEBUG("suscribe");
+          sub_ = pnh_.subscribe<topic_tools::ShapeShifter>(
+            "input", 1,
+            &Passthrough::inputCallback, this);
+          subscribing_ = true;
         }
       }
     }
   }
 
+  void Passthrough::disconnectCb()
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    NODELET_DEBUG("disconnectCb");
+    if (advertised_) {
+      if (pub_.getNumSubscribers() == 0) {
+        if (subscribing_) {
+          NODELET_DEBUG("disconnect");
+          sub_.shutdown();
+          subscribing_ = false;
+        }
+      }
+    }
+  }
+
+  
   ros::Publisher Passthrough::advertise(
     boost::shared_ptr<topic_tools::ShapeShifter const> msg,
     const std::string& topic)
   {
-    // ros::SubscriberStatusCallback connect_cb
-    //   = boost::bind( &Passthrough::connectCb, this);
-    // ros::SubscriberStatusCallback disconnect_cb
-    //   = boost::bind( &Passthrough::disconnectCb, this);
+    ros::SubscriberStatusCallback connect_cb
+      = boost::bind( &Passthrough::connectCb, this);
+    ros::SubscriberStatusCallback disconnect_cb
+      = boost::bind( &Passthrough::disconnectCb, this);
     ros::AdvertiseOptions opts(topic, 1,
                                msg->getMD5Sum(),
                                msg->getDataType(),

@@ -90,6 +90,9 @@ class ROSConsole():
     def __init__(self, arguments):
         self.buffer_ = []
         self.arguments = arguments
+        # check arguments.node
+        self.arguments.node = [n if n.startswith("/") else "/" + n
+                               for n in self.arguments.node or []]
         self.lock_ = Lock()
         self.sub_ = rospy.Subscriber("/rosout", Log, self.rosoutCallback)
         self.timer_ = rospy.Timer(rospy.Duration(1 / 10.0), self.timerCallback)

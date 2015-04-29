@@ -96,13 +96,17 @@ namespace jsk_topic_tools
     virtual bool stopCallback(
       std_srvs::Empty::Request& req,
       std_srvs::Empty::Response& res);
-    
+
+    virtual void disconnectCb();
+    virtual void connectCb();
+
     ros::Time finish_time_;
     bool publish_requested_;
     boost::mutex mutex_;
     ros::Publisher pub_;
     ros::Subscriber sub_;
     bool advertised_;
+    bool subscribing_;
     ros::NodeHandle pnh_;
     ros::Time end_time_;
     ros::ServiceServer request_duration_srv_;
