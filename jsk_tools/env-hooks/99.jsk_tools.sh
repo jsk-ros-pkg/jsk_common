@@ -10,7 +10,7 @@ rossetdefault() {
         local ros_home="$HOME/.ros"
     fi
     mkdir -p $ros_home/jsk_tools
-    echo "$hostname\n$ros_port" > $ros_home/jsk_tools/rosdefault
+    echo -e "$hostname\n$ros_port" > $ros_home/jsk_tools/rosdefault
     rosdefault
 }
 rosdefault() {
