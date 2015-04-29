@@ -42,12 +42,12 @@ _update_prompt() {
         fi
     elif [ "$master_host" != "" ]; then
         local ros_prompt="[$ROS_MASTER_URI][$ROS_IP]"
-        if [ "$CATKIN_SHELL" = "sh" ]; then
-            export PS1="$ros_prompt ${WITHOUT_ROS_PROMPT}"
-        elif [ "$CATKIN_SHELL" = "bash" ]; then
+        if [ "$CATKIN_SHELL" = "bash" ]; then
             export PS1="\[\033[00;31m\]$ros_prompt\[\033[00m\] ${WITHOUT_ROS_PROMPT}"
         elif [ "$CATKIN_SHELL" = "zsh" ]; then
             export PS1="%{$fg[red]%}$ros_prompt%{$reset_color%} ${WITHOUT_ROS_PROMPT}"
+        else
+            echo "unsupported shell"
         fi
     fi
 }
