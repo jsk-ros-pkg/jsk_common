@@ -32,6 +32,17 @@ REPLACE_RULES={
     "h-kamada": "Hitoshi Kamada",
     "s-noda": "Shintaro Noda"}
 
+def remove_duplicates(values):
+    output = []
+    seen = set()
+    for value in values:
+        # If value has not been encountered yet,
+        # ... add it to both list and set.
+        if value not in seen:
+            output.append(value)
+            seen.add(value)
+    return output
+
 def replaceContributors(line):
     match = re.match("\* Contributors: (.*)", line)
     if match:
@@ -44,7 +55,8 @@ def replaceContributors(line):
                 replaced_authors.append(REPLACE_RULES[author])
             else:
                 replaced_authors.append(org_author)
-        return "* Contributors: " + ", ".join(list(set(replaced_authors)))
+        # remove duplicats, but not change orders
+        return "* Contributors: " + ", ".join(remove_duplicates(replaced_authors))
     else:
         return line
 

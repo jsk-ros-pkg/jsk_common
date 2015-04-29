@@ -337,4 +337,4 @@ Changelog for package jsk_tools
 * updated launch doc
 * updated launch doc
 * updated launch doc
-* Contributors: nozawa, manabu, Kei Okada, youhei, rosen, Xiangyu Chen, y-tnaka
+* Contributors: nozawa, Manabu Saito, Kei Okada, youhei, rosen, Xiangyu Chen, y-tnaka
