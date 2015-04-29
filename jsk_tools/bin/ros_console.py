@@ -76,6 +76,9 @@ class ROSConsole():
     def __init__(self, arguments):
         self.buffer_ = []
         self.arguments = arguments
+        # check arguments.node
+        self.arguments.node = [n if n.startswith("/") else "/" + n
+                               for n in self.arguments.node or []]
         self.lock_ = Lock()
         self.sub_ = rospy.Subscriber("/rosout", Log, self.rosoutCallback)
         self.timer_ = rospy.Timer(rospy.Duration(1 / 10.0), self.timerCallback)
@@ -117,7 +120,7 @@ if __name__ == "__main__":
     colorama.init()
     parser = argparse.ArgumentParser(description='Show rosout in your terminal')
     parser.add_argument('-n', '--node', help='Filter messages by node',
-                        nargs='?')
+                        nargs='+')
     rospy.init_node("ros_console", anonymous=True)
     args = parser.parse_args(rospy.myargv()[1:])
     console = ROSConsole(args)
