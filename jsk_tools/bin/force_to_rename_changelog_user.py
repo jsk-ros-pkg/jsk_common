@@ -19,6 +19,7 @@ REPLACE_RULES={
     "aginika": "Yuto Inagaki",
     "tarukosu": "Yusuke Furuta",
     "furuta": "Yusuke Furuta",
+    "manabu": "Manabu Saito",
     "pr2 application": "JSK Lab member",
     "pr2admin": "JSK Lab member",
     "terasawa": "Ryo Terasawa",
