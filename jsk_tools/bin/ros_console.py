@@ -13,7 +13,21 @@ from rosgraph_msgs.msg import Log
 from threading import Lock
 import math
 
+def levelGreaterEqualThan(msg, level):
+    return msg.level >= levelValue(level)
 
+def levelValue(level):
+    if level == "DEBUG":
+        return Log.DEBUG
+    elif level == "INFO":
+        return Log.INFO
+    elif level == "WARN":
+        return Log.WARN
+    elif level == "ERROR":
+        return Log.ERROR
+    elif level == "FATAL":
+        return Log.FATAL
+    
 def levelString(msg):
     if msg.level == Log.DEBUG:
         return "[DEBUG]"
@@ -115,12 +129,18 @@ class ROSConsole():
         if self.arguments.node and len(self.arguments.node) > 0:
             if msg.name not in self.arguments.node:
                 show = False
+        # message level
+        if self.arguments.level:
+            show = levelGreaterEqualThan(msg, self.arguments.level)
         return show
 if __name__ == "__main__":
     colorama.init()
     parser = argparse.ArgumentParser(description='Show rosout in your terminal')
     parser.add_argument('-n', '--node', help='Filter messages by node',
-                        nargs='+')
+                        nargs='?')
+    parser.add_argument('-l', '--level',
+                        help='Filter messages by level (DEBUG, INFO, WARN, ERROR, FATAL)',
+                        default = "DEBUG")
     rospy.init_node("ros_console", anonymous=True)
     args = parser.parse_args(rospy.myargv()[1:])
     console = ROSConsole(args)
