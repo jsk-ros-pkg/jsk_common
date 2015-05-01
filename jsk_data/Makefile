@@ -8,9 +8,9 @@ DATA_DIR=$(shell if [ -e /home/jsk/ros/data ] ; then echo "/home/jsk/ros/data"; 
 .PHONY : small large
 
 large-list:
-	@ssh $$USER@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/large
+	@ssh $$USER@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/large/${KEYWORD}
 small-list:
-	@ssh $$USER@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/small
+	@ssh $$USER@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/small/${KEYWORD}
 
 large:
 	@echo "***\n*** Consider using KEYWORD option to download large data\n***"
