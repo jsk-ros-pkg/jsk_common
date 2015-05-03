@@ -2,6 +2,13 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [image_view2] add Fisheye Grid Line option
+* [jsk_perception] add dynamic reconf for image_view2
+* [image_view2] add grid option
+* Contributors: Yuto Inagaki
+
 1.0.66 (2015-04-03)
 -------------------
 
@@ -312,4 +319,4 @@ Changelog for package image_view2
 * back to previous version, which is not using subscribeCamera, becouse of slow connection of pr2-network
 * rewrite using subscribeCamera
 * add image_view2/
-* Contributors: manabu, kazuto, Kei Okada, youhei, Xiangyu Chen, Ryohei Ueda, mikita
+* Contributors: Manabu Saito, kazuto, Kei Okada, youhei, Xiangyu Chen, Ryohei Ueda, mikita

@@ -2,6 +2,9 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.66 (2015-04-03)
 -------------------
 
@@ -211,4 +214,4 @@ Changelog for package dynamic_tf_publisher
 * fix bag when assoc service called again
 * do not accept set_dynamic_tf service for assocd frames
 * mv jtalk and pddl to 3rdparty directory
-* Contributors: Ryohei Ueda, Kei Okada, manabu, Yusuke Furuta, kazuto
+* Contributors: Ryohei Ueda, Kei Okada, Manabu Saito, Yusuke Furuta, kazuto

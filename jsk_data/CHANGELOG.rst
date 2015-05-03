@@ -2,6 +2,15 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_data/rosbag_always.py] Remove old active file too
+* [jsk_data] enable to select use_depth_image_proc or use_stereo_image_proc
+* [jsk_data] add save_multisense parameter in hrp2_record.launch
+* [jsk_data] add save_multisense parameter in common_record.launch
+* [jsk_data] Save bags under ~/.ros directory
+* Contributors: Kamada Hitoshi, Ryohei Ueda
+
 1.0.66 (2015-04-03)
 -------------------
 

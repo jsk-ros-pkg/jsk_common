@@ -2,6 +2,11 @@
 Changelog for package posedetection_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [posedetection_msgs] Add feature0d_to_image node
+* Contributors: Kentaro Wada
+
 1.0.66 (2015-04-03)
 -------------------
 
