@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.67 (2015-05-03)
+-------------------
 * [jsk_topic_tools] Do not subscribe input if no need in Passthrough nodelet
 * [jsk_topic_tools] Remove non-used TransportHint from relay_nodelet
 * Contributors: Ryohei Ueda

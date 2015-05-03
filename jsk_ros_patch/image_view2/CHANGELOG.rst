@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.67 (2015-05-03)
+-------------------
 * [image_view2] add Fisheye Grid Line option
 * [jsk_perception] add dynamic reconf for image_view2
 * [image_view2] add grid option

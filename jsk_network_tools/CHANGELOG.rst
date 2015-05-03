@@ -2,8 +2,8 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.67 (2015-05-03)
+-------------------
 * [angle-vector-compress.l] 360-mode input of 0 will return 0
 * [angle-vector-compress.l] add debug code (but commented out for now)
 * [jsk_network_tools] Use ~robot parameter and it's initialized to ROBOT

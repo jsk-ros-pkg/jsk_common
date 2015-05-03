@@ -2,8 +2,8 @@
 Changelog for package downward
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.67 (2015-05-03)
+-------------------
 * [downward] use xzf to extract .tar.gz, instaed of xvzf to reduce log length
 * Contributors: Kei Okada
 

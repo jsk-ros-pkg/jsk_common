@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.67 (2015-05-03)
+-------------------
 * [jsk_tools] return error status when unable ``rossetip``
 * Merge remote-tracking branch 'refs/remotes/origin/master' into add-level
   Conflicts:
