@@ -93,6 +93,8 @@ class ROSConsole():
         # check arguments.node
         self.arguments.node = [n if n.startswith("/") else "/" + n
                                for n in self.arguments.node or []]
+        self.arguments.exclude_node = [n if n.startswith("/") else "/" + n
+                                       for n in self.arguments.exclude_node or []]
         self.lock_ = Lock()
         self.sub_ = rospy.Subscriber("/rosout", Log, self.rosoutCallback)
         self.timer_ = rospy.Timer(rospy.Duration(1 / 10.0), self.timerCallback)
@@ -129,15 +131,20 @@ class ROSConsole():
         if self.arguments.node and len(self.arguments.node) > 0:
             if msg.name not in self.arguments.node:
                 show = False
+        if self.arguments.exclude_node and len(self.arguments.exclude_node) > 0:
+            if msg.name in self.arguments.exclude_node:
+                show = show and False
         # message level
         if self.arguments.level:
-            show = levelGreaterEqualThan(msg, self.arguments.level)
+            show = show and levelGreaterEqualThan(msg, self.arguments.level)
         return show
 if __name__ == "__main__":
     colorama.init()
     parser = argparse.ArgumentParser(description='Show rosout in your terminal')
     parser.add_argument('-n', '--node', help='Filter messages by node',
-                        nargs='?')
+                        nargs='+')
+    parser.add_argument('-N', '--exclude-node', help='Remove messages by node',
+                        nargs='+')
     parser.add_argument('-l', '--level',
                         help='Filter messages by level (DEBUG, INFO, WARN, ERROR, FATAL)',
                         default = "DEBUG")
