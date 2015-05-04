@@ -41,6 +41,8 @@
 #include <nodelet/nodelet.h>
 #include <boost/thread.hpp>
 
+#include "jsk_topic_tools/log_utils.h"
+
 namespace jsk_topic_tools
 {
   /** @brief
