@@ -182,7 +182,7 @@ by `~message` parameter.
 * `~send_rate` (default: `2`)
 
   Fixed rate in Hz to send message.
-* `~packet_size` (default: `1000`)
+* `~packet_size` (default: `12000`)
 
   Packet size of UDP. ROS message will be splitted into the packets
   of `~packet_size`. Unit is byte.
