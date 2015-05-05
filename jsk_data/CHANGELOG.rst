@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.68 (2015-05-05)
+-------------------
 * [jsk_data] env value ARIES_USER will be default username to login aries
 * [jsk_data] Add usage of KEYWORD for make large-list / small-list
 * [jsk_data] Add KEYWORD to large-list/small-list target in Makefile
