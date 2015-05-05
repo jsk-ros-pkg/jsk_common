@@ -68,7 +68,17 @@ namespace jsk_topic_tools
      *  to false.
      */
     virtual void inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
-
+    
+    /** @brief
+     *  Callback function for ~request service.
+     *
+     *  This callback reqtrieves std_srvs::Empty and
+     *  enables passthrough for ~default_duration seconds.
+     */
+    virtual bool requestCallback(
+      std_srvs::Empty::Request &req,
+      std_srvs::Empty::Response &res);
+    
     /** @brief
      *  Callback function for ~request_duration service.
      *
@@ -82,6 +92,13 @@ namespace jsk_topic_tools
       jsk_topic_tools::PassthroughDuration::Request &req,
       jsk_topic_tools::PassthroughDuration::Response &res);
 
+    /** @brief
+     *  Implementation of requestDurationCallback.
+     *
+     */
+    virtual void requestDurationCallbackImpl(
+      const ros::Duration& duration);
+    
     /** @brief
      * Advertise a topic according to a specific message instance.
      */
@@ -102,6 +119,7 @@ namespace jsk_topic_tools
 
     ros::Time finish_time_;
     bool publish_requested_;
+    double default_duration_;
     boost::mutex mutex_;
     ros::Publisher pub_;
     ros::Subscriber sub_;
@@ -111,6 +129,7 @@ namespace jsk_topic_tools
     ros::Time end_time_;
     ros::ServiceServer request_duration_srv_;
     ros::ServiceServer stop_srv_;
+    ros::ServiceServer request_srv_;
   };
 }
 

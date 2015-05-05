@@ -56,11 +56,14 @@ namespace jsk_topic_tools
     publish_requested_ = false;
     pnh_ = getPrivateNodeHandle();
     subscribing_ = true;
+    pnh_.param("default_duration", default_duration_, 10.0);
     sub_ = pnh_.subscribe<topic_tools::ShapeShifter>(
       "input", 1,
       &Passthrough::inputCallback, this);
     request_duration_srv_ = pnh_.advertiseService(
       "request_duration", &Passthrough::requestDurationCallback, this);
+    request_srv_ = pnh_.advertiseService(
+      "request", &Passthrough::requestCallback, this);
     stop_srv_ = pnh_.advertiseService(
       "stop", &Passthrough::stopCallback, this);
   }
@@ -77,14 +80,13 @@ namespace jsk_topic_tools
     publish_requested_ = false;
     return true;
   }
-  
-  bool Passthrough::requestDurationCallback(
-    jsk_topic_tools::PassthroughDuration::Request &req,
-    jsk_topic_tools::PassthroughDuration::Response &res)
+
+  void Passthrough::requestDurationCallbackImpl(
+    const ros::Duration& duration)
   {
     boost::mutex::scoped_lock lock(mutex_);
     // special case of ros::Duration(0), it means eternal
-    if (req.duration == ros::Duration(0)) {
+    if (duration == ros::Duration(0)) {
       end_time_ = ros::Time(0);
       publish_requested_ = true;
     }
@@ -92,13 +94,13 @@ namespace jsk_topic_tools
       ros::Time now = ros::Time::now();
       if (publish_requested_) {
         // check need to update end_time or not
-        if (end_time_ < now + req.duration) {
-          end_time_ = now + req.duration;
+        if (end_time_ < now + duration) {
+          end_time_ = now + duration;
         }
       }
       else {
         publish_requested_ = true;
-        end_time_ = now + req.duration;
+        end_time_ = now + duration;
       }
     }
     if (!subscribing_) {
@@ -108,6 +110,21 @@ namespace jsk_topic_tools
         &Passthrough::inputCallback, this);
       subscribing_ = true;
     }
+  }
+  
+  bool Passthrough::requestDurationCallback(
+    jsk_topic_tools::PassthroughDuration::Request &req,
+    jsk_topic_tools::PassthroughDuration::Response &res)
+  {
+    requestDurationCallbackImpl(req.duration);
+    return true;
+  }
+
+  bool Passthrough::requestCallback(
+    std_srvs::Empty::Request &req,
+    std_srvs::Empty::Response &res)
+  {
+    requestDurationCallbackImpl(ros::Duration(default_duration_));
     return true;
   }
   
