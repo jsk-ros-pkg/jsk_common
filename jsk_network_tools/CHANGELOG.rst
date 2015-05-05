@@ -2,6 +2,9 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.68 (2015-05-05)
 -------------------
 * [jsk_network_tools] Use 1500*8 bits as default packet_size for MTU:=1500

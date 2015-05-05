@@ -2,6 +2,11 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [CMakeLists.txt] add depends to gen_cfg
+* Contributors: Kei Okada
+
 1.0.68 (2015-05-05)
 -------------------
 

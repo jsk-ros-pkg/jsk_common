@@ -2,6 +2,9 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.68 (2015-05-05)
 -------------------
 * [jsk_data] env value ARIES_USER will be default username to login aries

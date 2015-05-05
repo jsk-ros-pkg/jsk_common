@@ -2,6 +2,11 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Shorter test duration for topic_buffer/hztest_chatter_update
+* Contributors: Ryohei Ueda
+
 1.0.68 (2015-05-05)
 -------------------
 * [jsk_topic_tools] Add log_utils.h to print with __PRETY_FUNCTION__

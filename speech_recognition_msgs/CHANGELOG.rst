@@ -2,6 +2,9 @@
 Changelog for package speech_recognition_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.68 (2015-05-05)
 -------------------
 
