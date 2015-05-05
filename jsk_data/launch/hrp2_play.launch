@@ -1,7 +1,8 @@
 <launch>
   <!-- other file args -->
   <arg name="bagfile_names" default="tmp.bag"/>
-  <arg name="launch_openni" default="true"/>
+  <arg name="launch_openni" default="false"/>
+  <arg name="launch_multisense" default="true" />
   <arg name="launch_robot_model" default="true"/>
   <arg name="use_gui" default="false"/>
   <arg name="rosbag_option" default="--clock -l" />
@@ -14,7 +15,9 @@
   <!-- setup openni_launch -->
   <include if="$(arg launch_openni)" file="$(find jsk_pcl_ros)/launch/openni2_remote.launch">
   </include>
-
+  <include if="$(arg launch_multisense)" file="$(find jsk_data)/launch/multisense_play.launch">
+    <arg name="play_rosbag" value="false"/>
+  </include>
   <group if="$(arg use_xterm)">
     <node unless="$(arg use_gui)" pkg="rosbag" type="play" name="rosbag_play"
           launch-prefix="xterm -e"

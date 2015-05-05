@@ -1,5 +1,6 @@
 <launch>
   <arg name="INPUT" />
+  <arg name="play_rosbag" default="true" />
   <arg name="use_depth_image_proc" default="true" />
   <arg name="namespace"  default="multisense" />
   <arg name="fixed_frame_id" default="head_root" />
@@ -7,7 +8,7 @@
   <arg name="use_resize" default="true" />
   <arg name="run_laser_pipeline" default="false" />
 
-  <node pkg="rosbag" type="play" args="$(arg INPUT)" name="rosbag" />
+  <node if="$(arg play_rosbag)" pkg="rosbag" type="play" args="$(arg INPUT)" name="rosbag" />
   <group unless="$(arg use_depth_image_proc)">
     <node pkg="nodelet" type="nodelet" name="stereo_pointcloud"
           args="standalone stereo_image_proc/point_cloud2">
