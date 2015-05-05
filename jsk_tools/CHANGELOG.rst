@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.69 (2015-05-05)
+-------------------
 * [jsk_tools] Add -N option to exclude messages from specified nodes
 * Contributors: Ryohei Ueda
 

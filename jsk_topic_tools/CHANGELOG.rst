@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.69 (2015-05-05)
+-------------------
 * [jsk_topic_tools] Shorter test duration for topic_buffer/hztest_chatter_update
 * Contributors: Ryohei Ueda
 
