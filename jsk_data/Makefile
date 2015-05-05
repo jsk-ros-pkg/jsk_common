@@ -3,7 +3,8 @@
 ##
 all: small
 
-DATA_DIR=$(shell if [ -e /home/jsk/ros/data ] ; then echo "/home/jsk/ros/data"; else echo "$$USER@aries.jsk.t.u-tokyo.ac.jp:/home/jsk/ros/data"; fi)
+LOGIN_USER=$(shell if [ "${SSH_USER}" != "" ]; then echo ${SSH_USER}; else echo ${USER}; fi)
+DATA_DIR=$(shell if [ -e /home/jsk/ros/data ] ; then echo "/home/jsk/ros/data"; else echo "${LOGIN_USER}@aries.jsk.t.u-tokyo.ac.jp:/home/jsk/ros/data"; fi)
 
 .PHONY : small large
 
@@ -11,16 +12,16 @@ large-list:
 	@echo "***\n*** Consider using KEYWORD option to get the list of large data\n***"
 	@echo "*** for example... "
 	@echo "*** > make large-list KEYWORD=2014_05*"
-	@ssh $$USER@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/large/${KEYWORD}
+	@ssh ${LOGIN_USER}@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/large/${KEYWORD}
 small-list:
-	@ssh $$USER@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/small/${KEYWORD}
+	@ssh ${LOGIN_USER}@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/small/${KEYWORD}
 
 large:
 	@echo "***\n*** Consider using KEYWORD option to download large data\n***"
 	@echo "*** for example... "
 	@echo "*** > make large KEYWORD=2014_05*"
 	@echo "*** current large data list is ..."
-	@ssh $$USER@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/large
+	@ssh ${LOGIN_USER}@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/large
 	@echo "---"
 	rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" --bwlimit=100000 ${DATA_DIR}/large/${KEYWORD} large/ || exit 0
 	bash `rospack find jsk_data`/scripts/decompress large || exit 0
