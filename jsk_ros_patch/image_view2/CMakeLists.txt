@@ -22,7 +22,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 find_package(OpenCV REQUIRED)
 add_executable(image_view2 image_view2.cpp image_view2_node.cpp)
 target_link_libraries(image_view2 ${OpenCV_LIBS} ${catkin_LIBRARIES})
-add_dependencies(image_view2 ${PROJECT_NAME}_gencpp)
+add_dependencies(image_view2 ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_gencfg)
 
 # Point Rectangle Extractor
 add_executable(points_rectangle_extractor points_rectangle_extractor.cpp)

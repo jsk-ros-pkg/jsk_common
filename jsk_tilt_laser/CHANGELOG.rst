@@ -2,6 +2,36 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.69 (2015-05-05)
+-------------------
+
+1.0.68 (2015-05-05)
+-------------------
+
+1.0.67 (2015-05-03)
+-------------------
+* [jsk_tilt_laser] Use resized and compressed images to reconstruct
+  multisense pointcloud
+* [jsk_tilt_laser] Do not use spindle_half model in order to decrease risk of
+  dropping of tilt laser scans
+* [jsk_tilt_laser] Add arguments for resized images in multisense.launch
+* [jsk_tilt_laser] Increase queue size of point_xyz and point_xyzrgb in multisense_remote.launch
+* [jsk_tilt_laser] Downsample pointcloud in default
+* [jsk_tilt_laser] Fix indent and typo
+* [jsk_network_tools] Load laser_pipeline.launch from multisense_remote.launch
+* [jsk_tilt_laser] Fix indent
+* [jsk_tilt_laser] Use compressed rgb image to colorize pointcloud and
+  separate laser pipeline into multisense_laser_pipeline.launch
+* [jsk_tilt_laser] Relay multisense_local/left/camera_info to
+  multisense/left/camera_info in remote machine
+* Merge remote-tracking branch 'refs/remotes/origin/master' into multisense-local
+  Conflicts:
+  jsk_tilt_laser/launch/multisense.launch
+* [jsk_tilt_laser] Add local argument to multisense.launch and add multisense_remote.launch
+  to separatly run multisense driver
+* [jsk_tilt_laser] Add options to run multisense local mode
+* Contributors: Ryohei Ueda
+
 1.0.66 (2015-04-03)
 -------------------
 * [jsk_tilt_laser] Add fixed_frame_id argument to multisense.launch

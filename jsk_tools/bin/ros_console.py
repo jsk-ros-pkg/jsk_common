@@ -13,7 +13,21 @@ from rosgraph_msgs.msg import Log
 from threading import Lock
 import math
 
+def levelGreaterEqualThan(msg, level):
+    return msg.level >= levelValue(level)
 
+def levelValue(level):
+    if level == "DEBUG":
+        return Log.DEBUG
+    elif level == "INFO":
+        return Log.INFO
+    elif level == "WARN":
+        return Log.WARN
+    elif level == "ERROR":
+        return Log.ERROR
+    elif level == "FATAL":
+        return Log.FATAL
+    
 def levelString(msg):
     if msg.level == Log.DEBUG:
         return "[DEBUG]"
@@ -39,7 +53,7 @@ def coloredMessage(msg):
         return Fore.RED + msg.msg
 
 def stampString(msg):
-    return "[%d]" % (msg.header.stamp.secs)
+    return "[{:10.2f}]".format(msg.header.stamp.to_sec())
 
 # from http://stackoverflow.com/questions/566746/how-to-get-console-window-width-in-python
 def getTerminalSize():
@@ -76,6 +90,11 @@ class ROSConsole():
     def __init__(self, arguments):
         self.buffer_ = []
         self.arguments = arguments
+        # check arguments.node
+        self.arguments.node = [n if n.startswith("/") else "/" + n
+                               for n in self.arguments.node or []]
+        self.arguments.exclude_node = [n if n.startswith("/") else "/" + n
+                                       for n in self.arguments.exclude_node or []]
         self.lock_ = Lock()
         self.sub_ = rospy.Subscriber("/rosout", Log, self.rosoutCallback)
         self.timer_ = rospy.Timer(rospy.Duration(1 / 10.0), self.timerCallback)
@@ -112,12 +131,23 @@ class ROSConsole():
         if self.arguments.node and len(self.arguments.node) > 0:
             if msg.name not in self.arguments.node:
                 show = False
+        if self.arguments.exclude_node and len(self.arguments.exclude_node) > 0:
+            if msg.name in self.arguments.exclude_node:
+                show = show and False
+        # message level
+        if self.arguments.level:
+            show = show and levelGreaterEqualThan(msg, self.arguments.level)
         return show
 if __name__ == "__main__":
     colorama.init()
     parser = argparse.ArgumentParser(description='Show rosout in your terminal')
     parser.add_argument('-n', '--node', help='Filter messages by node',
-                        nargs='?')
+                        nargs='+')
+    parser.add_argument('-N', '--exclude-node', help='Remove messages by node',
+                        nargs='+')
+    parser.add_argument('-l', '--level',
+                        help='Filter messages by level (DEBUG, INFO, WARN, ERROR, FATAL)',
+                        default = "DEBUG")
     rospy.init_node("ros_console", anonymous=True)
     args = parser.parse_args(rospy.myargv()[1:])
     console = ROSConsole(args)

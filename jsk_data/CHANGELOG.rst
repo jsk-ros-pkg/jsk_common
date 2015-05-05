@@ -2,6 +2,25 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.69 (2015-05-05)
+-------------------
+
+1.0.68 (2015-05-05)
+-------------------
+* [jsk_data] env value ARIES_USER will be default username to login aries
+* [jsk_data] Add usage of KEYWORD for make large-list / small-list
+* [jsk_data] Add KEYWORD to large-list/small-list target in Makefile
+* Contributors: Kentaro Wada
+
+1.0.67 (2015-05-03)
+-------------------
+* [jsk_data/rosbag_always.py] Remove old active file too
+* [jsk_data] enable to select use_depth_image_proc or use_stereo_image_proc
+* [jsk_data] add save_multisense parameter in hrp2_record.launch
+* [jsk_data] add save_multisense parameter in common_record.launch
+* [jsk_data] Save bags under ~/.ros directory
+* Contributors: Kamada Hitoshi, Ryohei Ueda
+
 1.0.66 (2015-04-03)
 -------------------
 

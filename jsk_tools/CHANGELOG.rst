@@ -2,6 +2,47 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.69 (2015-05-05)
+-------------------
+* [jsk_tools] Add -N option to exclude messages from specified nodes
+* Contributors: Ryohei Ueda
+
+1.0.68 (2015-05-05)
+-------------------
+
+1.0.67 (2015-05-03)
+-------------------
+* [jsk_tools] return error status when unable ``rossetip``
+* Merge remote-tracking branch 'refs/remotes/origin/master' into add-level
+  Conflicts:
+  jsk_tools/bin/ros_console.py
+* [jsk_tools] Add -l option to specify level in ros_console.py
+* [jsk_tools] does not support sh but only bash and zsh
+* [jsk_tools] store correctly default rosmaster by rossetdefault in bash
+  issue: https://github.com/jsk-ros-pkg/jsk_common/issues/899
+* [force_to_rename_changelog_user.py] keep order of Contributors
+* [force_to_rename_changelog_user.py] add manabu -> Manabu Saito
+* Merge pull request `#892 <https://github.com/jsk-ros-pkg/jsk_common/issues/892>`_ from garaemon/add-slash-prefix
+  [jsk_tools] Add / prefix to node names in ros_console.py
+* [jsk_tools] Add / prefix to node names in ros_console.py
+* [jsk_tools] Print more detailed timestamp in ros_console.py
+* [jsk_tools] temporary change to avoid error caused by bug in ros/catkin repo
+* [jsk_tools] Script to check /etc/hosts sanity
+* [jsk_tools] See CATKIN_SHELL to find shell
+* [jsk_tools] now you can install pygithub3 by rosdep install
+* [jsk_tools] save rosdefault file under ROS_HOME
+* [env-hooks/99.jsk_tools.bash] fix typo and wrong -q option for cd
+* [jsk_tools] Merge 99.jsk_tools.[bash|zsh] to 99.jsk_tools.sh
+* [jsk_tools] Update README for PR `#868 <https://github.com/jsk-ros-pkg/jsk_common/issues/868>`_
+* [jsk_tools] Add rossetdefault, rosdefault to bashrc.ros
+* [jsk_tools] Add rossetdefault, rosdefault to zshrc.ros
+* [jsk_tools] Add Documentation for rossetip,rossetlocal,rossetmaster
+* [jsk_tools] Remove no need comment
+* [jsk_tools] Display ROS_IP in rossetmaster for zsh
+* [jsk_tool] Add script to add git commit aliases like commit-ueda
+* [jsk_tools] Remove -a option from zshrc.ros
+* Contributors: Kei Okada, Kentaro Wada, Ryohei Ueda, iori
+
 1.0.66 (2015-04-03)
 -------------------
 * [jsk_tools/zshrc.ros] use env-hooks to store contents of zshrc.ros
@@ -337,4 +378,4 @@ Changelog for package jsk_tools
 * updated launch doc
 * updated launch doc
 * updated launch doc
-* Contributors: nozawa, manabu, Kei Okada, youhei, rosen, Xiangyu Chen, y-tnaka
+* Contributors: nozawa, Manabu Saito, Kei Okada, youhei, rosen, Xiangyu Chen, y-tnaka

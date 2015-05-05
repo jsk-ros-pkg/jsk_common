@@ -2,6 +2,15 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.69 (2015-05-05)
+-------------------
+
+1.0.68 (2015-05-05)
+-------------------
+
+1.0.67 (2015-05-03)
+-------------------
+
 1.0.66 (2015-04-03)
 -------------------
 
@@ -221,4 +230,4 @@ Changelog for package multi_map_server
 ------------------
 * add explicit dependency to yaml-cpp as yaml-cpp i sinstalled as a rosdep system dependency
 * add multi_map_server, map_server with switch service, (this will publish TF between maps in the future)
-* Contributors: Kei Okada, manabu
+* Contributors: Kei Okada, Manabu Saito

@@ -2,6 +2,29 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.69 (2015-05-05)
+-------------------
+
+1.0.68 (2015-05-05)
+-------------------
+* [jsk_network_tools] Use 1500*8 bits as default packet_size for MTU:=1500
+  environment in silverhammer_highspeed communication
+* Contributors: Ryohei Ueda
+
+1.0.67 (2015-05-03)
+-------------------
+* [angle-vector-compress.l] 360-mode input of 0 will return 0
+* [angle-vector-compress.l] add debug code (but commented out for now)
+* [jsk_network_tools] Use ~robot parameter and it's initialized to ROBOT
+  environment variable
+* [jsk_network_tools/test/launch_joint_state_compressor.xml] set ROBOT environment for test (and this should be removed), see https://github.com/jsk-ros-pkg/jsk_common/commit/39089ecfc793ac655d45552545ddc13c1fe87b09#commitcomment-10899961
+* load environment variable for setting robot in joint-state-compressor.l
+* [jsk_network_tools] add test for angle-vector/JointStates compress
+* [jsk_network_tools] Including pr2_description/upload_pr2.launch in order
+  to set /robot_description
+* [jsk_network_tools] Support jaxon in compressing/decompressing angle-vector
+* Contributors: Yuki Furuta, Kei Okada, MasakiMurooka, Ryohei Ueda
+
 1.0.66 (2015-04-03)
 -------------------
 

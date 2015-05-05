@@ -82,7 +82,7 @@ def listBagsSortedByDate(save_dir):
     bags = []
     for dirpath, dirnames, filenames in os.walk(save_dir):
         for f in filenames:
-            if f.startswith('rosbag') and f.endswith('.bag'):
+            if f.startswith('rosbag') and (f.endswith('.bag') or f.endswith('.active')):
                 bags.append(os.path.join(dirpath, f))
     return sorted(bags, key=keyFuncToSortBag)
     

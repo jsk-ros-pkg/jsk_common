@@ -97,6 +97,7 @@ def tweet(dat):
     rospy.loginfo(rospy.get_name() + " sending %s", message)
     # search word start from / and end with {.jpeg,.jpg,.png,.gif}                                                 
     m = re.search('/\S+\.(jpeg|jpg|png|gif)', message)
+    ret = None
     if m:
         filename = m.group(0)
         message = re.sub(filename,"",message)
@@ -104,6 +105,8 @@ def tweet(dat):
             ##rospy.logdebug(rospy.get_name() + " tweet %s with file %s", message, filename)                       
             ret = Api.PostMedia(message, filename)
             #ret = Api.PostUpdate(message)
+        else:
+            rospy.logerr(rospy.get_name() + " %s could not find", filename)
     else:
         ret = Api.PostUpdate(message[0:140])
     ## seg faults if message is longer than 140 byte ???                           

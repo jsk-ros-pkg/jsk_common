@@ -2,6 +2,22 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.69 (2015-05-05)
+-------------------
+* [jsk_topic_tools] Shorter test duration for topic_buffer/hztest_chatter_update
+* Contributors: Ryohei Ueda
+
+1.0.68 (2015-05-05)
+-------------------
+* [jsk_topic_tools] Add log_utils.h to print with __PRETY_FUNCTION__
+* Contributors: Ryohei Ueda
+
+1.0.67 (2015-05-03)
+-------------------
+* [jsk_topic_tools] Do not subscribe input if no need in Passthrough nodelet
+* [jsk_topic_tools] Remove non-used TransportHint from relay_nodelet
+* Contributors: Ryohei Ueda
+
 1.0.66 (2015-04-03)
 -------------------
 
