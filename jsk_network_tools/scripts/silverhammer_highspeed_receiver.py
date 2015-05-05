@@ -40,7 +40,7 @@ class SilverHammerReceiver:
                                                 latch=self.latch)
         self.socket_server = socket(AF_INET, SOCK_DGRAM)
         self.socket_server.bind((self.receive_ip, self.receive_port))
-        self.packet_size = rospy.get_param("~packet_size", 1500 * 8)   #2Hz
+        self.packet_size = rospy.get_param("~packet_size", 1400)   #2Hz
         self.packets = []
         self.launched_time = rospy.Time.now()
         self.last_received_time = rospy.Time(0)

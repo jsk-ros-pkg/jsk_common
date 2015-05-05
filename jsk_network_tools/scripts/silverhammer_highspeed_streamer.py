@@ -41,7 +41,7 @@ class SilverHammerStreamer:
         self.send_num = 0
         self.rate = rospy.get_param("~send_rate", 2)   #2Hz
         self.socket_client = socket(AF_INET, SOCK_DGRAM)
-        self.packet_size = rospy.get_param("~packet_size", 1500 * 8) # for MTU:=1500
+        self.packet_size = rospy.get_param("~packet_size", 1400) # for MTU:=1500
         subscriber_info = subscribersFromMessage(self.message_class())
         self.messages = {}
         self.subscribe(subscriber_info)
@@ -71,7 +71,7 @@ class SilverHammerStreamer:
             stat.add("UDP address", self.send_ip)
             stat.add("UDP port", self.send_port)
             stat.add("Expected Hz to send", "%f Hz" % self.rate)
-            stat.add("Packet size", "%d bit" % self.packet_size)
+            stat.add("Packet size", "%d bytes" % self.packet_size)
             if self.packet_interval:
                 stat.add("Latest nterval duration between packets",
                          self.packet_interval)
