@@ -2,6 +2,12 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_network_tools] Use 1500*8 bits as default packet_size for MTU:=1500
+  environment in silverhammer_highspeed communication
+* Contributors: Ryohei Ueda
+
 1.0.67 (2015-05-03)
 -------------------
 * [angle-vector-compress.l] 360-mode input of 0 will return 0

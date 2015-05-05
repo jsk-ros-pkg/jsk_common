@@ -2,6 +2,11 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Add log_utils.h to print with __PRETY_FUNCTION__
+* Contributors: Ryohei Ueda
+
 1.0.67 (2015-05-03)
 -------------------
 * [jsk_topic_tools] Do not subscribe input if no need in Passthrough nodelet

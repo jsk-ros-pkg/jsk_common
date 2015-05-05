@@ -2,6 +2,9 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.67 (2015-05-03)
 -------------------
 * [image_view2] add Fisheye Grid Line option

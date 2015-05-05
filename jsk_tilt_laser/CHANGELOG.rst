@@ -2,6 +2,9 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.67 (2015-05-03)
 -------------------
 * [jsk_tilt_laser] Use resized and compressed images to reconstruct

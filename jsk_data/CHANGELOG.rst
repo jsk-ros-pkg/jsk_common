@@ -2,6 +2,13 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_data] env value ARIES_USER will be default username to login aries
+* [jsk_data] Add usage of KEYWORD for make large-list / small-list
+* [jsk_data] Add KEYWORD to large-list/small-list target in Makefile
+* Contributors: Kentaro Wada
+
 1.0.67 (2015-05-03)
 -------------------
 * [jsk_data/rosbag_always.py] Remove old active file too
