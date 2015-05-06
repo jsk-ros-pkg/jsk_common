@@ -47,7 +47,7 @@
         args="load pcl/VoxelGrid multisense_laser_manager">
     <remap from="~input" to="tilt_laser_listener/output_cloud" />
     <rosparam>
-      leaf_size: 0.02
+      leaf_size: 0.01
       filter_limit_min: -100
       filter_limit_max: 100
     </rosparam>
