@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.70 (2015-05-08)
+-------------------
 * [jsk_data] add option in hrp2_play with multisense
 * Contributors: Yu Ohara
 

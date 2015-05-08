@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.70 (2015-05-08)
+-------------------
 * [jsk_topic_tools/Passthrough] Add ~request service like Snapshot
 * Contributors: Ryohei Ueda
 

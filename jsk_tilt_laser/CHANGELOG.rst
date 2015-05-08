@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.70 (2015-05-08)
+-------------------
 * [jsk_tilt_laser] More detailed laser pointcloud for precise perception
 * Contributors: Ryohei Ueda
 
