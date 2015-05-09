@@ -5,7 +5,7 @@ import subprocess
 from pygithub3 import Github
 
 from getpass import getpass
-user = raw_input('User name: ')
+user = raw_input('GitHub User name: ')
 pw = getpass('Password: ')
 
 gh = Github(login=user, password=pw)
