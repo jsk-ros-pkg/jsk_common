@@ -25,7 +25,8 @@ def checkHostSanity(yaml_file_path):
       ip_should_be = p["ip"]
       try:
         real_ip = gethostbyname(hostname)
-        if real_ip == ip_should_be:
+        if real_ip == "127.0.0.1" or real_ip == "127.0.1.1" or real_ip == ip_should_be:
+          # Always localhost is OK
           print Fore.GREEN, "[OK!]    ", hostname, "is", real_ip
         else:
           print Fore.RED, "[ERROR!] ", hostname, "is", real_ip, "but it should be", ip_should_be
