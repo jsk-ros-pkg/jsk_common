@@ -86,7 +86,10 @@ rossetip_dev() {
 rossetip_addr() {
     local target_host=${1-"133.11.216.211"}
     ##target_hostip=$(host ${target_host} | sed -n -e 's/.*address \(.*\)/\1/gp')
-    target_hostip=$(getent hosts ${target_host} | cut -f 1 -d ' ')
+    # Check if target_host looks like ip address or not
+    if [ "$(echo $target_host | sed -e 's/[0-9\.]//g')" != "" ]; then
+        target_hostip=$(getent hosts ${target_host} | cut -f 1 -d ' ')
+    fi
     if [ "$target_hostip" = "" ]; then target_hostip=$target_host; fi
     local mask_target_ip=$(echo ${target_hostip} | cut -d. -f1-3)
     export ROS_IP=$(PATH=$PATH:/sbin LANGUAGE=en LANG=C ifconfig | grep inet\ | sed 's/.*inet addr:\([0-9\.]*\).*/\1/' | tr ' ' '\n' | grep $mask_target_ip | head -1)
@@ -101,7 +104,6 @@ rossetip() {
         export ROS_IP=""
         local master_host=$(echo $ROS_MASTER_URI | cut -d\/ -f3 | cut -d\: -f1)
         if [ "${master_host}" != "localhost" ]; then rossetip_addr ${master_host} ; fi
-        if [ "${ROS_IP}" = "" ]; then rossetip_addr ${device}; fi
         if [ "${ROS_IP}" = "" ]; then rossetip_dev ${device}; fi
     fi
     export ROS_HOSTNAME=$ROS_IP
