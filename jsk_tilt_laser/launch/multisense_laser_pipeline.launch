@@ -42,16 +42,60 @@
   </node>
   <node pkg="nodelet" type="nodelet" name="multisense_laser_manager"
         args="manager" output="screen"/>
+
+  <node pkg="nodelet" type="nodelet"
+        name="laser_x_filter"
+        args="load pcl/PassThrough multisense_laser_manager">
+    <remap from="~input" to="tilt_laser_listener/output_cloud" />
+    <rosparam>
+      filter_field_name: x
+      filter_limit_min: -5.0
+      filter_limit_max: 5.0
+    </rosparam>
+  </node>
+  <node pkg="nodelet" type="nodelet"
+        name="laser_y_filter"
+        args="load pcl/PassThrough multisense_laser_manager">
+    <remap from="~input" to="laser_x_filter/output" />
+    <rosparam>
+      filter_field_name: y
+      filter_limit_min: -5.0
+      filter_limit_max: 5.0
+    </rosparam>
+  </node>
+  <node pkg="nodelet" type="nodelet"
+        name="laser_z_filter"
+        args="load pcl/PassThrough multisense_laser_manager">
+    <remap from="~input" to="laser_y_filter/output" />
+    <rosparam>
+      filter_field_name: z
+      filter_limit_min: -5.0
+      filter_limit_max: 5.0
+    </rosparam>
+  </node>
+  
   <node pkg="nodelet" type="nodelet"
         name="laser_downsampler"
         args="load pcl/VoxelGrid multisense_laser_manager">
-    <remap from="~input" to="tilt_laser_listener/output_cloud" />
+    <remap from="~input" to="laser_z_filter/output" />
     <rosparam>
       leaf_size: 0.01
       filter_limit_min: -100
       filter_limit_max: 100
     </rosparam>
   </node>
+
+  <node pkg="nodelet" type="nodelet"
+        name="laser_camera_cloud"
+        args="load jsk_pcl/TfTransformCloud multisense_laser_manager">
+    <remap from="~input" to="laser_downsampler/output" />
+    <param name="target_frame_id" value="multisense/left_camera_optical_frame"
+           unless="$(arg not_use_sensor_tf_prefix)"/>
+    <param name="target_frame_id" value="left_camera_optical_frame"
+           if="$(arg not_use_sensor_tf_prefix)"/>
+  </node>
+
+    
   <node pkg="nodelet" type="nodelet"
         name="tilt_laser_listener"
         args="load jsk_pcl/TiltLaserListener multisense_laser_manager"
