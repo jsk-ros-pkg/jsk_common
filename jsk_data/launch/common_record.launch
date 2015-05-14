@@ -34,7 +34,7 @@
   <arg unless="$(arg save_all_image)"
        name="all_image_topics" value="" />
   <arg if    ="$(arg save_all_image)"
-       name="all_image_topics" value=" .*/(image_raw|camera_info)" />
+       name="all_image_topics" value=" .*/(image|image_raw|camera_info)" />
 
   <arg unless="$(arg save_multisense)"
        name="multisense_topics" value="" />
