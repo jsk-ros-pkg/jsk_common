@@ -13,12 +13,12 @@
         params:
           min_angle: 0
           max_angle: 175
-          neighbors: 3
-          window: 1
+          neighbors: 5
+          window: 5
       - name: dark_shadows
         type: LaserScanIntensityFilter
         params: 
-          lower_threshold: 100
+          lower_threshold: 200
           upper_threshold: 10000
           disp_histogram: 0
       - name: range
