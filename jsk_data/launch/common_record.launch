@@ -12,6 +12,7 @@
   <arg name="camera_namespace" default="openni"/>
   
   <arg name="save_dir" default="$(env HOME)/.ros"/>
+  <param name="mk_save_dir" command="mkdir -p $(arg save_dir)" />
   <!--                          -->
   <!--       Conditions         -->
   <!--                          -->
