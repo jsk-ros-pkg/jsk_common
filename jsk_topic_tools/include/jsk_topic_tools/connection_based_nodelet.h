@@ -67,6 +67,14 @@ namespace jsk_topic_tools
      */
     virtual void onInit();
 
+
+    /** @brief
+     * Post processing of initialization of nodelet.
+     * You need to call this method in order to use always_subscribe
+     * feature.
+     */
+    virtual void onInitPostProcess();
+    
     /** @brief
      * callback function which is called when new subscriber come
      */
@@ -131,6 +139,12 @@ namespace jsk_topic_tools
      * or not.
      */
     bool subscribed_;
+
+    /** @brief
+     * A flag to disable watching mechanism and always subscribe input 
+     * topics. It can be specified via ~always_subscribe parameter.
+     */
+    bool always_subscribe_;
   private:
     
   };
