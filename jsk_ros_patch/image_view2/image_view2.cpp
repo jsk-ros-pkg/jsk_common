@@ -957,10 +957,16 @@ namespace image_view2{
     else if (mode_ == MODE_SELECT_FORE_AND_BACK_RECT) {
       boost::mutex::scoped_lock lock(point_array_mutex_);
       if (rect_fg_.width != 0 && rect_fg_.height != 0) {
-        cv::rectangle(draw_, rect_fg_, CV_RGB(255, 0, 0), 4);
+        cv::rectangle(draw_,
+                      cv::Point(rect_fg_.x, rect_fg_.y),
+                      cv::Point(rect_fg_.x + rect_fg_.width, rect_fg_.y + rect_fg_.height),
+                      CV_RGB(255, 0, 0), 4);
       }
       if (rect_bg_.width != 0 && rect_bg_.height != 0) {
-        cv::rectangle(draw_, rect_bg_, CV_RGB(0, 255, 0), 4);
+        cv::rectangle(draw_,
+                      cv::Point(rect_bg_.x, rect_bg_.y),
+                      cv::Point(rect_bg_.x + rect_bg_.width, rect_bg_.y + rect_bg_.height),
+                      CV_RGB(0, 255, 0), 4);
       }
     }
     else if (mode_ == MODE_LINE) {
@@ -1185,14 +1191,18 @@ namespace image_view2{
   void ImageView2::setRegionWindowPoint(int x, int y)
   {
     boost::mutex::scoped_lock lock(point_array_mutex_);
-    ROS_DEBUG("setRegionWindowPoint");
+    ROS_DEBUG("setRegionWindowPoint(%d, %d)", x, y);
     if (selecting_fg_) {
       rect_fg_.x = x;
       rect_fg_.y = y;
+      rect_fg_.width = 0;
+      rect_fg_.height = 0;
     }
     else {
       rect_bg_.x = x;
       rect_bg_.y = y;
+      rect_bg_.width = 0;
+      rect_bg_.height = 0;
     }
   }
 
@@ -1293,6 +1303,7 @@ namespace image_view2{
   
   void ImageView2::publishForegroundBackgroundMask()
   {
+    boost::mutex::scoped_lock lock(image_mutex_);
     boost::mutex::scoped_lock lock2(point_array_mutex_);
     cv::Mat foreground_mask
       = cv::Mat::zeros(last_msg_->height, last_msg_->width, CV_8UC1);
