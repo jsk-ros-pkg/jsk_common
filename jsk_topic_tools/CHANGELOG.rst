@@ -2,6 +2,12 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Add ~always_subscribe parameter to ConnectionBasedNodelet
+  and DiagnosticNodelet to always subscribe input topics
+* Contributors: Ryohei Ueda
+
 1.0.70 (2015-05-08)
 -------------------
 * [jsk_topic_tools/Passthrough] Add ~request service like Snapshot

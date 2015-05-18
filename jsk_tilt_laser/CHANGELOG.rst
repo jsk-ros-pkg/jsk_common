@@ -2,6 +2,14 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tilt_laser] Update threshold to remove laser noise of multisense
+* [jsk_tilt_laser] Increase minimum intensity to use on multisense
+* [jsk_tilt_laser/multisense_laser_pipeline.launch] Add xyz filter before
+  downsample pointcloud in order to avoid overflow of indices
+* Contributors: Ryohei Ueda
+
 1.0.70 (2015-05-08)
 -------------------
 * [jsk_tilt_laser] More detailed laser pointcloud for precise perception

@@ -2,6 +2,13 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_network_tools] use multiprocess on silverhammer receiver
+* [jsk_network_tools/silverhammer_lowspeed_receiver] Force to disable timeout
+* [jsk_network_tools] add wireshark plugin for silverhammer udp protocol
+* Contributors: Yuki Furuta, Ryohei Ueda
+
 1.0.70 (2015-05-08)
 -------------------
 * [jsk_network_tools] Fix bytes/bits conversions

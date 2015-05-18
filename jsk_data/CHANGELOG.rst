@@ -2,6 +2,12 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_data] common_record.launch: Mkdir for saving rosbag file
+* [jsk_data] Add image to all_image regex to common_record.launch
+* Contributors: Kentaro Wada
+
 1.0.70 (2015-05-08)
 -------------------
 * [jsk_data] add option in hrp2_play with multisense
