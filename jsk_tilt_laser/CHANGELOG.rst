@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.71 (2015-05-17)
+-------------------
 * [jsk_tilt_laser] Update threshold to remove laser noise of multisense
 * [jsk_tilt_laser] Increase minimum intensity to use on multisense
 * [jsk_tilt_laser/multisense_laser_pipeline.launch] Add xyz filter before

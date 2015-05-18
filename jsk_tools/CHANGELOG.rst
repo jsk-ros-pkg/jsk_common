@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.71 (2015-05-17)
+-------------------
 * [jsk_tools] Do not run rossetip_addr with device names because it takes
   a lot of time to resolve non-existing host
 * [jsk_tools] Allow localhost in check_host_sanity.py

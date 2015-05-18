@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.71 (2015-05-17)
+-------------------
 * [jsk_data] common_record.launch: Mkdir for saving rosbag file
 * [jsk_data] Add image to all_image regex to common_record.launch
 * Contributors: Kentaro Wada
