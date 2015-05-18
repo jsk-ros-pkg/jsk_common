@@ -40,24 +40,34 @@ namespace jsk_topic_tools
   void ConnectionBasedNodelet::onInit()
   {
     pnh_.reset (new ros::NodeHandle (getMTPrivateNodeHandle ()));
+    pnh_->param("always_subscribe", always_subscribe_, false);
   }
-  
+
+  void ConnectionBasedNodelet::onInitPostProcess()
+  {
+    if (always_subscribe_) {
+      subscribe();
+    }
+  }
+
   void ConnectionBasedNodelet::connectionCallback(const ros::SingleSubscriberPublisher& pub)
   {
-    boost::mutex::scoped_lock lock(connection_mutex_);
-    for (size_t i = 0; i < publishers_.size(); i++) {
-      ros::Publisher pub = publishers_[i];
-      if (pub.getNumSubscribers() > 0) {
-        if (!subscribed_) {
-          subscribe();
-          subscribed_ = true;
+    if (!always_subscribe_) {
+      boost::mutex::scoped_lock lock(connection_mutex_);
+      for (size_t i = 0; i < publishers_.size(); i++) {
+        ros::Publisher pub = publishers_[i];
+        if (pub.getNumSubscribers() > 0) {
+          if (!subscribed_) {
+            subscribe();
+            subscribed_ = true;
+          }
+          return;
         }
-        return;
       }
-    }
-    if (subscribed_) {
-      unsubscribe();
-      subscribed_ = false;
+      if (subscribed_) {
+        unsubscribe();
+        subscribed_ = false;
+      }
     }
   }
 }
