@@ -72,6 +72,9 @@ class SilverHammerStreamer:
             stat.add("UDP port", self.send_port)
             stat.add("Expected Hz to send", "%f Hz" % self.rate)
             stat.add("Packet size", "%d bytes" % self.packet_size)
+            self.last_send_time_pub.publish(Time(data=self.last_send_time))
+            self.last_input_received_time_pub.publish(
+                Time(data=self.last_input_received_time))
             if self.packet_interval:
                 stat.add("Latest nterval duration between packets",
                          self.packet_interval)

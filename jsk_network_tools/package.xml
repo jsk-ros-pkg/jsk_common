@@ -24,4 +24,5 @@
   <run_depend>diagnostic_msgs</run_depend>
   <run_depend>diagnostic_updater</run_depend>
   <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>jsk_tools</run_depend>
 </package>
