@@ -42,7 +42,7 @@
   <arg if    ="$(arg save_multisense)"
        name="multisense_topics" value="/multisense/left/image_rect_color /multisense/left/camera_info
                                        /multisense/depth /multisense/depth/camera_info
-                                       /tilt_laser_listener/output_cloud" />
+                                       /tilt_laser_listener/output_cloud /multisense/imu/magnetometer" />
 
   <!-- execute -->
   <node name="default_rosbag_record" pkg="rosbag" type="record"
