@@ -2,7 +2,7 @@
 import rospy
 import os
 from threading import Lock
-
+import sys
 
 try:
     import colorama
@@ -18,7 +18,7 @@ def errorMessage(msg):
     print Fore.RED + "[ERROR] %s" % (msg) + Fore.RESET
 def warnMessage(msg):
     print Fore.YELLOW + "[WARN]  %s" % (msg) + Fore.RESET
-
+from sensor_msgs.msg import Image, JointState, Imu
 
 is_topic_published = False
 is_topic_published_lock = Lock()
