@@ -68,11 +68,11 @@ def checkTopicIsPublished(topic_name, class_name,
         if not result:
             return result
         for (tpc_name, cls) in other_topics:
-            print  Fore.RESET + "  Checking %s" % (tpc_name) + Fore.RESET
             result = result & checkTopicIsPublishedImpl(tpc_name, cls,
                                                         timeout)
             if not result:
                 return result
+        return result
     finally:
         if result:
             if ok_message:
