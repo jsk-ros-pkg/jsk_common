@@ -28,10 +28,7 @@ def checkTopicIsPublishedCallback(msg):
     with is_topic_published_lock:
         is_topic_published = True
 
-def checkTopicIsPublished(topic_name, class_name,
-                          ok_message = "",
-                          error_message = "",
-                          timeout = 1):
+def checkTopicIsPublishedImpl(topic_name, class_name, timeout = 1):
     global is_topic_published
     is_topic_published = False
     print  Fore.RESET + "  Checking %s" % (topic_name) + Fore.RESET
@@ -50,18 +47,39 @@ def checkTopicIsPublished(topic_name, class_name,
         rate.sleep()
     with is_topic_published_lock:
         try:
-            if is_topic_published:
-                okMessage("%s is published" % (topic_name))
-                if ok_message:
-                    okMessage(ok_message)
-            else:
+            if not is_topic_published:
                 errorMessage("%s is not published" % (topic_name))
-                if error_message:
-                    errorMessage(error_message)
             return is_topic_published
         finally:
             is_topic_published = False
             s.unregister()
+        
+def checkTopicIsPublished(topic_name, class_name,
+                          ok_message = "",
+                          error_message = "",
+                          timeout = 1,
+                          other_topics = []):
+    result = True
+    all_topic_names = [topic_name] + [tpc_name
+                                      for (tpc_name, cls) in other_topics]
+    try:
+        result = result & checkTopicIsPublishedImpl(topic_name, class_name,
+                                                    timeout)
+        if not result:
+            return result
+        for (tpc_name, cls) in other_topics:
+            print  Fore.RESET + "  Checking %s" % (tpc_name) + Fore.RESET
+            result = result & checkTopicIsPublishedImpl(tpc_name, cls,
+                                                        timeout)
+            if not result:
+                return result
+    finally:
+        if result:
+            if ok_message:
+                okMessage(ok_message)
+        else:
+            if error_message:
+                errorMessage(error_message)
 
 def isMasterHostAlive(host):
     response = os.system("ping -W 10 -c 1 " + host + " > /dev/null")
