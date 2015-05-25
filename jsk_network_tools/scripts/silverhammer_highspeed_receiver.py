@@ -29,8 +29,22 @@ def receive_process_func(packets_queue, receive_ip, receive_port, packet_size, m
     rospy.loginfo("kernel receive socket buffer: %d" % recv_buffer_size)
     if recv_buffer_size < 1564475392:
         rospy.logwarn("kernel receive socket buffer must be at least 1564475392 bytes.")
-        rospy.logwarn("to change this value, execute:")
-        rospy.logwarn("sudo sysctl -w net.core.rmem_max=4259840")
+        import os, rospkg
+        pkg_path = rospkg.RosPack().get_path('jsk_network_tools')
+        cmd_path = os.path.join(pkg_path, 'scripts', 'expand_udp_receive_buffer.sh')
+        rospy.loginfo('changing kernel parameter...')
+        try:
+            res = os.system('sudo ' + cmd_path)
+            if res == 0:
+                rospy.loginfo('successfly changed kernel parameter')
+            else:
+                raise Exception('return code is non zero')
+        except Exception as e:
+            rospy.logerr('failed to change expand kernel udp receive buffer size.')
+            rospy.logwarn('maybe you don\'t yet add NOPASSWD attribute to sudo user group?')
+            rospy.logwarn('try to change from "%sudo ALL=(ALL) ALL" to "%sudo ALL=(ALL) NOPASSWD:ALL"')
+        rospy.loginfo('continuing without existing buffer size.')
+
     rospy.logwarn("try to bind %s:%d" % (receive_ip, receive_port))
     socket_server.bind((receive_ip, receive_port))
 
