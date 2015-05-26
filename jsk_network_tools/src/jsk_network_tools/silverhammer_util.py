@@ -4,6 +4,9 @@ import re
 import rospy
 import roslib
 import roslib.message
+from jsk_tools.sanity_lib import checkTopicIsPublished
+from std_msgs.msg import Time
+
 
 # utility function
 def parseMessageType(field_string):
@@ -173,3 +176,31 @@ def separateBufferIntoPackets(seq_id, buffer, packet_size):
                                           packet_size))
         #print "buffer length", len(buffer[i*num_packet:(i+1)*num_packet])
     return packets
+
+# Utilities for sanity scripts
+def checkSanityLowspeedReceiver(name):
+    return checkTopicIsPublished(name + "/last_received_time",
+                                 Time,
+                                 "%s receiver is running" % (name),
+                                 "%s receiver is not running" % (name))
+
+def checkSanityLowspeedStreamer(name):
+    return checkTopicIsPublished(name + "/last_send_time",
+                                 Time,
+                                 "%s streamer is running" % (name),
+                                 "%s is not running" % (name))
+
+
+def checkSanityHighspeedReceiver(name):
+    return checkTopicIsPublished(name + "/last_received_time",
+                                 Time,
+                                 "%s receiver is running" % (name),
+                                 "%s receiver is not running" % (name))
+
+def checkSanityHighspeedStreamer(name):
+    return checkTopicIsPublished(name + "/last_send_time",
+                                 Time,
+                                 "%s streamer is running" % (name),
+                                 "%s is not running" % (name))
+
+

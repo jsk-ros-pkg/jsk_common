@@ -68,6 +68,8 @@ class SilverHammerLowspeedStreamer():
             stat.add("UDP address", self.to_ip)
             stat.add("UDP port", self.to_port)
             stat.add("EventDrivenMode", self.event_driven)
+            self.last_send_time_pub.publish(Time(data=self.last_send_time))
+            self.last_input_received_time_pub.publish(Time(data=self.last_input_received_time))
         return stat
     def messageCallback(self, msg):
         with self.lock:

@@ -3,6 +3,7 @@
 import rospy
 from jsk_network_tools.msg import AllTypeTest
 import unittest
+from threading import Lock
 
 def defaultMessage():
     msg = AllTypeTest()
@@ -32,9 +33,12 @@ def timerCallback(event):
     pub.publish(msg)
     
 relayed_message = None
+relayed_message_lock = Lock()
 def messageCallback(msg):
     global relayed_message
-    relayed_message = msg
+    with relayed_message_lock:
+        relayed_message = msg
+    
         
 class TestLowSpeed(unittest.TestCase):
     def test_topic_compare(self):
@@ -79,9 +83,14 @@ if __name__ == "__main__":
     rospy.init_node("test_all_type_low_speed")
     pub = rospy.Publisher("original", AllTypeTest)
     sub = rospy.Subscriber("relayed", AllTypeTest, messageCallback)
-    rospy.Timer(rospy.Duration(0.5), timerCallback)
-    rospy.loginfo("wait 10sec to acuumulate topics...")
-    rospy.sleep(10)
+    timer = rospy.Timer(rospy.Duration(0.5), timerCallback)
+    rate = rospy.Rate(1)
+    while not rospy.is_shutdown():
+        with relayed_message_lock:
+            if relayed_message != None:
+                break
+        rospy.loginfo("Waiting for input message")
+        rate.sleep()
     rostest.rosrun("jsk_network_tools", "test_low_speed", TestLowSpeed)
 
 
