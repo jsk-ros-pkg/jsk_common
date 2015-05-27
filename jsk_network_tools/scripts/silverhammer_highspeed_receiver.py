@@ -91,6 +91,9 @@ class SilverHammerReceiver:
         self.latch = rospy.get_param("~latch", True)
         self.pesimistic = rospy.get_param("~pesimistic", False)
         self.fragment_packets_torelance = rospy.get_param("~fragment_packets_torelance", 20)
+        self.timestamp_overwrite_topics = rospy.get_param("~timestamp_overwrite_topics", [])
+        self.publish_only_if_updated_topics = rospy.get_param("~publish_only_if_updated_topics", [])
+        self.prev_seq_ids = {}
         self.receive_port = rospy.get_param("~receive_port", 16484)
         self.receive_ip = rospy.get_param("~receive_ip", "localhost")
         self.topic_prefix = rospy.get_param("~topic_prefix", "/from_fc")
@@ -177,6 +180,20 @@ class SilverHammerReceiver:
             for pub in self.publishers:
                 if pub.name in messages:
                     rospy.loginfo("publishing %s" % pub.name)
+                    if pub.name in self.timestamp_overwrite_topics:
+                        if (hasattr(messages[pub.name], "header") and
+                            hasattr(messages[pub.name].header, "stamp")):
+                            messages[pub.name].header.stamp = rospy.Time.now()
+                    if pub.name in self.publish_only_if_updated_topics:
+                        if (hasattr(messages[pub.name], "header") and
+                            hasattr(messages[pub.name].header, "seq")):
+                            # Skip rule
+                            if (pub.name in self.prev_seq_ids and 
+                                messages[pub.name].header.seq == self.prev_seq_ids[pub.name]):
+                                # skip publishing
+                                continue
+                            else:
+                                self.prev_seq_ids[pub.name] = messages[pub.name].header.seq
                     pub.publish(messages[pub.name])
                 else:
                     rospy.logwarn("""cannot find '%s' in deserialized messages %s""" % (pub.name, messages.keys()))
