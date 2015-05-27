@@ -24,6 +24,7 @@ class TopicPublishedChecker():
     is_topic_published = False
     is_topic_published_lock = Lock()
     def __init__(self, topic_name, topic_class, timeout = 5):
+        self.topic_name = topic_name
         self.timeout = timeout
         self.launched_time = rospy.Time.now()
         print " Checking %s" % (topic_name)
@@ -52,11 +53,15 @@ def checkTopicIsPublished(topic_name, class_name,
     if other_topics:
         for (tpc_name, cls) in other_topics:
             checkers.append(TopicPublishedChecker(tpc_name, cls, timeout))
+    all_success = True
     for checker in checkers:
         if not checker.check():
-            if error_message:
-                errorMessage(error_message)
-            return False
+            errorMessage(" %s is not published" % checker.topic_name)
+            all_success = False
+    if not all_success:
+        if error_message:
+            errorMessage(error_message)
+        return False
     if ok_message:
         okMessage(ok_message)
     return True
