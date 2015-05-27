@@ -121,6 +121,26 @@ class SilverHammerReceiver:
                                                                           self.topic_prefix,
                                                                           self.pesimistic,
                                                                           self.fragment_packets_torelance))
+    def on_shutdown(self):
+        if self.receive_process.is_alive():
+            try:
+                self.receive_process.terminate()
+                self.receive_process.join(timeout=3)
+                if self.receive_process.is_alive():
+                    raise
+            except Exception as e:
+                if "no attribute 'terminate'" in e.message:
+                    return
+                pid = self.receive_process.pid
+                rospy.logerr("failed to terminate process %d: %s" % (pid, e))
+                try:
+                    rospy.loginfo("trying to kill process %d" % pid)
+                    import os, signal
+                    os.kill(pid, signal.SIGKILL)
+                except Exception as ex:
+                    rospy.logfatal("failed to kill process %d: %s." % (pid, ex))
+                    rospy.logfatal("It will be zombie process" % pid)
+
     def diagnosticCallback(self, stat):
         # always OK
         stat.summary(DiagnosticStatus.OK, "OK")
@@ -187,5 +207,5 @@ class SilverHammerReceiver:
 if __name__ == "__main__":
     rospy.init_node("silverhammer_highspeed_receiver")
     receiver = SilverHammerReceiver()
+    rospy.on_shutdown(receiver.on_shutdown)
     receiver.run()
-    
