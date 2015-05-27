@@ -20,66 +20,46 @@ def warnMessage(msg):
     print Fore.YELLOW + "[WARN]  %s" % (msg) + Fore.RESET
 from sensor_msgs.msg import Image, JointState, Imu
 
-is_topic_published = False
-is_topic_published_lock = Lock()
-
-def checkTopicIsPublishedCallback(msg):
-    global is_topic_published
-    with is_topic_published_lock:
-        is_topic_published = True
-
-def checkTopicIsPublishedImpl(topic_name, class_name, timeout = 1):
-    global is_topic_published
+class TopicPublishedChecker():
     is_topic_published = False
-    print  Fore.RESET + "  Checking %s" % (topic_name) + Fore.RESET
-    s = rospy.Subscriber(topic_name, class_name,
-                         checkTopicIsPublishedCallback)
-    start_time = rospy.Time.now()
-    rate = rospy.Rate(1)
-    while not rospy.is_shutdown():
-        now = rospy.Time.now()
-        diff = (now - start_time).to_sec()
-        if diff > timeout:
-            break
-        with is_topic_published_lock:
-            if is_topic_published:
-                break
-        rate.sleep()
-    with is_topic_published_lock:
+    is_topic_published_lock = Lock()
+    def __init__(self, topic_name, topic_class, timeout = 5):
+        self.timeout = timeout
+        self.launched_time = rospy.Time.now()
+        print " Checking %s" % (topic_name)
+        self.sub = rospy.Subscriber(topic_name, topic_class, self.callback)
+    def callback(self, msg):
+        with self.is_topic_published_lock:
+            self.is_topic_published = True
+    def check(self):
         try:
-            if not is_topic_published:
-                errorMessage("%s is not published" % (topic_name))
-            return is_topic_published
+            while not rospy.is_shutdown():
+                with self.is_topic_published_lock:
+                    if self.is_topic_published:
+                        return self.is_topic_published
+                if (rospy.Time.now() - self.launched_time).to_sec() > self.timeout:
+                    return False
         finally:
-            is_topic_published = False
-            s.unregister()
-        
+            self.sub.unregister()
+
 def checkTopicIsPublished(topic_name, class_name,
                           ok_message = "",
                           error_message = "",
                           timeout = 1,
                           other_topics = []):
-    result = True
-    all_topic_names = [topic_name] + [tpc_name
-                                      for (tpc_name, cls) in other_topics]
-    try:
-        result = result & checkTopicIsPublishedImpl(topic_name, class_name,
-                                                    timeout)
-        if not result:
-            return result
+    checkers = []
+    checkers.append(TopicPublishedChecker(topic_name, class_name, timeout))
+    if other_topics:
         for (tpc_name, cls) in other_topics:
-            result = result & checkTopicIsPublishedImpl(tpc_name, cls,
-                                                        timeout)
-            if not result:
-                return result
-        return result
-    finally:
-        if result:
-            if ok_message:
-                okMessage(ok_message)
-        else:
+            checkers.append(TopicPublishedChecker(tpc_name, cls, timeout))
+    for checker in checkers:
+        if not checker.check():
             if error_message:
                 errorMessage(error_message)
+            return False
+    if ok_message:
+        okMessage(ok_message)
+    return True
 
 def isMasterHostAlive(host):
     response = os.system("ping -W 10 -c 1 " + host + " > /dev/null")
