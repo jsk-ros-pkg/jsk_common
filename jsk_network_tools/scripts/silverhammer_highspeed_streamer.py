@@ -75,6 +75,8 @@ class SilverHammerStreamer:
             if self.packet_interval:
                 stat.add("Latest nterval duration between packets",
                          self.packet_interval)
+            self.last_send_time_pub.publish(self.last_send_time)
+            self.last_input_received_time_pub.publish(self.last_input_received_time)
         return stat
     def diagnosticTimerCallback(self, event):
         self.diagnostic_updater.update()
