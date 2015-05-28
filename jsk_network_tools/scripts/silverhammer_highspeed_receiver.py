@@ -177,26 +177,41 @@ class SilverHammerReceiver:
             # publish data
             msg = deserialized_data[0]
             messages = decomposeLargeMessage(msg, self.topic_prefix)
+            now = rospy.Time.now()
             for pub in self.publishers:
                 if pub.name in messages:
-                    rospy.loginfo("publishing %s" % pub.name)
-                    if pub.name in self.timestamp_overwrite_topics:
-                        if (hasattr(messages[pub.name], "header") and
-                            hasattr(messages[pub.name].header, "stamp")):
-                            messages[pub.name].header.stamp = rospy.Time.now()
-                    if pub.name in self.publish_only_if_updated_topics:
-                        if (hasattr(messages[pub.name], "header") and
-                            hasattr(messages[pub.name].header, "seq")):
-                            # Skip rule
-                            if (pub.name in self.prev_seq_ids and 
-                                messages[pub.name].header.seq == self.prev_seq_ids[pub.name]):
-                                # skip publishing
-                                continue
-                            else:
-                                self.prev_seq_ids[pub.name] = messages[pub.name].header.seq
+                    if not pub.name in self.publish_only_if_updated_topics:
+                        rospy.loginfo("publishing %s" % pub.name)
+                        if pub.name in self.timestamp_overwrite_topics:
+                            if (hasattr(messages[pub.name], "header") and
+                                hasattr(messages[pub.name].header, "stamp")):
+                                messages[pub.name].header.stamp = now
+                        pub.publish(messages[pub.name])
                     pub.publish(messages[pub.name])
                 else:
                     rospy.logwarn("""cannot find '%s' in deserialized messages %s""" % (pub.name, messages.keys()))
+            synchronized_publishers = []
+            at_lest_one_topic = False
+            # Check if there is any topic to update
+            for pub in self.publishers:
+                if pub.name in messages:
+                    if pub.name in self.publish_only_if_updated_topics:
+                        synchronized_publishers.append(pub)
+                        if (hasattr(messages[pub.name], "header") and
+                            hasattr(messages[pub.name].header, "stamp")):
+                            messages[pub.name].header.stamp = now # Overwrite with the same timestamp
+                        if (hasattr(messages[pub.name], "header") and
+                            hasattr(messages[pub.name].header, "seq")):
+                            # Skip rule
+                            if (pub.name in self.prev_seq_ids.keys() and 
+                                messages[pub.name].header.seq == self.prev_seq_ids[pub.name]):
+                                pass
+                            else:
+                                self.prev_seq_ids[pub.name] = messages[pub.name].header.seq
+                                at_lest_one_topic = True
+            if at_lest_one_topic:
+                for pub in synchronized_publishers:
+                    pub.publish(messages[pub.name])
         else:
             rospy.logerr("missed some packets")
 
