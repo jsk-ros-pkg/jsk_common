@@ -66,6 +66,8 @@
                  "package://hrpsys_ros_bridge_tutorials/models/samplerobot.l")
                 ((string= lrobot-name "jaxon")
                  "package://hrpsys_ros_bridge_tutorials/models/jaxon.l")
+                ((string= lrobot-name "jaxon_red")
+                 "package://hrpsys_ros_bridge_tutorials/models/jaxon_red.l")
                 ((string= lrobot-name "hrp2w")
                  "package://hrpsys_ros_bridge_tutorials/models/hrp2w.l")))))
 
