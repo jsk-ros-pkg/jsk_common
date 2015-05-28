@@ -107,16 +107,18 @@ def checkGitRepo(git_path):
 def checkWorkspace():
     workspace = None
     if isROSWS():
-        workspace = os.environ["ROS_WORKSPACE"]
+        workspaces = [os.environ["ROS_WORKSPACE"]]
     else:
-        workspace = os.path.abspath(os.path.join(splitPathEnv(os.environ["CMAKE_PREFIX_PATH"])[0], "..", "src"))
+        workspaces = [os.path.abspath(os.path.join(p, "..", "src"))
+                      for p in splitPathEnv(os.environ["CMAKE_PREFIX_PATH"])]
+        workspaces.reverse()
     git_repos = []
-    for root, dirs, files in os.walk(workspace):
-        if ".git" in dirs:                  
-            if not [repo for repo in git_repos if root.startswith(repo)]: #ignore subdirs
-                git_repos.append(root)
-                checkGitRepo(root)
-            
+    for workspace in workspaces:
+        for root, dirs, files in os.walk(workspace):
+            if ".git" in dirs:                  
+                if not [repo for repo in git_repos if root.startswith(repo)]: #ignore subdirs
+                    git_repos.append(root)
+                    checkGitRepo(root)
 
 if __name__ == "__main__":
     checkROSPackagePath()
