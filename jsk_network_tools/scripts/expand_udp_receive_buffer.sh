@@ -1,9 +1,11 @@
 #!/bin/bash
 
+set -eu
+
 if [ "`cat /etc/sysctl.conf | grep net.core.rmem_max`" = "" ]; then
-    echo 'net.core.rmem_max = 4259840' >> /etc/sysctl.conf
+    echo 'net.core.rmem_max = 782237696' >> /etc/sysctl.conf
     sysctl -p
-    echo "changed kernel parameter"
 else
-    echo "nothing to change"
+    sed -i -e "s/net.core.rmem_max = \(.*\)/net.core.rmem_max = 782237696/g" /etc/sysctl.conf
+    sysctl -p
 fi
