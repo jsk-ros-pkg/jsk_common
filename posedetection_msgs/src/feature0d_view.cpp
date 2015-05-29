@@ -13,17 +13,10 @@
 #include "posedetection_msgs/feature0d_view.h"
 #include <ros/node_handle.h>
 #include <ros/master.h>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/CameraInfo.h>
 #include <posedetection_msgs/ImageFeature0D.h>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <boost/shared_ptr.hpp>
-
-#include <map>
-#include <string>
-#include <cstdio>
-#include <vector>
 
 #include <cv_bridge/cv_bridge.h>
 
