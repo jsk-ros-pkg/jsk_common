@@ -11,6 +11,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #include "posedetection_msgs/feature0d_view.h"
+#include "posedetection_msgs/feature0d_to_image.h"
 #include <ros/node_handle.h>
 #include <ros/master.h>
 #include <posedetection_msgs/ImageFeature0D.h>
@@ -41,16 +42,11 @@ namespace posedetection_msgs
         cv_bridge::CvImagePtr cv_ptr;
         try {
             cv_ptr = cv_bridge::toCvCopy(msg_ptr->image, "bgr8");
-            for(size_t i = 0; i < msg_ptr->features.positions.size()/2; ++i) {
-                float scale = i < msg_ptr->features.scales.size() ? msg_ptr->features.scales[i] : 10.0;
-                CvPoint center = cvPoint(msg_ptr->features.positions[2*i+0],msg_ptr->features.positions[2*i+1]);
-                cv::circle(cv_ptr->image,center,scale,CV_RGB(0,255,0));
-                if( i < msg_ptr->features.orientations.size() ) {
-                    // draw line indicating orientation
-                    cv::line(cv_ptr->image,center,cvPoint(center.x+std::cos(msg_ptr->features.orientations[i])*scale,center.y+std::sin(msg_ptr->features.orientations[i])*scale),CV_RGB(255,0,0));
-                }
-            }
-            cv::imshow(_window_name.c_str(),cv_ptr->image);
+            cv::Mat image = draw_features(cv_ptr->image,
+                                          msg_ptr->features.positions,
+                                          msg_ptr->features.scales,
+                                          msg_ptr->features.orientations);
+            cv::imshow(_window_name.c_str(), image);
         }
         catch (cv_bridge::Exception error) {
             ROS_WARN("bad frame");
