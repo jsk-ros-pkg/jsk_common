@@ -10,6 +10,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include "posedetection_msgs/feature0d_view.h"
 #include <ros/node_handle.h>
 #include <ros/master.h>
 #include <sensor_msgs/Image.h>
@@ -29,14 +30,9 @@
 using namespace std;
 using namespace ros;
 
-class Feature0DView
+namespace posedetection_msgs
 {
-    ros::NodeHandle _node;
-    Subscriber _sub;
-    string _window_name;
-    cv_bridge::CvImage _bridge;
-public:
-    Feature0DView()
+    Feature0DView::Feature0DView()
     { 
         std::string topic = _node.resolveName("ImageFeature0D");
         ros::NodeHandle local_nh("~");
@@ -48,9 +44,9 @@ public:
         cvNamedWindow(_window_name.c_str(), autosize ? CV_WINDOW_AUTOSIZE : 0);
         cvStartWindowThread();
     }
-    virtual ~Feature0DView() {}
+    Feature0DView::~Feature0DView() {}
 
-    void image_cb(const posedetection_msgs::ImageFeature0DConstPtr& msg_ptr)
+    void Feature0DView::image_cb(const posedetection_msgs::ImageFeature0DConstPtr& msg_ptr)
     {
         cv_bridge::CvImagePtr cv_ptr;
         try {
@@ -79,7 +75,7 @@ int main(int argc, char **argv)
     if( !ros::master::check() )
         return 1;
     
-    boost::shared_ptr<Feature0DView> node(new Feature0DView());
+    boost::shared_ptr<posedetection_msgs::Feature0DView> node(new posedetection_msgs::Feature0DView());
     ros::spin();
     node.reset();
     return 0;
