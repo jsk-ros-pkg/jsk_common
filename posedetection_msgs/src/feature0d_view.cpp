@@ -20,9 +20,6 @@
 
 #include <cv_bridge/cv_bridge.h>
 
-using namespace std;
-using namespace ros;
-
 namespace posedetection_msgs
 {
     Feature0DView::Feature0DView()
