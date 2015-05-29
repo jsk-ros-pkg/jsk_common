@@ -207,7 +207,7 @@ class SilverHammerReceiver:
                                 hasattr(messages[pub.name].header, "stamp")):
                                 messages[pub.name].header.stamp = now
                         pub.publish(messages[pub.name])
-                    pub.publish(messages[pub.name])
+                    #pub.publish(messages[pub.name])
                 else:
                     rospy.logwarn("""cannot find '%s' in deserialized messages %s""" % (pub.name, messages.keys()))
             synchronized_publishers = []
@@ -225,8 +225,13 @@ class SilverHammerReceiver:
                             # Skip rule
                             if (pub.name in self.prev_seq_ids.keys() and 
                                 messages[pub.name].header.seq == self.prev_seq_ids[pub.name]):
+                                rospy.logwarn("skip publishing %s " % (pub.name))
                                 pass
                             else:
+                                rospy.logwarn("messages[%s].header.seq: %d"% (pub.name,
+                                                                              messages[pub.name].header.seq))
+                                rospy.logwarn("self.prev_seq_ids[%s]: %d"  % (pub.name,
+                                                                              messages[pub.name].header.seq))
                                 self.prev_seq_ids[pub.name] = messages[pub.name].header.seq
                                 at_lest_one_topic = True
             if at_lest_one_topic:
