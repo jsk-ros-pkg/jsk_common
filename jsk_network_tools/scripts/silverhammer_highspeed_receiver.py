@@ -225,12 +225,12 @@ class SilverHammerReceiver:
                             # Skip rule
                             if (pub.name in self.prev_seq_ids.keys() and 
                                 messages[pub.name].header.seq == self.prev_seq_ids[pub.name]):
-                                rospy.logwarn("skip publishing %s " % (pub.name))
+                                rospy.loginfo("skip publishing %s " % (pub.name))
                                 pass
                             else:
-                                rospy.logwarn("messages[%s].header.seq: %d"% (pub.name,
+                                rospy.loginfo("messages[%s].header.seq: %d"% (pub.name,
                                                                               messages[pub.name].header.seq))
-                                rospy.logwarn("self.prev_seq_ids[%s]: %d"  % (pub.name,
+                                rospy.loginfo("self.prev_seq_ids[%s]: %d"  % (pub.name,
                                                                               messages[pub.name].header.seq))
                                 self.prev_seq_ids[pub.name] = messages[pub.name].header.seq
                                 at_lest_one_topic = True
