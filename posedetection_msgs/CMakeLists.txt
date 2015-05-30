@@ -5,7 +5,8 @@ project(posedetection_msgs)
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs sensor_msgs geometry_msgs cv_bridge message_generation message_filters)
 find_package(OpenCV REQUIRED)
 
-include_directories(SYSTEM ${catkin_INCLUDE_DIRS}
+include_directories(SYSTEM include
+                           ${catkin_INCLUDE_DIRS}
                            ${OpenCV_INCLUDE_DIRS})
 
 add_message_files(FILES
@@ -33,7 +34,7 @@ generate_messages(
 catkin_package(
     CATKIN_DEPENDS roscpp std_msgs sensor_msgs geometry_msgs cv_bridge message_runtime
     DEPENDS OpenCV
-    INCLUDE_DIRS # TODO include
+    INCLUDE_DIRS include
     LIBRARIES # TODO
 )
 
