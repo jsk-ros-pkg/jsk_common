@@ -23,8 +23,10 @@ macro(jsk_nodelet _nodelet_cpp _nodelet_class
   if(${USE_ROSBUILD})
     rosbuild_add_executable(${_single_nodelet_exec_name} build/${_single_nodelet_exec_name}.cpp)
   else(${USE_ROSBUILD})
-    add_executable(${_single_nodelet_exec_name} ${_single_nodelet_exec_name}.cpp)
-    target_link_libraries(${_single_nodelet_exec_name} ${catkin_LIBRARIES})
+    add_executable(${_single_nodelet_exec_name}_target ${_single_nodelet_exec_name}.cpp)
+    set_target_properties(${_single_nodelet_exec_name}_target
+                          PROPERTIES OUTPUT_NAME ${_single_nodelet_exec_name})
+    target_link_libraries(${_single_nodelet_exec_name}_target ${catkin_LIBRARIES})
   endif(${USE_ROSBUILD})
   if (${ARGC} GREATER 4)
     list(APPEND ${ARGV4} ${_single_nodelet_exec_name})
