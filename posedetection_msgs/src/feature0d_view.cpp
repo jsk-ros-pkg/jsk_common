@@ -10,33 +10,20 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include "posedetection_msgs/feature0d_view.h"
+#include "posedetection_msgs/feature0d_to_image.h"
 #include <ros/node_handle.h>
 #include <ros/master.h>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/CameraInfo.h>
 #include <posedetection_msgs/ImageFeature0D.h>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <map>
-#include <string>
-#include <cstdio>
-#include <vector>
-
 #include <cv_bridge/cv_bridge.h>
 
-using namespace std;
-using namespace ros;
-
-class Feature0DView
+namespace posedetection_msgs
 {
-    ros::NodeHandle _node;
-    Subscriber _sub;
-    string _window_name;
-    cv_bridge::CvImage _bridge;
-public:
-    Feature0DView()
+    Feature0DView::Feature0DView()
     { 
         std::string topic = _node.resolveName("ImageFeature0D");
         ros::NodeHandle local_nh("~");
@@ -48,23 +35,18 @@ public:
         cvNamedWindow(_window_name.c_str(), autosize ? CV_WINDOW_AUTOSIZE : 0);
         cvStartWindowThread();
     }
-    virtual ~Feature0DView() {}
+    Feature0DView::~Feature0DView() {}
 
-    void image_cb(const posedetection_msgs::ImageFeature0DConstPtr& msg_ptr)
+    void Feature0DView::image_cb(const posedetection_msgs::ImageFeature0DConstPtr& msg_ptr)
     {
         cv_bridge::CvImagePtr cv_ptr;
         try {
             cv_ptr = cv_bridge::toCvCopy(msg_ptr->image, "bgr8");
-            for(size_t i = 0; i < msg_ptr->features.positions.size()/2; ++i) {
-                float scale = i < msg_ptr->features.scales.size() ? msg_ptr->features.scales[i] : 10.0;
-                CvPoint center = cvPoint(msg_ptr->features.positions[2*i+0],msg_ptr->features.positions[2*i+1]);
-                cv::circle(cv_ptr->image,center,scale,CV_RGB(0,255,0));
-                if( i < msg_ptr->features.orientations.size() ) {
-                    // draw line indicating orientation
-                    cv::line(cv_ptr->image,center,cvPoint(center.x+std::cos(msg_ptr->features.orientations[i])*scale,center.y+std::sin(msg_ptr->features.orientations[i])*scale),CV_RGB(255,0,0));
-                }
-            }
-            cv::imshow(_window_name.c_str(),cv_ptr->image);
+            cv::Mat image = draw_features(cv_ptr->image,
+                                          msg_ptr->features.positions,
+                                          msg_ptr->features.scales,
+                                          msg_ptr->features.orientations);
+            cv::imshow(_window_name.c_str(), image);
         }
         catch (cv_bridge::Exception error) {
             ROS_WARN("bad frame");
@@ -79,7 +61,7 @@ int main(int argc, char **argv)
     if( !ros::master::check() )
         return 1;
     
-    boost::shared_ptr<Feature0DView> node(new Feature0DView());
+    boost::shared_ptr<posedetection_msgs::Feature0DView> node(new posedetection_msgs::Feature0DView());
     ros::spin();
     node.reset();
     return 0;
