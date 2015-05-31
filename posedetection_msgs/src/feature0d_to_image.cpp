@@ -29,8 +29,8 @@ namespace posedetection_msgs
         ros::NodeHandle local_nh("~");
 
         _pub = _node.advertise<sensor_msgs::Image>(local_nh.resolveName("output"), 1);
-        _sub_image.subscribe(local_nh, "image", 1);
-        _sub_feature.subscribe(local_nh, "Feature0D", 1);
+        _sub_image.subscribe(_node, "image", 1);
+        _sub_feature.subscribe(_node, "Feature0D", 1);
         _sync = boost::make_shared<message_filters::Synchronizer<SyncPolicy> >(100);
         _sync->connectInput(_sub_image, _sub_feature);
         _sync->registerCallback(boost::bind(&Feature0DToImage::imagefeature_cb, this, _1, _2));
