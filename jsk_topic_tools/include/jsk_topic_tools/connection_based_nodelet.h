@@ -62,7 +62,7 @@ namespace jsk_topic_tools
   protected:
     
     /** @brief
-     * Initialize private nodehandle pnh_. Subclass should call
+     * Initialize nodehandles nh_ and pnh_. Subclass should call
      * this method in its onInit method
      */
     virtual void onInit();
@@ -128,7 +128,12 @@ namespace jsk_topic_tools
      * List of watching publishers
      */
     std::vector<ros::Publisher> publishers_;
-    
+
+    /** @brief
+     * Shared pointer to nodehandle.
+     */
+    boost::shared_ptr<ros::NodeHandle> nh_;
+
     /** @brief
      * Shared pointer to private nodehandle.
      */

@@ -39,6 +39,7 @@ namespace jsk_topic_tools
 {
   void ConnectionBasedNodelet::onInit()
   {
+    nh_.reset (new ros::NodeHandle (getMTNodeHandle ()));
     pnh_.reset (new ros::NodeHandle (getMTPrivateNodeHandle ()));
     pnh_->param("always_subscribe", always_subscribe_, false);
   }
