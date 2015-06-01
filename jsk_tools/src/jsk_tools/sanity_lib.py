@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+import rosnode
 import os
 from threading import Lock
 import sys
@@ -114,3 +115,38 @@ def checkIMU(timeout=5):
         finally:
             s.unregister()
 
+def checkROSParams(param_name, expected, needed=False):
+    if not rospy.has_param(param_name):
+        if needed:
+            errorMessage("Parameter " + param_name + " doesn't exist" )
+        else:
+            warnMessage("Parameter " + param_name + " doesn't exist. Expected value was " + str(expected))
+        return
+
+    target_param = rospy.get_param(param_name)
+    if target_param == expected:
+        okMessage("Parameter " + param_name + " is " + str(expected))
+    else:
+        errorMessage("Parameter " + param_name + " is " + str(target_param) + ". Doesn't match with exepcted value : " + str(expected))
+
+
+def checkNodeState(target_node_name, needed, sub_success="", sub_fail=""):
+    nodes = rosnode.get_node_names()
+    if target_node_name in nodes:
+        if needed:
+            okMessage("Node " + target_node_name + " exists")
+            if sub_success:
+                print Fore.GREEN+"    "+sub_success+ Fore.RESET
+        else:
+            errorMessage("Node " + target_node_name + " exists unexpecetedly. This should be killed with rosnode kill")
+            if sub_fail:
+                print Fore.RED+"    "+sub_fail+ Fore.RESET            
+    else:
+        if needed:
+            errorMessage("Node " + target_node_name + " doesn't exists. This node is NEEDED")
+            if sub_fail:
+                print Fore.RED+"    "+sub_fail+ Fore.RESET
+        else:
+            okMessage("Node " + target_node_name + " doesn't exists")
+            if sub_success:
+                print Fore.GREEN+"    "+sub_success+ Fore.RESET
