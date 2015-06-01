@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import rospy
 import rosnode
+import rostopic
+import rosgraph
 import os
 from threading import Lock
 import sys
@@ -24,14 +26,30 @@ from sensor_msgs.msg import Image, JointState, Imu
 class TopicPublishedChecker():
     is_topic_published = False
     is_topic_published_lock = Lock()
-    def __init__(self, topic_name, topic_class, timeout = 5):
+    def __init__(self, topic_name,  timeout = 5, echo = False):
         self.topic_name = topic_name
         self.timeout = timeout
         self.launched_time = rospy.Time.now()
+        self.first_time_callback = True
+        self.echo = echo
         print " Checking %s" % (topic_name)
-        self.sub = rospy.Subscriber(topic_name, topic_class, self.callback)
+        msg_class, _, _ = rostopic.get_topic_class(topic_name, blocking=True)
+        self.sub = rospy.Subscriber(topic_name, msg_class, self.callback)
     def callback(self, msg):
         with self.is_topic_published_lock:
+            if self.echo and self.first_time_callback:
+                print Fore.MAGENTA + "--- Echo "+ self.topic_name, Fore.RESET
+                self.first_time_callback = False
+                field_filter_fn = rostopic.create_field_filter(False, True)
+                callback_echo = rostopic.CallbackEcho(self.topic_name, None, plot=False,
+                                                      filter_fn=None,
+                                                      echo_clear=False, echo_all_topics=False,
+                                                      offset_time=False, count=None,
+                                                      field_filter_fn=field_filter_fn)
+                print Fore.CYAN
+                callback_echo.callback(msg, {"topic":self.topic_name,
+                                             "type_infomation":None})
+                print Fore.RESET
             self.is_topic_published = True
     def check(self):
         try:
@@ -48,12 +66,13 @@ def checkTopicIsPublished(topic_name, class_name,
                           ok_message = "",
                           error_message = "",
                           timeout = 1,
-                          other_topics = []):
+                          other_topics = [],
+                          echo = False):
     checkers = []
-    checkers.append(TopicPublishedChecker(topic_name, class_name, timeout))
+    checkers.append(TopicPublishedChecker(topic_name, timeout, echo))
     if other_topics:
         for (tpc_name, cls) in other_topics:
-            checkers.append(TopicPublishedChecker(tpc_name, cls, timeout))
+            checkers.append(TopicPublishedChecker(tpc_name, timeout, echo))
     all_success = True
     for checker in checkers:
         if not checker.check():
