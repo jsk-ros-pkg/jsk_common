@@ -2,6 +2,7 @@
 import rospy
 import rosnode
 import os
+import subprocess
 from threading import Lock
 import sys
 import math
@@ -150,3 +151,21 @@ def checkNodeState(target_node_name, needed, sub_success="", sub_fail=""):
             okMessage("Node " + target_node_name + " doesn't exists")
             if sub_success:
                 print Fore.GREEN+"    "+sub_success+ Fore.RESET
+
+
+def checkUSBExist(vendor_id, product_id, success_msg = "", error_msg = ""):
+    """check USB Exists
+    
+    vendor_string -- vendor string (e.g. if 8087:0024, 8087)
+    product_string -- product string (e.g. if 8087:0024, 0024)
+    """
+    output_lines = subprocess.check_output("lsusb", shell=True).split("\n")
+    vendor_product = str(vendor_id) + ":" + str(product_id)
+    for output in output_lines:
+        if vendor_product in output:
+            okMessage(vendor_product + " " + success_msg if success_msg else vendor_product + " Found")
+            return True
+    else:
+        errorMessage(vendor_product + " " + error_msg if error_msg else vendor_product + " NOT Found !!")
+        return False
+            
