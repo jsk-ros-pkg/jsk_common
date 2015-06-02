@@ -88,7 +88,7 @@ rossetip_addr() {
     ##target_hostip=$(host ${target_host} | sed -n -e 's/.*address \(.*\)/\1/gp')
     # Check if target_host looks like ip address or not
     if [ "$(echo $target_host | sed -e 's/[0-9\.]//g')" != "" ]; then
-        target_hostip=$(getent hosts ${target_host} | cut -f 1 -d ' ')
+        target_hostip=$(timeout 0.001 getent hosts ${target_host} | cut -f 1 -d ' ')
     fi
     if [ "$target_hostip" = "" ]; then target_hostip=$target_host; fi
     local mask_target_ip=$(echo ${target_hostip} | cut -d. -f1-3)
