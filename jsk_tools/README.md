@@ -74,6 +74,9 @@ set ROS_MASTER_URI to http://baxter:11311
 
 # sanity_lib.py
 ## check Topic is published
+
+- If you set `echo` param as True, the topic message will be shown in terminal
+
 ### Example
 ```
 from jsk_tools.sanity_lib import *
