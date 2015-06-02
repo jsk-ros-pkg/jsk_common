@@ -188,3 +188,83 @@ def checkROSMasterCLOSE_WAIT(host, username=""):
     except:
         errorMessage("failed to check CLOSE_WAIT")
         return False
+
+class SilverHammerSubscribeChecker():
+    is_topic_published = False
+    is_topic_published_lock = Lock()
+    def __init__(self, topic_name, timeout, expected_hz, expected_error_threshold, until_counter = 3):
+        self.expected_hz = expected_hz
+        self.expected_error_threshold = expected_error_threshold
+        self.prev_time = None
+        self.until_counter = until_counter
+        self.counter = 0
+        self.success = True
+
+        self.topic_name = topic_name
+        self.timeout = timeout
+        self.launched_time = rospy.Time.now()
+        self.first_time_callback = True
+        print Fore.LIGHTCYAN_EX," Checking %s %s times" % (topic_name, str(until_counter)), Fore.RESET
+        msg_class, _, _ = rostopic.get_topic_class(topic_name, blocking=True)
+        self.sub = rospy.Subscriber(topic_name, msg_class, self.callback)
+
+
+    def callback(self, msg):
+        if self.prev_time:
+            diff = (rospy.Time.now() - self.prev_time).to_sec()
+            rate = 0.0
+            if diff:
+                rate = 1.0/diff
+            if diff and (self.expected_hz - self.expected_error_threshold > rate or rate > self.expected_hz + self.expected_error_threshold):
+                errorMessage("Estimated Hz is OUT OF EXPECTED!! min:" + str(self.expected_hz - self.expected_error_threshold) + " max: " + str(self.expected_hz + self.expected_error_threshold) + " real: " + str(rate) )
+                self.success = False
+            elif diff:
+                print Fore.LIGHTMAGENTA_EX, "    ["+ str(self.counter+1)+"] Recieved Topic (" + str(self.topic_name) + ") Estimated hz : " + str(rate) + " Expected hz : " + str(self.expected_hz) +  "+-" + str(self.expected_error_threshold)
+            else:
+                print "duration was 0"
+        else:
+            print Fore.LIGHTMAGENTA_EX, "    ["+ str(self.counter+1)+"] Recieved Topic (" + str(self.topic_name) + ") First Time Recieved"
+        self.prev_time = rospy.Time.now()
+
+        self.counter += 1
+        with self.is_topic_published_lock:
+            if self.counter >= self.until_counter:
+                self.is_topic_published = True
+
+    def check(self):
+        try:
+            while not rospy.is_shutdown():
+                with self.is_topic_published_lock:
+                    if self.is_topic_published:
+                        return self.success
+                if (rospy.Time.now() - self.launched_time).to_sec() > self.timeout:
+                    errorMessage("Timeout has occured in ("+self.topic_name+"). Timeout is set as "+ str(self.timeout) + " sec")
+                    return False
+        finally:
+            self.sub.unregister()
+
+
+## USAGE ####
+# checkSilverHammerSubscribe("/ocs_from_fc_low_speed/output", 1 , 0.5)
+def checkSilverHammerSubscribe(topic_name, expected_hz, expected_error_threshold,
+                               ok_message = "",
+                               error_message = "",
+                               timeout = 20,
+                               other_topics = [],
+                               count_time = 3):
+    checkers = []
+    checkers.append(SilverHammerSubscribeChecker(topic_name, timeout, expected_hz, expected_error_threshold, until_counter = count_time))
+    if other_topics:
+        for (tpc_name, cls) in other_topics:
+            checkers.append(SilverHammerSubscribeChecker(tpc_name, timeout, expected_hz, expected_error_threshold, until_counter = count_time))
+    all_success = True
+    for checker in checkers:
+        if not checker.check():
+            all_success = False
+    if not all_success:
+        if error_message:
+            errorMessage(error_message)
+        return False
+    if ok_message:
+        okMessage(ok_message)
+    return True
