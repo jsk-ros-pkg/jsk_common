@@ -148,6 +148,18 @@ def checkROSParams(param_name, expected, needed=False):
     else:
         errorMessage("Parameter " + param_name + " is " + str(target_param) + ". Doesn't match with exepcted value : " + str(expected))
 
+def checkLocalRemoteROSParamDiff(param_name, host, ok_message="", error_message=""):
+    if not rospy.has_param(param_name):
+        errorMessage("Local doesn't have " + param_name)
+        return False
+
+    target_local_param_md5 = subprocess.check_output("bash -c 'source ~/ros/indigo/devel/setup.bash ;rosrun jsk_tools calc_md5.py " + param_name + " '", shell=True)
+    target_remote_param_md5 = subprocess.check_output(["ssh", host,  "source ~/ros/indigo/devel/setup.bash; rosrun jsk_tools calc_md5.py "+param_name])
+
+    if target_local_param_md5 == target_remote_param_md5:
+        okMessage("Local and Remote ("+host+") 's "+param_name+" is same and is " + str(rospy.get_param(param_name)))
+    else:
+        errorMessage("Local and Remote ("+host+") 's "+param_name+" is DIFFERENT !! (Local value is " + str(rospy.get_param(param_name)) + ")")
 
 def checkNodeState(target_node_name, needed, sub_success="", sub_fail=""):
     nodes = rosnode.get_node_names()
