@@ -150,3 +150,12 @@ def checkNodeState(target_node_name, needed, sub_success="", sub_fail=""):
             okMessage("Node " + target_node_name + " doesn't exists")
             if sub_success:
                 print Fore.GREEN+"    "+sub_success+ Fore.RESET
+
+def checkFilesExist(target_dir, target_files, custom_ok_msg = "", custom_error_msg =""):
+    for target_file in target_files:
+        target_file_path = os.path.join(target_dir, target_file)
+        exist = os.path.exists(target_file_path)
+        if exist:
+            okMessage("File (" + target_file_path + ") " + custom_ok_msg if custom_ok_msg else "File ("+target_file_path+") Exists" )
+        else:
+            errorMessage("File (" + target_file_path + ") " +  custom_error_msg if custom_error_msg else "File ("+target_file_path+") NOT EXISTS !!")
