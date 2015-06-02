@@ -4,6 +4,7 @@ import rosnode
 import rostopic
 import rosgraph
 import os
+import subprocess
 from threading import Lock
 import sys
 import math
@@ -169,3 +170,21 @@ def checkNodeState(target_node_name, needed, sub_success="", sub_fail=""):
             okMessage("Node " + target_node_name + " doesn't exists")
             if sub_success:
                 print Fore.GREEN+"    "+sub_success+ Fore.RESET
+
+def checkROSMasterCLOSE_WAIT(host, username=""):
+    try:
+        if username != "":
+            host = username + "@" + host
+        close_wait_num = int(subprocess.check_output(["ssh", host, "sudo", "bash", "-c", '"ps aux | grep rosmaster | grep CLOSE_WAIT | wc -l"']).split("\n")[0])
+        if close_wait_num < 150:
+            okMessage("roscore looks find (%d CLOSE_WAIT)" % close_wait_num)
+            return True
+        elif close_wait_num < 300:
+            warnMessage("roscore looks bad (%d CLOSE_WAIT)" % close_wait_num)
+            return True
+        else:
+            errorMessage("roscore looks not working (%d CLOSE_WAIT)" % close_wait_num)
+            return False
+    except:
+        errorMessage("failed to check CLOSE_WAIT")
+        return False
