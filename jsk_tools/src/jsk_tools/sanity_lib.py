@@ -87,13 +87,13 @@ def checkTopicIsPublished(topic_name, class_name,
         okMessage(ok_message)
     return True
 
-def isMasterHostAlive(host):
+def isMasterHostAlive(host, ok_message="", error_message=""):
     response = os.system("ping -W 10 -c 1 " + host + " > /dev/null")
     if response != 0:
-        errorMessage("%s is down" % host)
+        errorMessage( error_message if error_message else "%s is down" % host )
         return False
     else:
-        okMessage("%s is up" % host)
+        okMessage( ok_message if ok_message else "%s is up" % host)
         return True
 
 is_imu_ok = None
