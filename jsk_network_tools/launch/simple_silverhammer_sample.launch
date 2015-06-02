@@ -7,6 +7,7 @@
       <rosparam>
         message: jsk_network_tools/FC2OCS
         to_port: 1024
+        send_rate: 1.0
       </rosparam>
       <remap from="~input" to="fc2ocs_original" />
     </node>
@@ -26,6 +27,7 @@
       <rosparam>
         message: jsk_network_tools/OCS2FC
         to_port: 1025
+        send_rate: 1.0
       </rosparam>
       <remap from="~input" to="ocs2fc_original" />
     </node>
