@@ -1,0 +1,22 @@
+<launch>
+  <group ns="silverhammer">
+    <!-- FC to OCS -->
+    <node pkg="jsk_network_tools" type="silverhammer_lowspeed_streamer.py"
+          output="screen"
+          name="fc_streamer">
+      <rosparam>
+        message: jsk_network_tools/FC2OCS
+        to_port: 1024
+        send_rate: 1.0
+      </rosparam>
+      <remap from="~input" to="fc2ocs_original" />
+    </node>
+
+    <node pkg="rostopic" type="rostopic" name="bw_print"
+          args="bw /silverhammer/fc_receiver/output -w5"
+          output="screen" />
+    <node pkg="rostopic" type="rostopic" name="hz_print"
+          args="hz /silverhammer/fc_receiver/output -w5"
+          output="screen" />
+  </group>
+</launch>

@@ -1,0 +1,17 @@
+<launch>
+  <group ns="silverhammer">
+    <node pkg="jsk_network_tools" type="silverhammer_lowspeed_receiver.py"
+          output="screen"
+          name="fc_receiver">
+      <rosparam>
+        message: jsk_network_tools/FC2OCS
+        receive_port: 1024
+      </rosparam>
+    </node>
+    <node pkg="jsk_network_tools" type="fc2ocs_publisher.py" name="fc2ocs_original">
+      <rosparam>
+        pub_rate: 1000
+      </rosparam>
+    </node>
+  </group>
+</launch>
