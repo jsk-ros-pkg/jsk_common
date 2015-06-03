@@ -15,7 +15,7 @@ import sys
 import roslib
 from roslib.message import get_message_class
 from std_msgs.msg import Time
-from std_srvs.srv import Empty
+from jsk_network_tools.srv import SetSendRate, SetSendRateResponse
 
 class SilverHammerLowspeedStreamer():
     def __init__(self):
@@ -50,18 +50,25 @@ class SilverHammerLowspeedStreamer():
                                           self.sendTimerCallback)
         self.diagnostic_timer = rospy.Timer(rospy.Duration(1.0 / 10),
                                             self.diagnosticTimerCallback)
-        self.send_rate_service = rospy.Service('set_send_rate', Empty, self.setSendRate)
+        self.send_rate_service = rospy.Service('~set_send_rate', SetSendRate, self.setSendRate)
 
-    def setSendRate(self, _=None): # empty call
-        if self.event_driven:
-            rospy.logerr("failed to change send_rate. event_driven is enabled.")
-            return
-        if self.send_timer.is_alive():
-            self.send_timer.shutdown()
-        self.send_rate = rospy.get_param("~send_rate", 1)
-        rospy.loginfo("send_rate is set to %f" % self.send_rate)
-        self.send_timer = rospy.Timer(rospy.Duration(1 / self.send_rate),
-                                      self.sendTimerCallback)
+    def setSendRate(self, req):
+        try:
+            if self.event_driven:
+                rospy.logerr("failed to change send_rate. event_driven is enabled.")
+                return SetSendRateResponse(ok=False)
+            if self.send_timer.is_alive():
+                self.send_timer.shutdown()
+            self.send_rate = req.rate
+            rospy.set_param("~send_rate", self.send_rate)
+#            self.send_rate = rospy.get_param("~send_rate", 1.0)
+            rospy.loginfo("send_rate is set to %f" % self.send_rate)
+            self.send_timer = rospy.Timer(rospy.Duration(1.0 / self.send_rate),
+                                          self.sendTimerCallback)
+            return SetSendRateResponse(ok=True)
+        except Exception as e:
+            rospy.logerr("failed to set send_rate: %s" % e)
+            return SetSendRateResponse(ok=False)
 
     def diagnosticTimerCallback(self, event):
         self.diagnostic_updater.update()
