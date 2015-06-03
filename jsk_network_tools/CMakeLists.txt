@@ -17,6 +17,10 @@ add_message_files(
   OpenNISample.msg
   AllTypeTest.msg
 )
+add_service_files(
+  FILES
+  SetSendRate.srv
+)
 generate_dynamic_reconfigure_options(
   cfg/SilverhammerHighspeedStreamer.cfg
   )
