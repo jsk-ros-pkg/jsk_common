@@ -171,27 +171,32 @@ def checkNodeState(target_node_name, needed, sub_success="", sub_fail=""):
             if sub_success:
                 print Fore.GREEN+"    "+sub_success+ Fore.RESET
 
-def checkUSBExist(vendor_id, product_id, expect_usb_nums = 1, success_msg = "", error_msg = ""):
+def checkUSBExist(vendor_id, product_id, expect_usb_nums = 1, host="", success_msg = "", error_msg = ""):
     """check USB Exists
     
     vendor_string -- vendor string (e.g. if 8087:0024, 8087)
     product_string -- product string (e.g. if 8087:0024, 0024)
     expect_usb_nums -- number of usbs (default is 1)
     """
-    output_lines = subprocess.check_output("lsusb", shell=True).split("\n")
     vendor_product = str(vendor_id) + ":" + str(product_id)
+    print Fore.LIGHTCYAN_EX + "Check USB Connect " + vendor_product + " x"+str(expect_usb_nums) + (" in "+str(host) if host else "")
+    output_lines = ""
+    if host:
+        output_lines = subprocess.check_output("ssh "+ host +" lsusb", shell=True).split("\n")
+    else:
+        output_lines = subprocess.check_output("lsusb", shell=True).split("\n")
     usb_counter = 0
     for output in output_lines:
         if vendor_product in output:
             usb_counter += 1
-    if usb_counter >= expect_usb_nums:
-        okMessage(vendor_product + " " + success_msg if success_msg else vendor_product + " Found enough ( "+str(usb_counter)+"/"+str(expect_usb_nums)+" ) Detected")
+    if usb_counter == expect_usb_nums:
+        okMessage(vendor_product + " ("+str(usb_counter)+"/"+str(expect_usb_nums)+"): " + success_msg if success_msg else vendor_product + " Found enough ( "+str(usb_counter)+"/"+str(expect_usb_nums)+" ) Detected")
         return True
     elif usb_counter == 0:
-        errorMessage(vendor_product + " " + error_msg if error_msg else vendor_product + " NOT Found !! ( 0 / " + str(expect_usb_nums) + " ) Detected")
+        errorMessage(vendor_product + " (0/" + str(expect_usb_nums) + ")  " + error_msg if error_msg else vendor_product + " NOT Found !! ( 0 / " + str(expect_usb_nums) + " ) Detected")
         return False
     else:
-        errorMessage(vendor_product + " " + error_msg if error_msg else vendor_product + " IS FEW !! Only ( "+str(usb_counter)+"/"+str(expect_usb_nums)+" ) Detected")
+        errorMessage(vendor_product + " ("+str(usb_counter)+"/"+str(expect_usb_nums)+") " + error_msg if error_msg else vendor_product + " DOESN'T MATCH !! ( "+str(usb_counter)+"/"+str(expect_usb_nums)+" ) Detected")
         return False
             
 def checkROSMasterCLOSE_WAIT(host, username=""):
