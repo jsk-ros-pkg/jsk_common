@@ -38,7 +38,7 @@ class SilverHammerLowspeedStreamer():
             "~last_input_received_time", Time)
         self.to_port = rospy.get_param("~to_port", 1024)
         self.to_ip = rospy.get_param("~to_ip", "127.0.0.1")
-        self.send_rate = rospy.get_param("~send_rate", 1)
+        self.send_rate = rospy.get_param("~send_rate", 1.0)
         self.event_driven = rospy.get_param("~event_driven", False)
         self.latest_message = None
         self.socket_client = socket(AF_INET, SOCK_DGRAM)
@@ -46,7 +46,7 @@ class SilverHammerLowspeedStreamer():
         self.sub = rospy.Subscriber("~input", 
                                     self.send_message, self.messageCallback)
         if not self.event_driven:
-            self.send_timer = rospy.Timer(rospy.Duration(1 / self.send_rate),
+            self.send_timer = rospy.Timer(rospy.Duration(1.0 / self.send_rate),
                                           self.sendTimerCallback)
         self.diagnostic_timer = rospy.Timer(rospy.Duration(1.0 / 10),
                                             self.diagnosticTimerCallback)
