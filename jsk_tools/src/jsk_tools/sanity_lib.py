@@ -316,3 +316,24 @@ def checkSilverHammerSubscribe(topic_name, expected_hz, expected_error_threshold
         else:
             okMessage(" Topic %s 's Hz is well. " % (topic_name))
     return True
+
+def checkBlackListDaemon(daemon_names, kill=False):
+#    indexMessage("Check BlackLists Daemon [%s]" % (str(daemon_names)))
+    for daemon_name in daemon_names:
+        daemon_related_nums = int(subprocess.check_output("ps aux | grep " + daemon_name + " | wc |tr -s ' '| cut -f2 -d ' '", shell=True).strip("\n")) - 2
+        if daemon_related_nums > 0:
+            errorMessage("There is a BAD Daemon " + daemon_name + ". (" + str(daemon_related_nums) + " process)")
+            if kill:
+                print "pKilling " + daemon_name + " ... "
+                subprocess.check_output("pkill " + daemon_name, shell=True)
+                import time
+                time.sleep(2)
+                
+                daemon_related_nums = int(subprocess.check_output("ps aux | grep " + daemon_name + " | wc |tr -s ' '| cut -f2 -d ' '", shell=True).strip("\n")) - 2
+                if daemon_related_nums > 0:
+                    errorMessage("a BAD Daemon " + daemon_name + " STILL exist. (" + str(daemon_related_nums) + " process). Please kill by yourself")
+                else:
+                    okMessage("Now all BAD Daemon" + daemon_name + " is removed!")
+
+        else:
+            okMessage("No BAD Daemon " + daemon_name + " found.")
