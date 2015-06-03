@@ -22,6 +22,9 @@ def errorMessage(msg):
     print Fore.RED + "[ERROR] %s" % (msg) + Fore.RESET
 def warnMessage(msg):
     print Fore.YELLOW + "[WARN]  %s" % (msg) + Fore.RESET
+def indexMessage(msg):
+    print Fore.LIGHTCYAN_EX + "  == %s ==" % (msg) + Fore.RESET
+
 from sensor_msgs.msg import Image, JointState, Imu
 
 class TopicPublishedChecker():
