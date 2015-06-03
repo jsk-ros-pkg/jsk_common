@@ -40,7 +40,11 @@
       </rosparam>
     </node>
     
-    <node pkg="jsk_network_tools" type="fc2ocs_publisher.py" name="fc2ocs_original" />
+    <node pkg="jsk_network_tools" type="fc2ocs_publisher.py" name="fc2ocs_original">
+      <rosparam>
+        pub_rate: 1000
+      </rosparam>
+    </node>
     <node pkg="jsk_network_tools" type="ocs2fc_publisher.py" name="ocs2fc_original" />
     <node pkg="rqt_console" type="rqt_console" name="silverhammer_console" />
     <node pkg="rqt_graph" type="rqt_graph" name="silverhammer_graph" />
