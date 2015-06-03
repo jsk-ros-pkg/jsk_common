@@ -307,7 +307,12 @@ def checkSilverHammerSubscribe(topic_name, expected_hz, expected_error_threshold
     if not all_success:
         if error_message:
             errorMessage(error_message)
+        else:
+            erorrMessage(" Topic %s 's Hz is BAD. Check SilverHammerNode. " % (topic_name))
         return False
     if ok_message:
-        okMessage(ok_message)
+        if ok_message:
+            okMessage(ok_message)
+        else:
+            okMessage(" Topic %s 's Hz is well. " % (topic_name))
     return True
