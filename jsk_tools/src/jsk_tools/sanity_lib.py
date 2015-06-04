@@ -326,7 +326,7 @@ def checkSilverHammerSubscribe(topic_name, expected_hz, expected_error_threshold
         if error_message:
             errorMessage(error_message)
         else:
-            erorrMessage(" Topic %s 's Hz is BAD. Check SilverHammerNode. " % (topic_name))
+            errorMessage(" Topic %s 's Hz is BAD. Check SilverHammerNode. " % (topic_name))
         return False
     if ok_message:
         if ok_message:
@@ -388,7 +388,6 @@ def checkROSCoreROSMaster():
     indexMessage("Check ROSmaster came from roscore")
     rmc = ROSMasterChecker()
     rmc.checkIsFromRoscore()
-
 
 def colored(string, color):
     colors = {
