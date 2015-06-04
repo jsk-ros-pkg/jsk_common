@@ -24,6 +24,7 @@ def errorMessage(msg):
 def warnMessage(msg):
     print Fore.YELLOW + "[WARN]  %s" % (msg) + Fore.RESET
 def indexMessage(msg):
+    print
     print Fore.LIGHTCYAN_EX + "  == %s ==" % (msg) + Fore.RESET
 
 from sensor_msgs.msg import Image, JointState, Imu
@@ -456,12 +457,12 @@ def checkGitRepoDiff(git_path):
             if l.startswith(" M"):
                 modified_files.append(l)
     if modified_files:
-        print colored("  %d files are modified" % (len(modified_files)), "red")
+        errorMessage("  %d files are modified" % (len(modified_files)))
         for f in modified_files:
             print "    ", colored(f, "red")
     else:
-        print okMessage("  No modified files")
-            
+        okMessage("  No modified files")
+
 def checkGitBranch(git_path):
     os.chdir(git_path)
     current_branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref",
@@ -477,15 +478,14 @@ def checkGitBranch(git_path):
     remote_origin_head = subprocess.check_output(["git", "rev-parse", "--abbrev-ref",
                                        "origin/HEAD"]).strip()
     if not current_tracking_branch:
-        print "    ", colored("no tracking branch", "red")
+        errorMessage("no tracking branch")
     elif current_tracking_branch != remote_origin_head:
-        print "    ", colored("the branch(%s) may not sync with %s" 
+        errorMessage("the branch(%s) may not sync with %s"
                               % (current_branch,
-                              remote_origin_head), "red")
+                              remote_origin_head))
     else:
-        print okMessage("  No Branch Problem")
+        okMessage("  No Branch Problem")
 
-        
 def checkGitRepo(git_path):
     print colored("[checking %s]" % git_path, "green")
     checkGitRepoDiff(git_path)
