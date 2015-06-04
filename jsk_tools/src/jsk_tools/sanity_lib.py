@@ -329,16 +329,15 @@ def checkSilverHammerSubscribe(topic_name, expected_hz, expected_error_threshold
             errorMessage(" Topic %s 's Hz is BAD. Check SilverHammerNode. " % (topic_name))
         return False
     if ok_message:
-        if ok_message:
-            okMessage(ok_message)
-        else:
-            okMessage(" Topic %s 's Hz is well. " % (topic_name))
+        okMessage(ok_message)
+    else:
+        okMessage(" Topic %s 's Hz is well. " % (topic_name))
     return True
 
 def checkBlackListDaemon(daemon_names, kill=False):
 #    indexMessage("Check BlackLists Daemon [%s]" % (str(daemon_names)))
     for daemon_name in daemon_names:
-        daemon_related_nums = int(subprocess.check_output("ps aux | grep " + daemon_name + " | wc |tr -s ' '| cut -f2 -d ' '", shell=True).strip("\n")) - 2
+        daemon_related_nums = int(subprocess.check_output("ps aux | grep " + daemon_name + " | grep -v grep | wc | tr -s ' ' | cut -f2 -d ' '", shell=True).strip("\n")) - 2
         if daemon_related_nums > 0:
             errorMessage("There is a BAD Daemon " + daemon_name + ". (" + str(daemon_related_nums) + " process)")
             if kill:
@@ -347,7 +346,7 @@ def checkBlackListDaemon(daemon_names, kill=False):
                 import time
                 time.sleep(2)
                 
-                daemon_related_nums = int(subprocess.check_output("ps aux | grep " + daemon_name + " | wc |tr -s ' '| cut -f2 -d ' '", shell=True).strip("\n")) - 2
+                daemon_related_nums = int(subprocess.check_output("ps aux | grep " + daemon_name + " | grep -v grep | wc |tr -s ' '| cut -f2 -d ' '", shell=True).strip("\n")) - 2
                 if daemon_related_nums > 0:
                     errorMessage("a BAD Daemon " + daemon_name + " STILL exist. (" + str(daemon_related_nums) + " process). Please kill by yourself")
                 else:
@@ -368,7 +367,7 @@ class ROSMasterChecker():
         return subprocess.check_output("ps -p  " + str(pid) + " -oppid= ", shell=True).strip("\n")
 
     def getMasterPID(self):
-        self.rosmaster_pid = subprocess.check_output("sudo ps aux | grep rosmaster | cut -f 3 -d ' ' |  sed -n '1p'", shell=True).strip("\n")
+        self.rosmaster_pid = subprocess.check_output("ps aux | grep rosmaster | tr -s ' ' | grep -v grep |cut -f 2 -d ' ' |  sed -n '1p'", shell=True).strip("\n")
 
     def checkIsFromRoscore(self):
         self.getMasterPID()
@@ -385,7 +384,6 @@ class ROSMasterChecker():
             return True
 
 def checkROSCoreROSMaster():
-    indexMessage("Check ROSmaster came from roscore")
     rmc = ROSMasterChecker()
     rmc.checkIsFromRoscore()
 
