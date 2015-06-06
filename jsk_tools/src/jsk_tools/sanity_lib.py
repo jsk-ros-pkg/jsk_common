@@ -509,3 +509,28 @@ def checkWorkspace():
                 if not [repo for repo in git_repos if root.startswith(repo)]: #ignore subdirs
                     git_repos.append(root)
                     checkGitRepo(root)
+
+def checkNetworkSpeed(expected_speed, ok_message="", error_message=""):
+    interfaces = subprocess.check_output( "ifconfig  | tr -s ' ' | cut -f 1 -d ' ' | xargs echo", shell=True).split(" ")
+    eths=[]
+    for interface in interfaces:
+        if "eth" in interface:
+            try:
+                speed_string = subprocess.check_output( "ethtool "+str(interface)+" 2>/dev/null | grep 'Speed: ' | cut -f 2 -d ' ' | grep -oE '[0-9]{0,}'", shell=True)
+                if speed_string:
+                    speed = int(speed_string)
+                else:
+                    raise subprocess.CalledProcessError("", "", "")
+                if speed == expected_speed:
+                    okMessage(ok_message if ok_message else "Network Speed for " + interface + " is Expected Speed " + str(speed) + " MB/s" )
+                    eths.append(interface)
+                else:
+                    errorMessage(error_message if error_message else "Network Speed for " + interface + " is NOT EXPECTED!! Expect : " + str(expected_speed) + " MB/s Real : " + str(speed) + " MB/s" )
+                    return False
+            except subprocess.CalledProcessError:
+                errorMessage("Is eth connected?")
+                return False
+    else:
+        if len(eths) == 0:
+            warnMessage("The eth wan not found through ifconfig")
+        return True
