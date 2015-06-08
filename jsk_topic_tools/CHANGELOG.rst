@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.72 (2015-06-07)
+-------------------
 * [jsk_topic_tools] Add global nodehandle
 * Contributors: Kentaro Wada
 

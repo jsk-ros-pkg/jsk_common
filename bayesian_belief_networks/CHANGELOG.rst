@@ -2,8 +2,8 @@
 Changelog for package bayesian_belief_networks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.72 (2015-06-07)
+-------------------
 * [bayesian_belief_networks] Ignore libs in git tracking
 * Contributors: Kentaro Wada
 

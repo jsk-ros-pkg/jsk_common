@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.72 (2015-06-07)
+-------------------
 * add network speed check func
 * [jsk_tools] update mesage format in sanity_lib's functions
 * [jsk_tools/sanity_libs.py] modify small parts of bags
