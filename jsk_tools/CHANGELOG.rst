@@ -2,6 +2,40 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add network speed check func
+* [jsk_tools] update mesage format in sanity_lib's functions
+* [jsk_tools/sanity_libs.py] modify small parts of bags
+  - use `grep -v grep`
+  - remove duplicated if
+  - remove unneeded message
+* [jsk_tools ] fix type in checkBlack
+* [jsk_tools] move ws_doctor.py's function to sanity_lib.py
+* [jsk_tools] Add Checker for where rosmaster came from
+* [jsk_tools][sanity_lib.py] add bad process checker/killer
+* [sanity_lib.py] more message for check silver
+* [jsk_tools] add indexMessage func for Index in terminal
+* add host option to USB Check
+* check local remote ROS Parameter diff
+* add expect of usb to check
+* add sub ok/error message option to isMasterHostAlive
+* add check SilverHammer's published topic hz check
+* add timeout 0.001 for rossetip
+* [jsk_tools] Add sanity function to check CLOSE_WAIT
+* add check usb exist with lsusb
+* Add echo option for checkIsTopicPublished
+* Add other ros related checker
+* [jsk_tools] Support parent workspace in ws_doctor.py
+* [jsk_tools] Better output about topics which not working
+* [jsk_tools] Use multi-threded sanity lib for faster speed
+* [jsk_tools] Fix return value of checkTopicIsPublished
+* [jsk_tools] Support multiple topics to check in sanity_lib
+* [jsk_tools] Add import math
+* [jsk_tools] Add IMU to fix sanity_lib
+* [jsk_tools] Add sanity_lib.py for sanity scripts
+* Contributors: Kei Okada, Ryohei Ueda, Shunichi Nozawa, Yuto Inagaki, leus
+
 1.0.71 (2015-05-17)
 -------------------
 * [jsk_tools] Do not run rossetip_addr with device names because it takes

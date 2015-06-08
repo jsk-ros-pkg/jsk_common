@@ -2,6 +2,17 @@
 Changelog for package posedetection_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [posedetection_msgs] Change local topic name -> global of feature0d_to_image
+* [posedetection_msgs] Use draw_features func in Feature0DView
+* [posedetection_msgs] Remove no need namespace declaration in Feature0DView
+* [posedetection_msgs] Remove no need headers in Feature0DView
+* [posedetection_msgs] Add header file for feature0d_view
+* [posedetection_msgs] Add header file for feature0d_to_image
+* [posedetection_msgs] Visualize Feature0D with Image
+* Contributors: Kentaro Wada
+
 1.0.71 (2015-05-17)
 -------------------
 
