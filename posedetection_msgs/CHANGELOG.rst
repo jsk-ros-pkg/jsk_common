@@ -2,8 +2,8 @@
 Changelog for package posedetection_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.72 (2015-06-07)
+-------------------
 * [posedetection_msgs] Change local topic name -> global of feature0d_to_image
 * [posedetection_msgs] Use draw_features func in Feature0DView
 * [posedetection_msgs] Remove no need namespace declaration in Feature0DView

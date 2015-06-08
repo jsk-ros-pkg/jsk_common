@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.72 (2015-06-07)
+-------------------
 * add  recording magnetometer
 * Contributors: Ryo Terasawa
 

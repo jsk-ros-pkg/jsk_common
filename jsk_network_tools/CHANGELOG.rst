@@ -2,8 +2,8 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.72 (2015-06-07)
+-------------------
 * [jsk_network_tools] add bandwidth/rate checker for lowspeed
 * [jsk_network_tools] add pub_rate param for test
 * [jsk_network_tools] use service request instead of reloading param to set send_rate
