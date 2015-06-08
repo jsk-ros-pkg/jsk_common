@@ -2,6 +2,31 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_network_tools] add bandwidth/rate checker for lowspeed
+* [jsk_network_tools] add pub_rate param for test
+* [jsk_network_tools] use service request instead of reloading param to set send_rate
+* [jsk_network_tools] use float to avoid zero-division error instead of int
+* [jsk_network_tools] add SetSendRate.srv
+* [jsk_network_tools/silverhammer_lowspeed_streamer.py] add service for setting send_rate
+* [jsk_network_tools] bugfix: fix rmem_max value; set bash option to check command executed successfly
+* [jsk_network_tools] Use loginfo instead of logwarn in silverhammre
+  highspeed receiver
+* [jsk_network_tools] Update for synchronized topic
+* [jsk_network_tools] Add jaxon_red to joint-states-compressor.l
+* Merge pull request `#948 <https://github.com/jsk-ros-pkg/jsk_common/issues/948>`_ from garaemon/synchronize-timestamp
+  [jsk_network_tools] Synchronize timestamp
+* [jsk_network_tools] Synchronize timestamp
+* Merge pull request `#947 <https://github.com/jsk-ros-pkg/jsk_common/issues/947>`_ from furushchev/ensure-kill-multiprocess
+  [jsk_network_tools/silverhammer_highspeed_receiver.py] ensure terminate multiprocess
+* [jsk_network_tools/silverhammer_highspeed_receiver.py] ensure terminate multiprocess
+* [jsk_network_tools] Update timestamp in highspeed receiver if specified
+* [jsk_network_tools] publish time information from silverhammer streamers
+* [jsk_network_tools] check/fix udp buffer size when launches silverhammer_highspeed_receiver.py
+* [jsk_network_tools] add shell script to expand udp receive buffer
+* Contributors: Yuki Furuta, Ryohei Ueda
+
 1.0.71 (2015-05-17)
 -------------------
 * [jsk_network_tools] use multiprocess on silverhammer receiver

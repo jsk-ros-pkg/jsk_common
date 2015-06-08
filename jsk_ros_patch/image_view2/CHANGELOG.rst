@@ -2,6 +2,11 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [image_view2] Fix drawing of rectangle when interaction_mode is grabcut_rect
+* Contributors: Ryohei Ueda
+
 1.0.71 (2015-05-17)
 -------------------
 

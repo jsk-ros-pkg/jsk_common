@@ -2,6 +2,11 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add  recording magnetometer
+* Contributors: Ryo Terasawa
+
 1.0.71 (2015-05-17)
 -------------------
 * [jsk_data] common_record.launch: Mkdir for saving rosbag file
