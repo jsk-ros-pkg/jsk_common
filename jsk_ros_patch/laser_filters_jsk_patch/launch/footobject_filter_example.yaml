@@ -1,7 +1,0 @@
-scan_filter_chain:
-- name: footobject
-  type: laser_filters/ScanFootObjectFilter
-  params:
-    max_radius: 0.1
-    min_points: 3
-

@@ -1,5 +1,0 @@
-./autogen.sh
-./configure --prefix=/usr --with-hark-inc=path/to/hark-inc/include/hark --enable-ros --with-harkio2-inc=path/to/harkio2-inc/include/harkio2 --with-harkio2-lib=path/to/harkio2-inc/include/harkio2/ --enable-harkio2
-# or
-sudo aptitude install harkio2-dev harkfd-dev
-./configure --prefix=/usr --with-hark-inc=/usr/include/hark --enable-ros --with-harkio2-inc=/usr/include/harkio2 --with-harkio2-lib=/usr/include/harkio2/ --enable-harkio2
