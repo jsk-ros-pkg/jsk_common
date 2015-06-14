@@ -8,6 +8,7 @@ function usage {
     echo >&2 "          [-e|--show-environment] display environment variables"
     echo >&2 "          [-y|--yes] force yes to all input"
     echo >&2 "          [-n|--dry-run] do not run any commands, just sho that"
+    echo >&2 "          [--no-sudo] do not run with sudo"
     echo >&2 "          [-s|--shadow-fixed] use ros-shodow-fixed repository"
     echo >&2 "          [--rtm|--start-jsk|--rtm-ros-robotics] merge .rosinstall for rtm-ros stuff"
     echo >&2 "          [--from-source] install jsk and related packages from source code"
@@ -24,7 +25,7 @@ function error {
 trap error ERR
 
 # command line parse
-OPT=`getopt -o hipeyns -l help,show-install,show-package,show-environment,yes,rtm,start-jsk,from-source,from-full-source,use-shadow-fixed -- $*`
+OPT=`getopt -o hipeyns -l help,show-install,show-package,show-environment,yes,rtm,start-jsk,from-source,from-full-source,use-shadow-fixed,no-sudo -- $*`
 if [ $? != 0 ]; then
     usage
 fi
@@ -40,9 +41,10 @@ while [ -n "$1" ] ; do
 	-y|--yes) YES="-y"; shift;;
 	-n|--dry-run) DRY=true; shift;;
 	-s|--use-shadow) DEBIAN_REPOSITORY='http://packages.ros.org/ros-shadow-fixed/ubuntu'; shift;;
-        --rtm|--start-jsk|--rtm-ros-robotics) RTM_ROS_ROBOTICS=true; shift;;
-        --from-source) USE_SOURCE=true; shift;;
-        --from-full-source) USE_SOURCE=full; shift;;
+	--rtm|--start-jsk|--rtm-ros-robotics) RTM_ROS_ROBOTICS=true; shift;;
+	--from-source) USE_SOURCE=true; shift;;
+	--from-full-source) USE_SOURCE=full; shift;;
+	--no-sudo) NO_SUDO=true; shift;;
 	--) shift; break;;
 	*) echo "Unknown option($1)"; usage;;
     esac
@@ -103,6 +105,15 @@ export PATH=$PATH:/usr/local/bin ## for ros tools
 export LC_ALL=en_US.UTF-8
 unset SVN_REVISION ## this jenkins environment valiables conflicts with mk/svn_checkout.mk
 
+function runsudo()
+{
+    if [ "$NO_SUDO" != "true" ]; then
+        sudo sh -c "$*"
+    else
+        echo "[NO_SUDO=true] skipping $*"
+    fi
+}
+
 # define functions
 # http://www.ros.org/wiki/electric/Installation/Ubuntu
 function setup-ros {
@@ -113,11 +124,11 @@ function setup-ros {
         echo
     fi
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        $COMMAND sudo dpkg --configure -a
+        $COMMAND runsudo dpkg --configure -a
     fi
-    $COMMAND sudo add-apt-repository ppa:webupd8team/java -y
-    $COMMAND sudo apt-get update
-    $COMMAND sudo apt-get $YES install build-essential python-yaml cmake subversion wget python-setuptools git-core mercurial aptitude oracle-java7-installer
+    $COMMAND runsudo add-apt-repository ppa:webupd8team/java -y
+    $COMMAND runsudo apt-get update
+    $COMMAND runsudo apt-get $YES install build-essential python-yaml cmake subversion wget python-setuptools git-core mercurial aptitude oracle-java7-installer
     REPLY="Y"
     if [ "$YES" != "-y" -a -e /etc/apt/sources.list.d/ros-latest.list ] ; then
         read -p "Are you sure? to overwrite /etc/apt/sources.list.d/ros-latest.list [y/N] " -n 1 -r
@@ -126,8 +137,8 @@ function setup-ros {
 	REPLY="N"
     fi
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        $COMMAND sudo sh -c "echo \"deb $DEBIAN_REPOSITORY `lsb_release -cs` main\" > /etc/apt/sources.list.d/ros-latest.list"
-        $COMMAND wget http://packages.ros.org/ros.key -O - | $COMMAND sudo apt-key add -
+        $COMMAND runsudo sh -c "echo \"deb $DEBIAN_REPOSITORY `lsb_release -cs` main\" > /etc/apt/sources.list.d/ros-latest.list"
+        $COMMAND wget http://packages.ros.org/ros.key -O - | $COMMAND runsudo apt-key add -
     fi
     if [ "$YES" == "-y" ] ;then
         REPLY="Y"
@@ -136,19 +147,19 @@ function setup-ros {
         echo
     fi
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        $COMMAND sudo apt-get update
+        $COMMAND runsudo apt-get update
     fi
-    $COMMAND sudo apt-get upgrade $YES
-    $COMMAND sudo apt-get -qq $YES install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools python-pip
+    $COMMAND runsudo apt-get upgrade $YES
+    $COMMAND runsudo apt-get -qq $YES install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools python-pip
     if [ "$USE_SOURCE" == "full" ]; then
-        $COMMAND sudo apt-get -qq $YES install python-rosinstall-generator
-        $COMMAND sudo apt-get -qq $YES install libftdi-dev libgstreamer0.10-dev libgst-dev libgstreamer-plugins-base0.10-dev
+        $COMMAND runsudo apt-get -qq $YES install python-rosinstall-generator
+        $COMMAND runsudo apt-get -qq $YES install libftdi-dev libgstreamer0.10-dev libgst-dev libgstreamer-plugins-base0.10-dev
     fi
     if [ -e /etc/ros/rosdep/sources.list.d/20-default.list ] ; then
-        $COMMAND sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list;  # rosdep init fails when arleady initialized
+        $COMMAND runsudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list;  # rosdep init fails when arleady initialized
     fi
     while [ ! -e /etc/ros/rosdep/sources.list.d/20-default.list ]; do
-        $COMMAND sudo rosdep init
+        $COMMAND runsudo rosdep init
     done
     ($COMMAND rosdep update; true)
 }
@@ -218,11 +229,13 @@ function compile-pkg {
     trap error ERR
     local PACKAGES=$@
 
-    echo "hddtemp hddtemp/daemon boolean false" | $COMMAND sudo debconf-set-selections
+    echo "hddtemp hddtemp/daemon boolean false" | $COMMAND runsudo debconf-set-selections
 
     # rosdep install
-    (cd ${ROS_INSTALLDIR}/src &&
-        $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION ROS_PACKAGE_PATH="$ROS_PACKAGE_PATH:$HOME/ros/hydro_parent/src:$HOME/ros/hydro/src" $COMMAND bash)
+    if [ "$NO_SUDO" != "true" ]; then
+        (cd ${ROS_INSTALLDIR}/src &&
+                $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION ROS_PACKAGE_PATH="$ROS_PACKAGE_PATH:$HOME/ros/hydro_parent/src:$HOME/ros/hydro/src" $COMMAND bash)
+    fi
     ## do compile for upstream
     $COMMAND source /opt/ros/$DISTRIBUTION/setup.sh
     if [ -e ${ROS_INSTALLDIR}_parent/src ]; then
