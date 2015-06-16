@@ -7,10 +7,11 @@
   <arg name="use_gui" default="false"/>
   <arg name="rosbag_option" default="--clock -l" />
   <arg name="use_xterm" default="false" />
+  <arg name="ROBOT" default="$(env ROBOT)" />
   
   <!-- set params for rviz -->
   <param name="use_sim_time" value="true" />
-  <param if="$(arg launch_robot_model)" name="robot_description" textfile="$(find hrpsys_ros_bridge_tutorials)/models/HRP2JSKNTS.dae" />
+  <param if="$(arg launch_robot_model)" name="robot_description" textfile="$(find hrpsys_ros_bridge_tutorials)/models/$(arg ROBOT).dae" />
 
   <!-- setup openni_launch -->
   <include if="$(arg launch_openni)" file="$(find jsk_pcl_ros)/launch/openni2_remote.launch">
