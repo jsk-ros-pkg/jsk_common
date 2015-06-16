@@ -2,8 +2,8 @@
   <arg name="not_use_sensor_tf_prefix" default="false" />
   <arg name="namespace"  default="multisense" />
   <arg name="fixed_frame_id" default="head_root" />
-  <node name="tilt_scan_to_scan"
-        pkg="laser_filters" type="scan_to_scan_filter_chain"
+  <node name="tilt_scan_to_cloud"
+        pkg="laser_filters" type="scan_to_cloud_filter_chain"
         output="screen">
     <remap from="scan" to="/multisense/lidar_scan" />
     <rosparam subst_value="true">
@@ -25,20 +25,11 @@
         type: laser_filters/LaserScanRangeFilter
         params:
           lower_threshold: 0.2 # 0.5
-          upper_threshold: 30
+          upper_threshold: 10
+      high_fidelity: true
+      target_frame: $(arg fixed_frame_id)
     </rosparam>
     <remap from="scan_filtered" to="/multisense/lidar_scan_filtered" />
-  </node>
-  <node name="tilt_scan_to_cloud"
-        pkg="laser_filters" type="scan_to_cloud_filter_chain"
-        output="screen">
-    <remap from="scan" to="/multisense/lidar_scan_filtered" />
-    <rosparam>
-      high_fidelity: true
-    </rosparam>
-    <param name="target_frame" value="multisense/spindle" unless="$(arg not_use_sensor_tf_prefix)"/>
-    <param name="target_frame" value="spindle" if="$(arg not_use_sensor_tf_prefix)"/>
-    <remap from="cloud_filtered" to="/multisense/lidar_scan_cloud_filtered" />
   </node>
   <node pkg="nodelet" type="nodelet" name="multisense_laser_manager"
         args="manager" output="screen"/>
@@ -101,14 +92,16 @@
         args="load jsk_pcl/TiltLaserListener multisense_laser_manager"
         output="screen">
     <remap from="~input" to="/$(arg namespace)/joint_states" />
-    <rosparam>
+    <rosparam subst_value="true">
 #      laser_type: infinite_spindle_half
       laser_type: infinite_spindle
       joint_name: motor_joint
       use_laser_assembler: true
+      not_use_laser_assembler_service: true
       overwrap_angle: 0.0
+      skip_number: 10
     </rosparam>
-    <remap from="~assemble_scans2" to="/assemble_scans2" />
+    <remap from="~input/cloud" to="/cloud_filtered" />
   </node>
   
   <!-- for backward compatibility -->
@@ -117,15 +110,5 @@
         args="load jsk_topic_tools/Relay multisense_laser_manager">
     <remap from="~input" to="tilt_laser_listener/output_cloud" />
     <remap from="~output" to="/full_cloud2" />
-  </node>
-  <!-- full_cloud2 -->
-  <node pkg="laser_assembler" type="laser_scan_assembler"
-        name="laser_scan_assembler_node"
-        output="screen" >
-    <remap from="scan" to="/multisense/lidar_scan_filtered"/>
-    <param name="tf_cache_time_secs" value="20" />
-    <param name="max_scans" type="int" value="1000" />
-    <param name="fixed_frame" type="string" value="multisense/$(arg fixed_frame_id)" unless="$(arg not_use_sensor_tf_prefix)"/>
-    <param name="fixed_frame" type="string" value="$(arg fixed_frame_id)" if="$(arg not_use_sensor_tf_prefix)"/>
   </node>
 </launch>
