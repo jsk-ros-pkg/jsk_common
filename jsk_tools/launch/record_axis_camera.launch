@@ -2,6 +2,7 @@
   <arg name="filename" default="output.avi" />
   <arg name="hostname" default="133.11.216.141" />
   <arg name="username" default="root" />
+  <arg name="camera_info_url" default="package://jsk_tools/info/133_11_216_141.yaml" />
 
   <arg name="ask_password" default="true" />
   <arg unless="$(arg ask_password)" name="password" />
@@ -13,13 +14,15 @@
       <param if="$(arg ask_password)" name="password"
              command="python -c 'import getpass;passwd=getpass.getpass(&quot;Axis password?: &quot;);print(passwd)'" />
       <param unless="$(arg ask_password)" name="password" value="$(arg password)" />
+      <param name="camera_info_url" value="$(arg camera_info_url)" />
     </node>
     <node name="image_transport_republisher" pkg="image_transport" type="republish" args="compressed">
       <remap from="in" to="image_raw" />
       <remap from="out" to="image_raw" />
     </node>
+    <node name="image_proc" pkg="image_proc" type="image_proc" />
     <node name="video_recorder" pkg="image_view" type="video_recorder" output="screen">
-      <remap from="image" to="image_raw" />
+      <remap from="image" to="image_rect_color" />
       <param name="filename" value="$(arg filename)" />
     </node>
   </group>
