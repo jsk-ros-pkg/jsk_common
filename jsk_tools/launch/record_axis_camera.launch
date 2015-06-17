@@ -1,0 +1,26 @@
+<launch>
+  <arg name="filename" default="output.avi" />
+  <arg name="hostname" default="133.11.216.141" />
+  <arg name="username" default="root" />
+
+  <arg name="ask_password" default="true" />
+  <arg unless="$(arg ask_password)" name="password" />
+
+  <group ns="axis">
+    <node name="axis_camera" pkg="axis_camera" type="axis.py" >
+      <param name="hostname" value="$(arg hostname)" />
+      <param name="username" value="$(arg username)" />
+      <param if="$(arg ask_password)" name="password"
+             command="python -c 'import getpass;passwd=getpass.getpass(&quot;Axis password?: &quot;);print(passwd)'" />
+      <param unless="$(arg ask_password)" name="password" value="$(arg password)" />
+    </node>
+    <node name="image_transport_republisher" pkg="image_transport" type="republish" args="compressed">
+      <remap from="in" to="image_raw" />
+      <remap from="out" to="image_raw" />
+    </node>
+    <node name="video_recorder" pkg="image_view" type="video_recorder" output="screen">
+      <remap from="image" to="image_raw" />
+      <param name="filename" value="$(arg filename)" />
+    </node>
+  </group>
+</launch>
