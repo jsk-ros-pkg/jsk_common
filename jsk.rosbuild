@@ -30,6 +30,7 @@ if [ $? != 0 ]; then
     usage
 fi
 DEBIAN_REPOSITORY='http://packages.ros.org/ros/ubuntu'
+SUDO=sudo
 
 eval set -- $OPT
 while [ -n "$1" ] ; do
@@ -44,7 +45,7 @@ while [ -n "$1" ] ; do
 	--rtm|--start-jsk|--rtm-ros-robotics) RTM_ROS_ROBOTICS=true; shift;;
 	--from-source) USE_SOURCE=true; shift;;
 	--from-full-source) USE_SOURCE=full; shift;;
-	--no-sudo) NO_SUDO=true; shift;;
+	--no-sudo) SUDO='echo "[NO_SUDO] skipping"'; shift;;
 	--) shift; break;;
 	*) echo "Unknown option($1)"; usage;;
     esac
@@ -105,15 +106,6 @@ export PATH=$PATH:/usr/local/bin ## for ros tools
 export LC_ALL=en_US.UTF-8
 unset SVN_REVISION ## this jenkins environment valiables conflicts with mk/svn_checkout.mk
 
-function runsudo()
-{
-    if [ "$NO_SUDO" != "true" ]; then
-        sudo sh -c "$*"
-    else
-        echo "[NO_SUDO=true] skipping $*"
-    fi
-}
-
 # define functions
 # http://www.ros.org/wiki/electric/Installation/Ubuntu
 function setup-ros {
@@ -124,11 +116,11 @@ function setup-ros {
         echo
     fi
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        $COMMAND runsudo dpkg --configure -a
+        $COMMAND $SUDO dpkg --configure -a
     fi
-    $COMMAND runsudo add-apt-repository ppa:webupd8team/java -y
-    $COMMAND runsudo apt-get update
-    $COMMAND runsudo apt-get $YES install build-essential python-yaml cmake subversion wget python-setuptools git-core mercurial aptitude oracle-java7-installer
+    $COMMAND $SUDO add-apt-repository ppa:webupd8team/java -y
+    $COMMAND $SUDO apt-get update
+    $COMMAND $SUDO apt-get $YES install build-essential python-yaml cmake subversion wget python-setuptools git-core mercurial aptitude oracle-java7-installer
     REPLY="Y"
     if [ "$YES" != "-y" -a -e /etc/apt/sources.list.d/ros-latest.list ] ; then
         read -p "Are you sure? to overwrite /etc/apt/sources.list.d/ros-latest.list [y/N] " -n 1 -r
@@ -137,8 +129,8 @@ function setup-ros {
 	REPLY="N"
     fi
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        $COMMAND runsudo sh -c "echo \"deb $DEBIAN_REPOSITORY `lsb_release -cs` main\" > /etc/apt/sources.list.d/ros-latest.list"
-        $COMMAND wget http://packages.ros.org/ros.key -O - | $COMMAND runsudo apt-key add -
+        $COMMAND $SUDO sh -c "echo \"deb $DEBIAN_REPOSITORY `lsb_release -cs` main\" > /etc/apt/sources.list.d/ros-latest.list"
+        $COMMAND wget http://packages.ros.org/ros.key -O - | $COMMAND $SUDO apt-key add -
     fi
     if [ "$YES" == "-y" ] ;then
         REPLY="Y"
@@ -147,19 +139,19 @@ function setup-ros {
         echo
     fi
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        $COMMAND runsudo apt-get update
+        $COMMAND $SUDO apt-get update
     fi
-    $COMMAND runsudo apt-get upgrade $YES
-    $COMMAND runsudo apt-get -qq $YES install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools python-pip
+    $COMMAND $SUDO apt-get upgrade $YES
+    $COMMAND $SUDO apt-get -qq $YES install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools python-pip
     if [ "$USE_SOURCE" == "full" ]; then
-        $COMMAND runsudo apt-get -qq $YES install python-rosinstall-generator
-        $COMMAND runsudo apt-get -qq $YES install libftdi-dev libgstreamer0.10-dev libgst-dev libgstreamer-plugins-base0.10-dev
+        $COMMAND $SUDO apt-get -qq $YES install python-rosinstall-generator
+        $COMMAND $SUDO apt-get -qq $YES install libftdi-dev libgstreamer0.10-dev libgst-dev libgstreamer-plugins-base0.10-dev
     fi
     if [ -e /etc/ros/rosdep/sources.list.d/20-default.list ] ; then
-        $COMMAND runsudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list;  # rosdep init fails when arleady initialized
+        $COMMAND $SUDO rm -f /etc/ros/rosdep/sources.list.d/20-default.list;  # rosdep init fails when arleady initialized
     fi
     while [ ! -e /etc/ros/rosdep/sources.list.d/20-default.list ]; do
-        $COMMAND runsudo rosdep init
+        $COMMAND $SUDO rosdep init
     done
     ($COMMAND rosdep update; true)
 }
@@ -229,7 +221,7 @@ function compile-pkg {
     trap error ERR
     local PACKAGES=$@
 
-    echo "hddtemp hddtemp/daemon boolean false" | $COMMAND runsudo debconf-set-selections
+    echo "hddtemp hddtemp/daemon boolean false" | $COMMAND $SUDO debconf-set-selections
 
     # rosdep install
     if [ "$NO_SUDO" != "true" ]; then
