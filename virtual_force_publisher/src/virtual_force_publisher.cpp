@@ -215,19 +215,19 @@ namespace virtual_force_publisher{
                     for (unsigned int i = 0; i < jnt_pos_.rows(); i++) {
                         std::stringstream ss;
                         for (unsigned int j=0; j<6; j++)
-                            ss << jacobian_(j,i) << " ";
+                            ss << std::fixed << std::setw(8) << std::setprecision(4) << jacobian_(j,i) << " ";
                         ROS_INFO_STREAM(ss.str());
                     }
                     ROS_INFO("effort : ");
                     std::stringstream sstau;
                     for (unsigned int i = 0; i < tau.rows(); i++) {
-                        sstau << tau(i) << " ";
+                        sstau << std::fixed << std::setw(8) << std::setprecision(4) << tau(i) << " ";
                     }
                     ROS_INFO_STREAM(sstau.str());
                     ROS_INFO("force : ");
                     std::stringstream ssf;
                     for (unsigned int j = 0; j < 6; j++) {
-                        ssf << F(j) << " ";
+		      ssf << std::fixed << std::setw(8) << std::setprecision(4) << F(j) << " ";
                     }
                     ROS_INFO_STREAM(ssf.str());
                 }
