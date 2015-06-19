@@ -163,7 +163,23 @@ namespace virtual_force_publisher{
 		
 		jnt_to_jac_solver_->JntToJac(jnt_pos_, jacobian_);
 		jac_t = jacobian_.data.transpose();
-		jac_t_pseudo_inv =(jac_t.transpose() * jac_t).inverse() *  jac_t.transpose();
+		if ( jacobian_.columns() >= jacobian_.rows() ) {
+		  jac_t_pseudo_inv =(jac_t.transpose() * jac_t).inverse() *  jac_t.transpose();
+		} else {
+		  jac_t_pseudo_inv =jac_t.transpose() * ( jac_t *  jac_t.transpose() ).inverse();
+		}
+#if 1
+		{
+		  ROS_INFO("jac_t# jac_t : ");
+		  Eigen::Matrix<double,6,6> mat_i =  mat_i = jac_t_pseudo_inv * jac_t;
+		  for (unsigned int i = 0; i < 6; i++) {
+		    std::stringstream ss;
+		    for (unsigned int j=0; j<6; j++)
+		      ss << std::fixed << std::setw(8) << std::setprecision(4) << mat_i(j,i) << " ";
+		    ROS_INFO_STREAM(ss.str());
+                    }
+		}
+#endif
                 // f = - inv(jt) * effort
                 for (unsigned int j=0; j<6; j++)
                     {
