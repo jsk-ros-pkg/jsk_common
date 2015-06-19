@@ -201,3 +201,9 @@
 #     local-name: ar_tools
 #     uri: 'https://github.com/ar-tools/ar_tools.git'
 #     version: master
+
+# completion for wstool command
+- git:
+    local-name: wstool_catkin
+    uri: 'https://github.com/tkruse/wstool_catkin'
+    version: master
