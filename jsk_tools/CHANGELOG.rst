@@ -2,6 +2,13 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tools] Record image_rect of axis camera
+* [jsk_tools] Add calibration data
+* [jsk_tools] Add launch to record axis camera
+* Contributors: Kentaro Wada
+
 1.0.72 (2015-06-07)
 -------------------
 * add network speed check func

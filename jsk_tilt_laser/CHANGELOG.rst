@@ -2,6 +2,11 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tilt_laser] Do not use laser_assembler in order to reduce CPU load
+* Contributors: Ryohei Ueda
+
 1.0.72 (2015-06-07)
 -------------------
 
