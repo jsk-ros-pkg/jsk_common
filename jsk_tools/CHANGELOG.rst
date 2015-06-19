@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.0 (2015-06-19)
+------------------
 * [jsk_tools] Record image_rect of axis camera
 * [jsk_tools] Add calibration data
 * [jsk_tools] Add launch to record axis camera
