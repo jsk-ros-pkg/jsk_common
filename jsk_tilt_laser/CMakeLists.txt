@@ -10,10 +10,11 @@ endif(NOT $ENV{ROS_DISTRO} STREQUAL "groovy")
 find_package(catkin REQUIRED
   dynamic_reconfigure sensor_msgs ${laser_assembler}
   tf_conversions tf cmake_modules
+  multisense_lib
   )
 
 find_package(Eigen REQUIRED)
-include_directories(${Eigen_INCLUDE_DIRS})
+include_directories(${Eigen_INCLUDE_DIRS} ${CATKIN_INCLUDE_DIRS})
 
 generate_dynamic_reconfigure_options(
   cfg/DynamixelTiltController.cfg
@@ -35,3 +36,11 @@ if(NOT $ENV{ROS_DISTRO} STREQUAL "groovy")
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
     )
 endif(NOT $ENV{ROS_DISTRO} STREQUAL "groovy")
+
+add_executable(multisense_killer src/multisense_killer.cpp)
+target_link_libraries(multisense_killer ${catkin_LIBRARIES})
+install(TARGETS multisense_killer
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
