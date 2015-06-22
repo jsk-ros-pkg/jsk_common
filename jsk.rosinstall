@@ -158,10 +158,10 @@
     local-name: pr2_apps
     uri: 'https://github.com/PR2/pr2_apps.git'
     version: hydro-devel
-- git:
-    local-name: pr2_gripper_sensor
-    uri: 'https://github.com/PR2/pr2_gripper_sensor.git'
-    version: hydro-devel
+# - git:
+#     local-name: pr2_gripper_sensor
+#     uri: 'https://github.com/PR2/pr2_gripper_sensor.git'
+#     version: hydro-devel
 - git:
     local-name: pr2_common_actions
     uri: 'https://github.com/PR2/pr2_common_actions.git'
