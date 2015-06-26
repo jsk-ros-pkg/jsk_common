@@ -41,6 +41,12 @@
       relay a topic message from ~input to ~output.
     </description>
   </class>
+  <class name="jsk_topic_tools/DeprecatedRelay" type="DeprecatedRelay"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      relay a topic message from ~input to ~output with deprecated message.
+    </description>
+  </class>
   <class name="jsk_topic_tools/Passthrough" type="Passthrough"
          base_class_type="nodelet::Nodelet">
     <description>
