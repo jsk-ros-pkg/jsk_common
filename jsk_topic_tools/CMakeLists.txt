@@ -55,6 +55,8 @@ jsk_topic_tools_nodelet(src/mux_nodelet.cpp
   "jsk_topic_tools/MUX" "mux")
 jsk_topic_tools_nodelet(src/relay_nodelet.cpp
   "jsk_topic_tools/Relay" "relay")
+jsk_topic_tools_nodelet(src/deprecated_relay_nodelet.cpp
+  "jsk_topic_tools/DeprecatedRelay" "deprecated_relay")
 jsk_topic_tools_nodelet(src/passthrough_nodelet.cpp
   "jsk_topic_tools/Passthrough" "passthrough")
 jsk_topic_tools_nodelet(src/block_nodelet.cpp
