@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.1 (2015-06-28)
+------------------
 * [jsk_tools] Add local_pc_monitor.launch to monitor load of computers
 * Contributors: Ryohei Ueda
 

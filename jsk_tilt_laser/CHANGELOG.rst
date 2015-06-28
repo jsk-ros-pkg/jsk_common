@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.1 (2015-06-28)
+------------------
 * [jsk_tilt_laser] Add multisense_killer to kill multisense streaming if
   host PC is down
 * Contributors: Ryohei Ueda
