@@ -2,6 +2,11 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Add DeprecatedRelay nodelet for deprecated topics
+* Contributors: Ryohei Ueda
+
 2.0.0 (2015-06-19)
 ------------------
 

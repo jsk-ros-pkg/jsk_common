@@ -2,6 +2,11 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tools] Add local_pc_monitor.launch to monitor load of computers
+* Contributors: Ryohei Ueda
+
 2.0.0 (2015-06-19)
 ------------------
 * [jsk_tools] Record image_rect of axis camera

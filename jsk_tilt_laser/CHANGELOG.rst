@@ -2,6 +2,12 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tilt_laser] Add multisense_killer to kill multisense streaming if
+  host PC is down
+* Contributors: Ryohei Ueda
+
 2.0.0 (2015-06-19)
 ------------------
 * [jsk_tilt_laser] Do not use laser_assembler in order to reduce CPU load
