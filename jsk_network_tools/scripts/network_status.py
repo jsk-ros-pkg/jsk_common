@@ -3,6 +3,10 @@ import re
 import rospy
 from std_msgs.msg import Float32
 from collections import deque
+import os
+
+def rosSafeName(name):
+    return name.lower().replace("-", "_")
 
 class NetworkStatus():
     def __init__(self):
@@ -14,13 +18,12 @@ class NetworkStatus():
         self.init_publisher()
         rospy.Timer(rospy.Duration(1.0/self.hz), self.publish)
         rospy.spin()
-
     def init_publisher(self):
         faces = self.read_net_file()
         self.faces_map = {}
         for face in faces:
-            pub_transmit = rospy.Publisher(face[0] + '/transmit', Float32)
-            pub_receive = rospy.Publisher(face[0] + '/receive', Float32)
+            pub_transmit = rospy.Publisher(rosSafeName(os.uname()[1]) + "/" + face[0] + '/transmit', Float32)
+            pub_receive = rospy.Publisher(rosSafeName(os.uname()[1]) + "/" + face[0] + '/receive', Float32)
             queue_transmit = deque()
             queue_reveice = deque()
 
