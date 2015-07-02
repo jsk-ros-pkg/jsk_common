@@ -6,10 +6,10 @@ python:
 compiler:
   - gcc
 env:
-  - ROS_DISTRO=hydro  ROSWS=wstool BUILDER=catkin    USE_DEB=true  EXTRA_DEB="ros-hydro-pr2eus ros-hydro-joint-state-publisher" ROS_PARALLEL_JOBS="-j2 -l2"
-  - ROS_DISTRO=hydro  ROSWS=wstool BUILDER=catkin    USE_DEB=false EXTRA_DEB="ros-hydro-pr2eus ros-hydro-joint-state-publisher" ROS_PARALLEL_JOBS="-j2 -l2" NOT_TEST_INSTALL="true"
-  - ROS_DISTRO=indigo  ROSWS=wstool BUILDER=catkin   USE_DEB=true  EXTRA_DEB="ros-indigo-pr2eus  ros-indigo-joint-state-publisher" ROS_PARALLEL_JOBS="-j8"
-  - ROS_DISTRO=indigo  ROSWS=wstool BUILDER=catkin   USE_DEB=false EXTRA_DEB="ros-indigo-pr2eus  ros-indigo-joint-state-publisher" ROS_PARALLEL_JOBS="-j8" NOT_TEST_INSTALL="true"
+  - ROS_DISTRO=hydro  ROSWS=wstool BUILDER=catkin    USE_DEB=true  ROS_PARALLEL_JOBS="-j2 -l2"
+  - ROS_DISTRO=hydro  ROSWS=wstool BUILDER=catkin    USE_DEB=false ROS_PARALLEL_JOBS="-j2 -l2" NOT_TEST_INSTALL="true"
+  - ROS_DISTRO=indigo  ROSWS=wstool BUILDER=catkin   USE_DEB=true  ROS_PARALLEL_JOBS="-j8"
+  - ROS_DISTRO=indigo  ROSWS=wstool BUILDER=catkin   USE_DEB=false ROS_PARALLEL_JOBS="-j8" NOT_TEST_INSTALL="true"
   - ROS_DISTRO=jade  ROSWS=wstool BUILDER=catkin   USE_DEB=true  ROS_PARALLEL_JOBS="-j8" TEST_PKGS="dynamic_tf_publisher image_view2 jsk_data jsk_tilt_laser jsk_tools jsk_topic_tools multi_map_server virtual_force_publisher"
   - ROS_DISTRO=jade  ROSWS=wstool BUILDER=catkin   USE_DEB=false ROS_PARALLEL_JOBS="-j8" NOT_TEST_INSTALL="true" TEST_PKGS="dynamic_tf_publisher image_view2 jsk_data jsk_tilt_laser jsk_tools jsk_topic_tools multi_map_server virtual_force_publisher"
 script: source .travis/travis.sh
