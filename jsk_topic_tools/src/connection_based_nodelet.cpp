@@ -39,6 +39,7 @@ namespace jsk_topic_tools
 {
   void ConnectionBasedNodelet::onInit()
   {
+    connection_status_ = NOT_SUBSCRIBED;
     nh_.reset (new ros::NodeHandle (getMTNodeHandle ()));
     pnh_.reset (new ros::NodeHandle (getMTPrivateNodeHandle ()));
     pnh_->param("always_subscribe", always_subscribe_, false);
@@ -58,16 +59,16 @@ namespace jsk_topic_tools
       for (size_t i = 0; i < publishers_.size(); i++) {
         ros::Publisher pub = publishers_[i];
         if (pub.getNumSubscribers() > 0) {
-          if (!subscribed_) {
+          if (connection_status_ != SUBSCRIBED) {
             subscribe();
-            subscribed_ = true;
+            connection_status_ = SUBSCRIBED;
           }
           return;
         }
       }
-      if (subscribed_) {
+      if (connection_status_ == SUBSCRIBED) {
         unsubscribe();
-        subscribed_ = false;
+        connection_status_ = NOT_SUBSCRIBED;
       }
     }
   }

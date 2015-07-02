@@ -65,13 +65,19 @@ namespace jsk_topic_tools
   void DiagnosticNodelet::updateDiagnostic(
     diagnostic_updater::DiagnosticStatusWrapper &stat)
   {
-    if (vital_checker_->isAlive()) {
-      stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
-                   getName() + " running");
+    if (connection_status_ == SUBSCRIBED) {
+      if (vital_checker_->isAlive()) {
+        stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
+                     getName() + " running");
+      }
+      else {
+        jsk_topic_tools::addDiagnosticErrorSummary(
+          name_, vital_checker_, stat);
+      }
     }
     else {
-      jsk_topic_tools::addDiagnosticErrorSummary(
-        name_, vital_checker_, stat);
+      stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
+                   getName() + " is not subscribed");
     }
   }
 }
