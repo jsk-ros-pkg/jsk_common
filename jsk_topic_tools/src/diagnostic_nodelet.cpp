@@ -67,7 +67,7 @@ namespace jsk_topic_tools
   {
     if (vital_checker_->isAlive()) {
       stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
-                   name_ + " running");
+                   getName() + " running");
     }
     else {
       jsk_topic_tools::addDiagnosticErrorSummary(
