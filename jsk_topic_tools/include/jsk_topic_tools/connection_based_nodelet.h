@@ -46,6 +46,16 @@
 namespace jsk_topic_tools
 {
   /** @brief
+   * Enum to represent connection status.
+   */
+  enum ConnectionStatus
+  {
+    NOT_INITIALIZED,
+    NOT_SUBSCRIBED,
+    SUBSCRIBED
+  };
+  
+  /** @brief
    * Nodelet to automatically subscribe/unsubscribe
    * topics according to subscription of advertised topics.
    *
@@ -150,6 +160,11 @@ namespace jsk_topic_tools
      * topics. It can be specified via ~always_subscribe parameter.
      */
     bool always_subscribe_;
+
+    /** @brief
+     * Status of connection
+     */
+    ConnectionStatus connection_status_;
   private:
     
   };

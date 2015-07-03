@@ -41,6 +41,8 @@
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <jsk_topic_tools/ChangeTopic.h>
+#include "jsk_topic_tools/connection_based_nodelet.h"
+#include "jsk_topic_tools/timered_diagnostic_updater.h"
 
 namespace jsk_topic_tools
 {
@@ -59,16 +61,23 @@ namespace jsk_topic_tools
     virtual ros::Publisher advertise(
       boost::shared_ptr<topic_tools::ShapeShifter const> msg,
       const std::string& topic);
-
+    virtual void updateDiagnostic(
+      diagnostic_updater::DiagnosticStatusWrapper &stat);
     boost::shared_ptr<topic_tools::ShapeShifter const> sample_msg_;
     std::string output_topic_name_;
     boost::mutex mutex_;
     ros::Publisher pub_;
     ros::Subscriber sub_;
-    bool advertised_;
-    bool subscribing_;
+    ConnectionStatus connection_status_;
     ros::NodeHandle pnh_;
     ros::ServiceServer change_output_topic_srv_;
+    /** @brief
+     * Pointer to TimeredDiagnosticUpdater to call
+     * updateDiagnostic(diagnostic_updater::DiagnosticStatusWrapper&)
+     * periodically.
+     */
+    TimeredDiagnosticUpdater::Ptr diagnostic_updater_;
+
   };
 }
 
