@@ -74,4 +74,11 @@ namespace jsk_topic_tools
     return dead_sec_;
   }
 
+  void VitalChecker::registerStatInfo(diagnostic_updater::DiagnosticStatusWrapper &stat, const std::string& prefix)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    stat.add(prefix, 
+             (boost::format("%f sec before") % lastAliveTimeRelative()).str());
+  }
+
 }

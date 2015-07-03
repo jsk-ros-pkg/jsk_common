@@ -43,6 +43,7 @@
 #include <jsk_topic_tools/ChangeTopic.h>
 #include "jsk_topic_tools/connection_based_nodelet.h"
 #include "jsk_topic_tools/timered_diagnostic_updater.h"
+#include "jsk_topic_tools/diagnostic_utils.h"
 
 namespace jsk_topic_tools
 {
@@ -77,7 +78,7 @@ namespace jsk_topic_tools
      * periodically.
      */
     TimeredDiagnosticUpdater::Ptr diagnostic_updater_;
-
+    VitalChecker::Ptr vital_checker_;
   };
 }
 

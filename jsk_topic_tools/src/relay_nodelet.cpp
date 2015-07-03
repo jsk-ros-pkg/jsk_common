@@ -50,6 +50,10 @@ namespace jsk_topic_tools
       getName() + "::Relay",
       boost::bind(
         &Relay::updateDiagnostic, this, _1));
+    double vital_rate;
+    pnh_.param("vital_rate", vital_rate, 1.0);
+    vital_checker_.reset(
+      new jsk_topic_tools::VitalChecker(1 / vital_rate));
     diagnostic_updater_->start();
     sub_ = pnh_.subscribe<topic_tools::ShapeShifter>(
       "input", 1,
@@ -68,13 +72,23 @@ namespace jsk_topic_tools
                    + pnh_.resolveName("input") + " active?");
     }
     else if (connection_status_ == SUBSCRIBED) {
-      stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
-                   "subscribed");
+      if (vital_checker_->isAlive()) {
+        stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
+                     "subscribed: " + pnh_.resolveName("output"));
+      }
+      else {
+        stat.summary(diagnostic_msgs::DiagnosticStatus::ERROR,
+                     "subscribed but no input. Is " 
+                     + pnh_.resolveName("input") + " active?");
+      }
+      vital_checker_->registerStatInfo(stat);
     }
     else if (connection_status_ == NOT_SUBSCRIBED) {
       stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
-                   "not subscribed");
+                   "not subscribed: " + pnh_.resolveName("output"));
     }
+    stat.add("input topic", pnh_.resolveName("input"));
+    stat.add("output topic", pnh_.resolveName("output"));
   }
   
   void Relay::inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
@@ -92,6 +106,7 @@ namespace jsk_topic_tools
       sample_msg_ = msg;
     }
     else if (pub_.getNumSubscribers() > 0) {
+      vital_checker_->poke();
       pub_.publish(msg);
     }
   }
