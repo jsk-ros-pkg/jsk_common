@@ -16,5 +16,10 @@
         enforce_clock_speed: $(arg ENFORCE_CLOCK_SPEED)
       </rosparam>
     </node>
+    <node pkg="jsk_network_tools"
+          type="network_status.py"
+          name="$(anon network_status)">
+      <param name="hz" value="1" />
+    </node>
   </group>
 </launch>
