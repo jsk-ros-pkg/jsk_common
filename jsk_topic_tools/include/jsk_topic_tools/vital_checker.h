@@ -37,6 +37,7 @@
 #define JSK_TOPIC_TOOLS_VITAL_CHECKER_H_
 
 #include <ros/time.h>
+#include <diagnostic_updater/diagnostic_updater.h>
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/min.hpp>
@@ -46,6 +47,7 @@
 #include <boost/timer.hpp>
 
 #include <boost/thread.hpp>
+#include <boost/format.hpp>
 
 namespace jsk_topic_tools
 {
@@ -60,6 +62,8 @@ namespace jsk_topic_tools
     bool isAlive();
     double deadSec();
     double lastAliveTimeRelative();
+    void registerStatInfo(diagnostic_updater::DiagnosticStatusWrapper &stat,
+                          const std::string& prefix = std::string("last_poked_time"));
   protected:
     ros::Time last_alive_time_;
     double dead_sec_;
