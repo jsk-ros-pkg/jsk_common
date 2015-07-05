@@ -242,12 +242,16 @@ def checkUSBExist(vendor_id, product_id, expect_usb_nums = 1, host="", success_m
     else:
         errorMessage(vendor_product + " ("+str(usb_counter)+"/"+str(expect_usb_nums)+") " + error_msg if error_msg else vendor_product + " DOESN'T MATCH !! ( "+str(usb_counter)+"/"+str(expect_usb_nums)+" ) Detected")
         return False
-            
+
+
+def getROSMasterCLOSE_WAIT(host, username=""):
+    if username != "":
+        host = username + "@" + host
+    return int(subprocess.check_output(["ssh", host, "sudo", "bash", "-c", '"ps aux | grep rosmaster | grep CLOSE_WAIT | wc -l"']).split("\n")[0])
+
 def checkROSMasterCLOSE_WAIT(host, username=""):
     try:
-        if username != "":
-            host = username + "@" + host
-        close_wait_num = int(subprocess.check_output(["ssh", host, "sudo", "bash", "-c", '"ps aux | grep rosmaster | grep CLOSE_WAIT | wc -l"']).split("\n")[0])
+        close_wait_num = getROSMasterCLOSE_WAIT(host, username)
         if close_wait_num < 150:
             okMessage("roscore looks find (%d CLOSE_WAIT)" % close_wait_num)
             return True
