@@ -34,7 +34,7 @@
  *********************************************************************/
 
 #include "jsk_topic_tools/diagnostic_nodelet.h"
-
+#include <sstream>
 namespace jsk_topic_tools
 {
   DiagnosticNodelet::DiagnosticNodelet(const std::string& name):
@@ -78,6 +78,21 @@ namespace jsk_topic_tools
     else {
       stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
                    getName() + " is not subscribed");
+    }
+    std::stringstream topic_names;
+    for (size_t i = 0; i < publishers_.size(); i++) {
+      if (i == publishers_.size() - 1) {
+        topic_names << publishers_[i].getTopic();
+      }
+      else {
+        topic_names << publishers_[i].getTopic() << ", ";
+      }
+    }
+    stat.add("watched topics", topic_names.str());
+    for (size_t i = 0; i < publishers_.size(); i++) {
+      stat.add(publishers_[i].getTopic(),
+               (boost::format("%d subscribers") %
+                publishers_[i].getNumSubscribers()).str());
     }
   }
 }
