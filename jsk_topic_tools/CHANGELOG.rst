@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.2 (2015-07-07)
+------------------
 * [jsk_topic_tools] add install config directory
 * [jsk_topic_tools] Add number of subscribers to diagnostic information
 * [jsk_topic_tools/Relay] Add more readable diagnostic including last time it receives input topic

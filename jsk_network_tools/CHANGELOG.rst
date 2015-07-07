@@ -2,8 +2,8 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.2 (2015-07-07)
+------------------
 * [jsk_topic_tools] Check ROS original message size in silverhammer_lowspeed_check_size
 * [jsk_network_tools] Remove euslisp code from jsk_network_tools to
   resolve distorted dependency

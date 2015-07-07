@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.2 (2015-07-07)
+------------------
 * [jsk_tools] Remove monitor_roscore.py
 * [jsk_tools] Add monitoring script to check roscore CLOSE_WAIT num
 * [jsk_tools] Check msg type is same as published one
