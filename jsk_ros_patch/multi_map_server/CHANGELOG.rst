@@ -2,6 +2,9 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.0.1 (2015-06-28)
 ------------------
 * [jsk_ros_patch/multi_map_server/CMakeLists.txt] hydro/indigo/jade has wet package, so remove code for groovy

@@ -2,6 +2,14 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Check ROS original message size in silverhammer_lowspeed_check_size
+* [jsk_network_tools] Remove euslisp code from jsk_network_tools to
+  resolve distorted dependency
+* [jsk_network_tools] Publish under hostname prefix in network_status.py
+* Contributors: Ryohei Ueda
+
 2.0.1 (2015-06-28)
 ------------------
 

@@ -2,6 +2,15 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tools] Remove monitor_roscore.py
+* [jsk_tools] Add monitoring script to check roscore CLOSE_WAIT num
+* [jsk_tools] Check msg type is same as published one
+* [jsk_tools] import sanity_lib in __init__.py
+* [jsk_tools] Add network stats to local_pc_monitor.launch
+* Contributors: Kentaro Wada, Ryohei Ueda
+
 2.0.1 (2015-06-28)
 ------------------
 * [jsk_tools] Add local_pc_monitor.launch to monitor load of computers

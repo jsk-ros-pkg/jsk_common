@@ -2,6 +2,15 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] add install config directory
+* [jsk_topic_tools] Add number of subscribers to diagnostic information
+* [jsk_topic_tools/Relay] Add more readable diagnostic including last time it receives input topic
+* [jsk_topic_tools/Relay] Add diagnostic information
+* [jsk_topic_tools] Update default diagnostic message to be more useful
+* Contributors: Yuki Furuta, Ryohei Ueda
+
 2.0.1 (2015-06-28)
 ------------------
 * [jsk_topic_tools] Add DeprecatedRelay nodelet for deprecated topics
