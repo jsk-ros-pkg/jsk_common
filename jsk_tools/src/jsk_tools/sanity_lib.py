@@ -247,7 +247,7 @@ def checkUSBExist(vendor_id, product_id, expect_usb_nums = 1, host="", success_m
 def getROSMasterCLOSE_WAIT(host, username=""):
     if username != "":
         host = username + "@" + host
-    return int(subprocess.check_output(["ssh", host, "sudo", "bash", "-c", '"ps aux | grep rosmaster | grep CLOSE_WAIT | wc -l"']).split("\n")[0])
+    return int(subprocess.check_output(["ssh", host, "sudo", "bash", "-c", '"lsof -l | grep rosmaster | grep CLOSE_WAIT | wc -l"']).split("\n")[0])
 
 def checkROSMasterCLOSE_WAIT(host, username=""):
     try:
