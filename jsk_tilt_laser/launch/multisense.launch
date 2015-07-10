@@ -27,7 +27,7 @@
       <arg name="ip_address" value="$(arg ip_address)" />
       <arg name="namespace" value="$(arg namespace)" />
       <arg name="mtu" value="$(arg mtu)" />
-      <arg name="launch_robot_state_publisher" value="$(arg use_robot_description)" />    
+      <arg name="launch_robot_state_publisher" value="$(arg use_robot_description)" />
     </include>
   </group>
   <!--
@@ -70,7 +70,8 @@
      <include file="$(find jsk_pcl_ros)/launch/multi_resolution_organized_pointcloud.launch" if="$(arg use_resize)">
        <arg name="NAMESPACE" value="multisense_local" if="$(arg local)"/>
        <arg name="NAMESPACE" value="multisense" unless="$(arg local)"/>
-       <arg name="INPUT" value="/multisense/organized_image_points2_color" />
+       <arg name="INPUT" value="/multisense/organized_image_points2_color" unless="$(arg local)"/>
+       <arg name="INPUT" value="/multisense_local/organized_image_points2_color" if="$(arg local)"/>
        <arg name="INPUT_LEFT_IMAGE" value="/multisense_local/left/image_rect_color" />
        <arg name="INPUT_LEFT_CAMERA_INFO" value="/multisense_local/left/camera_info" />
        <arg name="INPUT_DEPTH" value="/multisense/depth" />
