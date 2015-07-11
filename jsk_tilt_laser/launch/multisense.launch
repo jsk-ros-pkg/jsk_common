@@ -8,6 +8,7 @@
   <arg name="not_use_sensor_tf_prefix" default="false" />
   <arg name="run_driver" default="true" />
   <arg name="fixed_frame_id" default="head_root" />
+  <arg name="assemble_cloud" default="/multisense/lidar_scan_filtered"/>
   <arg name="run_laser_pipeline" default="true" />
   <!-- if 'use_resize' is true, run nodelets to publish resized stereo pointcloud-->
   <arg name="use_resize" default="true" />
@@ -60,6 +61,7 @@
      <arg name="not_use_sensor_tf_prefix" value="$(arg not_use_sensor_tf_prefix)" />
      <arg name="namespace"  value="$(arg namespace)" />
      <arg name="fixed_frame_id" value="$(arg fixed_frame_id)" />
+     <arg name="assemble_cloud" value="$(arg assemble_cloud)"/>
    </include>
    <!-- modify multisense parameters -->
    <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense motor_speed 1.0" name="set_multisense_spindle_speed" />
