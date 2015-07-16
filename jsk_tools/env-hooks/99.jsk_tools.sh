@@ -147,7 +147,7 @@ rost() {
         header=$(echo $select | awk '{print $1}')
         content=$(echo $select | awk '{print $2}')
         if [ "$header" = "*" ]; then
-            rost $content
+            rosn $content
         elif [ "$header" = "Type:" ]; then
             rosmsg show $content | less
             rost
