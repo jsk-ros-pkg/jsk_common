@@ -123,12 +123,18 @@ rossetip() {
 
 rosn() {
     if [ "$1" = "" ]; then
-        topic=$(rosnode list | percol | xargs -n 1 rosnode info | percol | sed -e 's%.* \* \(/[/a-zA-Z0-9_]*\) .*%\1%')
+        select=$(rosnode list | percol | xargs -n 1 rosnode info | percol)
     else
-        topic=$(rosnode info $1 | percol | sed -e 's%.* \* \(/[/a-zA-Z0-9_]*\) .*%\1%')
+        select=$(rosnode info $1 | percol)
     fi
-    if [ "$topic" != "" ] ; then
-        rost $topic
+    if [ "$select" != "" ]; then
+        header=$(echo $select | awk '{print $1}')
+        content=$(echo $select | awk '{print $2}')
+        if [ "$header" = "*" ]; then
+            rost $content
+        else
+            rosn
+        fi
     fi
 }
 rost() {
