@@ -139,11 +139,20 @@ rosn() {
 }
 rost() {
     if [ "$1" = "" ]; then
-        node=$(rostopic list | percol | xargs -n 1 rostopic info | percol | sed -e 's%.* \* \(/[/a-zA-Z0-9_]*\) .*%\1%')
+        select=$(rostopic list | percol | xargs -n 1 rostopic info | percol)
     else
-        node=$(rostopic info $1 | percol | sed -e 's%.* \* \(/[/a-zA-Z0-9_]*\) .*%\1%')
+        select=$(rostopic info $1 | percol)
     fi
-    if [ "$node" != "" ] ; then
-        rosn $node
+    if [ "$select" != "" ]; then
+        header=$(echo $select | awk '{print $1}')
+        content=$(echo $select | awk '{print $2}')
+        if [ "$header" = "*" ]; then
+            rost $content
+        elif [ "$header" = "Type:" ]; then
+            rosmsg show $content | less
+            rost
+        else
+            rost
+        fi
     fi
 }
