@@ -122,8 +122,6 @@ rossetip() {
 }
 
 rosn() {
-    which percol || echo -e "\e[1;31mNeed to install percol, \`sudo pip install python-percol\` or \`rosdep install jsk_tools\` \e[m";
-    which percol || return 1
     if [ "$1" = "" ]; then
         topic=$(rosnode list | percol | xargs -n 1 rosnode info | percol | sed -e 's%.* \* \(/[/a-zA-Z0-9_]*\) .*%\1%')
     else
@@ -134,8 +132,6 @@ rosn() {
     fi
 }
 rost() {
-    which percol || echo -e "\e[1;31mNeed to install percol, \`sudo pip install python-percol\` or \`rosdep install jsk_tools\` \e[m";
-    which percol || return 1
     if [ "$1" = "" ]; then
         node=$(rostopic list | percol | xargs -n 1 rostopic info | percol | sed -e 's%.* \* \(/[/a-zA-Z0-9_]*\) .*%\1%')
     else
