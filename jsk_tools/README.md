@@ -43,7 +43,7 @@ http://pr1040:11311
 
 rosdefault
 ----------
-Setup `ROS_MASTER_URI` with default hostname written in `~/.rosdefault`.  
+Setup `ROS_MASTER_URI` with default hostname written in `~/.rosdefault`.
 
 ```sh
 $ cat ~/.rosdefault
@@ -57,8 +57,8 @@ It is recommended to run `rosdefault` in your .bashrc or .zshrc.
 
 rossetdefault
 -------------
-Setup your default hostname.  
-After running this command, you can setup `ROS_MASTER_URI` with default hostname by `rosdefault`.  
+Setup your default hostname.
+After running this command, you can setup `ROS_MASTER_URI` with default hostname by `rosdefault`.
 (default hostname will be stored at `~/.rosdefault`)
 
 ```sh
@@ -104,4 +104,34 @@ checkNodeState("/listener", True)
 from jsk_tools.sanity_lib import *
 rospy.init_node("check_sanity", anonymous = True)
 checkROSParam("/param_test", 5)
+```
+
+bag_plotter.py
+--------------
+bag_plotter is a script to plot from a bag file directly.
+![](images/bag_plotter.png)
+
+
+Usage is
+```
+$ bag_plotter.py bag_file conf_yaml
+```
+
+Format of yaml file is like:
+```yaml
+global:
+  layout: "vertical"
+plots:
+  - title: "pose_x and pose_y"
+    type: "line"
+    topic: ["/Board/pose", "/Board/pose"]
+    field: ["pose/position/x", "pose/position/y"]
+  - title: "pose_x"
+    type: "line"
+    topic: ["/Board/pose"]
+    field: ["pose/position/x"]
+  - title: "pose_y"
+    type: "line"
+    topic: ["/Board/pose"]
+    field: ["pose/position/y"]
 ```
