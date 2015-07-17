@@ -118,6 +118,7 @@ unset SVN_REVISION ## this jenkins environment valiables conflicts with mk/svn_c
 function setup-ros {
     if [ "$YES" == "-y" ] ;then
         REPLY="Y"
+        APT_GET_YES="-y -qq -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew"
     else
         read -p "Are you sure? to run dpkg --configure? [y/N] " -n 1 -r
         echo
@@ -127,7 +128,7 @@ function setup-ros {
     fi
     $COMMAND $SUDO add-apt-repository ppa:webupd8team/java -y
     $COMMAND $SUDO apt-get update
-    $COMMAND $SUDO apt-get $YES install build-essential python-yaml cmake subversion wget python-setuptools git-core mercurial aptitude oracle-java7-installer
+    $COMMAND $SUDO apt-get $APT_GET_YES install build-essential python-yaml cmake subversion wget python-setuptools git-core mercurial aptitude oracle-java7-installer
     REPLY="Y"
     if [ "$YES" != "-y" -a -e /etc/apt/sources.list.d/ros-latest.list ] ; then
         read -p "Are you sure? to overwrite /etc/apt/sources.list.d/ros-latest.list [y/N] " -n 1 -r
@@ -149,10 +150,10 @@ function setup-ros {
         $COMMAND $SUDO apt-get update
     fi
     $COMMAND $SUDO apt-get upgrade $YES
-    $COMMAND $SUDO apt-get -qq $YES install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools python-pip
+    $COMMAND $SUDO apt-get $APT_GET_YES install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools python-pip
     if [ "$USE_SOURCE" == "full" ]; then
-        $COMMAND $SUDO apt-get -qq $YES install python-rosinstall-generator
-        $COMMAND $SUDO apt-get -qq $YES install libftdi-dev libgstreamer0.10-dev libgst-dev libgstreamer-plugins-base0.10-dev
+        $COMMAND $SUDO apt-get $APT_GET_YES install python-rosinstall-generator
+        $COMMAND $SUDO apt-get $APT_GET_YES install libftdi-dev libgstreamer0.10-dev libgst-dev libgstreamer-plugins-base0.10-dev
     fi
     if [ -e /etc/ros/rosdep/sources.list.d/20-default.list ] ; then
         $COMMAND $SUDO rm -f /etc/ros/rosdep/sources.list.d/20-default.list;  # rosdep init fails when arleady initialized
