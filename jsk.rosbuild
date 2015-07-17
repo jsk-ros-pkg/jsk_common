@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function usage {
-    echo >&2 "usage: $0"
+    echo >&2 "usage: $0 [ros_distro(hydro,inidgo,...)]"
     echo >&2 "          [-h|--help] print this message"
     echo >&2 "          [-i|--show-install] show how to install "
     echo >&2 "          [-p|--show-package] display packages to install"
@@ -13,6 +13,7 @@ function usage {
     echo >&2 "          [--rtm|--start-jsk|--rtm-ros-robotics] merge .rosinstall for rtm-ros stuff"
     echo >&2 "          [--from-source] install jsk and related packages from source code"
     echo >&2 "          [--from-full-source] install whole ros system using source code"
+    echo >&2 "          [-r|--repositories] comma separated list of repositories to install"
     exit 0
 }
 
@@ -25,12 +26,13 @@ function error {
 trap error ERR
 
 # command line parse
-OPT=`getopt -o hipeyns -l help,show-install,show-package,show-environment,yes,rtm,start-jsk,from-source,from-full-source,use-shadow-fixed,no-sudo -- $*`
+OPT=`getopt -o hipeynsr: -l help,show-install,show-package,show-environment,yes,rtm,start-jsk,from-source,from-full-source,use-shadow-fixed,no-sudo,repositories -- $*`
 if [ $? != 0 ]; then
     usage
 fi
 DEBIAN_REPOSITORY='http://packages.ros.org/ros/ubuntu'
 SUDO=sudo
+INSTALL_REPOSITORIES=''
 
 eval set -- $OPT
 while [ -n "$1" ] ; do
@@ -46,10 +48,12 @@ while [ -n "$1" ] ; do
 	--from-source) USE_SOURCE=true; shift;;
 	--from-full-source) USE_SOURCE=full; shift;;
 	--no-sudo) SUDO='echo "[NO_SUDO] skipping"'; shift;;
+	-r|--repositories) shift; INSTALL_REPOSITORIES=$1; shift;;
 	--) shift; break;;
 	*) echo "Unknown option($1)"; usage;;
     esac
 done
+
 
 # set environment variables
 # set distribution
@@ -85,7 +89,10 @@ else
     exit -1
 fi
 
-
+# get list of the repository ( local-names to be installed)
+if [ "$INSTALL_REPOSITORIES" != "" ]; then
+    echo "Install only selected repositories ${INSTALL_REPOSITORIES}"
+fi
 
 # setup workspaceand buildspace
 if [ "$WORKSPACE" == "" ]; then # if not jenkins
@@ -192,11 +199,23 @@ function install-pkg {
         (cd $ROS_INSTALLDIR_SRC; $COMMAND wstool info)
     fi
 
+    # check install repositories
+    INSTALL_PARENT_PACKAGE=''
+    if [ "${INSTALL_REPOSITORIES}" != "" ]; then
+        # split comman separated list to space separated list
+        OLD_IFS=$IFS
+        IFS=','
+        for repo in ${INSTALL_REPOSITORIES}; do
+            $COMMAND grep "local-name: $repo" ${ROS_INSTALLDIR_SRC}/.rosinstall || INSTALL_PARENT_PACKAGE="$INSTALL_PARENT_PACKAGE $repo"
+        done
+        IFS=$OLD_IFS
+    fi
+
     # wstool update
     success=0
     retry=0
     while [ $success == 0 -a $retry -lt 10 ]; do
-        (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" $COMMAND wstool update -j10 --delete-changed-uris) && success=1 || sleep 120
+        (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" $COMMAND wstool update -j10 --delete-changed-uris ${INSTALL_REPOSITORIES}) && success=1 || sleep 120
         retry=`expr $retry + 1`
     done
 
@@ -318,7 +337,17 @@ EOF
             pkg2=$(echo $pkg | sed s@/@-@g)
             if [ -e $ROS_INSTALLDIR_SRC/$pkg/setup_upstream.sh -a ! -e ${ROS_INSTALLDIR}_parent/src/$pkg2-setup.sh ]; then
                 $COMMAND cp $ROS_INSTALLDIR_SRC/$pkg/setup_upstream.sh ${ROS_INSTALLDIR}_parent/src/$pkg2-setup_upstream.sh
-                ROS_DISTRO=$DISTRIBUTION $COMMAND ${ROS_INSTALLDIR}_parent/src/$pkg2-setup_upstream.sh -w ${ROS_INSTALLDIR}_parent/
+                if [ "${INSTALL_PARENT_PACKAGE}" != "" ] ;then
+                    OLD_IFS=$IFS
+                    IFS=','
+                    for repo in ${INSTALL_REPOSITORIES}; do
+                        $COMMAND grep "local-name: $repo" ${ROS_INSTALLDIR}_parent/src/.rosinstall || (echo "'$repo' is not found, please check your -r option, they are one of following"; grep local-name ${ROS_INSTALLDIR}_parent/src/.rosinstall ${ROS_INSTALLDIR_SRC}/.rosinstall | sed 's@.*local-name:\([^,]*\),.*$@\1@'; kill 0)
+                        ROS_DISTRO=$DISTRIBUTION $COMMAND ${ROS_INSTALLDIR}_parent/src/$pkg2-setup_upstream.sh -w ${ROS_INSTALLDIR}_parent/ -p $repo
+                    done
+                    IFS=$OLD_IFS
+                else
+                    ROS_DISTRO=$DISTRIBUTION $COMMAND ${ROS_INSTALLDIR}_parent/src/$pkg2-setup_upstream.sh -w ${ROS_INSTALLDIR}_parent/
+                fi
             fi
         done
     fi
