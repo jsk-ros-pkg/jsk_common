@@ -67,6 +67,8 @@ jsk_topic_tools_nodelet(src/hz_measure_nodelet.cpp
   "jsk_topic_tools/HzMeasure" "hz_measure")
 jsk_topic_tools_nodelet(src/vital_checker_nodelet.cpp
   "jsk_topic_tools/VitalCheckerNodelet" "vital_checker")
+jsk_topic_tools_nodelet(src/string_relay_nodelet.cpp
+  "jsk_topic_tools/StringRelay" "string_relay")
 
 add_library(jsk_topic_tools SHARED
   ${jsk_topic_tools_nodelet_sources}

@@ -59,4 +59,10 @@
       block topic
     </description>
   </class>
+  <class name="jsk_topic_tools/StringRelay" type="StringRelay"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      block topic
+    </description>
+  </class>
 </library>
