@@ -27,6 +27,7 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 #include_directories(${Boost_INCLUDE_DIRS})
+add_executable(standalone_complexed_nodelet src/standalone_complexed_nodelet.cpp)
 add_executable(topic_buffer_server src/topic_buffer_server.cpp)
 add_executable(topic_buffer_client src/topic_buffer_client.cpp)
 add_executable(transform_merger src/transform_merger.cpp)
@@ -39,7 +40,7 @@ add_dependencies(topic_buffer_server ${PROJECT_NAME}_gencpp)
 add_dependencies(topic_buffer_client ${PROJECT_NAME}_gencpp)
 target_link_libraries(topic_buffer_server ${catkin_LIBRARIES})
 target_link_libraries(topic_buffer_client ${catkin_LIBRARIES})
-
+target_link_libraries(standalone_complexed_nodelet ${catkin_LIBRARIES})
 
 include(${PROJECT_SOURCE_DIR}/cmake/nodelet.cmake)
 
@@ -99,6 +100,7 @@ endif(NOT $ENV{ROS_DISTRO} STREQUAL "indigo")
 
 install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
   ${jsk_topic_tools_nodelet_executable_names}
+  standalone_complexed_nodelet
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
