@@ -122,26 +122,37 @@ rossetip() {
 }
 
 rosn() {
-    which percol || echo -e "\e[1;31mNeed to install percol, \`sudo pip install python-percol\` or \`rosdep install jsk_tools\` \e[m";
-    which percol || return 1
     if [ "$1" = "" ]; then
-        topic=$(rosnode list | percol | xargs -n 1 rosnode info | percol | sed -e 's%.* \* \(/[/a-zA-Z0-9_]*\) .*%\1%')
+        select=$(rosnode list | percol | xargs -n 1 rosnode info | percol)
     else
-        topic=$(rosnode info $1 | percol | sed -e 's%.* \* \(/[/a-zA-Z0-9_]*\) .*%\1%')
+        select=$(rosnode info $1 | percol)
     fi
-    if [ "$topic" != "" ] ; then
-        rost $topic
+    if [ "$select" != "" ]; then
+        header=$(echo $select | awk '{print $1}')
+        content=$(echo $select | awk '{print $2}')
+        if [ "$header" = "*" ]; then
+            rost $content
+        else
+            rosn
+        fi
     fi
 }
 rost() {
-    which percol || echo -e "\e[1;31mNeed to install percol, \`sudo pip install python-percol\` or \`rosdep install jsk_tools\` \e[m";
-    which percol || return 1
     if [ "$1" = "" ]; then
-        node=$(rostopic list | percol | xargs -n 1 rostopic info | percol | sed -e 's%.* \* \(/[/a-zA-Z0-9_]*\) .*%\1%')
+        select=$(rostopic list | percol | xargs -n 1 rostopic info | percol)
     else
-        node=$(rostopic info $1 | percol | sed -e 's%.* \* \(/[/a-zA-Z0-9_]*\) .*%\1%')
+        select=$(rostopic info $1 | percol)
     fi
-    if [ "$node" != "" ] ; then
-        rosn $node
+    if [ "$select" != "" ]; then
+        header=$(echo $select | awk '{print $1}')
+        content=$(echo $select | awk '{print $2}')
+        if [ "$header" = "*" ]; then
+            rosn $content
+        elif [ "$header" = "Type:" ]; then
+            rosmsg show $content | less
+            rost
+        else
+            rost
+        fi
     fi
 }
