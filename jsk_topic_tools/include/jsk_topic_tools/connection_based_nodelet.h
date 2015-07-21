@@ -117,6 +117,7 @@ namespace jsk_topic_tools
     advertise(ros::NodeHandle& nh,
               std::string topic, int queue_size)
     {
+      boost::mutex::scoped_lock lock(connection_mutex_);
       ros::SubscriberStatusCallback connect_cb
         = boost::bind( &ConnectionBasedNodelet::connectionCallback, this, _1);
       ros::SubscriberStatusCallback disconnect_cb
@@ -125,6 +126,7 @@ namespace jsk_topic_tools
                                            connect_cb,
                                            disconnect_cb);
       publishers_.push_back(ret);
+      
       return ret;
     }
 
