@@ -7,51 +7,64 @@
   <arg name="fixed_frame_id" default="head_root" />
   <arg name="not_use_sensor_tf_prefix" default="false" />
   <!-- Run stereo_image_proc -->
-  
+
   <group ns="$(arg namespace)">
-    <node pkg="nodelet" type="nodelet" name="stereo_manager" args="manager" />
+    <node pkg="jsk_topic_tools" type="standalone_complexed_nodelet" name="stereo_manager"
+          output="screen">
+    </node>
+    
     <include file="$(find jsk_pcl_ros)/launch/stereo_reconstruction.launch">
-      <arg name="MANAGER" value="/$(arg namespace)/stereo_manager" />
+      <arg name="MANAGER" value="stereo_manager" />
       <arg name="INPUT_LEFT_IMAGE" value="/multisense_local/left/image_rect_color" />
       <arg name="INPUT_LEFT_CAMERA_INFO" value="/multisense_local/left/camera_info" />
       <arg name="INPUT_DEPTH" value="/multisense/depth" />
       <arg name="USE_COMPRESS" value="$(arg use_compress)" />
       <arg name="COMPRESSED_TYPE" value="compressed" unless="$(arg use_theora)"/>
       <arg name="COMPRESSED_TYPE" value="theora" if="$(arg use_theora)"/>
+      <arg name="NAME_PREFIX" value="" />
+      <arg name="NO_SUB_NAMESPACE" value="true" />
+      <arg name="PARAM_COUNT" value="0" />
     </include>
-    <group ns="resize_1_2">
-      <include file="$(find jsk_pcl_ros)/launch/stereo_reconstruction.launch">
-        <arg name="MANAGER" value="/$(arg namespace)/stereo_manager" />
-        <arg name="INPUT_LEFT_IMAGE" value="/multisense_local/resize_1_2/left/image_rect_color" />
-        <arg name="INPUT_LEFT_CAMERA_INFO" value="/multisense_local/resize_1_2/left/camera_info" />
-        <arg name="INPUT_DEPTH" value="/multisense_local/resize_1_2/depth" />
-        <arg name="USE_COMPRESS" value="$(arg use_compress)" />
-        <arg name="COMPRESSED_TYPE" value="compressed" unless="$(arg use_theora)"/>
-        <arg name="COMPRESSED_TYPE" value="theora" if="$(arg use_theora)"/>
-      </include>
-    </group>
-    <group ns="resize_1_4">
-      <include file="$(find jsk_pcl_ros)/launch/stereo_reconstruction.launch">
-        <arg name="MANAGER" value="/$(arg namespace)/stereo_manager" />
-        <arg name="INPUT_LEFT_IMAGE" value="/multisense_local/resize_1_4/left/image_rect_color" />
-        <arg name="INPUT_LEFT_CAMERA_INFO" value="/multisense_local/resize_1_4/left/camera_info" />
-        <arg name="INPUT_DEPTH" value="/multisense_local/resize_1_4/depth" />
-        <arg name="USE_COMPRESS" value="$(arg use_compress)" />
-        <arg name="COMPRESSED_TYPE" value="compressed" unless="$(arg use_theora)"/>
-        <arg name="COMPRESSED_TYPE" value="theora" if="$(arg use_theora)"/>
-      </include>
-    </group>
-    <group ns="resize_1_8">
-      <include file="$(find jsk_pcl_ros)/launch/stereo_reconstruction.launch">
-        <arg name="MANAGER" value="/$(arg namespace)/stereo_manager" />
-        <arg name="INPUT_LEFT_IMAGE" value="/multisense_local/resize_1_8/left/image_rect_color" />
-        <arg name="INPUT_LEFT_CAMERA_INFO" value="/multisense_local/resize_1_8/left/camera_info" />
-        <arg name="INPUT_DEPTH" value="/multisense_local/resize_1_8/depth" />
-        <arg name="USE_COMPRESS" value="$(arg use_compress)" />
-        <arg name="COMPRESSED_TYPE" value="compressed" unless="$(arg use_theora)"/>
-        <arg name="COMPRESSED_TYPE" value="theora" if="$(arg use_theora)"/>
-      </include>
-    </group>
+    
+    <include file="$(find jsk_pcl_ros)/launch/stereo_reconstruction.launch">
+      <arg name="MANAGER" value="/$(arg namespace)/stereo_manager" />
+      <arg name="INPUT_LEFT_IMAGE" value="/multisense_local/resize_1_2/left/image_rect_color" />
+      <arg name="INPUT_LEFT_CAMERA_INFO" value="/multisense_local/resize_1_2/left/camera_info" />
+      <arg name="INPUT_DEPTH" value="/multisense_local/resize_1_2/depth" />
+      <arg name="RELAY_DEPTH" value="true" />
+      <arg name="USE_COMPRESS" value="$(arg use_compress)" />
+      <arg name="COMPRESSED_TYPE" value="compressed" unless="$(arg use_theora)"/>
+      <arg name="COMPRESSED_TYPE" value="theora" if="$(arg use_theora)"/>
+      <arg name="NAME_PREFIX" value="resize_1_2/" />
+      <arg name="SUB_NAMESPACE" value="resize_1_2" />
+      <arg name="PARAM_COUNT" value="1" />
+    </include>
+    <include file="$(find jsk_pcl_ros)/launch/stereo_reconstruction.launch">
+      <arg name="MANAGER" value="/$(arg namespace)/stereo_manager" />
+      <arg name="INPUT_LEFT_IMAGE" value="/multisense_local/resize_1_4/left/image_rect_color" />
+      <arg name="INPUT_LEFT_CAMERA_INFO" value="/multisense_local/resize_1_4/left/camera_info" />
+      <arg name="INPUT_DEPTH" value="/multisense_local/resize_1_4/depth" />
+      <arg name="RELAY_DEPTH" value="true" />
+      <arg name="USE_COMPRESS" value="$(arg use_compress)" />
+      <arg name="COMPRESSED_TYPE" value="compressed" unless="$(arg use_theora)"/>
+      <arg name="COMPRESSED_TYPE" value="theora" if="$(arg use_theora)"/>
+      <arg name="NAME_PREFIX" value="resize_1_4/" />
+      <arg name="SUB_NAMESPACE" value="resize_1_4" />
+      <arg name="PARAM_COUNT" value="2" />
+    </include>
+    <include file="$(find jsk_pcl_ros)/launch/stereo_reconstruction.launch">
+      <arg name="MANAGER" value="/$(arg namespace)/stereo_manager" />
+      <arg name="INPUT_LEFT_IMAGE" value="/multisense_local/resize_1_8/left/image_rect_color" />
+      <arg name="INPUT_LEFT_CAMERA_INFO" value="/multisense_local/resize_1_8/left/camera_info" />
+      <arg name="INPUT_DEPTH" value="/multisense_local/resize_1_8/depth" />
+      <arg name="RELAY_DEPTH" value="true" />
+      <arg name="USE_COMPRESS" value="$(arg use_compress)" />
+      <arg name="COMPRESSED_TYPE" value="compressed" unless="$(arg use_theora)"/>
+      <arg name="COMPRESSED_TYPE" value="theora" if="$(arg use_theora)"/>
+      <arg name="SUB_NAMESPACE" value="resize_1_8" />
+      <arg name="NAME_PREFIX" value="resize_1_8/" />
+      <arg name="PARAM_COUNT" value="3" />
+    </include>
   </group>
   
   <include file="$(find jsk_tilt_laser)/launch/multisense_laser_pipeline.launch" if="$(arg run_laser_pipeline)">
