@@ -202,12 +202,14 @@ function install-pkg {
 
     # check install repositories
     INSTALL_PARENT_PACKAGE=''
+    INSTALL_PACKAGE=''
     if [ "${INSTALL_REPOSITORIES}" != "" ]; then
         # split comman separated list to space separated list
         OLD_IFS=$IFS
         IFS=','
         for repo in ${INSTALL_REPOSITORIES}; do
             $COMMAND grep "local-name: $repo" ${ROS_INSTALLDIR_SRC}/.rosinstall || INSTALL_PARENT_PACKAGE="$INSTALL_PARENT_PACKAGE $repo"
+            $COMMAND grep "local-name: $repo" ${ROS_INSTALLDIR_SRC}/.rosinstall && INSTALL_PACKAGE="$INSTALL_PACKAGE $repo"
         done
         IFS=$OLD_IFS
     fi
@@ -216,7 +218,7 @@ function install-pkg {
     success=0
     retry=0
     while [ $success == 0 -a $retry -lt 10 ]; do
-        (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" $COMMAND wstool update -j10 --delete-changed-uris ${INSTALL_REPOSITORIES}) && success=1 || sleep 120
+        (cd $ROS_INSTALLDIR_SRC && ROS_WORKSPACE="" $COMMAND wstool update -j10 --delete-changed-uris ${INSTALL_PACKAGE}) && success=1 || sleep 120
         retry=`expr $retry + 1`
     done
 
@@ -246,7 +248,7 @@ function compile-pkg {
     # rosdep install
     if [ "$NO_SUDO" != "true" ]; then
         (cd ${ROS_INSTALLDIR}/src &&
-                $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION ROS_PACKAGE_PATH="$ROS_PACKAGE_PATH:$HOME/ros/hydro_parent/src:$HOME/ros/hydro/src" $COMMAND bash)
+                $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION ROS_PACKAGE_PATH="$ROS_PACKAGE_PATH:${ROS_INSTALLDIR}_parent/src:${ROS_INSTALLDIR}/src" $COMMAND bash)
     fi
     ## do compile for upstream
     $COMMAND source /opt/ros/$DISTRIBUTION/setup.sh
@@ -339,13 +341,9 @@ EOF
             if [ -e $ROS_INSTALLDIR_SRC/$pkg/setup_upstream.sh -a ! -e ${ROS_INSTALLDIR}_parent/src/$pkg2-setup.sh ]; then
                 $COMMAND cp $ROS_INSTALLDIR_SRC/$pkg/setup_upstream.sh ${ROS_INSTALLDIR}_parent/src/$pkg2-setup_upstream.sh
                 if [ "${INSTALL_PARENT_PACKAGE}" != "" ] ;then
-                    OLD_IFS=$IFS
-                    IFS=','
-                    for repo in ${INSTALL_REPOSITORIES}; do
-                        $COMMAND grep "local-name: $repo" ${ROS_INSTALLDIR}_parent/src/.rosinstall || (echo "'$repo' is not found, please check your -r option, they are one of following"; grep local-name ${ROS_INSTALLDIR}_parent/src/.rosinstall ${ROS_INSTALLDIR_SRC}/.rosinstall | sed 's@.*local-name:\([^,]*\),.*$@\1@'; kill 0)
+                    for repo in ${INSTALL_PARENT_PACKAGE}; do
                         ROS_DISTRO=$DISTRIBUTION $COMMAND ${ROS_INSTALLDIR}_parent/src/$pkg2-setup_upstream.sh -w ${ROS_INSTALLDIR}_parent/ -p $repo
                     done
-                    IFS=$OLD_IFS
                 else
                     ROS_DISTRO=$DISTRIBUTION $COMMAND ${ROS_INSTALLDIR}_parent/src/$pkg2-setup_upstream.sh -w ${ROS_INSTALLDIR}_parent/
                 fi
