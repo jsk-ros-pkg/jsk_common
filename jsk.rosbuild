@@ -248,7 +248,7 @@ function compile-pkg {
     # rosdep install
     if [ "$NO_SUDO" != "true" ]; then
         (cd ${ROS_INSTALLDIR}/src &&
-                $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION ROS_PACKAGE_PATH="$ROS_PACKAGE_PATH:$HOME/ros/${DISTRIBUTION}_parent/src:$HOME/ros/${DISTRIBUTION}/src" $COMMAND bash)
+                $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION ROS_PACKAGE_PATH="$ROS_PACKAGE_PATH:${ROS_INSTALLDIR}_parent/src:${ROS_INSTALLDIR}/src" $COMMAND bash)
     fi
     ## do compile for upstream
     $COMMAND source /opt/ros/$DISTRIBUTION/setup.sh
