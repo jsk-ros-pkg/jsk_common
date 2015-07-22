@@ -32,67 +32,88 @@
     </rosparam>
     <remap from="cloud_filtered" to="/multisense/lidar_scan_filtered" />
   </node>
-  <node pkg="nodelet" type="nodelet" name="multisense_laser_manager"
-        args="manager" output="screen"/>
-
-  <node pkg="nodelet" type="nodelet"
-        name="laser_x_filter"
-        args="load pcl/PassThrough multisense_laser_manager">
-    <remap from="~input" to="tilt_laser_listener/output_cloud" />
+  <node pkg="jsk_topic_tools"
+        type="standalone_complexed_nodelet"
+        name="multisense_laser"
+        output="screen">
+    <rosparam subst_value="true">
+    nodelets:
+      - name: laser_x_filter
+        type: pcl/PassThrough
+        remappings:
+          - from: ~input
+            to: tilt_laser_listener/output_cloud
+      - name: laser_y_filter
+        type: pcl/PassThrough
+        remappings:
+          - from: ~input
+            to: laser_x_filter/output
+      - name: laser_z_filter
+        type: pcl/PassThrough
+        remappings:
+          - from: ~input
+            to: laser_y_filter/output
+      - name: laser_downsampler
+        type: pcl/VoxelGrid
+        remappings:
+          - from: ~input
+            to: laser_z_filter/output
+      - name: laser_camera_cloud
+        type: jsk_pcl/TfTransformCloud
+        remappings:
+          - from: ~input
+            to: "laser_downsampler/output"
+      - name: tilt_laser_listener
+        type: jsk_pcl/TiltLaserListener
+        remappings:
+          - from: ~input
+            to: /$(arg namespace)/joint_states
+          - from: ~input/cloud
+            to: $(arg assemble_cloud)
+      - name: multisense_laser_relay
+        type: jsk_topic_tools/Relay
+        remappings:
+          - from: ~input
+            to: tilt_laser_listener/output_cloud
+          - from: ~output
+            to: /full_cloud2
+    </rosparam>
+  </node>
+  <group ns="laser_x_filter">
     <rosparam>
       filter_field_name: x
       filter_limit_min: -5.0
-      filter_limit_max: 5.0
+      filter_limit_max: 1000.0
     </rosparam>
-  </node>
-  <node pkg="nodelet" type="nodelet"
-        name="laser_y_filter"
-        args="load pcl/PassThrough multisense_laser_manager">
-    <remap from="~input" to="laser_x_filter/output" />
+  </group>
+  <group ns="laser_y_filter">
     <rosparam>
       filter_field_name: y
       filter_limit_min: -5.0
       filter_limit_max: 5.0
     </rosparam>
-  </node>
-  <node pkg="nodelet" type="nodelet"
-        name="laser_z_filter"
-        args="load pcl/PassThrough multisense_laser_manager">
-    <remap from="~input" to="laser_y_filter/output" />
+  </group>
+  <group ns="laser_z_filter">
     <rosparam>
       filter_field_name: z
       filter_limit_min: -5.0
       filter_limit_max: 5.0
     </rosparam>
-  </node>
-  
-  <node pkg="nodelet" type="nodelet"
-        name="laser_downsampler"
-        args="load pcl/VoxelGrid multisense_laser_manager">
-    <remap from="~input" to="laser_z_filter/output" />
+  </group>
+  <group ns="laser_downsampler">
     <rosparam>
       leaf_size: 0.01
       filter_limit_min: -100
       filter_limit_max: 100
     </rosparam>
-  </node>
-
-  <node pkg="nodelet" type="nodelet"
-        name="laser_camera_cloud"
-        args="load jsk_pcl/TfTransformCloud multisense_laser_manager">
-    <remap from="~input" to="laser_downsampler/output" />
+  </group>
+  <group ns="laser_camera_cloud">
     <param name="target_frame_id" value="multisense/left_camera_optical_frame"
            unless="$(arg not_use_sensor_tf_prefix)"/>
     <param name="target_frame_id" value="left_camera_optical_frame"
            if="$(arg not_use_sensor_tf_prefix)"/>
-  </node>
-
-    
-  <node pkg="nodelet" type="nodelet"
-        name="tilt_laser_listener"
-        args="load jsk_pcl/TiltLaserListener multisense_laser_manager"
-        output="screen">
-    <remap from="~input" to="/$(arg namespace)/joint_states" />
+  </group>
+  <group ns="tilt_laser_listener">
     <rosparam subst_value="true">
 #      laser_type: infinite_spindle_half
       laser_type: infinite_spindle
@@ -102,13 +123,5 @@
       overwrap_angle: 0.0
       skip_number: 10
     </rosparam>
-    <remap from="~input/cloud" to="$(arg assemble_cloud)" />
-  </node>
-  <!-- for backward compatibility -->
-  <node pkg="nodelet" type="nodelet"
-        name="multisense_laser_relay"
-        args="load jsk_topic_tools/Relay multisense_laser_manager">
-    <remap from="~input" to="tilt_laser_listener/output_cloud" />
-    <remap from="~output" to="/full_cloud2" />
-  </node>
+  </group>
 </launch>
