@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.3 (2015-07-24)
+------------------
 * [jsk_tools/99.jsk_tools.sh] fix typo
 * [jsk_tools/99.jsk_tools.sh] Safer rost func and support rosmsg show
 * [jsk_tools/99.jsk_tools.sh] Safer rosn function when selecting in percol

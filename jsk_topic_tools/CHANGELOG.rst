@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.3 (2015-07-24)
+------------------
 * [jsk_topic_tools] Install missing executables
 * [jsk_topic_tools/standalone_complexed_nodelet] Support if and unless
   fields and read parameter from ~nodelet_%lu as well as ~nodelet

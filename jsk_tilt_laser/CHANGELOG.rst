@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.3 (2015-07-24)
+------------------
 * [jsk_topic_tools] Rewrite multisense_remote.launch with standalone_complex_nodelet
 * [jsk_tilt_laser] Rewrite multisense_laser_pipeline.launch with standalone_complexed_nodelet
 * [jsk_tilt_laser] Add assemble_cloud argument to customize laser pipeline
