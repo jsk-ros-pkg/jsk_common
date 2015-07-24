@@ -101,6 +101,8 @@ endif(NOT $ENV{ROS_DISTRO} STREQUAL "indigo")
 install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
   ${jsk_topic_tools_nodelet_executable_names}
   standalone_complexed_nodelet
+  static_transform_pose_stamped
+  transform_merger
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
