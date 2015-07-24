@@ -2,6 +2,17 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tools/99.jsk_tools.sh] fix typo
+* [jsk_tools/99.jsk_tools.sh] Safer rost func and support rosmsg show
+* [jsk_tools/99.jsk_tools.sh] Safer rosn function when selecting in percol
+* [jsk_tools/99.jsk_tools.sh] depends should be resolved via rosdep install
+* [jsk_tools] Add bag_plotter.py to README
+* [jsk_tools] Add plotting code from bag file
+* [jsk_tools] Fix to use lsof to lookup CLOSE_WAIT num
+* Contributors: Kentaro Wada, Ryohei Ueda
+
 2.0.2 (2015-07-07)
 ------------------
 * [jsk_tools] Remove monitor_roscore.py

@@ -2,6 +2,21 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Install missing executables
+* [jsk_topic_tools/standalone_complexed_nodelet] Support if and unless
+  fields and read parameter from ~nodelet_%lu as well as ~nodelet
+* [jsk_topic_tools] Introduce new nodelet manager called
+  standalone_complexed_nodelet.
+  It reads nodelet clients from rosparam and launch them. It is a general
+  model for nodelet like stereo_image_proc. It does not need different
+  processes for manager/clients
+* [jsk_topic_tools] Make advertise template method critical section in
+  order to avoid race condition between advertise and connectionCallback
+* [jsk_topic_tools] Add StringRelay nodelet to test DiagnosticNodelet class
+* Contributors: Ryohei Ueda
+
 2.0.2 (2015-07-07)
 ------------------
 * [jsk_topic_tools] add install config directory

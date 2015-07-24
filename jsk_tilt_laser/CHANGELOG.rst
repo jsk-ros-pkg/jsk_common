@@ -2,6 +2,14 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Rewrite multisense_remote.launch with standalone_complex_nodelet
+* [jsk_tilt_laser] Rewrite multisense_laser_pipeline.launch with standalone_complexed_nodelet
+* [jsk_tilt_laser] Add assemble_cloud argument to customize laser pipeline
+* [jsk_tilt_laser] Fix multisense pointcloud topic for local mode
+* Contributors: Ryohei Ueda
+
 2.0.2 (2015-07-07)
 ------------------
 
