@@ -41,47 +41,47 @@
 #include <nodelet/nodelet.h>
 
 #define JSK_NODELET_DEBUG(str,...) \
-  NODELET_DEBUG("[%s]" str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+  NODELET_DEBUG("[%s] " str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #define JSK_NODELET_INFO(str,...) \
-  NODELET_INFO("[%s]" str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+  NODELET_INFO("[%s] " str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #define JSK_NODELET_WARN(str,...) \
-  NODELET_WARN("[%s]" str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+  NODELET_WARN("[%s] " str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #define JSK_NODELET_ERROR(str,...) \
-  NODELET_ERROR("[%s]" str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+  NODELET_ERROR("[%s] " str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #define JSK_NODELET_FATAL(str,...) \
-  NODELET_FATAL("[%s]" str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+  NODELET_FATAL("[%s] " str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 
 #define JSK_NODELET_DEBUG_STREAM(...) \
-  NODELET_DEBUG_STREAM("[" << __PRETTY_FUNCTION__ << "]" << __VA_ARGS__)
+  NODELET_DEBUG_STREAM("[" << __PRETTY_FUNCTION__ << "] " << __VA_ARGS__)
 #define JSK_NODELET_INFO_STREAM(...) \
-  NODELET_INFO_STREAM("[" << __PRETTY_FUNCTION__ << "]" << __VA_ARGS__)
+  NODELET_INFO_STREAM("[" << __PRETTY_FUNCTION__ << "] " << __VA_ARGS__)
 #define JSK_NODELET_WARN_STREAM(...) \
-  NODELET_WARN_STREAM("[" << __PRETTY_FUNCTION__ << "]" << __VA_ARGS__)
+  NODELET_WARN_STREAM("[" << __PRETTY_FUNCTION__ << "] " << __VA_ARGS__)
 #define JSK_NODELET_ERROR_STREAM(...) \
-  NODELET_ERROR_STREAM("[" << __PRETTY_FUNCTION__ << "]" << __VA_ARGS__)
+  NODELET_ERROR_STREAM("[" << __PRETTY_FUNCTION__ << "] " << __VA_ARGS__)
 #define JSK_NODELET_FATAL_STREAM(...) \
-  NODELET_FATAL_STREAM("[" << __PRETTY_FUNCTION__ << "]" << __VA_ARGS__)
+  NODELET_FATAL_STREAM("[" << __PRETTY_FUNCTION__ << "] " << __VA_ARGS__)
 
 #define JSK_ROS_DEBUG(str,...) \
-  ROS_DEBUG("[%s]" str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+  ROS_DEBUG("[%s] " str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #define JSK_ROS_INFO(str,...) \
-  ROS_INFO("[%s]" str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+  ROS_INFO("[%s] " str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #define JSK_ROS_WARN(str,...) \
-  ROS_WARN("[%s]" str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+  ROS_WARN("[%s] " str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #define JSK_ROS_ERROR(str,...) \
-  ROS_ERROR("[%s]" str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+  ROS_ERROR("[%s] " str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #define JSK_ROS_FATAL(str,...) \
-  ROS_FATAL("[%s]" str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+  ROS_FATAL("[%s] " str, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 
 #define JSK_ROS_DEBUG_STREAM(...) \
-  ROS_DEBUG_STREAM("[" << __PRETTY_FUNCTION__ << "]" << __VA_ARGS__)
+  ROS_DEBUG_STREAM("[" << __PRETTY_FUNCTION__ << "] " << __VA_ARGS__)
 #define JSK_ROS_INFO_STREAM(...) \
-  ROS_INFO_STREAM("[" << __PRETTY_FUNCTION__ << "]" << __VA_ARGS__)
+  ROS_INFO_STREAM("[" << __PRETTY_FUNCTION__ << "] " << __VA_ARGS__)
 #define JSK_ROS_WARN_STREAM(...) \
-  ROS_WARN_STREAM("[" << __PRETTY_FUNCTION__ << "]" << __VA_ARGS__)
+  ROS_WARN_STREAM("[" << __PRETTY_FUNCTION__ << "] " << __VA_ARGS__)
 #define JSK_ROS_ERROR_STREAM(...) \
-  ROS_ERROR_STREAM("[" << __PRETTY_FUNCTION__ << "]" << __VA_ARGS__)
+  ROS_ERROR_STREAM("[" << __PRETTY_FUNCTION__ << "] " << __VA_ARGS__)
 #define JSK_ROS_FATAL_STREAM(...) \
-  ROS_FATAL_STREAM("[" << __PRETTY_FUNCTION__ << "]" << __VA_ARGS__)
+  ROS_FATAL_STREAM("[" << __PRETTY_FUNCTION__ << "] " << __VA_ARGS__)
 
 #endif
