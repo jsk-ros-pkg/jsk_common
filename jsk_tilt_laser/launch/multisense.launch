@@ -10,6 +10,7 @@
   <arg name="fixed_frame_id" default="head_root" />
   <arg name="assemble_cloud" default="/multisense/lidar_scan_filtered"/>
   <arg name="run_laser_pipeline" default="true" />
+  <arg name="run_distance_filters" default="true" />
   <!-- if 'use_resize' is true, run nodelets to publish resized stereo pointcloud-->
   <arg name="use_resize" default="true" />
   <!-- 
@@ -62,6 +63,7 @@
      <arg name="namespace"  value="$(arg namespace)" />
      <arg name="fixed_frame_id" value="$(arg fixed_frame_id)" />
      <arg name="assemble_cloud" value="$(arg assemble_cloud)"/>
+     <arg name="run_distance_filters" value="$(arg run_distance_filters)" />
    </include>
    <!-- modify multisense parameters -->
    <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense motor_speed 1.0" name="set_multisense_spindle_speed" />
