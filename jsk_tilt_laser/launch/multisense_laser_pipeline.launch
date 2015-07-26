@@ -3,6 +3,7 @@
   <arg name="namespace"  default="multisense" />
   <arg name="fixed_frame_id" default="head_root" />
   <arg name="assemble_cloud" default="/multisense/lidar_scan_filtered"/>
+  <arg name="run_distance_filters" default="true" />
   <node name="tilt_scan_to_cloud"
         pkg="laser_filters" type="scan_to_cloud_filter_chain"
         output="screen">
@@ -40,24 +41,34 @@
     nodelets:
       - name: laser_x_filter
         type: pcl/PassThrough
+        if: $(arg run_distance_filters)
         remappings:
           - from: ~input
             to: tilt_laser_listener/output_cloud
       - name: laser_y_filter
         type: pcl/PassThrough
+        if: $(arg run_distance_filters)
         remappings:
           - from: ~input
             to: laser_x_filter/output
       - name: laser_z_filter
         type: pcl/PassThrough
+        if: $(arg run_distance_filters)
         remappings:
           - from: ~input
             to: laser_y_filter/output
       - name: laser_downsampler
         type: pcl/VoxelGrid
+        if: $(arg run_distance_filters)
         remappings:
           - from: ~input
             to: laser_z_filter/output
+      - name: laser_downsampler
+        type: pcl/VoxelGrid
+        unless: $(arg run_distance_filters)
+        remappings:
+          - from: ~input
+            to: tilt_laser_listener/output_cloud
       - name: laser_camera_cloud
         type: jsk_pcl/TfTransformCloud
         remappings:
