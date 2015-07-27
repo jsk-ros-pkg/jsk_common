@@ -255,7 +255,7 @@ function compile-pkg {
     if [ -e ${ROS_INSTALLDIR}_parent/src ]; then
         $COMMAND source /opt/ros/$DISTRIBUTION/setup.sh
         #
-        (cd ${ROS_INSTALLDIR}_parent && LC_ALL=C $COMMAND catkin build --no-status)
+        (cd ${ROS_INSTALLDIR}_parent && LC_ALL=C $COMMAND catkin init -w . && LC_ALL=C $COMMAND catkin build --no-status)
         if [ "`grep -c ${ROS_INSTALLDIR}_parent/devel/share ${ROS_INSTALLDIR}_parent/devel/.catkin`" == 0 ] ; then
             echo -n ";${ROS_INSTALLDIR}_parent/devel/share" >> ${ROS_INSTALLDIR}_parent/devel/.catkin
             echo "** force add ${ROS_INSTALLDIR}_parent/devel/share to ROS_PACKAGE_PATH"
@@ -271,7 +271,7 @@ function compile-pkg {
 
     env | grep ROS
     # do compile
-    (cd $ROS_INSTALLDIR && LC_ALL=C $COMMAND catkin build --no-status $PACKAGES)
+    (cd $ROS_INSTALLDIR && LC_ALL=C $COMMAND catkin init -w . && LC_ALL=C $COMMAND catkin build --no-status $PACKAGES)
     ## load setup.sh
     $COMMAND source ${ROS_INSTALLDIR}/devel/setup.sh
     $COMMAND rospack profile
