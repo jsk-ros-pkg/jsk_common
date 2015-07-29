@@ -90,10 +90,19 @@ rossetip_addr() {
     if [ "$(echo $target_host | sed -e 's/[0-9\.]//g')" != "" ]; then
         target_hostip=$(timeout 0.001 getent hosts ${target_host} | cut -f 1 -d ' ')
     fi
-    if [ "$target_hostip" = "" ]; then target_hostip=$target_host; fi
     local mask_target_ip=$(echo ${target_hostip} | cut -d. -f1-3)
-    export ROS_IP=$(PATH=$PATH:/sbin LANGUAGE=en LANG=C ifconfig | grep inet\ | sed 's/.*inet addr:\([0-9\.]*\).*/\1/' | tr ' ' '\n' | grep $mask_target_ip | head -1)
-    export ROS_HOSTNAME=$ROS_IP
+    for ip in $(hostname -I); do
+        if echo $ip | egrep "^172.17.42.|^127.0."; then
+            # skip docker/local host
+            continue
+        elif [ "${mask_targetip}" = "" ]; then
+            export ROS_IP=$ip
+        elif echo $ip | grep $mask_target_ip; then
+            export ROS_IP=$ip
+            break
+        fi
+    done
+   export ROS_HOSTNAME=$ROS_IP
 }
 
 rossetip() {
