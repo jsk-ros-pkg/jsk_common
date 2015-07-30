@@ -36,6 +36,8 @@
 #include <nodelet/loader.h>
 #include "jsk_topic_tools/rosparam_utils.h"
 #include "jsk_topic_tools/log_utils.h"
+#include <boost/algorithm/string.hpp>
+#include <list>
 // Parameter structure is
 // nodelets:
 //   -  name: node_name
@@ -45,6 +47,18 @@
 //        - to: to_topic
 //        - from: from_topic
 //        - to: to_topic
+
+std::string parentName(const std::string& name)
+{
+  std::list<std::string> list_string;
+  std::string delim("/");
+  boost::split(list_string, name, boost::is_any_of(delim));
+
+  if (list_string.size() > 0) {
+    list_string.pop_back();
+  }
+  return boost::algorithm::join(list_string, "/");
+}
 
 int main(int argc, char** argv)
 {
@@ -103,15 +117,20 @@ int main(int argc, char** argv)
                       std::string from = (std::string)remapping_element_param["from"];
                       std::string to = (std::string)remapping_element_param["to"];
                       if (from.size() > 0 && from[0] == '~') {
-                        ros::NodeHandle nodelet_private_nh(name);
+                        ros::NodeHandle nodelet_private_nh = ros::NodeHandle(name);
                         from = nodelet_private_nh.resolveName(from.substr(1, from.size() - 1));
                       }
+                      else {
+                        ros::NodeHandle nodelet_nh = ros::NodeHandle(parentName(name));
+                        from = nodelet_nh.resolveName(from);
+                      }
                       if (to.size() > 0 && to[0] == '~') {
-                        ros::NodeHandle nodelet_private_nh(name);
+                        ros::NodeHandle nodelet_private_nh = ros::NodeHandle(name);
                         to = nodelet_private_nh.resolveName(to.substr(1, to.size() - 1));
                       }
                       else {
-                        to = nh.resolveName(to);
+                        ros::NodeHandle nodelet_nh = ros::NodeHandle(parentName(name));
+                        to = nodelet_nh.resolveName(to);
                       }
                       JSK_ROS_INFO("remapping: %s => %s", from.c_str(), to.c_str());
                       remappings[from] = to;
