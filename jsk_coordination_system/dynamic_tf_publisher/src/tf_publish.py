@@ -9,7 +9,7 @@
 #
 import roslib; roslib.load_manifest('dynamic_tf_publisher')
 import rospy
-
+import sys
 from dynamic_tf_publisher.srv import * # SetDynamicTF
 from geometry_msgs.msg import TransformStamped,Quaternion,Vector3
 from std_srvs.srv import Empty, EmptyResponse
@@ -22,6 +22,13 @@ if os.getenv('ROS_DISTRO') != 'electric' :
     import genpy
 
 class dynamic_tf_publisher:
+    def advertiseServiceUnlessFound(self, name, srv, callback):
+        try:
+            rospy.wait_for_service(name, 1.0)
+            rospy.logfatal("%s is already exists" % (name))
+            sys.exit(1)
+        except rospy.ROSException, e:
+            rospy.Service(name, srv, callback)
     def __init__(self):
         self.pub_tf = rospy.Publisher("/tf", tf.msg.tfMessage)
         self.pub_tf_mine = rospy.Publisher("~tf", tf.msg.tfMessage)
@@ -31,11 +38,11 @@ class dynamic_tf_publisher:
         self.listener = tf.TransformListener()
         self.tf_sleep_time = 1.0
         self.lockobj = thread.allocate_lock()
-        rospy.Service('/set_dynamic_tf', SetDynamicTF, self.set_tf)
-        rospy.Service('/assoc_tf', AssocTF, self.assoc)
-        rospy.Service('/publish_tf', Empty, self.publish_tf)
-        rospy.Service('/dissoc_tf', DissocTF, self.dissoc)
-        rospy.Service('/delete_tf', DeleteTF, self.delete)
+        self.advertiseServiceUnlessFound('/set_dynamic_tf', SetDynamicTF, self.set_tf)
+        self.advertiseServiceUnlessFound('/assoc_tf', AssocTF, self.assoc)
+        self.advertiseServiceUnlessFound('/publish_tf', Empty, self.publish_tf)
+        self.advertiseServiceUnlessFound('/dissoc_tf', DissocTF, self.dissoc)
+        self.advertiseServiceUnlessFound('/delete_tf', DeleteTF, self.delete)
 
         self.use_cache = rospy.get_param('~use_cache', True)
         self.check_update = rospy.get_param('~check_update', False)
