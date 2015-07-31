@@ -98,6 +98,9 @@
     uri: https://github.com/ros-naoqi/naoqi_bridge.git
     local-name: ros_naoqi/naoqi_bridge
 - git:
+    uri: https://github.com/ros-naoqi/naoqi_bridge_mss.git
+    local-name: ros_naoqi/naoqi_bridge_msgs
+- git:
     local-name: roboticsgroup/roboticsgroup_gazebo_plugins
     uri: https://github.com/roboticsgroup/roboticsgroup_gazebo_plugins.git
 - git:
