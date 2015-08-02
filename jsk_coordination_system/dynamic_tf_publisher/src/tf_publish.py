@@ -31,11 +31,6 @@ class dynamic_tf_publisher:
         self.listener = tf.TransformListener()
         self.tf_sleep_time = 1.0
         self.lockobj = thread.allocate_lock()
-        rospy.Service('/set_dynamic_tf', SetDynamicTF, self.set_tf)
-        rospy.Service('/assoc_tf', AssocTF, self.assoc)
-        rospy.Service('/publish_tf', Empty, self.publish_tf)
-        rospy.Service('/dissoc_tf', DissocTF, self.dissoc)
-        rospy.Service('/delete_tf', DeleteTF, self.delete)
 
         self.use_cache = rospy.get_param('~use_cache', True)
         self.check_update = rospy.get_param('~check_update', False)
@@ -50,6 +45,11 @@ class dynamic_tf_publisher:
                 roslib.message.fill_message_args(tfm,[yaml.load(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))])
             for pose in tfm.transforms :
                 self.cur_tf[pose.child_frame_id] = pose
+        rospy.Service('/set_dynamic_tf', SetDynamicTF, self.set_tf)
+        rospy.Service('/assoc_tf', AssocTF, self.assoc)
+        rospy.Service('/publish_tf', Empty, self.publish_tf)
+        rospy.Service('/dissoc_tf', DissocTF, self.dissoc)
+        rospy.Service('/delete_tf', DeleteTF, self.delete)
 
     def publish_tf(self, req=None):
         self.lockobj.acquire()
