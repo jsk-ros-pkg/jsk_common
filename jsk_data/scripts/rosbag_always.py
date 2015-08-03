@@ -9,6 +9,12 @@ import sys
 import argparse
 import re
 import shutil
+try:
+    import colorama
+except:
+    print "Please install colorama by pip install colorama"
+    sys.exit(1)
+from colorama import Fore, Style
 from jsk_topic_tools.master_util import isMasterAlive
 
 
@@ -91,7 +97,7 @@ def removeOldFiles(save_dir, max_size, current_size):
     remove_size = current_size - max_size
     for f in files:
         the_size = os.path.getsize(f)
-        print 'removing %s (%d)' % (f, the_size / 1000 / 1000)
+        print Fore.GREEN + 'removing %s (%d)' % (f, the_size / 1000 / 1000) + Fore.RESET
         os.remove(f)
         remove_size = remove_size - the_size / 1000.0 / 1000.0
         if remove_size < 0:
@@ -99,8 +105,7 @@ def removeOldFiles(save_dir, max_size, current_size):
     
 def checkDirectorySize(save_dir, max_size):
     size = getDirectorySize(save_dir)
-    print 'current directory size is %fM (max is %dM)' % (size, int(max_size))
-    
+    # print 'current directory size is %fM (max is %dM)' % (size, int(max_size))
     if size > max_size:
         removeOldFiles(save_dir, max_size, size)
     
