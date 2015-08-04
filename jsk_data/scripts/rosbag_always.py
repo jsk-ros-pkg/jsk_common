@@ -82,7 +82,9 @@ def getDirectorySize(start_path = '.'):
 
 def keyFuncToSortBag(bag):
     parse = parseBagFile(os.path.basename(bag))
-    return int(reduce(lambda x, y: x + y, parse))
+    parse[len(parse) - 1] = str(int(parse[len(parse) - 1])).zfill(4)
+    concatenated_string = reduce(lambda x, y: x + y, parse)
+    return int(concatenated_string)
     
 def listBagsSortedByDate(save_dir):
     bags = []
