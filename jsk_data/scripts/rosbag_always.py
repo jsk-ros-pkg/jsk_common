@@ -101,6 +101,8 @@ def removeOldFiles(save_dir, max_size, current_size):
         the_size = os.path.getsize(f)
         print Fore.GREEN + 'removing %s (%d)' % (f, the_size / 1000 / 1000) + Fore.RESET
         os.remove(f)
+        # Send desktop notification
+        subprocess.check_output(['notify-send', "Removed %s (%d)" % (f, the_size / 1000 / 1000)])
         remove_size = remove_size - the_size / 1000.0 / 1000.0
         if remove_size < 0:
             return
