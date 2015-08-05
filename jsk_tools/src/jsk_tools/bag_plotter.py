@@ -109,6 +109,7 @@ class BagPlotter():
             self.topic_data.append(PlotData(opt))
             self.plot_options.append(opt)
     def plot(self):
+        plt.interactive(True)
         fig = plt.figure()
         min_stamp = None
         with rosbag.Bag(self.bag_file) as bag:
@@ -134,6 +135,8 @@ class BagPlotter():
         fig.subplots_adjust(hspace=0.4)
         plt.draw()
         plt.show()
+        while True:
+            time.sleep(1)
     def run(self):
         self.processConfFile()
         self.plot()
