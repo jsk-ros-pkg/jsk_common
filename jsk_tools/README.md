@@ -111,10 +111,22 @@ bag_plotter.py
 bag_plotter is a script to plot from a bag file directly.
 ![](images/bag_plotter.png)
 
-
-Usage is
 ```
-$ bag_plotter.py bag_file conf_yaml
+usage: bag_plotter.py [-h] [--duration DURATION] [--start-time START_TIME]
+                      config bag
+
+Plot from bag file
+
+positional arguments:
+  config                yaml file to configure plot
+  bag                   bag file to plot
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --duration DURATION, -d DURATION
+                        Duration to plot
+  --start-time START_TIME, -s START_TIME
+                        Start timestamp to plot
 ```
 
 Format of yaml file is like:

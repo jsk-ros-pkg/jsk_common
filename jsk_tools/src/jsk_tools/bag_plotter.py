@@ -3,7 +3,9 @@ import yaml
 import matplotlib.pyplot as plt
 import time
 from progressbar import *
-
+import sys
+import argparse
+import rospy
 def accessMessageSlot(msg, field):
     if len(field) == 0:
         return msg
@@ -26,6 +28,11 @@ class PlotData():
             if target_topic == topic:
                 self.values[i].append((value.header.stamp,
                                        accessMessageSlot(value, self.fields[i])))
+    def filter(self, start_time, end_time):
+        for i in range(len(self.values)):
+            self.values[i] = [v for v in self.values[i]
+                              if v[0] >= start_time and
+                              v[0] <= end_time]
     def plot(self, min_stamp, fig, layout):
         ax = fig.add_subplot(*layout)
         for vs, i in zip(self.values, range(len(self.values))):
@@ -41,9 +48,25 @@ class BagPlotterException(Exception):
     pass
 
 class BagPlotter():
-    def __init__(self, bag_file, conf_file):
-        self.bag_file = bag_file
-        self.conf_file = conf_file
+    def __init__(self):
+        pass
+        # self.bag_file = bag_file
+        # self.conf_file = conf_file
+    def parse(self):
+        parser = argparse.ArgumentParser(description='Plot from bag file')
+        parser.add_argument('config',
+                            help='yaml file to configure plot')
+        parser.add_argument('bag',
+                            help='bag file to plot')
+        parser.add_argument('--duration', '-d', type=int,
+                            help='Duration to plot')
+        parser.add_argument('--start-time', '-s', type=int, default=0,
+                            help='Start time to plot')
+        args = parser.parse_args()
+        self.bag_file = args.bag
+        self.conf_file = args.config
+        self.duration = args.duration
+        self.start_time = args.start_time
     def processConfFile(self):
         """
         conf file format is:
@@ -110,8 +133,9 @@ class BagPlotter():
             self.plot_options.append(opt)
     def plot(self):
         plt.interactive(True)
-        fig = plt.figure()
+        fig = plt.figure(facecolor="1.0")
         min_stamp = None
+        max_stamp = None
         with rosbag.Bag(self.bag_file) as bag:
             info = yaml.load(bag._get_yaml_info())
             message_num = info["messages"]
@@ -128,15 +152,32 @@ class BagPlotter():
                             min_stamp = msg.header.stamp
                     else:
                         min_stamp = msg.header.stamp
+                    if max_stamp:
+                        if max_stamp < msg.header.stamp:
+                            max_stamp = msg.header.stamp
+                    else:
+                        max_stamp = msg.header.stamp
                 counter = counter + 1
             pbar.finish()
+            print ("""Plot from %s to %s (%d secs)""" %
+                   (str(time.ctime(min_stamp.to_sec())),
+                    str(time.ctime(max_stamp.to_sec())),
+                    (max_stamp - min_stamp).to_sec()))
+        start_time = rospy.Duration(self.start_time) + min_stamp
+        if self.duration:
+            end_time = start_time + rospy.Duration(self.duration)
+        else:
+            end_time = max_stamp
+        for topic_data in self.topic_data:
+            topic_data.filter(start_time, end_time)
         for topic_data, i in zip(self.topic_data, range(len(self.topic_data))):
-            topic_data.plot(min_stamp, fig, (len(self.topic_data), 1, i))
+            topic_data.plot(start_time,
+                            fig, (len(self.topic_data), 1, i))
         fig.subplots_adjust(hspace=0.4)
         plt.draw()
         plt.show()
         while True:
-            time.sleep(1)
+            plt.pause(1)
     def run(self):
         self.processConfFile()
         self.plot()
