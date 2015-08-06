@@ -6,6 +6,12 @@ from progressbar import *
 import sys
 import argparse
 import rospy
+try:
+    import colorama
+except:
+    print "Please install colorama by pip install colorama"
+    sys.exit(1)
+from colorama import Fore, Style
 def accessMessageSlot(msg, field):
     if len(field) == 0:
         return msg
@@ -56,7 +62,7 @@ class BagPlotter():
         parser = argparse.ArgumentParser(description='Plot from bag file')
         parser.add_argument('config',
                             help='yaml file to configure plot')
-        parser.add_argument('bag',
+        parser.add_argument('bag', nargs="+",
                             help='bag file to plot')
         parser.add_argument('--duration', '-d', type=int,
                             help='Duration to plot')
@@ -136,33 +142,39 @@ class BagPlotter():
         fig = plt.figure(facecolor="1.0")
         min_stamp = None
         max_stamp = None
-        with rosbag.Bag(self.bag_file) as bag:
-            info = yaml.load(bag._get_yaml_info())
-            message_num = info["messages"]
-            widgets = ["%s: " % (self.bag_file), Percentage(), Bar()]
-            pbar = ProgressBar(maxval=message_num, widgets=widgets).start()
-            counter = 0
-            for topic, msg, timestamp in bag.read_messages():
-                pbar.update(counter)
-                if topic in self.all_topics:
-                    for topic_data in self.topic_data:
-                        topic_data.addValue(topic, msg)
-                    if min_stamp:
-                        if min_stamp > msg.header.stamp:
+        no_valid_data = True
+        for abag in self.bag_file:
+            with rosbag.Bag(abag) as bag:
+                info = yaml.load(bag._get_yaml_info())
+                message_num = info["messages"]
+                widgets = [Fore.GREEN + "%s: " % (abag) + Fore.RESET, Percentage(), Bar()]
+                pbar = ProgressBar(maxval=message_num, widgets=widgets).start()
+                counter = 0
+                for topic, msg, timestamp in bag.read_messages():
+                    pbar.update(counter)
+                    if topic in self.all_topics:
+                        for topic_data in self.topic_data:
+                            topic_data.addValue(topic, msg)
+                            no_valid_data = False
+                        if min_stamp:
+                            if min_stamp > msg.header.stamp:
+                                min_stamp = msg.header.stamp
+                        else:
                             min_stamp = msg.header.stamp
-                    else:
-                        min_stamp = msg.header.stamp
-                    if max_stamp:
-                        if max_stamp < msg.header.stamp:
+                        if max_stamp:
+                            if max_stamp < msg.header.stamp:
+                                max_stamp = msg.header.stamp
+                        else:
                             max_stamp = msg.header.stamp
-                    else:
-                        max_stamp = msg.header.stamp
-                counter = counter + 1
-            pbar.finish()
-            print ("""Plot from %s to %s (%d secs)""" %
-                   (str(time.ctime(min_stamp.to_sec())),
-                    str(time.ctime(max_stamp.to_sec())),
-                    (max_stamp - min_stamp).to_sec()))
+                    counter = counter + 1
+                pbar.finish()
+        if no_valid_data:
+            print Fore.RED + "Cannot find valid data in bag files, valid topics are:\n%s" % ", ".join(self.all_topics) + Fore.RESET
+            return
+        print ("""Plot from %s to %s (%d secs)""" %
+               (str(time.ctime(min_stamp.to_sec())),
+                str(time.ctime(max_stamp.to_sec())),
+                (max_stamp - min_stamp).to_sec()))
         start_time = rospy.Duration(self.start_time) + min_stamp
         if self.duration:
             end_time = start_time + rospy.Duration(self.duration)
