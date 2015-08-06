@@ -386,6 +386,12 @@ else
     # setup-android
     compile-jsk-ros-pkg
     # test-jsk-ros-pkg
+    echo
+    echo
+    echo "==============================================="
+    echo "Done jsk.rosbuild"
+    echo "source $ROS_INSTALLDIR/devel/setup.bash"
+    echo "==============================================="
 fi
 
 #
