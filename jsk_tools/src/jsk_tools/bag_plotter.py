@@ -1,6 +1,7 @@
 import rosbag
 import yaml
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 import time
 from progressbar import *
 import sys
@@ -63,7 +64,7 @@ class PlotData():
                               if v[0] >= start_time and
                               v[0] <= end_time]
     def plot(self, min_stamp, fig, layout):
-        ax = fig.add_subplot(*layout)
+        ax = fig.add_subplot(layout)
         for vs, i in zip(self.values, range(len(self.values))):
             xs = [v[0].to_sec() - min_stamp.to_sec() for v in vs]
             ys = [v[1] for v in vs]
@@ -144,7 +145,9 @@ class BagPlotter():
                 raise BagPlotterException("plot config requires title section")
             opt["type"] = self.readOption(opt, "type", "line")
             opt["legend"] = self.readOption(opt, "legend", True)
-            
+            opt["layout"] = self.readOption(opt, "layout", None)
+            if self.global_options["layout"] == "manual" and opt["layout"] == None:
+                raise BagPlotterException("Need to specify layout field for manual layout")
             if not opt.has_key("topic"):
                 raise BagPlotterException("plots config requires topic section")
             if not opt.has_key("field"):
@@ -160,9 +163,28 @@ class BagPlotter():
                 
             self.topic_data.append(PlotData(opt))
             self.plot_options.append(opt)
+    def layoutGridSize(self):
+        if self.global_options["layout"] == "vertical":
+            return (len(self.topic_data), 1)
+        elif self.global_options["layout"] == "horizontal":
+            return (1, len(self.topic_data))
+        elif self.global_options["layout"] == "manual":
+            max_x = 0
+            max_y = 0
+            for topic_data in self.topic_data:
+                max_x = max(topic_data.options["layout"][0], max_x)
+                max_y = max(topic_data.options["layout"][1], max_y)
+            return (max_y + 1, max_x + 1)
+    def layoutPosition(self, gs, topic_data, i):
+        if self.global_options["layout"] == "vertical":
+            return gs[i]
+        elif self.global_options["layout"] == "horizontal":
+            return gs[i]
+        elif self.global_options["layout"] == "manual":
+            return gs[topic_data.options["layout"][1], topic_data.options["layout"][0]]
+            
     def plot(self):
         plt.interactive(True)
-        fig = plt.figure(facecolor="1.0")
         min_stamp = None
         max_stamp = None
         no_valid_data = True
@@ -194,8 +216,8 @@ class BagPlotter():
         if no_valid_data:
             print Fore.RED + "Cannot find valid data in bag files, valid topics are:\n%s" % ", ".join(self.all_topics) + Fore.RESET
             return
-        print ("""Plot from %s to %s (%d secs)""" %
-               (str(time.ctime(min_stamp.to_sec())),
+        title = ("""Plot from [%s] to [%s] (%d secs)""" %
+                 (str(time.ctime(min_stamp.to_sec())),
                 str(time.ctime(max_stamp.to_sec())),
                 (max_stamp - min_stamp).to_sec()))
         start_time = rospy.Duration(self.start_time) + min_stamp
@@ -205,9 +227,18 @@ class BagPlotter():
             end_time = max_stamp
         for topic_data in self.topic_data:
             topic_data.filter(start_time, end_time)
-        for topic_data, i in zip(self.topic_data, range(len(self.topic_data))):
+            
+        fig = plt.figure(facecolor="1.0")
+        fig.suptitle(title)
+        print title
+        # Compute layout
+        grid_size = self.layoutGridSize()
+        gs = gridspec.GridSpec(*grid_size)
+        for topic_data, i in zip(self.topic_data, 
+                                 range(len(self.topic_data))):
             topic_data.plot(start_time,
-                            fig, (len(self.topic_data), 1, i))
+                            fig,
+                            self.layoutPosition(gs, topic_data, i))
         fig.subplots_adjust(hspace=0.4)
         plt.draw()
         plt.show()
