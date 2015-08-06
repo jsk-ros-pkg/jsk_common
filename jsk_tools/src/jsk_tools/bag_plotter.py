@@ -6,25 +6,48 @@ from progressbar import *
 import sys
 import argparse
 import rospy
+import re
+
 try:
     import colorama
 except:
     print "Please install colorama by pip install colorama"
     sys.exit(1)
 from colorama import Fore, Style
+
 def accessMessageSlot(msg, field):
     if len(field) == 0:
         return msg
-    return accessMessageSlot(getattr(msg, field[0]), field[1:])
+    # check field has array accessor or not
+    # print field[0]
+    if re.search("\[([0-9]+)\]", field[0]):
+        res = re.match("(.*)\[([0-9]+)\]", field[0])
+        return accessMessageSlot(getattr(msg, res.group(1))[int(res.group(2))], field[1:])
+    else:
+        return accessMessageSlot(getattr(msg, field[0]), field[1:])
+
+def expandArrayFields(fields, topics):
+    ret_fields = []
+    ret_topics = []
+    for f, t in zip(fields, topics):
+        if re.search("\[([0-9]+):([0-9]+)\]", f): # [X:Y]
+            res = re.match(".*\[([0-9]+):([0-9]+)\]", f)
+            X = int(res.group(1))
+            Y = int(res.group(2))
+            for i in range(X, Y):
+                ret_fields.append(re.sub("\[[0-9+:[0-9]+\]", "[" + str(i) + "]", f))
+                ret_topics.append(t)
+        else:
+            ret_fields.append(f)
+            ret_topics.append(t)
+    return (ret_fields, ret_topics)
 
 class PlotData():
     def __init__(self, options):
-        self.topics = options["topic"]
-        fields = options["field"]
-        self.fields_orig = fields
-        self.fields = [f.split("/") for f in fields]
+        (self.fields_orig, self.topics) = expandArrayFields(options["field"], options["topic"])
+        self.fields = [f.split("/") for f in self.fields_orig]
         self.values = []
-        for i in range(len(fields)):
+        for i in range(len(self.fields)):
             self.values.append([])
         self.options = options
     def addValue(self, topic, value):
