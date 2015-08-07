@@ -22,12 +22,11 @@ def runROSBag(topics, size, save_dir):
     """
     run rosbag and return Popen object
     """
-    cmd = 'rosbag record --split'
+    cmd = 'roslaunch jsk_data rosbag_always_run_rosbag.launch'
     formatted_topics = [t for t in topics.split(' ') if t]
-    return subprocess.Popen(cmd.split(' ') 
-                            + formatted_topics 
-                            + ['--size', size]
-                            + ['-o', save_dir + '/rosbag'])
+    args = cmd.split(' ') + ["TOPICS:=" + topics + ""] + ["SIZE:=" + size] + ["OUTPUT:=" + save_dir + '/rosbag']
+    print args
+    return subprocess.Popen(args)
 
 def parseBagFile(bag):
     # bag file name is ...
@@ -135,8 +134,11 @@ def killROSBag():
     if g_rosbag_process:
         print 'Killing rosbag ...'
         rosbag_pid = g_rosbag_process.pid
-        killChildProcesses(rosbag_pid)
-        g_rosbag_process.send_signal(subprocess.signal.SIGINT)
+        try:
+            killChildProcesses(rosbag_pid)
+            g_rosbag_process.send_signal(subprocess.signal.SIGINT)
+        except:
+            pass
     
 def main(topics, size, save_dir, max_size, rate = 1):
     if not os.path.exists(save_dir):
@@ -154,9 +156,11 @@ def main(topics, size, save_dir, max_size, rate = 1):
             watchFileSystem(save_dir, max_size)
             previous_master_state = master_state
             time.sleep(1.0 / rate)
-    except:
+    except Exception, e:
         time.sleep(1)
         watchFileSystem(save_dir, max_size)
+    finally:
+        killROSBag()
 
 
         

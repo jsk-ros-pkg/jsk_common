@@ -1,0 +1,8 @@
+<launch>
+  <arg name="TOPICS" />
+  <arg name="SIZE" />
+  <arg name="OUTPUT" />
+  <node pkg="rosbag" type="record" name="always_rosbag_record" respawn="true"
+        output="screen"
+        args="--split --topic $(arg TOPICS) --size $(arg SIZE) -o $(arg OUTPUT)" />
+</launch>
