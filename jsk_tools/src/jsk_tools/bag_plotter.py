@@ -63,14 +63,14 @@ class PlotData():
             self.values[i] = [v for v in self.values[i]
                               if v[0] >= start_time and
                               v[0] <= end_time]
-    def plot(self, min_stamp, fig, layout):
+    def plot(self, min_stamp, fig, layout, show_legend):
         ax = fig.add_subplot(layout)
         for vs, i in zip(self.values, range(len(self.values))):
             xs = [v[0].to_sec() - min_stamp.to_sec() for v in vs]
             ys = [v[1] for v in vs]
             ax.plot(xs, ys, label=self.topics[i] + "/" + self.fields_orig[i])
         ax.set_title(self.options["title"])
-        if self.options["legend"]:
+        if show_legend and self.options["legend"]:
             ax.legend()
         self.ax = ax
 
@@ -230,20 +230,33 @@ class BagPlotter():
             
         fig = plt.figure(facecolor="1.0")
         fig.suptitle(title)
+        self.show_legend = True
+        cid = fig.canvas.mpl_connect('button_press_event', self.onclick)
         print title
         # Compute layout
+        self.plotAll(fig, start_time, self.show_legend)
+        prev_show_legend = self.show_legend
+        while True:
+            plt.pause(1)
+            if prev_show_legend != self.show_legend:
+                plt.clf()
+                self.plotAll(fig, start_time, self.show_legend)
+            prev_show_legend = self.show_legend
+    def onclick(self, event):
+        self.show_legend = not self.show_legend
+    def plotAll(self, fig, start_time, show_legend):
         grid_size = self.layoutGridSize()
         gs = gridspec.GridSpec(*grid_size)
         for topic_data, i in zip(self.topic_data, 
                                  range(len(self.topic_data))):
             topic_data.plot(start_time,
                             fig,
-                            self.layoutPosition(gs, topic_data, i))
+                            self.layoutPosition(gs, topic_data, i),
+                            show_legend)
         fig.subplots_adjust(hspace=0.4)
         plt.draw()
         plt.show()
-        while True:
-            plt.pause(1)
+
     def run(self):
         self.processConfFile()
         self.plot()
