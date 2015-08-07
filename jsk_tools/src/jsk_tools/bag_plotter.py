@@ -1,24 +1,54 @@
 import rosbag
 import yaml
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 import time
 from progressbar import *
 import sys
 import argparse
 import rospy
+import re
+
+try:
+    import colorama
+except:
+    print "Please install colorama by pip install colorama"
+    sys.exit(1)
+from colorama import Fore, Style
+
 def accessMessageSlot(msg, field):
     if len(field) == 0:
         return msg
-    return accessMessageSlot(getattr(msg, field[0]), field[1:])
+    # check field has array accessor or not
+    # print field[0]
+    if re.search("\[([0-9]+)\]", field[0]):
+        res = re.match("(.*)\[([0-9]+)\]", field[0])
+        return accessMessageSlot(getattr(msg, res.group(1))[int(res.group(2))], field[1:])
+    else:
+        return accessMessageSlot(getattr(msg, field[0]), field[1:])
+
+def expandArrayFields(fields, topics):
+    ret_fields = []
+    ret_topics = []
+    for f, t in zip(fields, topics):
+        if re.search("\[([0-9]+):([0-9]+)\]", f): # [X:Y]
+            res = re.match(".*\[([0-9]+):([0-9]+)\]", f)
+            X = int(res.group(1))
+            Y = int(res.group(2))
+            for i in range(X, Y):
+                ret_fields.append(re.sub("\[[0-9+:[0-9]+\]", "[" + str(i) + "]", f))
+                ret_topics.append(t)
+        else:
+            ret_fields.append(f)
+            ret_topics.append(t)
+    return (ret_fields, ret_topics)
 
 class PlotData():
     def __init__(self, options):
-        self.topics = options["topic"]
-        fields = options["field"]
-        self.fields_orig = fields
-        self.fields = [f.split("/") for f in fields]
+        (self.fields_orig, self.topics) = expandArrayFields(options["field"], options["topic"])
+        self.fields = [f.split("/") for f in self.fields_orig]
         self.values = []
-        for i in range(len(fields)):
+        for i in range(len(self.fields)):
             self.values.append([])
         self.options = options
     def addValue(self, topic, value):
@@ -34,7 +64,7 @@ class PlotData():
                               if v[0] >= start_time and
                               v[0] <= end_time]
     def plot(self, min_stamp, fig, layout):
-        ax = fig.add_subplot(*layout)
+        ax = fig.add_subplot(layout)
         for vs, i in zip(self.values, range(len(self.values))):
             xs = [v[0].to_sec() - min_stamp.to_sec() for v in vs]
             ys = [v[1] for v in vs]
@@ -56,7 +86,7 @@ class BagPlotter():
         parser = argparse.ArgumentParser(description='Plot from bag file')
         parser.add_argument('config',
                             help='yaml file to configure plot')
-        parser.add_argument('bag',
+        parser.add_argument('bag', nargs="+",
                             help='bag file to plot')
         parser.add_argument('--duration', '-d', type=int,
                             help='Duration to plot')
@@ -115,7 +145,9 @@ class BagPlotter():
                 raise BagPlotterException("plot config requires title section")
             opt["type"] = self.readOption(opt, "type", "line")
             opt["legend"] = self.readOption(opt, "legend", True)
-            
+            opt["layout"] = self.readOption(opt, "layout", None)
+            if self.global_options["layout"] == "manual" and opt["layout"] == None:
+                raise BagPlotterException("Need to specify layout field for manual layout")
             if not opt.has_key("topic"):
                 raise BagPlotterException("plots config requires topic section")
             if not opt.has_key("field"):
@@ -131,38 +163,63 @@ class BagPlotter():
                 
             self.topic_data.append(PlotData(opt))
             self.plot_options.append(opt)
+    def layoutGridSize(self):
+        if self.global_options["layout"] == "vertical":
+            return (len(self.topic_data), 1)
+        elif self.global_options["layout"] == "horizontal":
+            return (1, len(self.topic_data))
+        elif self.global_options["layout"] == "manual":
+            max_x = 0
+            max_y = 0
+            for topic_data in self.topic_data:
+                max_x = max(topic_data.options["layout"][0], max_x)
+                max_y = max(topic_data.options["layout"][1], max_y)
+            return (max_y + 1, max_x + 1)
+    def layoutPosition(self, gs, topic_data, i):
+        if self.global_options["layout"] == "vertical":
+            return gs[i]
+        elif self.global_options["layout"] == "horizontal":
+            return gs[i]
+        elif self.global_options["layout"] == "manual":
+            return gs[topic_data.options["layout"][1], topic_data.options["layout"][0]]
+            
     def plot(self):
         plt.interactive(True)
-        fig = plt.figure(facecolor="1.0")
         min_stamp = None
         max_stamp = None
-        with rosbag.Bag(self.bag_file) as bag:
-            info = yaml.load(bag._get_yaml_info())
-            message_num = info["messages"]
-            widgets = ["%s: " % (self.bag_file), Percentage(), Bar()]
-            pbar = ProgressBar(maxval=message_num, widgets=widgets).start()
-            counter = 0
-            for topic, msg, timestamp in bag.read_messages():
-                pbar.update(counter)
-                if topic in self.all_topics:
-                    for topic_data in self.topic_data:
-                        topic_data.addValue(topic, msg)
-                    if min_stamp:
-                        if min_stamp > msg.header.stamp:
+        no_valid_data = True
+        for abag in self.bag_file:
+            with rosbag.Bag(abag) as bag:
+                info = yaml.load(bag._get_yaml_info())
+                message_num = info["messages"]
+                widgets = [Fore.GREEN + "%s: " % (abag) + Fore.RESET, Percentage(), Bar()]
+                pbar = ProgressBar(maxval=message_num, widgets=widgets).start()
+                counter = 0
+                for topic, msg, timestamp in bag.read_messages():
+                    pbar.update(counter)
+                    if topic in self.all_topics:
+                        for topic_data in self.topic_data:
+                            topic_data.addValue(topic, msg)
+                            no_valid_data = False
+                        if min_stamp:
+                            if min_stamp > msg.header.stamp:
+                                min_stamp = msg.header.stamp
+                        else:
                             min_stamp = msg.header.stamp
-                    else:
-                        min_stamp = msg.header.stamp
-                    if max_stamp:
-                        if max_stamp < msg.header.stamp:
+                        if max_stamp:
+                            if max_stamp < msg.header.stamp:
+                                max_stamp = msg.header.stamp
+                        else:
                             max_stamp = msg.header.stamp
-                    else:
-                        max_stamp = msg.header.stamp
-                counter = counter + 1
-            pbar.finish()
-            print ("""Plot from %s to %s (%d secs)""" %
-                   (str(time.ctime(min_stamp.to_sec())),
-                    str(time.ctime(max_stamp.to_sec())),
-                    (max_stamp - min_stamp).to_sec()))
+                    counter = counter + 1
+                pbar.finish()
+        if no_valid_data:
+            print Fore.RED + "Cannot find valid data in bag files, valid topics are:\n%s" % ", ".join(self.all_topics) + Fore.RESET
+            return
+        title = ("""Plot from [%s] to [%s] (%d secs)""" %
+                 (str(time.ctime(min_stamp.to_sec())),
+                str(time.ctime(max_stamp.to_sec())),
+                (max_stamp - min_stamp).to_sec()))
         start_time = rospy.Duration(self.start_time) + min_stamp
         if self.duration:
             end_time = start_time + rospy.Duration(self.duration)
@@ -170,9 +227,18 @@ class BagPlotter():
             end_time = max_stamp
         for topic_data in self.topic_data:
             topic_data.filter(start_time, end_time)
-        for topic_data, i in zip(self.topic_data, range(len(self.topic_data))):
+            
+        fig = plt.figure(facecolor="1.0")
+        fig.suptitle(title)
+        print title
+        # Compute layout
+        grid_size = self.layoutGridSize()
+        gs = gridspec.GridSpec(*grid_size)
+        for topic_data, i in zip(self.topic_data, 
+                                 range(len(self.topic_data))):
             topic_data.plot(start_time,
-                            fig, (len(self.topic_data), 1, i))
+                            fig,
+                            self.layoutPosition(gs, topic_data, i))
         fig.subplots_adjust(hspace=0.4)
         plt.draw()
         plt.show()
