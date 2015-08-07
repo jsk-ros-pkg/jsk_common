@@ -2,6 +2,7 @@ import rosbag
 import yaml
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+from matplotlib.widgets import Button
 import time
 from progressbar import *
 import sys
@@ -63,8 +64,11 @@ class PlotData():
             self.values[i] = [v for v in self.values[i]
                               if v[0] >= start_time and
                               v[0] <= end_time]
-    def plot(self, min_stamp, fig, layout, show_legend):
-        ax = fig.add_subplot(layout)
+    def plot(self, min_stamp, fig, layout, show_legend, share_ax = None):
+        if share_ax:
+            ax = fig.add_subplot(layout, sharex=share_ax)
+        else:
+            ax = fig.add_subplot(layout)
         for vs, i in zip(self.values, range(len(self.values))):
             xs = [v[0].to_sec() - min_stamp.to_sec() for v in vs]
             ys = [v[1] for v in vs]
@@ -73,6 +77,7 @@ class PlotData():
         if show_legend and self.options["legend"]:
             ax.legend()
         self.ax = ax
+        return ax
 
 class BagPlotterException(Exception):
     pass
@@ -229,30 +234,36 @@ class BagPlotter():
             topic_data.filter(start_time, end_time)
             
         fig = plt.figure(facecolor="1.0")
+        self.fig = fig
         fig.suptitle(title)
         self.show_legend = True
-        cid = fig.canvas.mpl_connect('button_press_event', self.onclick)
-        print title
+        
         # Compute layout
+        self.start_time = start_time
         self.plotAll(fig, start_time, self.show_legend)
+        buttonax = plt.axes([0.0, 0.05, 0.05, 0.075])
+        legend_toggle_button = Button(buttonax, "toggle legend")
+        legend_toggle_button.on_clicked(self.toggleLegend)
         prev_show_legend = self.show_legend
         while True:
             plt.pause(1)
-            if prev_show_legend != self.show_legend:
-                plt.clf()
-                self.plotAll(fig, start_time, self.show_legend)
-            prev_show_legend = self.show_legend
-    def onclick(self, event):
+    def toggleLegend(self, event):
         self.show_legend = not self.show_legend
+        plt.clf()
+        buttonax = plt.axes([0.0, 0.05, 0.05, 0.075])
+        legend_toggle_button = Button(buttonax, "toggle legend")
+        legend_toggle_button.on_clicked(self.toggleLegend)
+        self.plotAll(self.fig, self.start_time, self.show_legend)
     def plotAll(self, fig, start_time, show_legend):
         grid_size = self.layoutGridSize()
         gs = gridspec.GridSpec(*grid_size)
+        ax = None
         for topic_data, i in zip(self.topic_data, 
                                  range(len(self.topic_data))):
-            topic_data.plot(start_time,
-                            fig,
-                            self.layoutPosition(gs, topic_data, i),
-                            show_legend)
+            ax = topic_data.plot(start_time,
+                                 fig,
+                                 self.layoutPosition(gs, topic_data, i),
+                                 show_legend, share_ax=ax)
         fig.subplots_adjust(hspace=0.4)
         plt.draw()
         plt.show()
