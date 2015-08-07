@@ -37,7 +37,7 @@ class dynamic_tf_publisher:
         self.update_tf = dict()
         self.listener = tf.TransformListener()
         self.tf_sleep_time = 1.0
-        self.lockobj = thread.allocate_lock()
+        self.lock = thread.Lock()
 
         self.use_cache = rospy.get_param('~use_cache', True)
         self.check_update = rospy.get_param('~check_update', False)
@@ -59,27 +59,26 @@ class dynamic_tf_publisher:
         self.advertiseServiceUnlessFound('/delete_tf', DeleteTF, self.delete)
 
     def publish_tf(self, req=None):
-        self.lockobj.acquire()
-        time = rospy.Time.now()
-        tfm = tf.msg.tfMessage()
+        with self.lock:
+            time = rospy.Time.now()
+            tfm = tf.msg.tfMessage()
 
-        if self.check_update:
-            publish_all = False
-            if self.check_update_last_update + rospy.Duration(self.check_update_sleep_time) < time:
-                publish_all = True
-                self.check_update_last_update = time
+            if self.check_update:
+                publish_all = False
+                if self.check_update_last_update + rospy.Duration(self.check_update_sleep_time) < time:
+                    publish_all = True
+                    self.check_update_last_update = time
 
-        for frame_id in self.cur_tf.keys():
-            if (not self.check_update) or publish_all or self.update_tf[frame_id]:
-                pose = self.cur_tf[frame_id]
-                pose.header.stamp = time
-                tfm.transforms.append(pose)
-                self.update_tf[frame_id] = False
+            for frame_id in self.cur_tf.keys():
+                if (not self.check_update) or publish_all or self.update_tf[frame_id]:
+                    pose = self.cur_tf[frame_id]
+                    pose.header.stamp = time
+                    tfm.transforms.append(pose)
+                    self.update_tf[frame_id] = False
 
-        if len(tfm.transforms) > 0:
-            self.pub_tf.publish(tfm)
-            self.pub_tf_mine.publish(tfm)
-        self.lockobj.release()
+            if len(tfm.transforms) > 0:
+                self.pub_tf.publish(tfm)
+                self.pub_tf_mine.publish(tfm)
         return EmptyResponse()
 
     def assoc(self,req):
@@ -97,24 +96,22 @@ class dynamic_tf_publisher:
         ts.header.stamp = req.header.stamp
         ts.header.frame_id = req.parent_frame
         ts.child_frame_id = req.child_frame
-        self.lockobj.acquire()
-        self.original_parent[req.child_frame] = self.cur_tf[req.child_frame].header.frame_id
-        self.cur_tf[req.child_frame] = ts
-        self.update_tf[req.child_frame] = True
-        self.lockobj.release()
+        with self.lock:
+            self.original_parent[req.child_frame] = self.cur_tf[req.child_frame].header.frame_id
+            self.cur_tf[req.child_frame] = ts
+            self.update_tf[req.child_frame] = True
         self.publish_tf()
         return AssocTFResponse()
 
     def dissoc(self,req):
         areq = None
         rospy.loginfo("dissoc TF %s" % (req.frame_id))
-        self.lockobj.acquire()
-        if self.original_parent.has_key(req.frame_id):
-            areq = AssocTFRequest()
-            areq.header = req.header
-            areq.child_frame = req.frame_id
-            areq.parent_frame = self.original_parent[req.frame_id]
-        self.lockobj.release()
+        with self.lock:
+            if self.original_parent.has_key(req.frame_id):
+                areq = AssocTFRequest()
+                areq.header = req.header
+                areq.child_frame = req.frame_id
+                areq.parent_frame = self.original_parent[req.frame_id]
         if areq:
             self.assoc(areq)
             self.original_parent.pop(req.frame_id) # remove 
@@ -122,25 +119,23 @@ class dynamic_tf_publisher:
 
     def delete(self,req):
         rospy.loginfo("delete TF %s"%(req.header.frame_id))
-        self.lockobj.acquire()
-        if self.original_parent.has_key(req.header.frame_id):
-            del self.original_parent[req.header.frame_id]
-        if self.cur_tf.has_key(req.header.frame_id):
-            del self.cur_tf[req.header.frame_id]
-        if self.update_tf.has_key(req.header.frame_id):
-            del self.update_tf[req.header.frame_id]
-        self.lockobj.release()
+        with self.lock:
+            if self.original_parent.has_key(req.header.frame_id):
+                del self.original_parent[req.header.frame_id]
+            if self.cur_tf.has_key(req.header.frame_id):
+                del self.cur_tf[req.header.frame_id]
+            if self.update_tf.has_key(req.header.frame_id):
+                del self.update_tf[req.header.frame_id]
         return DeleteTFResponse()
 
     def set_tf(self,req):
-        self.lockobj.acquire()
-        # if not assocd
-        if not self.original_parent.has_key(req.cur_tf.child_frame_id):
-            self.tf_sleep_time = 1.0/req.freq
-            self.cur_tf[req.cur_tf.child_frame_id] = req.cur_tf
-            self.update_tf[req.cur_tf.child_frame_id] = True
-            print "Latch [%s]/[%shz]"%(req.cur_tf.child_frame_id,req.freq)
-        self.lockobj.release()
+        with self.lockobk:
+            # if not assocd
+            if not self.original_parent.has_key(req.cur_tf.child_frame_id):
+                self.tf_sleep_time = 1.0/req.freq
+                self.cur_tf[req.cur_tf.child_frame_id] = req.cur_tf
+                self.update_tf[req.cur_tf.child_frame_id] = True
+                print "Latch [%s]/[%shz]"%(req.cur_tf.child_frame_id,req.freq)
         # set parameter
         if self.use_cache:
             time = rospy.Time.now()
