@@ -16,6 +16,7 @@ from std_srvs.srv import Empty, EmptyResponse
 import tf
 import tf.msg
 import thread
+from threading import Lock
 import yaml
 import os
 if os.getenv('ROS_DISTRO') != 'electric' :
@@ -37,7 +38,7 @@ class dynamic_tf_publisher:
         self.update_tf = dict()
         self.listener = tf.TransformListener()
         self.tf_sleep_time = 1.0
-        self.lock = thread.Lock()
+        self.lock = Lock()
 
         self.use_cache = rospy.get_param('~use_cache', True)
         self.check_update = rospy.get_param('~check_update', False)
@@ -129,23 +130,24 @@ class dynamic_tf_publisher:
         return DeleteTFResponse()
 
     def set_tf(self,req):
-        with self.lockobk:
+        rospy.loginfo("%s => %s" % (req.cur_tf.header.frame_id, req.cur_tf.child_frame_id))
+        with self.lock:
             # if not assocd
             if not self.original_parent.has_key(req.cur_tf.child_frame_id):
                 self.tf_sleep_time = 1.0/req.freq
                 self.cur_tf[req.cur_tf.child_frame_id] = req.cur_tf
                 self.update_tf[req.cur_tf.child_frame_id] = True
-                print "Latch [%s]/[%shz]"%(req.cur_tf.child_frame_id,req.freq)
-        # set parameter
-        if self.use_cache:
-            time = rospy.Time.now()
-            tfm = tf.msg.tfMessage()
-            for frame_id in self.cur_tf.keys():
-                pose = self.cur_tf[frame_id]
-                pose.header.stamp = time
-                tfm.transforms.append(pose)
-            rospy.set_param('dynamic_tf_publisher'+rospy.get_name(),tfm.__str__())
-        return SetDynamicTFResponse()
+                rospy.loginfo("Latch [%s]/[%shz]"%(req.cur_tf.child_frame_id,req.freq))
+            # set parameter
+            if self.use_cache:
+                time = rospy.Time.now()
+                tfm = tf.msg.tfMessage()
+                for frame_id in self.cur_tf.keys():
+                    pose = self.cur_tf[frame_id]
+                    pose.header.stamp = time
+                    tfm.transforms.append(pose)
+                rospy.set_param('dynamic_tf_publisher'+rospy.get_name(),tfm.__str__())
+            return SetDynamicTFResponse()
 
     def publish_and_sleep(self):
         self.publish_tf()
@@ -157,5 +159,4 @@ if __name__ == "__main__":
     pub = dynamic_tf_publisher()
     while not rospy.is_shutdown():
         pub.publish_and_sleep()
-    print "exit"
 
