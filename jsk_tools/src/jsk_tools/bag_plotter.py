@@ -196,26 +196,26 @@ class BagPlotter():
         for abag in self.bag_file:
             with rosbag.Bag(abag) as bag:
                 info = yaml.load(bag._get_yaml_info())
-                message_num = info["messages"]
+                message_num = sum([topic["messages"] for topic in info["topics"]
+                                   if topic["topic"] in self.all_topics])
                 widgets = [Fore.GREEN + "%s: " % (abag) + Fore.RESET, Percentage(), Bar()]
                 pbar = ProgressBar(maxval=message_num, widgets=widgets).start()
                 counter = 0
-                for topic, msg, timestamp in bag.read_messages():
+                for topic, msg, timestamp in bag.read_messages(topics=self.all_topics):
                     pbar.update(counter)
-                    if topic in self.all_topics:
-                        for topic_data in self.topic_data:
-                            topic_data.addValue(topic, msg)
-                            no_valid_data = False
-                        if min_stamp:
-                            if min_stamp > msg.header.stamp:
-                                min_stamp = msg.header.stamp
-                        else:
+                    for topic_data in self.topic_data:
+                        topic_data.addValue(topic, msg)
+                        no_valid_data = False
+                    if min_stamp:
+                        if min_stamp > msg.header.stamp:
                             min_stamp = msg.header.stamp
-                        if max_stamp:
-                            if max_stamp < msg.header.stamp:
-                                max_stamp = msg.header.stamp
-                        else:
+                    else:
+                        min_stamp = msg.header.stamp
+                    if max_stamp:
+                        if max_stamp < msg.header.stamp:
                             max_stamp = msg.header.stamp
+                    else:
+                        max_stamp = msg.header.stamp
                     counter = counter + 1
                 pbar.finish()
         if no_valid_data:
