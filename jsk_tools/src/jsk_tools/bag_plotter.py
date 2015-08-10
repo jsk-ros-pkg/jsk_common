@@ -75,7 +75,7 @@ class PlotData():
             ax.plot(xs, ys, label=self.topics[i] + "/" + self.fields_orig[i])
         ax.set_title(self.options["title"])
         if show_legend and self.options["legend"]:
-            ax.legend()
+            ax.legend(prop={'size': '8'})
         self.ax = ax
         return ax
 
@@ -237,22 +237,26 @@ class BagPlotter():
         self.fig = fig
         fig.suptitle(title)
         self.show_legend = True
-        
+        fig.canvas.mpl_connect('key_press_event', self.keyPress)
         # Compute layout
         self.start_time = start_time
         self.plotAll(fig, start_time, self.show_legend)
-        buttonax = plt.axes([0.0, 0.05, 0.05, 0.075])
-        legend_toggle_button = Button(buttonax, "toggle legend")
-        legend_toggle_button.on_clicked(self.toggleLegend)
-        prev_show_legend = self.show_legend
-        while True:
+        self.printUsage()
+        self.runp = True
+        while self.runp:
             plt.pause(1)
-    def toggleLegend(self, event):
+    def keyPress(self, event):
+        if event.key == "l" or event.key == "L":
+            self.toggleLegend()
+        elif event.key == "q" or event.key == "Q":
+            self.runp = False
+    def printUsage(self):
+        print "Usage::"
+        print "  l or L:  toggle legend"
+        print "  q or Q:  quit"
+    def toggleLegend(self):
         self.show_legend = not self.show_legend
         plt.clf()
-        buttonax = plt.axes([0.0, 0.05, 0.05, 0.075])
-        legend_toggle_button = Button(buttonax, "toggle legend")
-        legend_toggle_button.on_clicked(self.toggleLegend)
         self.plotAll(self.fig, self.start_time, self.show_legend)
     def plotAll(self, fig, start_time, show_legend):
         grid_size = self.layoutGridSize()
