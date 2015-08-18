@@ -4,6 +4,7 @@ TOPICS="/joint_states /motor_states /motor_states/abs_angle /motor_states/abs_cu
 /motor_states/board_vdd /motor_states/board_vin /motor_states/cur_angle \
 /motor_states/motor_current /motor_states/motor_outer_temp /motor_states/motor_temp \
 /motor_states/ref_angle /motor_states/servo_alarm \
+/motor_states/pgain /motor_states/dgain \
 /urata_status \
 /off_lfsensor /off_rfsensor /off_lhsensor /off_rhsensor \
 /lfsensor /rfsensor /lhsensor /rhsensor \
