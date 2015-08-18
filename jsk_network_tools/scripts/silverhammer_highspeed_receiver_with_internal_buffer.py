@@ -80,9 +80,11 @@ class SilverHammerReceiver:
         b = StringIO()
         b.write(msg.data)
         deserialized_data = []
+        rospy.loginfo("data size: %d" % len(msg.data))
         rospy.msg.deserialize_messages(b, deserialized_data,
                                        self.message_class)
         rospy.loginfo("received %d message" % len(deserialized_data))
+        
         if len(deserialized_data) > 0:
             # publish data
             msg = deserialized_data[0]
