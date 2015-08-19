@@ -64,9 +64,10 @@ namespace jsk_network_tools
       memcpy(&data[0], &buf[12], size);
     }
 
-    void fill(std::vector<Base>& target, size_t start, size_t end)
+    size_t fill(std::vector<Base>& target, size_t start, size_t end)
     {
-      memcpy(&target[start], &data[0], end - start);
+      memcpy(&target[start], &data[0], std::min(end - start, data.size()));
+      return std::min(end - start, data.size());
     }
 
     bool operator<(const Packet& other) const
@@ -189,17 +190,20 @@ namespace jsk_network_tools
       size_t target_packet_id = 0;
       
       ROS_INFO("expected data size: %lu", num * packet_size);
+      size_t len = 0;
       while (target_packet_id < num && it != packet_array.end()) {
         if (it->packet_id == target_packet_id) {
-          it->fill(msg_.data, target_packet_id * packet_size, (target_packet_id + 1) * packet_size);
+          len += it->fill(msg_.data, target_packet_id * packet_size, (target_packet_id + 1) * packet_size);
           ++it;
         }
         else {                  // fill by dummy 0 data == just skip
           // pass
+          len += packet_size;
         }
         ++target_packet_id;
       }
-
+      ROS_INFO("len: %lu", len);
+      msg_.data.resize(len);
       pub_.publish(msg_);
     }
 
