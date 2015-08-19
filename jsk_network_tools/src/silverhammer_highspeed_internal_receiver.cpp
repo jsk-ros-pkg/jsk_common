@@ -125,6 +125,7 @@ namespace jsk_network_tools
 
         if (last_received_seq_id == -1) {
           packet_array.push_back(packet);
+          last_received_seq_id = seq_id;
         }
         else if (last_received_seq_id != seq_id) {
           ROS_INFO("seq_id := %lu, packet_array.size() := %lu, packet_num := %lu",
