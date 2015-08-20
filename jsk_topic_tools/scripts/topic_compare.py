@@ -8,7 +8,7 @@ import rospy
 import os, sys
 import time
 import traceback
-
+from threading import Lock
 
 class ROSTopicCompare(object):
     subscriberArray = []
@@ -16,7 +16,7 @@ class ROSTopicCompare(object):
     topicTimesArray = []
     scaleType = 0
     captureSize = 100
-
+    lock = Lock()
     def __init__(self, scale="KB", captureSize=100):
         if scale == "B":
             self.scaleType = 1
@@ -35,12 +35,13 @@ class ROSTopicCompare(object):
             topic_num = _topic_num
             try:
                 t = time.time()
-                self.topicTimesArray[topic_num].append(t)
-                self.topicSizesArray[topic_num].append(len(msg._buff))
-                assert(len(self.topicTimesArray[topic_num]) == len(self.topicSizesArray[topic_num]))
-                if len(self.topicTimesArray[topic_num]) > self.captureSize:
-                    self.topicTimesArray[topic_num].pop(0)
-                    self.topicSizesArray[topic_num].pop(0)
+                with self.lock:
+                    self.topicTimesArray[topic_num].append(t)
+                    self.topicSizesArray[topic_num].append(len(msg._buff))
+                    assert(len(self.topicTimesArray[topic_num]) == len(self.topicSizesArray[topic_num]))
+                    if len(self.topicTimesArray[topic_num]) > self.captureSize:
+                        self.topicTimesArray[topic_num].pop(0)
+                        self.topicSizesArray[topic_num].pop(0)
             except:
                 traceback.print_exc()
         return _callback
@@ -49,7 +50,9 @@ class ROSTopicCompare(object):
         sub = rospy.Subscriber(topic_name, rospy.AnyMsg, self._gen_callback())
         self.subscriberArray.append(sub)
         print "subscribed as %d: %s" % (len(self.subscriberArray)-1, topic_name)
-
+    def isAllTopicAvailable(self, size):
+        with self.lock:
+            return all([len(t) > size for t in self.topicTimesArray])
     def getTotalBytes(self, i):
         return sum(self.topicSizesArray[i])
     def getMaxByte(self, i):
@@ -60,6 +63,10 @@ class ROSTopicCompare(object):
         return len(self.topicTimesArray[i])
     def getStartTime(self, i):
         return self.topicTimesArray[i][0]
+    def getEndTime(self, i):
+        return self.topicTimesArray[i][-1]
+    def getBandwidth(self, i):
+        return self.getTotalBytes(i) / (self.getEndTime(i) - self.getStartTime(i))
     def printBandWidth(self):
         current_time = time.time()
 
