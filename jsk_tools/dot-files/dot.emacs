@@ -25,7 +25,7 @@
   (setq mail-mode-hook 'my-auto-fill-mode))
 
 ;;; time
-;;; 
+;;;
 (load "time" t t)
 (display-time)
 
@@ -161,11 +161,12 @@
 
 
 (defun lisp-other-window ()
-  "Run Lisp on other window"
+  "Run lisp on other window"
   (interactive)
-  (switch-to-buffer-other-window
-   (get-buffer-create "*inferior-lisp*"))
-  (run-lisp inferior-lisp-program))
+  (if (not (string= (buffer-name) "*inferior-lisp*"))
+      (switch-to-buffer-other-window
+       (get-buffer-create "*inferior-lisp*")))
+  (run-lisp inferior-euslisp-program))
 
 (set-variable 'inferior-lisp-program "roseus")
 (global-set-key "\C-cE" 'lisp-other-window)
