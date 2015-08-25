@@ -65,6 +65,10 @@ Type `restart travis <job-id>` from slack#travis channel.
 
 **N.B.: `<job-id>` is not the number of Pull-request.**
 
+you can get `<job-id>` from Travis page.
+
+- ![](images/PR_page.png)
+- ![](images/Travis_page.png)
 
 Restart docker from slack
 -------------------------
