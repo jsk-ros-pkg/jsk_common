@@ -120,7 +120,7 @@ rossetip() {
     then
         unset ROS_IP
         unset ROS_HOSTNAME
-        echo -e "\e[1;31munable to set ROS_IP and ROS_HOSTNAME\e[m"
+        echo -e "\e[1;31munable to set ROS_IP and ROS_HOSTNAME\e[m" >&2
         return 1
     else
         echo -e "\e[1;31mset ROS_IP and ROS_HOSTNAME to $ROS_IP\e[m"
