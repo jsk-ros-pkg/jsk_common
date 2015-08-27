@@ -1,4 +1,4 @@
-jsk_common [![Build Status](https://travis-ci.org/jsk-ros-pkg/jsk_common.png?branch=master)](https://travis-ci.org/jsk-ros-pkg/jsk_common) [![Slack](https://img.shields.io/badge/slack-jsk--robotics-e100e1.svg)](http://jsk-robotics.slack.com)
+jsk_common [![Build Status](https://travis-ci.org/jsk-ros-pkg/jsk_common.svg?branch=master)](https://travis-ci.org/jsk-ros-pkg/jsk_common) [![Slack](https://img.shields.io/badge/slack-jsk--robotics-e100e1.svg)](http://jsk-robotics.slack.com)
 ===
 
 Install
