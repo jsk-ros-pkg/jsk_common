@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="rqt_gui" type="rqt_gui" name="multisense_all_local_view"
+        args="--perspective-file $(find jsk_tilt_laser)/config/multisense_local_views.perspective" />
+</launch>
