@@ -131,6 +131,7 @@
       joint_name: motor_joint
       use_laser_assembler: true
       not_use_laser_assembler_service: true
+      twist_frame_id: head_hokuyo_frame
       overwrap_angle: 0.0
       skip_number: 10
     </rosparam>
