@@ -92,7 +92,7 @@ rossetip_addr() {
     fi
     local mask_target_ip=$(echo ${target_hostip} | cut -d. -f1-3)
     for ip in $(hostname -I); do
-        if echo $ip | egrep "^172.17.42.|^127.0."; then
+        if echo $ip | egrep "^172.17.42.|^127.0." >/dev/null; then
             # skip docker/local host
             continue
         elif [ "${mask_targetip}" = "" ]; then
