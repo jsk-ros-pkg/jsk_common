@@ -1,0 +1,600 @@
+{
+  "keys": {}, 
+  "groups": {
+    "pluginmanager": {
+      "keys": {
+        "running-plugins": {
+          "type": "repr", 
+          "repr": "{u'__DockWidgetContainer': [2, 3, 1, 4, 5], u'rqt_image_view/ImageView': [10, 7, 6, 5, 4, 3, 2, 1, 9, 8]}"
+        }
+      }, 
+      "groups": {
+        "plugin____DockWidgetContainer__1": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "None"
+                }
+              }, 
+              "groups": {
+                "mainwindow": {
+                  "keys": {
+                    "geometry": {
+                      "type": "repr(QByteArray.hex)", 
+                      "repr(QByteArray.hex)": "QtCore.QByteArray('01d9d0cb000100000000000000000015000001a0000004680000000000000000ffffffffffffffff000000000000')", 
+                      "pretty-print": "           h           "
+                    }, 
+                    "state": {
+                      "type": "repr(QByteArray.hex)", 
+                      "repr(QByteArray.hex)": "QtCore.QByteArray('000000ff00000000fd0000000200000001000001a100000454fc0200000004fb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f0032030000117700000083000000e300000469fb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f0033030000054f000000b90000012400000469fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0031005f005f0049006d00610067006500560069006500770057006900640067006500740100000000000000c50000005100fffffffb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0033005f005f0049006d006100670065005600690065007700570069006400670065007401000000cb000003890000005100ffffff000000030000000000000000fc0100000001fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0034005f005f0049006d006100670065005600690065007700570069006400670065007403000001a5000001f100000382000001a3000000000000045400000004000000040000000800000008fc00000000')", 
+                      "pretty-print": "                 0__DockWidgetContainer__2          0__DockWidgetContainer__3          Zrqt_image_view__ImageView__1__ImageViewWidget          Zrqt_image_view__ImageView__3__ImageViewWidget                   Zrqt_image_view__ImageView__4__ImageViewWidget                       "
+                    }
+                  }, 
+                  "groups": {}
+                }
+              }
+            }
+          }
+        }, 
+        "plugin__rqt_image_view__ImageView__6": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget__ImageViewWidget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "3"
+                }
+              }, 
+              "groups": {}
+            }, 
+            "plugin": {
+              "keys": {
+                "dynamic_range": {
+                  "type": "repr", 
+                  "repr": "False"
+                }, 
+                "max_range": {
+                  "type": "repr", 
+                  "repr": "10.0"
+                }, 
+                "topic": {
+                  "type": "repr", 
+                  "repr": "u'/multisense_local/resize_1_2/depth'"
+                }, 
+                "zoom1": {
+                  "type": "repr", 
+                  "repr": "False"
+                }
+              }, 
+              "groups": {}
+            }
+          }
+        }, 
+        "plugin____DockWidgetContainer__3": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "None"
+                }
+              }, 
+              "groups": {
+                "mainwindow": {
+                  "keys": {
+                    "geometry": {
+                      "type": "repr(QByteArray.hex)", 
+                      "repr(QByteArray.hex)": "QtCore.QByteArray('01d9d0cb000100000000000000000015000000da000004680000000000000000ffffffffffffffff000000000000')", 
+                      "pretty-print": "           h           "
+                    }, 
+                    "state": {
+                      "type": "repr(QByteArray.hex)", 
+                      "repr(QByteArray.hex)": "QtCore.QByteArray('000000ff00000000fd0000000100000001000000db00000454fc0200000002fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0035005f005f0049006d00610067006500560069006500770057006900640067006500740100000000000000e50000005100fffffffb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0036005f005f0049006d006100670065005600690065007700570069006400670065007401000000eb000003690000005100ffffff000000000000042c00000004000000040000000800000008fc00000000')", 
+                      "pretty-print": "                 Zrqt_image_view__ImageView__5__ImageViewWidget          Zrqt_image_view__ImageView__6__ImageViewWidget                       "
+                    }
+                  }, 
+                  "groups": {}
+                }
+              }
+            }
+          }
+        }, 
+        "plugin____DockWidgetContainer__2": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "None"
+                }
+              }, 
+              "groups": {
+                "mainwindow": {
+                  "keys": {
+                    "geometry": {
+                      "type": "repr(QByteArray.hex)", 
+                      "repr(QByteArray.hex)": "QtCore.QByteArray('01d9d0cb00010000000000000000001500000194000004680000000000000000ffffffffffffffff000000000000')", 
+                      "pretty-print": "           h           "
+                    }, 
+                    "state": {
+                      "type": "repr(QByteArray.hex)", 
+                      "repr(QByteArray.hex)": "QtCore.QByteArray('000000ff00000000fd00000002000000000000019500000454fc0200000003fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0034005f005f0049006d00610067006500560069006500770057006900640067006500740100000000000000ba0000005100fffffffb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0036005f005f0049006d006100670065005600690065007700570069006400670065007403000002f00000018b000000e300000059fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0032005f005f0049006d006100670065005600690065007700570069006400670065007401000000c0000003940000005100ffffff00000003000000db0000044cfc0100000001fb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f0033030000063e0000009b0000012400000469000000000000045400000004000000040000000800000008fc00000000')", 
+                      "pretty-print": "                 Zrqt_image_view__ImageView__4__ImageViewWidget          Zrqt_image_view__ImageView__6__ImageViewWidget          Zrqt_image_view__ImageView__2__ImageViewWidget                   0__DockWidgetContainer__3                       "
+                    }
+                  }, 
+                  "groups": {}
+                }
+              }
+            }
+          }
+        }, 
+        "plugin____DockWidgetContainer__5": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "None"
+                }
+              }, 
+              "groups": {
+                "mainwindow": {
+                  "keys": {
+                    "geometry": {
+                      "type": "repr(QByteArray.hex)", 
+                      "repr(QByteArray.hex)": "QtCore.QByteArray('01d9d0cb000100000000000000000015000001df000004680000000000000000ffffffffffffffff000000000000')", 
+                      "pretty-print": "           h           "
+                    }, 
+                    "state": {
+                      "type": "repr(QByteArray.hex)", 
+                      "repr(QByteArray.hex)": "QtCore.QByteArray('000000ff00000000fd0000000200000002000001e000000454fc0100000001fc00000000000001e0000000e300fffffffc0200000002fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0039005f005f0049006d006100670065005600690065007700570069006400670065007401000000000000013d0000005100fffffffb0000005c007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f00310030005f005f0049006d00610067006500560069006500770057006900640067006500740100000143000003110000005100ffffff000000030000000000000000fc0100000002fb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f00310300000a3b000000bc0000011f00000469fb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f00320300000a5b000000b4000000e300000469000001e00000000000000004000000040000000800000008fc00000000')", 
+                      "pretty-print": "                                                                              = Q                                                    C   Q                                       ;     i                            [     i              "
+                    }
+                  }, 
+                  "groups": {}
+                }
+              }
+            }
+          }
+        }, 
+        "plugin____DockWidgetContainer__4": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "None"
+                }
+              }, 
+              "groups": {
+                "mainwindow": {
+                  "keys": {
+                    "geometry": {
+                      "type": "repr(QByteArray.hex)", 
+                      "repr(QByteArray.hex)": "QtCore.QByteArray('01d9d0cb000100000000000000000015000000ff000004680000000000000000ffffffffffffffff000000000000')", 
+                      "pretty-print": "           h           "
+                    }, 
+                    "state": {
+                      "type": "repr(QByteArray.hex)", 
+                      "repr(QByteArray.hex)": "QtCore.QByteArray('000000ff00000000fd00000002000000020000010000000454fc0100000001fc0000000000000100000000db00fffffffc0200000002fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0037005f005f0049006d00610067006500560069006500770057006900640067006500740100000000000001030000005100fffffffb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0038005f005f0049006d006100670065005600690065007700570069006400670065007401000001090000034b0000005100ffffff000000030000000000000000fc0100000004fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0039005f005f0049006d006100670065005600690065007700570069006400670065007403000004a8000001390000070900000473fb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f003103000004f7000000e50000011f00000469fb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f00320300000523000000a6000000e300000469fb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f0035030000062600000096000001e000000469000001000000000000000004000000040000000800000008fc00000000')", 
+                      "pretty-print": "                                                                                Q                                                     K Q                                                              9   s                                  i                            #     i                            &     i              "
+                    }
+                  }, 
+                  "groups": {}
+                }
+              }
+            }
+          }
+        }, 
+        "plugin__rqt_image_view__ImageView__7": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget__ImageViewWidget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "4"
+                }
+              }, 
+              "groups": {}
+            }, 
+            "plugin": {
+              "keys": {
+                "dynamic_range": {
+                  "type": "repr", 
+                  "repr": "False"
+                }, 
+                "max_range": {
+                  "type": "repr", 
+                  "repr": "10.0"
+                }, 
+                "topic": {
+                  "type": "repr", 
+                  "repr": "u'/multisense_local/resize_1_4/left/image_rect_color'"
+                }, 
+                "zoom1": {
+                  "type": "repr", 
+                  "repr": "False"
+                }
+              }, 
+              "groups": {}
+            }
+          }
+        }, 
+        "plugin__rqt_image_view__ImageView__1": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget__ImageViewWidget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "1"
+                }
+              }, 
+              "groups": {}
+            }, 
+            "plugin": {
+              "keys": {
+                "dynamic_range": {
+                  "type": "repr", 
+                  "repr": "False"
+                }, 
+                "max_range": {
+                  "type": "repr", 
+                  "repr": "10.0"
+                }, 
+                "topic": {
+                  "type": "repr", 
+                  "repr": "u'/multisense_local/left/image_rect_color'"
+                }, 
+                "zoom1": {
+                  "type": "repr", 
+                  "repr": "False"
+                }
+              }, 
+              "groups": {}
+            }
+          }
+        }, 
+        "plugin__rqt_image_view__ImageView__4": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget__ImageViewWidget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "2"
+                }
+              }, 
+              "groups": {}
+            }, 
+            "plugin": {
+              "keys": {
+                "dynamic_range": {
+                  "type": "repr", 
+                  "repr": "False"
+                }, 
+                "max_range": {
+                  "type": "repr", 
+                  "repr": "10.0"
+                }, 
+                "topic": {
+                  "type": "repr", 
+                  "repr": "u'/multisense_local/resize_1_1/left/image_rect_color'"
+                }, 
+                "zoom1": {
+                  "type": "repr", 
+                  "repr": "False"
+                }
+              }, 
+              "groups": {}
+            }
+          }
+        }, 
+        "plugin__rqt_image_view__ImageView__8": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget__ImageViewWidget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "4"
+                }
+              }, 
+              "groups": {}
+            }, 
+            "plugin": {
+              "keys": {
+                "dynamic_range": {
+                  "type": "repr", 
+                  "repr": "False"
+                }, 
+                "max_range": {
+                  "type": "repr", 
+                  "repr": "10.0"
+                }, 
+                "topic": {
+                  "type": "repr", 
+                  "repr": "u'/multisense_local/resize_1_4/depth'"
+                }, 
+                "zoom1": {
+                  "type": "repr", 
+                  "repr": "False"
+                }
+              }, 
+              "groups": {}
+            }
+          }
+        }, 
+        "plugin__rqt_image_view__ImageView__9": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget__ImageViewWidget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "5"
+                }
+              }, 
+              "groups": {}
+            }, 
+            "plugin": {
+              "keys": {
+                "dynamic_range": {
+                  "type": "repr", 
+                  "repr": "False"
+                }, 
+                "max_range": {
+                  "type": "repr", 
+                  "repr": "10.0"
+                }, 
+                "topic": {
+                  "type": "repr", 
+                  "repr": "u'/multisense_local/resize_1_8/left/image_rect_color'"
+                }, 
+                "zoom1": {
+                  "type": "repr", 
+                  "repr": "False"
+                }
+              }, 
+              "groups": {}
+            }
+          }
+        }, 
+        "plugin__rqt_image_view__ImageView__5": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget__ImageViewWidget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "3"
+                }
+              }, 
+              "groups": {}
+            }, 
+            "plugin": {
+              "keys": {
+                "dynamic_range": {
+                  "type": "repr", 
+                  "repr": "False"
+                }, 
+                "max_range": {
+                  "type": "repr", 
+                  "repr": "10.0"
+                }, 
+                "topic": {
+                  "type": "repr", 
+                  "repr": "u'/multisense_local/resize_1_2/left/image_rect_color'"
+                }, 
+                "zoom1": {
+                  "type": "repr", 
+                  "repr": "False"
+                }
+              }, 
+              "groups": {}
+            }
+          }
+        }, 
+        "plugin__rqt_image_view__ImageView__2": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget__ImageViewWidget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "2"
+                }
+              }, 
+              "groups": {}
+            }, 
+            "plugin": {
+              "keys": {
+                "dynamic_range": {
+                  "type": "repr", 
+                  "repr": "False"
+                }, 
+                "max_range": {
+                  "type": "repr", 
+                  "repr": "10.0"
+                }, 
+                "topic": {
+                  "type": "repr", 
+                  "repr": "u'/multisense_local/resize_1_1/depth'"
+                }, 
+                "zoom1": {
+                  "type": "repr", 
+                  "repr": "False"
+                }
+              }, 
+              "groups": {}
+            }
+          }
+        }, 
+        "plugin__rqt_image_view__ImageView__10": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget__ImageViewWidget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "5"
+                }
+              }, 
+              "groups": {}
+            }, 
+            "plugin": {
+              "keys": {
+                "dynamic_range": {
+                  "type": "repr", 
+                  "repr": "False"
+                }, 
+                "max_range": {
+                  "type": "repr", 
+                  "repr": "10.0"
+                }, 
+                "topic": {
+                  "type": "repr", 
+                  "repr": "u'/multisense_local/resize_1_8/depth'"
+                }, 
+                "zoom1": {
+                  "type": "repr", 
+                  "repr": "False"
+                }
+              }, 
+              "groups": {}
+            }
+          }
+        }, 
+        "plugin__rqt_image_view__ImageView__3": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget__ImageViewWidget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "1"
+                }
+              }, 
+              "groups": {}
+            }, 
+            "plugin": {
+              "keys": {
+                "dynamic_range": {
+                  "type": "repr", 
+                  "repr": "False"
+                }, 
+                "max_range": {
+                  "type": "repr", 
+                  "repr": "10.0"
+                }, 
+                "topic": {
+                  "type": "repr", 
+                  "repr": "u'/multisense/depth'"
+                }, 
+                "zoom1": {
+                  "type": "repr", 
+                  "repr": "False"
+                }
+              }, 
+              "groups": {}
+            }
+          }
+        }
+      }
+    }, 
+    "mainwindow": {
+      "keys": {
+        "geometry": {
+          "type": "repr(QByteArray.hex)", 
+          "repr(QByteArray.hex)": "QtCore.QByteArray('01d9d0cb00010000000001dc00000072000008f40000052d000001e40000008e000008ec00000525000000000000')", 
+          "pretty-print": "       r   -       %   "
+        }, 
+        "state": {
+          "type": "repr(QByteArray.hex)", 
+          "repr(QByteArray.hex)": "QtCore.QByteArray('000000ff00000000fd00000002000000020000070900000469fc0100000005fb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f00310100000000000001a1000000db00fffffffb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f003201000001a700000195000000db00fffffffb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f00330100000342000000db000000db00fffffffb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f0034010000042300000100000000db00fffffffb00000030005f005f0044006f0063006b0057006900640067006500740043006f006e007400610069006e00650072005f005f00350100000529000001e0000000e300ffffff000000030000070900000469fc0100000005fc00000000000007090000000000fffffffc0200000002fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0037005f005f0049006d0061006700650056006900650077005700690064006700650074030000043d000000c000000382000002dafc00000019000004690000000000fffffffc0100000001fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0038005f005f0049006d0061006700650056006900650077005700690064006700650074030000048f000002030000038100000469fc00000388000003810000000000fffffffc0200000004fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0032005f005f0049006d00610067006500560069006500770057006900640067006500740300000292000001530000038100000170fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0033005f005f0049006d006100670065005600690065007700570069006400670065007403000007910000018b000002ef000000f6fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0036005f005f0049006d006100670065005600690065007700570069006400670065007403000003b3000001650000038100000334fb0000005c007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f00310030005f005f0049006d00610067006500560069006500770057006900640067006500740300000609000002930000035800000059fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0031005f005f0049006d0061006700650056006900650077005700690064006700650074030000010400000104000001170000042efb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0034005f005f0049006d006100670065005600690065007700570069006400670065007403000002b40000009e0000010200000102fb0000005a007200710074005f0069006d006100670065005f0076006900650077005f005f0049006d0061006700650056006900650077005f005f0035005f005f0049006d006100670065005600690065007700570069006400670065007403000003b100000166000000e300000108000007090000000000000004000000040000000800000008fc00000001000000030000000100000036004d0069006e0069006d0069007a006500640044006f0063006b00570069006400670065007400730054006f006f006c0062006100720000000000ffffffff0000000000000000')", 
+          "pretty-print": "                 0__DockWidgetContainer__1          0__DockWidgetContainer__2          0__DockWidgetContainer__3          0__DockWidgetContainer__4          0__DockWidgetContainer__5                                                                              =                   Zrqt_image_view__ImageView__8__ImageViewWidget                                                                       S   p                                                                                                           e   4                                                      X Y                                                       .                                                                                                           f                                                            "
+        }
+      }, 
+      "groups": {
+        "toolbar_areas": {
+          "keys": {
+            "MinimizedDockWidgetsToolbar": {
+              "type": "repr", 
+              "repr": "8"
+            }
+          }, 
+          "groups": {}
+        }
+      }
+    }
+  }
+}
