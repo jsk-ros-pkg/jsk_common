@@ -11,6 +11,8 @@ function usage {
     echo >&2 "          [--no-sudo] do not run with sudo"
     echo >&2 "          [-s|--shadow-fixed] use ros-shodow-fixed repository"
     echo >&2 "          [--rtm|--start-jsk|--rtm-ros-robotics] merge .rosinstall for rtm-ros stuff"
+    echo >&2 "          [--rbrapp] merge .rosinstall for rbrapp user"
+    echo >&2 "          [--h8|--h8-tools] merge .rosinstall for h8_tools user"
     echo >&2 "          [--from-source] install jsk and related packages from source code"
     echo >&2 "          [--from-full-source] install whole ros system using source code"
     echo >&2 "          [-r|--repositories] comma separated list of repositories to install"
@@ -26,7 +28,7 @@ function error {
 trap error ERR
 
 # command line parse
-OPT=`getopt -o hipeynsr: -l help,show-install,show-package,show-environment,yes,rtm,start-jsk,from-source,from-full-source,use-shadow-fixed,no-sudo,repositories -- $*`
+OPT=`getopt -o hipeynsr: -l help,show-install,show-package,show-environment,yes,rtm,start-jsk,rtm-ros-robotics,rbrapp,h8,h8-tools,from-source,from-full-source,use-shadow-fixed,no-sudo,repositories -- $*`
 if [ $? != 0 ]; then
     usage
 fi
@@ -45,6 +47,8 @@ while [ -n "$1" ] ; do
 	-n|--dry-run) DRY=true; shift;;
 	-s|--use-shadow) DEBIAN_REPOSITORY='http://packages.ros.org/ros-shadow-fixed/ubuntu'; shift;;
 	--rtm|--start-jsk|--rtm-ros-robotics) RTM_ROS_ROBOTICS=true; shift;;
+	--rbrapp) RBRAPP=true; shift;;
+	--h8|--h8-tools) H8_TOOLS=true; shift;;
 	--from-source) USE_SOURCE=true; shift;;
 	--from-full-source) USE_SOURCE=full; shift;;
 	--no-sudo) SUDO='echo "[NO_SUDO] skipping"'; shift;;
@@ -305,6 +309,20 @@ EOF
 - git:
     uri: https://github.com/start-jsk/rtmros_gazebo.git
     local-name: rtm-ros-robotics/rtmros_gazebo
+EOF
+    fi
+    if [ "$RBRAPP" = "true" ]; then
+        cat <<EOF >> /tmp/rosinstall.$$
+- git:
+    uri: git@github.com:jsk-ros-pkg/rbrapp.git
+    local-name: jsk-ros-pkg/rbrapp
+EOF
+    fi
+    if [ "$H8_TOOLS" = "true" ]; then
+        cat <<EOF >> /tmp/rosinstall.$$
+- git:
+    uri: git@github.com:jsk-ros-pkg/h8_tools.git
+    local-name: jsk-ros-pkg/h8_tools
 EOF
     fi
     if [ "$USE_SOURCE" != "" ]; then
