@@ -203,3 +203,11 @@ You can invoke roseus by `C-c e`.
 
 When you use inferior-lisp-mode, you can immediately evaluate sexpression
 without copy-and-paste it by `C-x C-e`.
+
+tmux
+----
+Write following line in your `~/.tmux.conf`
+
+```
+source-file ~/ros/hydro/src/jsk-ros-pkg/jsk_common/jsk_tools/dot-files/tmux.conf
+```
