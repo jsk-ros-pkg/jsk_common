@@ -12,9 +12,9 @@ large-list:
 	@echo "***\n*** Consider using KEYWORD option to get the list of large data\n***"
 	@echo "*** for example... "
 	@echo "*** > make large-list KEYWORD=2014_05*"
-	@ssh ${LOGIN_USER}@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/large/${KEYWORD}
+	@ssh ${LOGIN_USER}@aries.jsk.t.u-tokyo.ac.jp ls -sh /home/jsk/ros/data/large/${KEYWORD}
 small-list:
-	@ssh ${LOGIN_USER}@aries.jsk.t.u-tokyo.ac.jp ls /home/jsk/ros/data/small/${KEYWORD}
+	@ssh ${LOGIN_USER}@aries.jsk.t.u-tokyo.ac.jp ls -sh /home/jsk/ros/data/small/${KEYWORD}
 
 large:
 	@echo "***\n*** Consider using KEYWORD option to download large data\n***"
