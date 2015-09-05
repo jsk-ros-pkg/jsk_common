@@ -117,6 +117,18 @@ export PATH=$PATH:/usr/local/bin ## for ros tools
 export LC_ALL=en_US.UTF-8
 unset SVN_REVISION ## this jenkins environment valiables conflicts with mk/svn_checkout.mk
 
+function _version_ge {
+  local ver1 ver2 ret
+  ver1=$1
+  ver2=$2
+  python -c "\
+import sys
+from distutils.version import StrictVersion
+if StrictVersion('$ver1') >= StrictVersion('$ver2'):
+  sys.exit(0)
+sys.exit(1)"
+}
+
 # define functions
 # http://www.ros.org/wiki/electric/Installation/Ubuntu
 function setup-ros {
@@ -155,6 +167,10 @@ function setup-ros {
     fi
     $COMMAND $SUDO apt-get upgrade $YES
     $COMMAND $SUDO apt-get $APT_GET_YES install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools python-pip
+    _version_ge $(rosdep --version) "0.11.2" || {
+      echo "rosdep is too old (should be greater than 0.11.2)! version: $(rosdep --version). upgrading..." >&2
+      $COMMAND $SUDO apt-get install --only-upgrade python-rosdep  # python-rosdep>=0.11.2
+    }
     if [ "$USE_SOURCE" == "full" ]; then
         $COMMAND $SUDO apt-get $APT_GET_YES install python-rosinstall-generator
         $COMMAND $SUDO apt-get $APT_GET_YES install libftdi-dev libgstreamer0.10-dev libgst-dev libgstreamer-plugins-base0.10-dev
