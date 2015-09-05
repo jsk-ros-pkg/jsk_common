@@ -6,48 +6,63 @@
 - git:
     uri: https://github.com/jsk-ros-pkg/openrave_planning.git
     local-name: jsk-ros-pkg/openrave_planning
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_visualization.git
     local-name: jsk-ros-pkg/jsk_visualization
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_smart_apps.git
     local-name: jsk-ros-pkg/jsk_smart_apps
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_roseus.git
     local-name: jsk-ros-pkg/jsk_roseus
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_robot.git
     local-name: jsk-ros-pkg/jsk_robot
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_recognition.git
     local-name: jsk-ros-pkg/jsk_recognition
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_pr2eus.git
     local-name: jsk-ros-pkg/jsk_pr2eus
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_planning.git
     local-name: jsk-ros-pkg/jsk_planning
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_model_tools.git
     local-name: jsk-ros-pkg/jsk_model_tools
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_demos.git
     local-name: jsk-ros-pkg/jsk_demos
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_control.git
     local-name: jsk-ros-pkg/jsk_control
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_common.git
     local-name: jsk-ros-pkg/jsk_common
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_common_msgs.git
     local-name: jsk-ros-pkg/jsk_common_msgs
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_3rdparty.git
     local-name: jsk-ros-pkg/jsk_3rdparty
+    version: master
 - git:
     uri: https://github.com/jsk-ros-pkg/jsk_openni_kinect.git
     local-name: jsk-ros-pkg/jsk_openni_kinect
+    version: master
 
 # for snap map icp
 - git:
