@@ -183,5 +183,9 @@ restart_travis() {
   job_id=$2
   msg="restart travis $slug $job_id"
   echo "sending... '$msg' -> #travis"
-  echo $msg | slacker --channel travis --as-user 1
+  echo $msg | slacker --channel travis --as-user
+  if [ $? -eq 2 ]; then
+    echo "Please upgrade slacker-cli" >&2
+    return 1
+  fi
 }
