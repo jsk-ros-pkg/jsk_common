@@ -165,3 +165,23 @@ rost() {
         fi
     fi
 }
+
+restart_travis() {
+  # Restart travis from command line
+  if [ $# -lt 2 ]; then
+    echo "usage: restart_travis <repo_slug> <job_id>"
+    echo "example:"
+    echo "  restart_travis jsk-ros-pkg/jsk_common 1258.2"
+    return 1
+  fi
+  if [ -z $SLACK_TOKEN ]; then
+    echo "Please set SLACK_TOKEN (see: https://api.slack.com/web)"
+    return 1
+  fi
+  local slug job_id msg
+  slug=$1
+  job_id=$2
+  msg="restart travis $slug $job_id"
+  echo "sending... '$msg' -> #travis"
+  echo $msg | slacker --channel travis --as-user 1
+}
