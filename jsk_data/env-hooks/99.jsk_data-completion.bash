@@ -1,22 +1,32 @@
 #!/usr/bin/env bash
 
 
-_jsk_data()
-{
+_jsk_data() {
     local cur prev opts
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     opts=""
 
-    case "$COMP_CWORD" in
-      1)
-        opts="get ls" ;;
-      2)
-        opts="large small" ;;
+    if [ $COMP_CWORD -eq 1 ]; then
+        opts="get ls put"
+        COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
+        return 0
+    fi
+
+    case "$prev" in
+      get|put)
+        if [[ $cur =~ -+ ]]; then
+          opts="--public"
+        fi
+        ;;
+      ls)
+        if [[ $cur =~ -+ ]]; then
+          opts="--public --show-size --sort --reverse"
+        fi
+        ;;
       *) ;;
     esac
-    COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
-    return 0
+    COMPREPLY=( $(compgen -W "${opts}" ${cur}) ) && return 0
 }
 complete -F _jsk_data jsk_data
