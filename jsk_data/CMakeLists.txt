@@ -7,7 +7,6 @@ catkin_package(
 catkin_python_setup()
 catkin_install_python(PROGRAMS scripts/jsk_data DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-catkin_add_env_hooks(99.jsk_data SHELLS sh bash zsh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
 catkin_add_env_hooks(99.jsk_data-completion SHELLS bash zsh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
 
 install(DIRECTORY launch rvizconfig scripts
