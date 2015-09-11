@@ -1,0 +1,6 @@
+- git:
+    uri: https://github.com/jsk-ros-pkg/jsk_common_msgs.git
+    local-name: jsk-ros-pkg/jsk_common_msgs
+- git:
+    uri: https://github.com/jsk-ros-pkg/jsk_3rdparty.git
+    local-name: jsk-ros-pkg/jsk_3rdparty
