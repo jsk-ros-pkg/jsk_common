@@ -2,7 +2,7 @@ jsk_common
 ===
 
 [![Build Status](https://travis-ci.org/jsk-ros-pkg/jsk_common.svg?branch=master)](https://travis-ci.org/jsk-ros-pkg/jsk_common)
-[![Slack](https://img.shields.io/badge/slack-jsk--robotics-e100e1.svg)](http://jsk-robotics.slack.com) 
+[![Slack](https://img.shields.io/badge/slack-jsk--robotics-e100e1.svg)](http://jsk-robotics.slack.com)
 [![Join the chat at https://gitter.im/jsk-ros-pkg/jsk_common](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jsk-ros-pkg/jsk_common?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Install
@@ -93,15 +93,16 @@ hydro
 - binarydeb raring amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-hydro-jsk-common_binarydeb_raring_amd64)](http://jenkins.ros.org/job/ros-hydro-jsk-common_binarydeb_raring_amd64/)
 - binarydeb raring i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-hydro-jsk-common_binarydeb_raring_i386)](http://jenkins.ros.org/job/ros-hydro-jsk-common_binarydeb_raring_i386/)
 
-groovy
+indigo
 
-- sourcedeb [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-groovy-jsk-common_sourcedeb)](http://jenkins.ros.org/job/ros-groovy-jsk-common_sourcedeb/)
-- binarydeb oneiric amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-groovy-jsk-common_binarydeb_oneiric_amd64)](http://jenkins.ros.org/job/ros-groovy-jsk-common_binarydeb_oneiric_amd64/)
-- binarydeb oneiric i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-groovy-jsk-common_binarydeb_oneiric_i386)](http://jenkins.ros.org/job/ros-groovy-jsk-common_binarydeb_oneiric_i386/)
-- binarydeb precise amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-groovy-jsk-common_binarydeb_precise_amd64)](http://jenkins.ros.org/job/ros-groovy-jsk-common_binarydeb_precise_amd64/)
-- binarydeb precise i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-groovy-jsk-common_binarydeb_precise_i386)](http://jenkins.ros.org/job/ros-groovy-jsk-common_binarydeb_precise_i386/)
-- binarydeb quantal amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-groovy-jsk-common_binarydeb_quantal_amd64)](http://jenkins.ros.org/job/ros-groovy-jsk-common_binarydeb_quantal_amd64/)
-- binarydeb quantal i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-groovy-jsk-common_binarydeb_quantal_i386)](http://jenkins.ros.org/job/ros-groovy-jsk-common_binarydeb_quantal_i386/)
+- sourcedeb [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_sourcedeb)](http://jenkins.ros.org/job/ros-indigo-jsk-common_sourcedeb/)
+- binarydeb oneiric amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_oneiric_amd64)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_oneiric_amd64/)
+- binarydeb oneiric i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_oneiric_i386)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_oneiric_i386/)
+- binarydeb precise amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_precise_amd64)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_precise_amd64/)
+- binarydeb precise i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_precise_i386)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_precise_i386/)
+- binarydeb quantal amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_quantal_amd64)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_quantal_amd64/)
+- binarydeb quantal i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_quantal_i386)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_quantal_i386/)
+
 
 Devel Test Status
 -----------------
@@ -109,9 +110,9 @@ Devel Test Status
 
 [![Hydro Test Satus](http://jenkins.ros.org/job/devel-hydro-jsk_common/test/trend?job)](http://jenkins.ros.org/job/devel-hydro-jsk_common/)
 
-[Groovy](http://jenkins.ros.org/job/devel-groovy-jsk_common) [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=devel-groovy-jsk_common)](http://jenkins.ros.org/job/devel-groovy-jsk_common/)
+[Indigo](http://jenkins.ros.org/job/devel-indigo-jsk_common) [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=devel-indigo-jsk_common)](http://jenkins.ros.org/job/devel-indigo-jsk_common/)
 
-[![Groovy Test Satus](http://jenkins.ros.org/job/devel-groovy-jsk_common/test/trend?job)](http://jenkins.ros.org/job/devel-groovy-jsk_common/)
+[![Indigo Test Satus](http://jenkins.ros.org/job/devel-indigo-jsk_common/test/trend?job)](http://jenkins.ros.org/job/devel-indigo-jsk_common/)
 
 Prerelease Test Status
 ----------------------
@@ -120,6 +121,6 @@ Prerelease Test Status
 
 [![Hydro Test Satus](http://jenkins.ros.org/job/prerelease-hydro-jsk_common/test/trend?job)](http://jenkins.ros.org/job/prerelease-hydro-jsk_common/)
 
-[Groovy](http://jenkins.ros.org/job/prerelease-groovy-jsk_common) [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=prerelease-groovy-jsk_common)](http://jenkins.ros.org/job/prerelease-groovy-jsk_common/)  [Start Testing](http://prerelease.ros.org/create_job/groovy)
+[Indigo](http://jenkins.ros.org/job/prerelease-indigo-jsk_common) [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=prerelease-indigo-jsk_common)](http://jenkins.ros.org/job/prerelease-indigo-jsk_common/)  [Start Testing](http://prerelease.ros.org/create_job/indigo)
 
-[![Groovy Test Satus](http://jenkins.ros.org/job/prerelease-groovy-jsk_common/test/trend?job)](http://jenkins.ros.org/job/prerelease-groovy-jsk_common/)
+[![Indigo Test Satus](http://jenkins.ros.org/job/prerelease-indigo-jsk_common/test/trend?job)](http://jenkins.ros.org/job/prerelease-indigo-jsk_common/)
