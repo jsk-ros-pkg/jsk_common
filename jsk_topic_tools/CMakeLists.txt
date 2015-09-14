@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(jsk_topic_tools)
 
 find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp rostest std_msgs std_srvs
+  rostime
   nodelet tf
   geometry_msgs
   eigen_conversions
@@ -19,7 +20,7 @@ add_service_files(
 generate_messages()
 catkin_package(
     DEPENDS
-    CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs std_srvs
+    CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs std_srvs roscpp rostime
     INCLUDE_DIRS include
     LIBRARIES jsk_topic_tools
     CFG_EXTRAS nodelet.cmake

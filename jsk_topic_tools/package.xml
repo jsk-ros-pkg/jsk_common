@@ -31,6 +31,8 @@
   <build_depend>tf</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>eigen_conversions</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rostime</build_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>std_srvs</run_depend>
   <run_depend>topic_tools</run_depend>
@@ -45,6 +47,8 @@
   <run_depend>tf</run_depend>
   <run_depend>geometry_msgs</run_depend>
   <run_depend>eigen_conversions</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rostime</run_depend>
   <export>
     <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>
   </export>
