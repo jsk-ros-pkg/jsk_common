@@ -35,19 +35,17 @@ class TestHzMeasure(unittest.TestCase):
         while hz_msg == None:
             rospy.loginfo('wait for msg...')
             if not rospy.is_shutdown():
-                rospy.sleep(1.0)          #wait 1 sec
+                rospy.sleep(5.0)          #wait for 5 sec
         # should be 30Hz
         msgs = []
         while len(msgs) < 30:
             msgs.append(hz_msg.data)
-            rospy.loginfo('hz of msg %s'%hz_msg.data)
+            # rospy.loginfo('hz of msg %s'%hz_msg.data)
             rospy.sleep(0.1)
         hz = np.median(msgs)
         rospy.loginfo('average hz of msg %s'%np.mean(msgs))
         rospy.loginfo('median  hz of msg %s'%hz)
-        self.assertTrue(eps_equal(hz,
-                                  30,
-                                  1))
+        self.assertTrue(eps_equal(hz, 30, 1))
 
 if __name__ == "__main__":
     import rostest

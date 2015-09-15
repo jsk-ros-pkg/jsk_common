@@ -1,6 +1,10 @@
 <launch>
-  <include file="$(find jsk_topic_tools)/launch/topic_buffer_client_sample.launch" />
-  <include file="$(find jsk_topic_tools)/launch/topic_buffer_server_sample.launch" />
+  <include file="$(find jsk_topic_tools)/launch/topic_buffer_client_sample.launch">
+    <arg name="OUTPUT" value="log" />
+  </include>
+  <include file="$(find jsk_topic_tools)/launch/topic_buffer_server_sample.launch">
+    <arg name="OUTPUT" value="log" />
+  </include>
 
   <param name="hztest_chatter/topic" value="chatter" />
   <param name="hztest_chatter/hz" value="10.0" />

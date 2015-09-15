@@ -3,16 +3,16 @@
   <node pkg="roscpp_tutorials" type="talker" name="talker"/>
 
   <node pkg="jsk_topic_tools" type="topic_buffer_server" name="sample_topic_buffer_server"
-	args="/chatter"	output="screen" respawn="true" />
+        args="/chatter"	output="log" respawn="true" />
 
   <node pkg="roscpp_tutorials" type="listener" name="listener"
-	output="screen">
+        output="log">
     <remap from="chatter" to="chatter_buffered"/>
   </node>
 
 
   <node pkg="jsk_topic_tools" type="topic_buffer_client" name="sample_topic_buffer_client"
-	output="screen" respawn="true" >
+        output="log" respawn="true" >
     <remap from="/list" to="/sample_topic_buffer_server/list"/>
     <remap from="/update" to="/sample_topic_buffer_server/update"/>
     <param name="update_rate" value="0.1" />
