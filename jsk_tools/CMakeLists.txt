@@ -12,6 +12,7 @@ catkin_package(
   CFG_EXTRAS download_package.cmake
   )
 catkin_add_env_hooks(99.jsk_tools SHELLS sh bash zsh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
+catkin_add_env_hooks(99.jsk_tools-completion SHELLS bash zsh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
 
 install(DIRECTORY src test bin dot-files
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
