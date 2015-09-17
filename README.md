@@ -80,6 +80,17 @@ Restart docker from slack
 
 Type `restart docker` from slack#travis channel.
 
+Use [scudcloud](https://github.com/raelgc/scudcloud) on 12.04
+-------------------------------------------------------------
+ScudCloud is a client of slack.
+You can install it on 12.04 by following ppas
+```
+sudo add-apt-repository -y ppa:gstreamer-developers/ppa
+sudo add-apt-repository -y ppa:immerrr-k/qtwebkit4-backport
+sudo apt-add-repository -y ppa:rael-gc/scudcloud
+sudo apt-get install scudcloud
+```
+
 Deb Build Status
 -----------------
 
