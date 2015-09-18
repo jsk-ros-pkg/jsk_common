@@ -59,6 +59,9 @@ Slack for JSK Lab members ![](https://upload.wikimedia.org/wikipedia/en/7/76/Sla
 You can login to [slack](https://slack.com/) from [here](https://jsk-robotics.slack.com).
 You can create account using imi address.
 
+[scudcloud](https://github.com/raelgc/scudcloud) is a desktop client for slack and you can install it
+by following [instruction](https://github.com/raelgc/scudcloud#ubuntukubuntu-mint-and-debian).
+
 You can restart travis and jenkins from slack's `#travis` channel.
 
 Restart travis from slack
@@ -80,16 +83,6 @@ Restart docker from slack
 
 Type `restart docker` from slack#travis channel.
 
-Use [scudcloud](https://github.com/raelgc/scudcloud) on 12.04
--------------------------------------------------------------
-ScudCloud is a client of slack.
-You can install it on 12.04 by following ppas
-```
-sudo add-apt-repository -y ppa:gstreamer-developers/ppa
-sudo add-apt-repository -y ppa:immerrr-k/qtwebkit4-backport
-sudo apt-add-repository -y ppa:rael-gc/scudcloud
-sudo apt-get install scudcloud
-```
 
 Deb Build Status
 -----------------
