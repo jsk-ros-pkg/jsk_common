@@ -14,10 +14,6 @@ install(DIRECTORY launch rvizconfig scripts
   USE_SOURCE_PERMISSIONS
 )
 
-install(FILES Makefile
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
-
 if (CATKIN_ENABLE_TESTING)
   catkin_add_nosetests(test)
 endif()
