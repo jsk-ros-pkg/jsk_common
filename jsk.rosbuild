@@ -138,6 +138,9 @@ sys.exit(1)"
 # define functions
 # http://www.ros.org/wiki/electric/Installation/Ubuntu
 function setup-ros {
+    # setup pip and setuptools
+    $COMMAND $SUDO easy_install pip
+    $COMMAND $SUDO pip install --upgrade pip setuptools
     if [ "$YES" == "-y" ] ;then
         REPLY="Y"
         APT_GET_YES="-y -qq -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew"
@@ -172,7 +175,7 @@ function setup-ros {
         $COMMAND $SUDO apt-get update
     fi
     $COMMAND $SUDO apt-get upgrade $YES
-    $COMMAND $SUDO apt-get $APT_GET_YES install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools python-pip
+    $COMMAND $SUDO apt-get $APT_GET_YES install ros-${DISTRIBUTION}-rosbash python-rosdep python-wstool python-catkin-tools
     _version_ge $(rosdep --version) "0.11.2" || {
       echo "rosdep is too old (should be greater than 0.11.2)! version: $(rosdep --version). upgrading..." >&2
       $COMMAND $SUDO apt-get install --only-upgrade python-rosdep  # python-rosdep>=0.11.2
