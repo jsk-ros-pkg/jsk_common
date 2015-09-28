@@ -127,8 +127,8 @@ def cmd_put(public, filename):
         sys.stderr.write(stderr.read())
     print('Done.')
     print('You can download it by:')
-    cmd = 'wget https://drive.google.com/uc?id={id}&export=download -O {file}'
-    print('$ ' + cmd.format(id=file_id, file=filename))
+    dl_url = google_drive_download_url(file_id)
+    print('$ wget {url} -O {file}'.format(url=dl_url, file=filename))
 
 
 @cli.command(name='pubinfo', help='Show public data info.')
