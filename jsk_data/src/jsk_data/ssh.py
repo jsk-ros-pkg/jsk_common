@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from contextlib import contextmanager
+
+import paramiko
+
+
+def connect_ssh(host, username=None, password=None):
+    return _connect_ssh_context(host, username, password)
+
+
+@contextmanager
+def _connect_ssh_context(host, username, password):
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.load_host_keys(os.path.expanduser('~/.ssh/known_hosts'))
+        ssh.connect(host, username=username, password=password)
+        yield ssh
+    finally:
+        ssh.close()
+
+
+def get_user_by_hostname(hostname):
+    with open(os.path.expanduser('~/.ssh/config')) as f:
+        ssh_config = paramiko.util.parse_ssh_config(f)
+    for entry in ssh_config._config:
+        config = entry['config']
+        if config.get('hostname') == hostname:
+            return config.get('user')
