@@ -98,14 +98,12 @@ hydro
 - binarydeb raring i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-hydro-jsk-common_binarydeb_raring_i386)](http://jenkins.ros.org/job/ros-hydro-jsk-common_binarydeb_raring_i386/)
 
 indigo
-
 - sourcedeb [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_sourcedeb)](http://jenkins.ros.org/job/ros-indigo-jsk-common_sourcedeb/)
-- binarydeb oneiric amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_oneiric_amd64)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_oneiric_amd64/)
-- binarydeb oneiric i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_oneiric_i386)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_oneiric_i386/)
-- binarydeb precise amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_precise_amd64)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_precise_amd64/)
-- binarydeb precise i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_precise_i386)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_precise_i386/)
-- binarydeb quantal amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_quantal_amd64)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_quantal_amd64/)
-- binarydeb quantal i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_quantal_i386)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_quantal_i386/)
+- binarydeb saucy amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_saucy_amd64)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_saucy_amd64/)
+- binarydeb saucy i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_saucy_i386)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_saucy_i386/)
+- binarydeb trusty amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_trusty_amd64)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_trusty_amd64/)
+- binarydeb trusty i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_trusty_i386)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_trusty_i386/)
+
 
 
 Devel Test Status
