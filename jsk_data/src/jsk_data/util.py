@@ -14,3 +14,7 @@ def filename_with_timestamp(filename, sep=None):
         return filename
     except ValueError:
         return sep.join([now.strftime(format), filename])
+
+
+def google_drive_download_url(id):
+    return 'https://drive.google.com/uc?id={0}&export=download'.format(id)
