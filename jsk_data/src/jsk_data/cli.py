@@ -139,26 +139,26 @@ def cmd_pubinfo(filename, show_dl_cmd):
     with connect_ssh(HOST, LOGIN_USER) as ssh:
         cmd = '{dir}/scripts/list-public-data.sh'.format(dir=DATA_DIR)
         _, stdout, stderr = ssh.exec_command(cmd)
-        header = stdout.next()
+        stdout.next()  # drop header
         for line in stdout.readlines():
-             file_id, title = line.split()[:2]
-             if filename == title:
+            file_id, title = line.split()[:2]
+            if filename == title:
                 break
         else:
             sys.stderr.write('file not found: {0}\n'.format(filename))
             sys.stderr.write('Run `jsk_data ls --public` to find files.\n')
             return
 
-        dl_url = google_drive_file_url(file_id, download=True)
-        if show_dl_cmd:
-            info = 'wget {url} -O {file}'.format(url=dl_url, file=filename)
-            sys.stdout.write(info)  # no new line for copy with pipe
-        else:
-            view_url = google_drive_file_url(file_id)
-            info = '''\
+    dl_url = google_drive_file_url(file_id, download=True)
+    if show_dl_cmd:
+        info = 'wget {url} -O {file}'.format(url=dl_url, file=filename)
+        sys.stdout.write(info)  # no new line for copy with pipe
+    else:
+        view_url = google_drive_file_url(file_id)
+        info = '''\
 Id: {id}
 Filename: {file}
 View URL: {view_url}
 Download URL: {dl_url}'''.format(id=file_id, file=filename,
                                  view_url=view_url, dl_url=dl_url)
-            print(info)
+        print(info)
