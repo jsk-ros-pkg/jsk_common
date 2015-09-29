@@ -26,6 +26,8 @@ def get_user_by_hostname(hostname):
     with open(os.path.expanduser('~/.ssh/config')) as f:
         ssh_config = paramiko.util.parse_ssh_config(f)
     for entry in ssh_config._config:
+        if not 'config' in entry:
+            continue
         config = entry['config']
         if config.get('hostname') == hostname:
             return config.get('user')
