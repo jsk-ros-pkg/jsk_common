@@ -1,10 +1,27 @@
 image_view2
 ==========
+![](images/image_view2_rect_interaction.gif)
+
 `image_view2` is an extended [image_view](http://ros.org/wiki/image_view).
 
 Features
 * Draw markers on image view
 * Interact with user direction
+
+Interaction Modes
+-----------------
+image_view2 support several mode to interact with user.
+* Rectangle mode
+
+  In rectangle mode, user can region-of-interest by dragging mouse pointer.
+
+  ![](images/image_view2_rect_interaction.gif)
+
+  Selected regions are published to `image/screenrectangle` topic.
+
+  If user clicks on the view instead of dragging pointer, clicked position
+  is published to `image/screenpoint` topic.
+
 
 ROS API
 -------
