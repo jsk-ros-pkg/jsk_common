@@ -8,7 +8,7 @@ Features
 
 image_view2/ImageMarker
 -----------------------
-image_view2/ImageMarker is a message to draw on image_view2 canvas.
+image_view2/ImageMarker2 is a message to draw on image_view2 canvas.
 
 Definition is:
 ```
