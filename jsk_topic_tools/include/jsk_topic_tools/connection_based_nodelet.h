@@ -91,6 +91,12 @@ namespace jsk_topic_tools
     virtual void connectionCallback(const ros::SingleSubscriberPublisher& pub);
 
     /** @brief
+     * callback function which is called when walltimer
+     * duration run out.
+     */
+    virtual void warnNeverSubscribedCallback(const ros::WallTimerEvent& event);
+
+    /** @brief
      * This method is called when publisher is subscribed by other
      * nodes. 
      * Set up subscribers in this method.
@@ -159,10 +165,21 @@ namespace jsk_topic_tools
     boost::shared_ptr<ros::NodeHandle> pnh_;
 
     /** @brief
+     * WallTimer instance for warning about no connection.
+     */
+    ros::WallTimer timer_;
+
+    /** @brief
      * A flag to check if any publisher is already subscribed
      * or not.
      */
     bool subscribed_;
+
+    /** @brief
+     * A flag to check if the node has been ever subscribed
+     * or not.
+     */
+    bool ever_subscribed_;
 
     /** @brief
      * A flag to disable watching mechanism and always subscribe input 

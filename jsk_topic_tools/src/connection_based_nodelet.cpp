@@ -43,12 +43,27 @@ namespace jsk_topic_tools
     nh_.reset (new ros::NodeHandle (getMTNodeHandle ()));
     pnh_.reset (new ros::NodeHandle (getMTPrivateNodeHandle ()));
     pnh_->param("always_subscribe", always_subscribe_, false);
+
+    // timer to warn when no connection in a few seconds
+    ever_subscribed_ = false;
+    timer_ = nh_->createWallTimer(
+      ros::WallDuration(5),
+      &ConnectionBasedNodelet::warnNeverSubscribedCallback,
+      this,
+      /*oneshot=*/true);
   }
 
   void ConnectionBasedNodelet::onInitPostProcess()
   {
     if (always_subscribe_) {
       subscribe();
+    }
+  }
+
+  void ConnectionBasedNodelet::warnNeverSubscribedCallback(const ros::WallTimerEvent& event)
+  {
+    if (!ever_subscribed_) {
+      NODELET_WARN("'%s' subscribes topics only with child subscribers.", nodelet::Nodelet::getName().c_str());
     }
   }
 
@@ -59,6 +74,9 @@ namespace jsk_topic_tools
       for (size_t i = 0; i < publishers_.size(); i++) {
         ros::Publisher pub = publishers_[i];
         if (pub.getNumSubscribers() > 0) {
+          if (!ever_subscribed_) {
+            ever_subscribed_ = true;
+          }
           if (connection_status_ != SUBSCRIBED) {
             subscribe();
             connection_status_ = SUBSCRIBED;
