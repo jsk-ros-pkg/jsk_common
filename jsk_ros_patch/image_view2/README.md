@@ -13,7 +13,7 @@ Interaction Modes
 image_view2 support several mode to interact with user.
 * Rectangle mode
 
-  In rectangle mode, user can region-of-interest by dragging mouse pointer.
+  In rectangle mode, user can select region-of-interest by dragging mouse pointer.
 
   ![](images/image_view2_rect_interaction.gif)
 
@@ -21,6 +21,13 @@ image_view2 support several mode to interact with user.
 
   If user clicks on the view instead of dragging pointer, clicked position
   is published to `image/screenpoint` topic.
+* Line mode
+
+  In line mode, user can select a line by dragging mouse pointer.
+
+  ![](images/image_view2_line_interaction.gif)
+
+  Selected line are published to `image/line` topic.
 
 
 ROS API
