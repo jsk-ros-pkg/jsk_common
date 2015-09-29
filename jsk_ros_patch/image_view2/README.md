@@ -6,7 +6,39 @@ Features
 * Draw markers on image view
 * Interact with user direction
 
-image_view2/ImageMarker
+ROS API
+-------
+
+### Subscribing Topics
+* `image` (`sensor_msgs/Image`)
+
+  Input image
+* `camera_info` (`sensor_msgs/CameraInfo`)
+
+  CameraInfo of the image. camera info is required to compute projection matrix
+  when drawing markers.
+* `image_marker` (`image_view2/ImageMarker2`)
+
+  Marker topic.
+* `image/event` (`image_view2/MouseEvent`)
+
+  Event interface. image_view2 can handle mouse events without gui interaction.
+  This topic is used to emulate event handling via ros topics
+
+### Advertising Services
+* `~change_mode` (`image_view2/ChangeMode`)
+
+  Service interface to change interaction mode.
+* `~rectangle_mode` (`std_srvs/Empty`)
+* `~grabcut_mode` (`std_srvs/Empty`)
+* `~grabcut_rect_mode` (`std_srvs/Empty`)
+* `~line_mode` (`std_srvs/Empty`)
+* `~poly_mode` (`std_srvs/Empty`)
+* `~none_mode` (`std_srvs/Empty`)
+
+  Service interface to change interaction mode with `std_srvs/Empty` service.
+
+image_view2/ImageMarker2
 -----------------------
 image_view2/ImageMarker2 is a message to draw on image_view2 canvas.
 
