@@ -63,7 +63,7 @@ namespace jsk_topic_tools
   void ConnectionBasedNodelet::warnNeverSubscribedCallback(const ros::WallTimerEvent& event)
   {
     if (!ever_subscribed_) {
-      NODELET_WARN("'%s' subscribes topics only with child subscribers.", nodelet::Nodelet::getName().c_str());
+      NODELET_INFO("'%s' subscribes topics only with child subscribers.", nodelet::Nodelet::getName().c_str());
     }
   }
 
