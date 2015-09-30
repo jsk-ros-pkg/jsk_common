@@ -28,7 +28,14 @@ image_view2 support several mode to interact with user.
   ![](images/image_view2_line_interaction.gif)
 
   Selected line are published to `image/line` topic.
+* Polygon mode
 
+  In polygon mode, user can select a series of closed lines.
+  User can add line by left-click and close the lines by right-click.
+
+  ![](images/image_view2_poly_interaction.gif)
+
+  Selected polygon are published to `image/poly` topic.
 
 ROS API
 -------
