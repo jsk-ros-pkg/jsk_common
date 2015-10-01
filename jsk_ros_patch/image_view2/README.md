@@ -49,6 +49,16 @@ change mode by service interfaces.
   The selected first red curve  is published to `image/foreground` and
   the second green one is publiehd to `image/background`.
   This mode is originally implemented to select forground and background pixels for grabcut.
+* Grabcut Rectangle mode
+
+  In grabcut rectangle mode, user can select two rectangles. By typing `Esc` key, you can clear
+  selected rectangles.
+
+  ![](images/image_view2_grabcut_rect_interaction.gif)
+
+  The selected first red rectangle  is published to `image/foreground_rect` and
+  the second green one is publiehd to `image/background_rect`.
+  This mode is originally implemented to select forground and background regions for grabcut.
 
 ROS API
 -------
