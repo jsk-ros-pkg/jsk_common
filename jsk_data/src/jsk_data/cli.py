@@ -142,6 +142,9 @@ def cmd_pubinfo(filename, show_dl_cmd):
         stdout.next()  # drop header
         for line in stdout.readlines():
             file_id, title = line.split()[:2]
+            # FIXME: gdrive does not return full title if it is longer than 40
+            if len(filename) > 40:
+                filename = filename[:19] + '...' + filename[-18:]
             if filename == title:
                 break
         else:
