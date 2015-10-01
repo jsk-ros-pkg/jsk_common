@@ -11,6 +11,9 @@ Features
 Interaction Modes
 -----------------
 image_view2 support several mode to interact with user.
+You can set interaction mode by `~interaction_mode` parameter or
+change mode by service interfaces.
+
 * Rectangle mode
 
   In rectangle mode, user can select region-of-interest by dragging mouse pointer.
@@ -36,6 +39,16 @@ image_view2 support several mode to interact with user.
   ![](images/image_view2_poly_interaction.gif)
 
   Selected polygon are published to `image/poly` topic.
+* Grabcut mode
+
+  In grabcut mode, user can select two curves. By typing `Esc` key, you can clear
+  selected curves.
+
+  ![](images/image_view2_grabcut_interaction.gif)
+
+  The selected first red curve  is published to `image/foreground` and
+  the second green one is publiehd to `image/background`.
+  This mode is originally implemented to select forground and background pixels for grabcut.
 
 ROS API
 -------
