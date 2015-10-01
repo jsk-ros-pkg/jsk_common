@@ -27,6 +27,6 @@ _jsk_data() {
         ;;
       *) ;;
     esac
-    COMPREPLY=( $(compgen -W "${opts}" ${cur}) ) && return 0
+    COMPREPLY=( $(compgen -W "${opts}" ${cur} 2>/dev/null) ) && return 0
 }
-complete -F _jsk_data jsk_data
+complete -o default -F _jsk_data jsk_data
