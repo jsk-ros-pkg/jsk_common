@@ -16,5 +16,8 @@ def filename_with_timestamp(filename, sep=None):
         return sep.join([now.strftime(format), filename])
 
 
-def google_drive_download_url(id):
-    return 'https://drive.google.com/uc?id={0}&export=download'.format(id)
+def google_drive_file_url(id, download=False):
+    url = 'https://drive.google.com/uc?id={0}'.format(id)
+    if download:
+        url += '&export=download'
+    return url
