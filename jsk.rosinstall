@@ -219,3 +219,6 @@
 #     local-name: ar_tools
 #     uri: 'https://github.com/ar-tools/ar_tools.git'
 #     version: master
+- git:
+    local-name: face_recognition
+    uri: https://github.com/procrob/face_recognition.git
