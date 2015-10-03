@@ -6,6 +6,7 @@
   <arg name="use_gui" default="false"/>
   <arg name="rosbag_option" default="--clock"/>
   <arg name="use_xterm" default="false" />
+  <arg name="camera" default="kinect_head_c2"/>
   
   <!-- set params for rviz -->
   <param name="use_sim_time" value="true" />
@@ -13,7 +14,7 @@
 
   <!-- setup openni_launch -->
   <include if="$(arg launch_openni)" file="$(find openni_launch)/launch/openni.launch">
-    <arg name="camera" value="openni"/>
+    <arg name="camera" value="$(arg camera)"/>
     <arg name="load_driver" value="false"/>
     <arg name="depth_registration" value="true"/>
   </include>
