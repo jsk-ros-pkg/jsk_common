@@ -15,7 +15,7 @@ from .ssh import connect_ssh, get_user_by_hostname
 from .util import filename_with_timestamp, google_drive_file_url
 
 
-__all__ = ('cli', 'cmd_get', 'cmd_ls', 'cmd_put')
+__all__ = ('cli', 'cmd_get', 'cmd_ls', 'cmd_put', 'cmd_pubinfo')
 
 
 def _get_login_user(host):
