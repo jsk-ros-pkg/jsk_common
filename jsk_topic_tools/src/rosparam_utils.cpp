@@ -34,6 +34,7 @@
  *********************************************************************/
 
 #include "jsk_topic_tools/rosparam_utils.h"
+#include "jsk_topic_tools/log_utils.h"
 
 namespace jsk_topic_tools
 {
@@ -51,6 +52,7 @@ namespace jsk_topic_tools
     }
     default:
     {
+      ROS_ERROR_STREAM("the value cannot be converted into double: " << val);
       throw std::runtime_error("the value cannot be converted into double");
     }
     }
