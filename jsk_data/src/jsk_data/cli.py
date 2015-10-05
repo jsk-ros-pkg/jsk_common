@@ -9,12 +9,13 @@ from contextlib import contextmanager
 
 import click
 import paramiko
+from jsk_tools.cltool import percol_select
 
 from .ssh import connect_ssh, get_user_by_hostname
 from .util import filename_with_timestamp, google_drive_file_url
 
 
-__all__ = ('cli', 'cmd_get', 'cmd_ls', 'cmd_put')
+__all__ = ('cli', 'cmd_get', 'cmd_ls', 'cmd_put', 'cmd_pubinfo')
 
 
 def _get_login_user(host):
@@ -50,6 +51,19 @@ def cmd_get(public, query):
     subprocess.call(shlex.split(cmd))
 
 
+def _list_aries_files(public, query=None, ls_options=None):
+    public_level = 'public' if public else 'private'
+    query = query or ''
+    ls_options = ls_options or []
+    with connect_ssh(HOST, LOGIN_USER) as ssh:
+        cmd = 'ls {opt} {dir}/{lv}/{q}'
+        cmd = cmd.format(opt=' '.join(ls_options), dir=DATA_DIR,
+                         lv=public_level, q=query)
+        _, stdout, _ = ssh.exec_command(cmd)
+        files = stdout.read().splitlines()
+    return files
+
+
 @cli.command(name='ls', help='Get list of files.')
 @click.option('-p', '--public', is_flag=True, help='Handle public files.')
 @click.argument('query', required=False)
@@ -73,15 +87,7 @@ def cmd_ls(public, query, show_size, sort, reverse):
     if reverse:
         ls_options.append('--reverse')
 
-    with connect_ssh(HOST, LOGIN_USER) as ssh:
-        cmd = 'ls {opt} {dir}/{lv}/{q}'.format(opt=' '.join(ls_options),
-                                               dir=DATA_DIR,
-                                               lv=public_level,
-                                               q=query)
-
-        _, stdout, stderr = ssh.exec_command(cmd)
-        sys.stdout.write(stdout.read())
-        sys.stderr.write(stderr.read())
+    print('\n'.join(_list_aries_files(public, query, ls_options)))
 
 
 @cli.command(name='put', help='Upload file to aries.')
@@ -132,10 +138,18 @@ def cmd_put(public, filename):
 
 
 @cli.command(name='pubinfo', help='Show public data info.')
-@click.argument('filename', required=True)
+@click.argument('filename', default='')
 @click.option('-d', '--download-cmd', 'show_dl_cmd', is_flag=True,
               help='Print out download command')
 def cmd_pubinfo(filename, show_dl_cmd):
+    if not filename:
+        candidates = _list_aries_files(public=True)
+        selected = percol_select(candidates)
+        if len(selected) != 1:
+            sys.stderr.write('Please select 1 filename.\n')
+            sys.exit(1)
+        filename = selected[0]
+
     with connect_ssh(HOST, LOGIN_USER) as ssh:
         cmd = '{dir}/scripts/list-public-data.sh'.format(dir=DATA_DIR)
         _, stdout, stderr = ssh.exec_command(cmd)

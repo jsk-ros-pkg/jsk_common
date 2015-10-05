@@ -1,5 +1,7 @@
-import shellblock_directive
-import video_directive
-import sanity_lib
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-
+from . import shellblock_directive
+from . import video_directive
+from . import sanity_lib
+from . import cltool
