@@ -40,9 +40,17 @@ def cli():
 
 @cli.command(name='get', help='Download specified file.')
 @click.option('-p', '--public', is_flag=True, help='Handle public files.')
-@click.argument('query', required=True)
+@click.argument('query', default='')
 def cmd_get(public, query):
     """Download specified file."""
+    if not query:
+        candidates = _list_aries_files(public=public)
+        selected = percol_select(candidates)
+        if len(selected) != 1:
+            sys.stderr.write('Please select 1 filename.\n')
+            sys.exit(1)
+        filename = selected[0]
+
     public_level = 'public' if public else 'private'
     cmd = 'rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no"\
            --bwlimit=100000 {usr}@{host}:{dir}/{lv}/{q} .'
