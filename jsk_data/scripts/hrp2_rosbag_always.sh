@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TOPICS="/joint_states /motor_states /motor_states/abs_angle /motor_states/abs_cur_angle_diff \
+TOPICS="/joint_states /joint_states_appended /motor_states /motor_states/abs_angle /motor_states/abs_cur_angle_diff \
 /motor_states/board_vdd /motor_states/board_vin /motor_states/cur_angle \
 /motor_states/motor_current /motor_states/motor_outer_temp /motor_states/motor_temp \
 /motor_states/ref_angle /motor_states/servo_alarm \
