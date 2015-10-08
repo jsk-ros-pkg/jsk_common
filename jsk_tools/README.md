@@ -204,6 +204,15 @@ plots:
     layout: [1, 1]
 ```
 
+roscore_regardless.py
+---------------------
+This script always checks roscore liveness and automatically run and kill a program.
+
+```
+rosrun jsk_tools roscore_regardless.py rostopic echo /foo
+```
+
+
 emacs
 -----
 We strongly recommend to use `dot.emacs` for common user.
