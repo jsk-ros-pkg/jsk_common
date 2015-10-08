@@ -23,15 +23,35 @@ There are following sub commands. See `jsk_data [sub command] --help` for more d
 
 * `put`: Upload data to the server.
 
-    Usage is `jsk_data put [OPTIONS] FILENAME`.  
+    Usage is `jsk_data put [OPTIONS] FILENAME`.
     With `--public` option, it also uploads to
     [public Google Drive folder](https://drive.google.com/folderview?id=0B9P1L--7Wd2vUGplQkVLTFBWcFE),
-    so please care about it when you handle secure data.  
+    so please care about it when you handle secure data.
 
 * `pubinfo`: Show public data info.
 
-    Usage is `jsk_data pubinfo [OPTIONS] FILENAME`.  
+    Usage is `jsk_data pubinfo [OPTIONS] FILENAME`.
 
 **Screencast**
 
 ![](./images/jsk_data_cli_screencast.gif)
+
+rosbag_always.py
+----------------
+rosbag_always.py can record bag files even if roscore is restarted.
+It also removes old bag files if recorded bag files exceed specified size.
+
+```
+$ rosrun jsk_data rosbag_always.py -h
+usage: rosbag_always.py [-h] --topics TOPICS --size SIZE --save-dir SAVE_DIR
+                        --max-size MAX_SIZE
+
+rosbag record regardless of rosmaster status
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --topics TOPICS      topics to record
+  --size SIZE          size of each rosbag
+  --save-dir SAVE_DIR  directory to store rosbag
+  --max-size MAX_SIZE  maximum size of rosbags in save_dir
+```
