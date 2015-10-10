@@ -34,6 +34,7 @@
  *********************************************************************/
 
 #include "jsk_topic_tools/connection_based_nodelet.h"
+#include "jsk_topic_tools/log_utils.h"
 
 namespace jsk_topic_tools
 {
@@ -43,7 +44,7 @@ namespace jsk_topic_tools
     nh_.reset (new ros::NodeHandle (getMTNodeHandle ()));
     pnh_.reset (new ros::NodeHandle (getMTPrivateNodeHandle ()));
     pnh_->param("always_subscribe", always_subscribe_, false);
-
+    pnh_->param("verbose_connection", verbose_connection_, false);
     // timer to warn when no connection in a few seconds
     ever_subscribed_ = false;
     timer_ = nh_->createWallTimer(
@@ -69,6 +70,9 @@ namespace jsk_topic_tools
 
   void ConnectionBasedNodelet::connectionCallback(const ros::SingleSubscriberPublisher& pub)
   {
+    if (verbose_connection_) {
+      JSK_NODELET_INFO("New connection or disconnection is detected");
+    }
     if (!always_subscribe_) {
       boost::mutex::scoped_lock lock(connection_mutex_);
       for (size_t i = 0; i < publishers_.size(); i++) {
@@ -78,6 +82,9 @@ namespace jsk_topic_tools
             ever_subscribed_ = true;
           }
           if (connection_status_ != SUBSCRIBED) {
+            if (verbose_connection_) {
+              JSK_NODELET_INFO("Subscribe input topics");
+            }
             subscribe();
             connection_status_ = SUBSCRIBED;
           }
@@ -85,6 +92,9 @@ namespace jsk_topic_tools
         }
       }
       if (connection_status_ == SUBSCRIBED) {
+        if (verbose_connection_) {
+          JSK_NODELET_INFO("Unsubscribe input topics");
+        }
         unsubscribe();
         connection_status_ = NOT_SUBSCRIBED;
       }
