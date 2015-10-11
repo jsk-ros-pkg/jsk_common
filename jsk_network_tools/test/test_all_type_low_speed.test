@@ -23,5 +23,6 @@
   </node>
   <test test-name="test_all_type_low_speed"
         pkg="jsk_network_tools" type="test_all_type_low_speed.py"
+        name="test_all_type_low_speed"
         />
 </launch>
