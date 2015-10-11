@@ -2,13 +2,21 @@
 
 This package includes several useful library for ROS software.
 
-## APIs
+## C++ APIs
 Please see [rosdoc](http://docs.ros.org/api/jsk_topic_tools/html/)
 
 ## How to generate document
 ```
 $ rosdoc_lite `rospack find jsk_topic_tools` -o doc
 ```
+
+## `pose_stamped_publisher.py`
+Publish static `geometry_msgs/PoseStamped`.
+```
+Usage: pose_stamped_publisher.py x y z roll pitch yaw from_frame rate
+```
+
+
 
 ## standalone_complexed_nodelet
 ### Why needed?
