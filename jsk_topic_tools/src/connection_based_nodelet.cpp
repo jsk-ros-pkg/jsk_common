@@ -45,6 +45,9 @@ namespace jsk_topic_tools
     pnh_.reset (new ros::NodeHandle (getMTPrivateNodeHandle ()));
     pnh_->param("always_subscribe", always_subscribe_, false);
     pnh_->param("verbose_connection", verbose_connection_, false);
+    if (!verbose_connection_) {
+      nh_->param("verbose_connection", verbose_connection_, false);
+    }
     // timer to warn when no connection in a few seconds
     ever_subscribed_ = false;
     timer_ = nh_->createWallTimer(
