@@ -191,6 +191,11 @@ namespace jsk_topic_tools
      * Status of connection
      */
     ConnectionStatus connection_status_;
+
+    /** @brief
+     * true if `~verbose_connection` parameter is true.
+     */
+    bool verbose_connection_;
   private:
     
   };
