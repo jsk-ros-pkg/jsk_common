@@ -95,9 +95,7 @@ rossetip_addr() {
         if echo $ip | egrep "^172.17.42.|^127.0." >/dev/null; then
             # skip docker/local host
             continue
-        elif [ "${mask_targetip}" = "" ]; then
-            export ROS_IP=$ip
-        elif echo $ip | grep $mask_target_ip; then
+        elif echo $ip | grep "$mask_target_ip" >/dev/null; then
             export ROS_IP=$ip
             break
         fi
