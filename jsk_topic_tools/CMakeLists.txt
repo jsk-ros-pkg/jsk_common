@@ -97,6 +97,7 @@ if (NOT $ENV{ROS_DISTRO} STREQUAL "indigo")
   add_rostest(test/test_topic_compare.test)
   add_rostest(test/test_hz_measure.test)
   add_rostest(test/test_block.test)
+  add_rostest(test/test_connection_based_nodelet.test)
 endif(NOT $ENV{ROS_DISTRO} STREQUAL "indigo")
 
 install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
