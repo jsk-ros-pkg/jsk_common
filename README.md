@@ -104,25 +104,7 @@ indigo
 - binarydeb trusty amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_trusty_amd64)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_trusty_amd64/)
 - binarydeb trusty i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-jsk-common_binarydeb_trusty_i386)](http://jenkins.ros.org/job/ros-indigo-jsk-common_binarydeb_trusty_i386/)
 
-
-
-Devel Test Status
------------------
-[Hydro](http://jenkins.ros.org/job/devel-hydro-jsk_common/) [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=devel-hydro-jsk_common)](http://jenkins.ros.org/job/devel-hydro-jsk_common/)
-
-[![Hydro Test Satus](http://jenkins.ros.org/job/devel-hydro-jsk_common/test/trend?job)](http://jenkins.ros.org/job/devel-hydro-jsk_common/)
-
-[Indigo](http://jenkins.ros.org/job/devel-indigo-jsk_common) [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=devel-indigo-jsk_common)](http://jenkins.ros.org/job/devel-indigo-jsk_common/)
-
-[![Indigo Test Satus](http://jenkins.ros.org/job/devel-indigo-jsk_common/test/trend?job)](http://jenkins.ros.org/job/devel-indigo-jsk_common/)
-
-Prerelease Test Status
-----------------------
-
-[Hydro](http://jenkins.ros.org/job/prerelease-hydro-jsk_common/) [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=prerelease-hydro-jsk_common)](http://jenkins.ros.org/job/prerelease-hydro-jsk_common/) [Start Testing](http://prerelease.ros.org/create_job/hydro)
-
-[![Hydro Test Satus](http://jenkins.ros.org/job/prerelease-hydro-jsk_common/test/trend?job)](http://jenkins.ros.org/job/prerelease-hydro-jsk_common/)
-
-[Indigo](http://jenkins.ros.org/job/prerelease-indigo-jsk_common) [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=prerelease-indigo-jsk_common)](http://jenkins.ros.org/job/prerelease-indigo-jsk_common/)  [Start Testing](http://prerelease.ros.org/create_job/indigo)
-
-[![Indigo Test Satus](http://jenkins.ros.org/job/prerelease-indigo-jsk_common/test/trend?job)](http://jenkins.ros.org/job/prerelease-indigo-jsk_common/)
+jade
+- sourcedeb [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-jade-jsk-common_sourcedeb)](http://jenkins.ros.org/job/ros-jade-jsk-common_sourcedeb/)
+- binarydeb trusty amd64 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-jade-jsk-common_binarydeb_trusty_amd64)](http://jenkins.ros.org/job/ros-jade-jsk-common_binarydeb_trusty_amd64/)
+- binarydeb trusty i386 [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-jade-jsk-common_binarydeb_trusty_i386)](http://jenkins.ros.org/job/ros-jade-jsk-common_binarydeb_trusty_i386/)
