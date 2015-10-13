@@ -97,6 +97,8 @@ if (NOT $ENV{ROS_DISTRO} STREQUAL "indigo")
   add_rostest(test/test_topic_compare.test)
   add_rostest(test/test_hz_measure.test)
   add_rostest(test/test_block.test)
+  add_rostest(test/test_connection_based_nodelet.test)
+  add_rostest(test/test_connection_based_transport.test)
 endif(NOT $ENV{ROS_DISTRO} STREQUAL "indigo")
 
 install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
@@ -118,7 +120,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 #   )
 
-install(DIRECTORY scripts launch test cmake config
+install(DIRECTORY scripts launch test cmake config sample
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
   )

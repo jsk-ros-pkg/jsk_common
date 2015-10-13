@@ -203,4 +203,16 @@
     </node><node pkg="jsk_topic_tools" type="string_relay" name="string_relay_99">
     <remap from="~input" to="string_relay_98/output" />
   </node>
+
+  <test test-name="test_connection"
+        name="test_connection"
+        pkg="jsk_topic_tools" type="test_connection.py">
+    <rosparam>
+      input_topic_type: std_msgs/String
+      check_connected_topics: [string_relay_98/output, string_relay_97/output]
+      wait_for_connection: 3
+    </rosparam>
+    <remap from="~input" to="string_relay_99/output" />
+  </test>
+
 </launch>
