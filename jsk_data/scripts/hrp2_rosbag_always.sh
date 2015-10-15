@@ -5,7 +5,7 @@ TOPICS="/joint_states /joint_states_appended /motor_states /motor_states/abs_ang
 /motor_states/motor_current /motor_states/motor_outer_temp /motor_states/motor_temp \
 /motor_states/ref_angle /motor_states/servo_alarm \
 /motor_states/pgain /motor_states/dgain \
-/urata_status \
+/urata_status /shm_servo_state \
 /off_lfsensor /off_rfsensor /off_lhsensor /off_rhsensor \
 /lfsensor /rfsensor /lhsensor /rhsensor \
 /zmp /odom /imu \
