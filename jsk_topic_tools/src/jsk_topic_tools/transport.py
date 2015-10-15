@@ -6,7 +6,12 @@ from enum import Enum
 import rospy
 
 
+__all__ = ('ConnectionBasedTransport',)
+
+
 ConnectionStatus = Enum('ConnectionStatus', 'SUBSCRIBED NOT_SUBSCRIBED')
+SUBSCRIBED = ConnectionStatus.SUBSCRIBED
+NOT_SUBSCRIBED = ConnectionStatus.NOT_SUBSCRIBED
 
 
 class ConnectionBasedTransport(rospy.SubscribeListener):
@@ -14,7 +19,7 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
         super(ConnectionBasedTransport, self).__init__()
         self._publishers = []
         self._ever_subscribed = False
-        self._connection_status = ConnectionStatus.NOT_SUBSCRIBED
+        self._connection_status = NOT_SUBSCRIBED
         rospy.Timer(rospy.Duration(5),
                     self._warn_never_subscribed_cb, oneshot=True)
 
@@ -31,16 +36,19 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
 
     def peer_subscribe(self, *args, **kwargs):
         rospy.logdebug('[{topic}] is subscribed'.format(topic=args[0]))
-        if self._connection_status == ConnectionStatus.NOT_SUBSCRIBED:
+        if self._connection_status == NOT_SUBSCRIBED:
             self.subscribe()
+            self._connection_status = SUBSCRIBED
             if not self._ever_subscribed:
                 self._ever_subscribed = True
 
     def peer_unsubscribe(self, *args, **kwargs):
         rospy.logdebug('[{topic}] is unsubscribed'.format(topic=args[0]))
         for pub in self._publishers:
-            if pub.get_num_connections() == 0:
+            if (pub.get_num_connections() == 0 and
+                    self._connection_status == SUBSCRIBED):
                 self.unsubscribe()
+                self._connection_status = NOT_SUBSCRIBED
 
     def advertise(self, *args, **kwargs):
         # subscriber_listener should be 'self'
