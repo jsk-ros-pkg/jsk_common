@@ -76,6 +76,8 @@ class PlotData():
         ax.set_title(self.options["title"])
         if show_legend and self.options["legend"]:
             ax.legend(prop={'size': '8'})
+        ax.minorticks_on()
+        ax.grid(True)
         self.ax = ax
         return ax
 
