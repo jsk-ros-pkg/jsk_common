@@ -10,6 +10,7 @@ TOPICS="/joint_states /joint_states_appended /motor_states /motor_states/abs_ang
 /lfsensor /rfsensor /lhsensor /rhsensor \
 /zmp /odom /imu \
 /thermo_lleg /thermo_rleg \
+/inside_pc_voltage_publisher \
 /multisense_local/resize_1_8/left/image_rect_color/throttle"
 
 # size unit is mega
