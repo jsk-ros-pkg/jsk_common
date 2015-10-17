@@ -31,6 +31,10 @@ There are following sub commands. See `jsk_data [sub command] --help` for more d
 * `pubinfo`: Show public data info.
 
     Usage is `jsk_data pubinfo [OPTIONS] FILENAME`.
+    Downloading large file with `wget` or `curl` from Google Drive can be failed.
+    (see [here](http://stackoverflow.com/questions/25010369/wget-curl-large-file-from-google-drive))
+    Please run `sudo pip install gdown` and use it at that time. (`Usage: gdown [URL] -O [FILENAME]`)
+
 
 **Screencast**
 
