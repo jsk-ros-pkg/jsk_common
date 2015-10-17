@@ -71,6 +71,9 @@ $ rosdefault
 set ROS_MASTER_URI to http://baxter:11311
 ```
 
+rosbag\_record\_interactive
+---------------------------
+You can choose topics to record in GUI and record them into a bag file
 
 restart\_travis
 ---------------

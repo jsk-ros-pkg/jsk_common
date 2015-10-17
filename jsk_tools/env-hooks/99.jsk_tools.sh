@@ -187,3 +187,7 @@ restart_travis() {
     return 1
   fi
 }
+
+rosbag_record_interactive() {
+    rosbag record $(zenity --list --column topics $(rostopic list) --multiple --separator=' ')
+}
