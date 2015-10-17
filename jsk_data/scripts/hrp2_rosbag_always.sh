@@ -9,6 +9,7 @@ TOPICS="/joint_states /joint_states_appended /motor_states /motor_states/abs_ang
 /off_lfsensor /off_rfsensor /off_lhsensor /off_rhsensor \
 /lfsensor /rfsensor /lhsensor /rhsensor \
 /zmp /odom /imu \
+/viso_odom /viso_odom_integrated /biped_odom_integrated /integrated_odom \
 /thermo_lleg /thermo_rleg \
 /inside_pc_voltage_publisher \
 /multisense_local/resize_1_8/left/image_rect_color/throttle"
