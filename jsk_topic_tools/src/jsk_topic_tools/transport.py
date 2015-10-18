@@ -44,7 +44,8 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
     def _warn_never_subscribed_cb(self, timer_event):
         if not self._ever_subscribed:
             rospy.logwarn('[{name}] subscribes topics only with'
-                          ' child subscribers.'.format(name=rospy.get_name()))
+                " child subscribers. Set '~always_subscribe' as True"
+                ' to have it subscribe always.'.format(name=rospy.get_name()))
 
     def subscribe(self):
         raise NotImplementedError('Please overwrite this method')
