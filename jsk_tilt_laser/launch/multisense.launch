@@ -22,7 +22,8 @@
   <group>
     <!-- Remapping for 'local:=true' -->
     <remap from="/multisense/left/image_rect_color" to="/multisense_local/left/image_rect_color" if="$(arg local)"/>
-    <remap from="/multisense/right/image_rect_color" to="/multisense_local/right/image_rect_color" if="$(arg local)"/>
+    <remap from="/multisense/left/image_rect" to="/multisense_local/left/image_rect" if="$(arg local)"/>    
+    <remap from="/multisense/right/image_rect" to="/multisense_local/right/image_rect" if="$(arg local)"/>
     <remap from="/multisense/image_points2_color" to="/multisense_local/image_points2_color" if="$(arg local)"/>
     <remap from="/multisense/organized_image_points2" to="/multisense_local/organized_image_points2" if="$(arg local)"/>
     <remap from="/multisense/organized_image_points2_color" to="/multisense_local/organized_image_points2_color" if="$(arg local)"/>
@@ -86,16 +87,28 @@
        <arg name="INPUT_LR" value="left" />
        <arg name="INPUT_IMAGE" value="/multisense_local/left/image_rect_color" />
        <arg name="INPUT_CAMERA_INFO" value="/multisense_local/left/camera_info" />
+       <arg name="OUTPUT_IMAGE" value="image_rect_color" />
        <arg name="NODELET_INDEX" value="1" />
        <arg name="RUN_MANAGER" value="false" />
      </include>
      <include file="$(find jsk_pcl_ros)/launch/multi_resolution_organized_stereo.launch" if="$(arg use_resize)">
        <arg name="NAMESPACE" value="multisense_local" if="$(arg local)"/>
        <arg name="NAMESPACE" value="multisense" unless="$(arg local)"/>
-       <arg name="INPUT_LR" value="right" />
-       <arg name="INPUT_IMAGE" value="/multisense_local/right/image_rect_color" />
-       <arg name="INPUT_CAMERA_INFO" value="/multisense_local/right/camera_info" />
+       <arg name="INPUT_LR" value="left" />
+       <arg name="INPUT_IMAGE" value="/multisense_local/left/image_rect" />
+       <arg name="INPUT_CAMERA_INFO" value="/multisense_local/left/camera_info" />
+       <arg name="OUTPUT_IMAGE" value="image_rect" />
        <arg name="NODELET_INDEX" value="2" />
+       <arg name="RUN_MANAGER" value="false" />
+     </include>
+     <include file="$(find jsk_pcl_ros)/launch/multi_resolution_organized_stereo.launch" if="$(arg use_resize)">
+       <arg name="NAMESPACE" value="multisense_local" if="$(arg local)"/>
+       <arg name="NAMESPACE" value="multisense" unless="$(arg local)"/>
+       <arg name="INPUT_LR" value="right" />
+       <arg name="INPUT_IMAGE" value="/multisense_local/right/image_rect" />
+       <arg name="INPUT_CAMERA_INFO" value="/multisense_local/right/camera_info" />
+       <arg name="OUTPUT_IMAGE" value="image_rect" />
+       <arg name="NODELET_INDEX" value="3" />
        <arg name="RUN_MANAGER" value="false" />
      </include>
    </group>
