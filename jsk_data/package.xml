@@ -9,6 +9,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <run_depend>paramiko</run_depend>
   <run_depend>python-click</run_depend>
+  <run_depend>jsk_topic_tools</run_depend>
   <test_depend>python-freezegun-pip</test_depend>
   <test_depend>python-nose</test_depend>
   <export>
