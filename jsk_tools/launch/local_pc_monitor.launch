@@ -4,6 +4,7 @@
   <arg name="LOAD1_THRESHOLD" default="5.0" />
   <arg name="LOAD5_THRESHOLD" default="3.0" />
   <arg name="ENFORCE_CLOCK_SPEED" default="false" />
+  <arg name="NTP_HOSTNAME" default="cmachine"/>
   <group ns="pc_monitor">
     <node pkg="pr2_computer_monitor"
           name="$(anon cpu_monitor)"
@@ -16,6 +17,10 @@
         enforce_clock_speed: $(arg ENFORCE_CLOCK_SPEED)
       </rosparam>
     </node>
+    <node pkg="pr2_computer_monitor"
+          name="$(anon ntp_monitor)"
+          type="ntp_monitor.py"
+          args="$(arg NTP_HOSTNAME)"/>
     <node pkg="jsk_network_tools"
           type="network_status.py"
           name="$(anon network_status)">
