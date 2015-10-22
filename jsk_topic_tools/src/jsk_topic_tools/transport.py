@@ -64,11 +64,14 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
         rospy.logdebug('[{topic}] is unsubscribed'.format(topic=args[0]))
         if rospy.get_param('~always_subscribe', False):
             return  # do not unsubscribe
+        if self._connection_status == NOT_SUBSCRIBED:
+            return  # no need to unsubscribe
         for pub in self._publishers:
-            if (pub.get_num_connections() == 0 and
-                    self._connection_status == SUBSCRIBED):
-                self.unsubscribe()
-                self._connection_status = NOT_SUBSCRIBED
+            if pub.get_num_connections() > 0:
+                break
+        else:
+            self.unsubscribe()
+            self._connection_status = NOT_SUBSCRIBED
 
     def advertise(self, *args, **kwargs):
         # subscriber_listener should be 'self'
