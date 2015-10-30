@@ -21,7 +21,10 @@ class TestStdout(unittest.TestCase):
     def test_stdout(self):
         command = rospy.get_param("~command")
         expected = rospy.get_param("~stdout")
-        stdout = subprocess.check_output(shlex.split(command))
+        shell = rospy.get_param("~shell", False)
+        if not shell:
+            command = shlex.split(command)
+        stdout = subprocess.check_output(command, shell=shell)
         self.assertEqual(stdout, expected)
 
 
