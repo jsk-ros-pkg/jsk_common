@@ -168,7 +168,7 @@
        (get-buffer-create "*inferior-lisp*")))
   (run-lisp inferior-euslisp-program))
 
-(set-variable 'inferior-lisp-program "roseus")
+(set-variable 'inferior-euslisp-program "roseus")
 (global-set-key "\C-cE" 'lisp-other-window)
 
 ;; add color space,tab,zenkaku-space
