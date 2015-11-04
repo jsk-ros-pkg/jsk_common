@@ -49,7 +49,8 @@ def cmd_get(public, query):
         if len(selected) != 1:
             sys.stderr.write('Please select 1 filename.\n')
             sys.exit(1)
-        filename = selected[0]
+        query = selected[0]
+        sys.stderr.write('Selected: {0}\n'.format(query))
 
     public_level = 'public' if public else 'private'
     cmd = 'rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no"\
