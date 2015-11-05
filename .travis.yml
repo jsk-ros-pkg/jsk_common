@@ -22,3 +22,6 @@ env:
   - ROS_DISTRO=jade USE_DEB=true ROS_PARALLEL_JOBS="-j8"
 #  - ROS_DISTRO=jade USE_DEB=false ROS_PARALLEL_JOBS="-j8" NOT_TEST_INSTALL="true"
 script: source .travis/travis.sh
+after_script:
+  - sudo pip install flake8 hacking
+  - flake8 jsk_data/src/jsk_data

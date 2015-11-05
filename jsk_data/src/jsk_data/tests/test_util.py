@@ -3,8 +3,8 @@
 
 import datetime
 
-from nose.tools import assert_equal
 from freezegun import freeze_time
+from nose.tools import assert_equal
 
 from jsk_data.util import filename_with_timestamp
 

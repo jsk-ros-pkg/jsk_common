@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 from contextlib import contextmanager
+import os
 
 import paramiko
 
@@ -29,7 +29,7 @@ def get_user_by_hostname(hostname):
     with open(ssh_config_file) as f:
         ssh_config = paramiko.util.parse_ssh_config(f)
     for entry in ssh_config._config:
-        if not 'config' in entry:
+        if 'config' not in entry:
             continue
         config = entry['config']
         if config.get('hostname') == hostname:
