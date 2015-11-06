@@ -10,7 +10,8 @@
 
   <test test-name="test_connection"
         name="test_connection"
-        pkg="jsk_topic_tools" type="test_connection.py">
+        pkg="jsk_topic_tools" type="test_connection.py"
+        retry="3">
     <rosparam>
       input_topic_type: sensor_msgs/Image
       check_connected_topics: [simple_image_transport/output, input]
