@@ -3,11 +3,9 @@
 
 import unittest
 
-
-import rospy
-
 import numpy as np
 
+import rospy
 try:
     from std_msgs.msg import Float32
 except:

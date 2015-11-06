@@ -9,5 +9,6 @@
         args="/origin 1 2 /half" />
   <test test-name="topic_compare_test"
         pkg="jsk_topic_tools" type="test_topic_compare.py"
-        name="test_topic_compare" />
+        name="test_topic_compare"
+        retry="3" />
 </launch>
