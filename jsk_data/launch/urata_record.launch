@@ -1,0 +1,34 @@
+<launch>
+  <!-- for URATA robots -->
+  <arg name="save_multisense_local" default="true" />
+  <arg name="other_topics" default=""/>
+  <arg name="other_options" default="--split --duration 2m"/>
+  <arg name="save_dir" default="$(env HOME)/.ros/urata_record"/>
+  <!-- URATA robot default topics -->
+  <arg name="urata_topics" default="/imu
+                                    /act_contact_states /ref_contact_states
+                                    /odom
+                                    /off_lfsensor /off_rfsensor /off_lhsensor /off_rhsensor
+                                    /lfsensor /rfsensor /lhsensor /rhsensor
+                                    /motor_states_low/board_vin"/>
+  <!-- multisense topics -->
+  <arg unless="$(arg save_multisense_local)"
+       name="local_multisense_topics" value="" />
+  <arg if    ="$(arg save_multisense_local)"
+       name="local_multisense_topics" value="/multisense_local/left/image_rect_color /multisense_local/left/camera_info
+                                             /multisense/right/image_rect /multisense/right/camera_info
+                                             /multisense/depth /multisense/depth/camera_info
+                                             /tilt_laser_listener/output_cloud /multisense/imu/magnetometer" />
+  <include file="$(find jsk_data)/launch/common_record.launch">
+    <arg name="save_openni2" value="false" />
+    <arg name="save_openni" value="false" />
+    <arg name="save_robot_model" value="true" />
+    <arg name="save_all_image" value="false" />
+    <arg name="save_multisense" value="false" />
+    <arg name="save_dir" value="$(arg save_dir)" />
+    <arg name="other_options" value="$(arg other_options)" />
+    <arg name="other_topics" value="$(arg other_topics)
+                                    $(arg urata_topics)
+                                    $(arg local_multisense_topics)" />
+  </include>
+</launch>
