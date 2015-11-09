@@ -56,6 +56,7 @@ namespace image_view2{
     point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/screenpoint",100);
     point_array_pub_ = nh.advertise<sensor_msgs::PointCloud2>(camera + "/screenpoint_array",100);
     rectangle_pub_ = nh.advertise<geometry_msgs::PolygonStamped>(camera + "/screenrectangle",100);
+    rectangle_img_pub_ = nh.advertise<sensor_msgs::Image>(camera + "/screenrectangle_image", 100);
     move_point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/movepoint", 100);
     foreground_mask_pub_ = nh.advertise<sensor_msgs::Image>(camera + "/foreground", 100);
     background_mask_pub_ = nh.advertise<sensor_msgs::Image>(camera + "/background", 100);
@@ -1031,7 +1032,21 @@ namespace image_view2{
       cv::putText(image_, info_str_2.c_str(), cv::Point(10,image_.rows-10), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar::all(255), 2);
     }
   }
-  
+
+  void ImageView2::cropROI()
+  {
+    if (mode_ == MODE_RECTANGLE) {
+      // publish rectangle cropped image
+      cv::Rect screen_rect(window_selection_.x, window_selection_.y, window_selection_.width, window_selection_.height);
+      cv::Mat cropped_img = original_image_(screen_rect);
+      rectangle_img_pub_.publish(
+        cv_bridge::CvImage(
+          last_msg_->header,
+          last_msg_->encoding,
+          cropped_img).toImageMsg());
+    }
+  }
+
   void ImageView2::redraw()
   {
     if (original_image_.empty()) {
@@ -1048,6 +1063,7 @@ namespace image_view2{
     }
     drawMarkers();
     drawInteraction();
+    cropROI();
 
     if ( draw_grid_ ) drawGrid();
     if ( blurry_mode_ ) cv::addWeighted(image_, 0.9, draw_, 1.0, 0.0, image_);

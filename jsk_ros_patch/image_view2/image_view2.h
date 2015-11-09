@@ -174,6 +174,7 @@ namespace image_view2
     void drawMarkers();
     void drawInteraction();
     void drawGrid();
+    void cropROI();
     void drawInfo(ros::Time& before_rendering);
     void resolveLocalMarkerQueue();
     bool lookupTransformation(
@@ -247,6 +248,7 @@ namespace image_view2
     ros::Publisher point_pub_;
     ros::Publisher point_array_pub_;
     ros::Publisher rectangle_pub_;
+    ros::Publisher rectangle_img_pub_;
     ros::Publisher move_point_pub_;
     ros::Publisher foreground_mask_pub_;
     ros::Publisher background_mask_pub_;
