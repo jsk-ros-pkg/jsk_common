@@ -1154,6 +1154,12 @@ namespace image_view2{
       if (msg->encoding.find("bayer") != std::string::npos) {
         original_image_ = cv::Mat(msg->height, msg->width, CV_8UC1,
                                   const_cast<uint8_t*>(&msg->data[0]), msg->step);
+      } else if (msg->encoding == sensor_msgs::image_encodings::TYPE_16UC1) {
+        // standardize pixel values to 0-255 to visualize depth image
+        cv::Mat input_image = cv_bridge::toCvCopy(msg)->image;
+        double min, max;
+        cv::minMaxIdx(input_image, &min, &max);
+        cv::convertScaleAbs(input_image, original_image_, 255 / max);
       } else {
         try {
           original_image_ = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
