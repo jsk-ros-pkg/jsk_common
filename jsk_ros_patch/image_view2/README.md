@@ -14,7 +14,7 @@ image_view2 support several mode to interact with user.
 You can set interaction mode by `~interaction_mode` parameter or
 change mode by service interfaces.
 
-* Rectangle mode
+* Rectangle mode (`~interaction_mode:=rectangle`)
 
   In rectangle mode, user can select region-of-interest by dragging mouse pointer.
 
@@ -24,14 +24,16 @@ change mode by service interfaces.
 
   If user clicks on the view instead of dragging pointer, clicked position
   is published to `image/screenpoint` topic.
-* Line mode
+
+* Line mode (`~interaction_mode:=line`)
 
   In line mode, user can select a line by dragging mouse pointer.
 
   ![](images/image_view2_line_interaction.gif)
 
   Selected line are published to `image/line` topic.
-* Polygon mode
+
+* Polygon mode (`~interaction_mode:=poly`)
 
   In polygon mode, user can select a series of closed lines.
   User can add line by left-click and close the lines by right-click.
@@ -39,7 +41,8 @@ change mode by service interfaces.
   ![](images/image_view2_poly_interaction.gif)
 
   Selected polygon are published to `image/poly` topic.
-* Grabcut mode
+
+* Grabcut mode (`~interaction_mode:=grabcut`)
 
   In grabcut mode, user can select two curves. By typing `Esc` key, you can clear
   selected curves.
@@ -49,7 +52,7 @@ change mode by service interfaces.
   The selected first red curve  is published to `image/foreground` and
   the second green one is publiehd to `image/background`.
   This mode is originally implemented to select forground and background pixels for grabcut.
-* Grabcut Rectangle mode
+* Grabcut Rectangle mode (`~interaction_mode:=grabcut_rect`)
 
   In grabcut rectangle mode, user can select two rectangles. By typing `Esc` key, you can clear
   selected rectangles.
