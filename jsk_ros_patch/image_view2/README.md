@@ -20,10 +20,11 @@ change mode by service interfaces.
 
   ![](images/image_view2_rect_interaction.gif)
 
-  Selected regions are published to `image/screenrectangle` topic.
+  Selected regions are published to
+  `image/screenrectangle` (`geometry_msgs/PolygonStamped`) topic.
 
   If user clicks on the view instead of dragging pointer, clicked position
-  is published to `image/screenpoint` topic.
+  is published to `image/screenpoint` (`geometry_msgs/PointStamped`) topic.
 
 * Line mode (`~interaction_mode:=line`)
 
@@ -31,7 +32,7 @@ change mode by service interfaces.
 
   ![](images/image_view2_line_interaction.gif)
 
-  Selected line are published to `image/line` topic.
+  Selected line are published to `image/line` (`geometry_msgs/PolygonStamped`) topic.
 
 * Polygon mode (`~interaction_mode:=poly`)
 
@@ -40,7 +41,7 @@ change mode by service interfaces.
 
   ![](images/image_view2_poly_interaction.gif)
 
-  Selected polygon are published to `image/poly` topic.
+  Selected polygon are published to `image/poly` (`geometry_msgs/PolygonStamped`) topic.
 
 * Grabcut mode (`~interaction_mode:=grabcut`)
 
@@ -49,8 +50,9 @@ change mode by service interfaces.
 
   ![](images/image_view2_grabcut_interaction.gif)
 
-  The selected first red curve  is published to `image/foreground` and
-  the second green one is publiehd to `image/background`.
+  The selected first red curve  is published to
+  `image/foreground` (`sensor_msgs/Image`) and
+  the second green one is publiehd to `image/background` (`sensor_msgs/Image`).
   This mode is originally implemented to select forground and background pixels for grabcut.
 * Grabcut Rectangle mode (`~interaction_mode:=grabcut_rect`)
 
@@ -59,8 +61,10 @@ change mode by service interfaces.
 
   ![](images/image_view2_grabcut_rect_interaction.gif)
 
-  The selected first red rectangle  is published to `image/foreground_rect` and
-  the second green one is publiehd to `image/background_rect`.
+  The selected first red rectangle  is published to
+  `image/foreground_rect` (`geometry_msgs/PolygonStamped`) and
+  the second green one is publiehd to
+  `image/background_rect` (`geometry_msgs/PolygonStamped`).
   This mode is originally implemented to select forground and background regions for grabcut.
 
 ROS API
