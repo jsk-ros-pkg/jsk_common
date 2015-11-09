@@ -66,6 +66,18 @@ change mode by service interfaces.
 ROS API
 -------
 
+### Publising Topics
+
+* `image/marked` (`sensor_msgs/Image`)
+
+  Image with marks drawed.
+
+* `image/screenrectangle_image` (`sensor_msgs/Image`)
+
+  Cropped image with user selection at **Rectangle mode**.
+
+  <img src="images/image_view2_screenrectangle_image.png" width="25%" />
+
 ### Subscribing Topics
 * `image` (`sensor_msgs/Image`)
 
