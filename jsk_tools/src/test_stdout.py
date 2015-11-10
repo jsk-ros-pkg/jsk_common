@@ -20,12 +20,17 @@ class TestStdout(unittest.TestCase):
 
     def test_stdout(self):
         command = rospy.get_param("~command")
-        expected = rospy.get_param("~stdout")
         shell = rospy.get_param("~shell", False)
         if not shell:
             command = shlex.split(command)
         stdout = subprocess.check_output(command, shell=shell)
-        self.assertEqual(stdout, expected)
+        expected = rospy.get_param("~stdout", None)
+        if expected:
+            self.assertEqual(stdout, expected)
+        for i, line in enumerate(stdout.splitlines()):
+            expected = rospy.get_param("~stdout_line{}".format(i), None)
+            if expected:
+                self.assertEqual(line, expected)
 
 
 if __name__ == '__main__':
