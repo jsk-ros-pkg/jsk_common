@@ -14,54 +14,73 @@ image_view2 support several mode to interact with user.
 You can set interaction mode by `~interaction_mode` parameter or
 change mode by service interfaces.
 
-* Rectangle mode
+* Rectangle mode (`~interaction_mode:=rectangle`)
 
   In rectangle mode, user can select region-of-interest by dragging mouse pointer.
 
   ![](images/image_view2_rect_interaction.gif)
 
-  Selected regions are published to `image/screenrectangle` topic.
+  Selected regions are published to
+  `image/screenrectangle` (`geometry_msgs/PolygonStamped`) topic.
 
   If user clicks on the view instead of dragging pointer, clicked position
-  is published to `image/screenpoint` topic.
-* Line mode
+  is published to `image/screenpoint` (`geometry_msgs/PointStamped`) topic.
+
+* Line mode (`~interaction_mode:=line`)
 
   In line mode, user can select a line by dragging mouse pointer.
 
   ![](images/image_view2_line_interaction.gif)
 
-  Selected line are published to `image/line` topic.
-* Polygon mode
+  Selected line are published to `image/line` (`geometry_msgs/PolygonStamped`) topic.
+
+* Polygon mode (`~interaction_mode:=poly`)
 
   In polygon mode, user can select a series of closed lines.
   User can add line by left-click and close the lines by right-click.
 
   ![](images/image_view2_poly_interaction.gif)
 
-  Selected polygon are published to `image/poly` topic.
-* Grabcut mode
+  Selected polygon are published to `image/poly` (`geometry_msgs/PolygonStamped`) topic.
+
+* Grabcut mode (`~interaction_mode:=grabcut`)
 
   In grabcut mode, user can select two curves. By typing `Esc` key, you can clear
   selected curves.
 
   ![](images/image_view2_grabcut_interaction.gif)
 
-  The selected first red curve  is published to `image/foreground` and
-  the second green one is publiehd to `image/background`.
+  The selected first red curve  is published to
+  `image/foreground` (`sensor_msgs/Image`) and
+  the second green one is publiehd to `image/background` (`sensor_msgs/Image`).
   This mode is originally implemented to select forground and background pixels for grabcut.
-* Grabcut Rectangle mode
+* Grabcut Rectangle mode (`~interaction_mode:=grabcut_rect`)
 
   In grabcut rectangle mode, user can select two rectangles. By typing `Esc` key, you can clear
   selected rectangles.
 
   ![](images/image_view2_grabcut_rect_interaction.gif)
 
-  The selected first red rectangle  is published to `image/foreground_rect` and
-  the second green one is publiehd to `image/background_rect`.
+  The selected first red rectangle  is published to
+  `image/foreground_rect` (`geometry_msgs/PolygonStamped`) and
+  the second green one is publiehd to
+  `image/background_rect` (`geometry_msgs/PolygonStamped`).
   This mode is originally implemented to select forground and background regions for grabcut.
 
 ROS API
 -------
+
+### Publising Topics
+
+* `image/marked` (`sensor_msgs/Image`)
+
+  Image with marks drawed.
+
+* `image/screenrectangle_image` (`sensor_msgs/Image`)
+
+  Cropped image with user selection at **Rectangle mode**.
+
+  <img src="images/image_view2_screenrectangle_image.png" width="25%" />
 
 ### Subscribing Topics
 * `image` (`sensor_msgs/Image`)
