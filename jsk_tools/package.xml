@@ -27,6 +27,7 @@
   <run_depend>axis_camera</run_depend>
   <run_depend>pr2_computer_monitor</run_depend>
   <run_depend>jsk_network_tools</run_depend>
+  <run_depend>jsk_topic_tools</run_depend>
   <run_depend>rosbag</run_depend>
   <run_depend>rosemacs-el</run_depend>
   <!-- <build_depend>mjpeg_server</build_depend> -->
