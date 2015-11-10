@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import argparse
+import sys
+
 from enum import Enum
 
 import rospy
+
+from jsk_topic_tools.name_utils import unresolve_name
 
 
 __all__ = ('ConnectionBasedTransport',)
@@ -20,6 +25,26 @@ class MetaConnectionBasedTransport(type):
     def __call__(cls, *args, **kwargs):
         """Called when you call ConnectionBasedTransport()"""
         obj = type.__call__(cls, *args, **kwargs)
+
+        # display node input/output topics
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--inout', action='store_true')
+        args = parser.parse_args(rospy.myargv()[1:])
+        if args.inout:
+            obj.subscribe()
+            tp_manager = rospy.topics.get_topic_manager()
+            print('Publications:')
+            for topic, topic_type in tp_manager.get_publications():
+                if topic == '/rosout':
+                    continue
+                topic = unresolve_name(rospy.get_name(), topic)
+                print(' * {0} [{1}]'.format(topic, topic_type))
+            print('Subscriptions:')
+            for topic, topic_type in tp_manager.get_subscriptions():
+                topic = unresolve_name(rospy.get_name(), topic)
+                print(' * {0} [{1}]'.format(topic, topic_type))
+            sys.exit(0)
+
         obj._post_init()
         return obj
 
