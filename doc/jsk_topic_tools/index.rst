@@ -19,10 +19,10 @@ This package includes several useful library for ROS software.
    ./scripts/*
 
 
-C++ APIs
---------
+C++ API documentation
+---------------------
 
-Please see `rosdoc <http://docs.ros.org/api/jsk_topic_tools/html/>`__
+Please see `rosdoc <http://docs.ros.org/indigo/api/jsk_topic_tools/html/>`__
 To generate documentation locally::
 
     $ rosdoc_lite `rospack find jsk_topic_tools` -o doc
