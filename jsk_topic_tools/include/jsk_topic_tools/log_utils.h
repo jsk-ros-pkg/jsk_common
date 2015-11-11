@@ -85,3 +85,14 @@
   ROS_FATAL_STREAM("[" << __PRETTY_FUNCTION__ << "] " << __VA_ARGS__)
 
 #endif
+
+namespace jsk_topic_tools
+{
+
+  /** @brief warn if there are expected remappings.
+   *
+   * @param[in] names Names which are expected to remapped.
+   */
+  void warnNoRemap(const std::vector<std::string> names);
+
+}
