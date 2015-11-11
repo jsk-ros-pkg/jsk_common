@@ -21,6 +21,7 @@ class MetaConnectionBasedTransport(type):
         """Called when you call ConnectionBasedTransport()"""
         obj = type.__call__(cls, *args, **kwargs)
         obj._post_init()
+        return obj
 
 
 class ConnectionBasedTransport(rospy.SubscribeListener):
