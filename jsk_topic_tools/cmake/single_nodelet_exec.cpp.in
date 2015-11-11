@@ -34,6 +34,19 @@
 
 #include <ros/ros.h>
 #include <nodelet/loader.h>
+#include <boost/program_options.hpp>
+
+namespace po = boost::program_options;
+
+std::string unresolve_name(const std::string node_name,
+                           const std::string resolved_name)
+{
+  std::string suffix = node_name + "/";
+  if (resolved_name.find(suffix) == 0) {
+    return "~" + resolved_name.substr(suffix.length());
+  }
+  return resolved_name;
+}
 
 int main(int argc, char **argv)
 {
@@ -43,6 +56,55 @@ int main(int argc, char **argv)
   nodelet::Loader manager(true); // Don't bring up the manager ROS API
   nodelet::M_string remappings;
   nodelet::V_string my_argv;
+
+  // Parse commane line arguments
+  po::options_description desc("option");
+  desc.add_options() ("inout", "show input/output topics");
+  po::variables_map vm;
+  try {
+    po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
+  } catch (boost::program_options::invalid_command_line_syntax& e) {
+    throw ros::Exception(e.what());
+  }  catch (boost::program_options::unknown_option& e) {
+    throw ros::Exception(e.what());
+  }
+  // Show input/output topics with --inout option
+  if (vm.count("inout")) {
+    // set always_subscribe:=true
+    bool original_value;
+    ros::param::get("~always_subscribe", original_value);
+    ros::param::set("~always_subscribe", true);
+    // setup node
+    std::string node_name = ros::this_node::getName();
+    manager.load(node_name, "@NODELET@", remappings, my_argv);
+    // see publications
+    ros::V_string topics;
+    ros::this_node::getAdvertisedTopics(topics);
+    std::cout << "Publications:" << std::endl;
+    for (size_t i = 0; i < topics.size(); i++) {
+      if (topics[i] != "/rosout") {
+        std::cout << " * " << unresolve_name(node_name, topics[i]) << std::endl;
+      }
+    }
+    topics.clear();
+    // see subscriptions
+    std::cout << "Subscriptions:" << std::endl;
+    ros::this_node::getSubscribedTopics(topics);
+    bool at_least_a_topic = false;
+    for (size_t i = 0; i < topics.size(); i++) {
+      if (topics[i] != "/rosout") {
+        std::cout << " * " << unresolve_name(node_name, topics[i]) << std::endl;
+        at_least_a_topic = true;
+      }
+    }
+    if (!at_least_a_topic) {
+      // FIXME: https://github.com/jsk-ros-pkg/jsk_common/issues/1145
+      std::cout << "[WARNING] No Subscriptions. This may be caused by unsupported '~always_subscribe' rosparam." << std::endl;
+      std::cout << "[WARNING] See: https://github.com/jsk-ros-pkg/jsk_common/issues/1145" << std::endl;
+    }
+    ros::param::set("~always_subscribe", original_value);  // restore always_subscribe value
+    exit(0);
+  }
 
   manager.load(ros::this_node::getName(), "@NODELET@", remappings, my_argv);
 
