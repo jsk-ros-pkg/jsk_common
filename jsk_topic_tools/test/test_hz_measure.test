@@ -15,7 +15,8 @@
         name="rostopic_30Hz"
         args="pub -r 30 /hz/input std_msgs/String foo" />
   <test test-name="test_hz_measure"
+        name="test_hz_measure"
         pkg="jsk_topic_tools" type="test_hz_measure.py"
-        name="test_hz_measure" />
+        retry="3" />
 
 </launch>

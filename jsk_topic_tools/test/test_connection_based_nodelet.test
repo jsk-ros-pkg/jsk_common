@@ -206,7 +206,8 @@
 
   <test test-name="test_connection"
         name="test_connection"
-        pkg="jsk_topic_tools" type="test_connection.py">
+        pkg="jsk_topic_tools" type="test_connection.py"
+        retry="3">
     <rosparam>
       input_topic_type: std_msgs/String
       check_connected_topics: [string_relay_98/output, string_relay_97/output]
