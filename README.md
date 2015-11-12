@@ -64,7 +64,7 @@ Watch all the jsk github repositories.
 ===
 Please use [this](http://jsk-github-watcher.herokuapp.com/)
 
-Slack for JSK Lab members ![](https://upload.wikimedia.org/wikipedia/en/7/76/Slack_Icon.png)
+Slack for JSK Lab members <img src="https://upload.wikimedia.org/wikipedia/en/7/76/Slack_Icon.png" height="40px" />
 =========================
 You can login to [slack](https://slack.com/) from [here](https://jsk-robotics.slack.com).
 You can create account using imi address.
@@ -85,7 +85,7 @@ Type `restart travis <job-id>` from slack#travis channel.
 you can get `<job-id>` from Travis page.
 
 - ![](images/PR_page.png)
-- ![](images/Travis_page.png)
+- <img src="images/Travis_page.png" width="70%" />
 
 Restart docker from slack
 -------------------------
