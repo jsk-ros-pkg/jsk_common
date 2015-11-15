@@ -15,5 +15,5 @@ install(DIRECTORY launch rvizconfig scripts
 )
 
 if (CATKIN_ENABLE_TESTING)
-  catkin_add_nosetests(test)
+  catkin_add_nosetests(src/jsk_data/tests)
 endif()

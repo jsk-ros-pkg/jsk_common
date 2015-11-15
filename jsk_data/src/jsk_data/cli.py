@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import shlex
 import subprocess
-from contextlib import contextmanager
+import sys
 
 import click
-import paramiko
 from jsk_tools.cltool import percol_select
 
-from .ssh import connect_ssh, get_user_by_hostname
-from .util import filename_with_timestamp, google_drive_file_url
+from jsk_data.ssh import connect_ssh
+from jsk_data.ssh import get_user_by_hostname
+from jsk_data.util import filename_with_timestamp
+from jsk_data.util import google_drive_file_url
 
 
 __all__ = ('cli', 'cmd_get', 'cmd_ls', 'cmd_put', 'cmd_pubinfo')
@@ -33,6 +33,8 @@ LOGIN_USER = _get_login_user(host=HOST)
 CONTEXT_SETTINGS = dict(
     help_option_names=['-h', '--help'],
 )
+
+
 @click.group(context_settings=CONTEXT_SETTINGS)
 def cli():
     pass
@@ -82,8 +84,6 @@ def _list_aries_files(public, query=None, ls_options=None):
 @click.option('-r', '--reverse', is_flag=True, help='Reverse the order.')
 def cmd_ls(public, query, show_size, sort, reverse):
     """Get list of files."""
-    public_level = 'public' if public else 'private'
-
     if query is None:
         query = ''
 
@@ -100,7 +100,8 @@ def cmd_ls(public, query, show_size, sort, reverse):
 
 
 @cli.command(name='put', help='Upload file to aries.')
-@click.option('-p', '--public', is_flag=True,
+@click.option(
+    '-p', '--public', is_flag=True,
     help=('Handle public files. It will be uploaded to Google Drive. '
           'Go https://drive.google.com/open?id=0B9P1L--7Wd2vUGplQkVLTFBWcFE'))
 @click.argument('filename', required=True, type=click.Path(exists=True))
@@ -111,8 +112,8 @@ def cmd_put(public, filename):
     filename_org = filename
     filename = filename_with_timestamp(filename)
     if filename_org != filename:
-        print('Filename is being changed: {0} -> {1}'\
-                .format(filename_org, filename))
+        print('Filename is being changed: {0} -> {1}'
+              .format(filename_org, filename))
         yn = raw_input('Are you sure?[Y/n]: ')
         if yn not in 'yY':
             sys.stderr.write('Aborted!')
