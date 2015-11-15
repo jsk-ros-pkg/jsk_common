@@ -80,6 +80,7 @@ add_library(jsk_topic_tools SHARED
   src/time_accumulator.cpp
   src/vital_checker.cpp
   src/color_utils.cpp
+  src/log_utils.cpp
   src/connection_based_nodelet.cpp
   src/diagnostic_nodelet.cpp
   src/series_boolean.cpp
