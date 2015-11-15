@@ -87,6 +87,9 @@ add_library(jsk_topic_tools SHARED
 add_dependencies(jsk_topic_tools ${PROJECT_NAME}_gencpp)
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 
+catkin_add_gtest(test_rosparam_utils src/tests/test_rosparam_utils.cpp)
+target_link_libraries(test_rosparam_utils ${PROJECT_NAME})
+
 add_rostest(test/test_topic_buffer.test)
 add_rostest(test/test_topic_buffer_close_wait.test)
 add_rostest(test/test_topic_buffer_fixed_rate.test)
