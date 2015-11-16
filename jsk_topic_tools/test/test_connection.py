@@ -11,7 +11,15 @@ import rosmsg
 import roslib
 
 
+PKG = 'jsk_topic_tools'
+NAME = 'test_connection'
+
+
 class TestConnection(unittest.TestCase):
+
+    def __init__(self, *args):
+        super(TestConnection, self).__init__(*args)
+        rospy.init_node(NAME)
 
     def test_no_subscribers(self):
         check_connected_topics = rospy.get_param('~check_connected_topics')
@@ -51,5 +59,4 @@ class TestConnection(unittest.TestCase):
 
 if __name__ == "__main__":
     import rostest
-    rospy.init_node('test_connection')
-    rostest.rosrun("jsk_topic_tools", "test_connection", TestConnection)
+    rostest.rosrun(PKG, NAME, TestConnection)
