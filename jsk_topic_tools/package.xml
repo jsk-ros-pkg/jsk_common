@@ -24,7 +24,6 @@
   <build_depend>message_generation</build_depend>
   <build_depend>nodelet</build_depend>
   <build_depend>roscpp</build_depend>
-  <build_depend>roscpp_tutorials</build_depend>
   <build_depend>roslaunch</build_depend>
   <build_depend>rosnode</build_depend>
   <build_depend>rostest</build_depend>
@@ -51,6 +50,7 @@
   <run_depend>std_srvs</run_depend>
   <run_depend>tf</run_depend>
   <run_depend>topic_tools</run_depend>
+  <test_depend>roscpp_tutorials</test_depend>
   <export>
     <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>
   </export>
