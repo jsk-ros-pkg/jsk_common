@@ -35,6 +35,9 @@
 
 #include "image_view2.h"
 #include <exception>
+#include <jsk_topic_tools/color_utils.h>
+
+
 namespace image_view2{
   ImageView2::ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), window_initialized_(false),space_(10)
   {
@@ -1176,6 +1179,22 @@ namespace image_view2{
         double min, max;
         cv::minMaxIdx(input_image, &min, &max);
         cv::convertScaleAbs(input_image, original_image_, 255 / max);
+      } else if (msg->encoding == sensor_msgs::image_encodings::TYPE_32SC1) {
+        cv::Mat input_image = cv_bridge::toCvCopy(msg)->image;
+        original_image_ = cv::Mat::zeros(msg->height, msg->width, CV_8UC3);
+        for (size_t j = 0; j < input_image.rows; ++j) {
+          for (size_t i = 0; i < input_image.cols; ++i) {
+            int val = input_image.at<int>(j, i);
+            if (val == 0) {
+              original_image_.at<cv::Vec3b>(j, i) = cv::Vec3b(0, 0, 0);
+            }
+            else {
+              std_msgs::ColorRGBA rgba = jsk_topic_tools::colorCategory20(val);
+              original_image_.at<cv::Vec3b>(j, i)
+                = cv::Vec3b(int(rgba.b * 255), int(rgba.g * 255), int(rgba.r * 255));
+            }
+          }
+        }
       } else {
         try {
           original_image_ = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
