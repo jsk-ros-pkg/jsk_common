@@ -102,6 +102,9 @@ add_rostest(test/test_hz_measure.test)
 add_rostest(test/test_block.test)
 add_rostest(test/test_connection_based_nodelet.test)
 add_rostest(test/test_connection_based_transport.test)
+if (CATKIN_ENABLE_TESTING)
+  catkin_add_nosetests(src/jsk_topic_tools/tests)
+endif()
 
 install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
   ${jsk_topic_tools_nodelet_executable_names}
