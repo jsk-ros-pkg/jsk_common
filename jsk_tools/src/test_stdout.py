@@ -26,11 +26,11 @@ class TestStdout(unittest.TestCase):
         stdout = subprocess.check_output(command, shell=shell)
         expected = rospy.get_param("~stdout", None)
         if expected:
-            self.assertEqual(stdout, expected)
+            self.assertEqual(stdout.strip(), expected)
         for i, line in enumerate(stdout.splitlines()):
             expected = rospy.get_param("~stdout_line{}".format(i), None)
             if expected:
-                self.assertEqual(line, expected)
+                self.assertEqual(line.strip(), expected)
 
 
 if __name__ == '__main__':
