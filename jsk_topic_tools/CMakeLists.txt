@@ -27,6 +27,7 @@ catkin_package(
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS})
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs")
 #include_directories(${Boost_INCLUDE_DIRS})
 add_executable(standalone_complexed_nodelet src/standalone_complexed_nodelet.cpp)
 add_executable(topic_buffer_server src/topic_buffer_server.cpp)
