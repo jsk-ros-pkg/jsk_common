@@ -92,7 +92,8 @@ namespace jsk_topic_tools
   /** @brief warn if there are expected remappings.
    *
    * @param[in] names Names which are expected to remapped.
+   * @return false if there is at least a topic which is not remapped, else true;
    */
-  void warnNoRemap(const std::vector<std::string> names);
+  bool warnNoRemap(const std::vector<std::string> names);
 
 }

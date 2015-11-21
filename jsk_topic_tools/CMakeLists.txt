@@ -105,6 +105,8 @@ add_rostest(test/test_connection_based_nodelet.test)
 add_rostest(test/test_connection_based_transport.test)
 if (CATKIN_ENABLE_TESTING)
   catkin_add_nosetests(src/jsk_topic_tools/tests)
+  add_rostest_gtest(test_log_utils test/test_log_utils.launch src/tests/test_log_utils.cpp)
+  target_link_libraries(test_log_utils ${PROJECT_NAME})
 endif()
 
 install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools

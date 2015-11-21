@@ -39,8 +39,9 @@
 namespace jsk_topic_tools
 {
 
-  void warnNoRemap(const std::vector<std::string> names)
+  bool warnNoRemap(const std::vector<std::string> names)
   {
+    bool no_warning = true;
     ros::M_string remappings = ros::names::getRemappings();
     for (size_t i = 0; i < names.size(); i++) {
       std::string resolved_name = ros::names::resolve(/*name=*/names[i],
@@ -48,8 +49,10 @@ namespace jsk_topic_tools
       if (remappings.find(resolved_name) == remappings.end()) {
         ROS_WARN("[%s] '%s' has not been remapped.",
                  ros::this_node::getName().c_str(), names[i].c_str());
+        no_warning = false;
       }
     }
+    return no_warning;
   }
 
 }
