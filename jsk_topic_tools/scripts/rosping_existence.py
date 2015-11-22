@@ -17,6 +17,7 @@ import sys
 import roslaunch
 import diagnostic_updater
 import diagnostic_msgs
+from sound_play.msg import SoundRequest
 
 def _succeed(args):
     code, msg, val = args
@@ -117,6 +118,12 @@ def checkNodeExistence(stat):
         stat.summary(diagnostic_msgs.msg.DiagnosticStatus.ERROR,
                      "dead nodes: " + ", ".join([n for (n, res) 
                                                  in result.items() if not res]))
+        if speak:
+            sound = SoundRequest()
+            sound.sound = SoundRequest.SAY
+            sound.command = SoundRequest.PLAY_ONCE
+            sound.arg = " ".join(nodes).replace("/", "").replace("_", " ") + " are dead"
+            g_robotsound_pub.publish(sound)
     else:
         stat.summary(diagnostic_msgs.msg.DiagnosticStatus.OK,
                      "every node is alive")
@@ -131,9 +138,13 @@ if __name__ == "__main__":
     updater.add("node existence", checkNodeExistence)
     argv = rospy.myargv()
     # you can specify the list of the launch files
-    launch_files = argv[1:]
-    config = roslaunch.config.load_config_default(launch_files, 0)
-    nodes = [n.namespace + n.name for n in config.nodes]
+    # launch_files = argv[1:]
+    # config = roslaunch.config.load_config_default(launch_files, 0)
+    # nodes = [n.namespace + n.name for n in config.nodes]
+    nodes = argv[1:]
+    speak = rospy.get_param("~speak", False)
+    if speak:
+        g_robotsound_pub = rospy.Publisher("/robotsound", SoundRequest)
     r = rospy.Rate(0.1)
     while not rospy.is_shutdown():
         updater.update()
