@@ -50,6 +50,7 @@
   <run_depend>std_srvs</run_depend>
   <run_depend>tf</run_depend>
   <run_depend>topic_tools</run_depend>
+  <run_depend>sound_play</run_depend>
   <test_depend>roscpp_tutorials</test_depend>
   <export>
     <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>
