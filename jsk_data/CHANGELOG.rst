@@ -2,6 +2,51 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_data/hrp2_rosbag_always.sh] Record capture points
+* [jsk_data] Add stamp to file basename
+* [jsk_data] Add flake8 code style check
+* [jsk_data] Change path of tests for python package
+* [jsk_data/launch] add urata_record.launch
+* [jsk_data] Correctly gets selected file by percol
+* [jsk_data] Describe about downloading large file from Google Drive
+* [jsk_data] Add odom topics to be recorded by rosbag
+* [jsk_data] Record PC voltage
+* [jsk_data] Add shm_servo_state to rosbag always
+* [jsk_data] Add rosbag_always.py document
+* add new subscribe topic
+* [jsk_data] Select filename at getting with jsk_data  Closes `#1141 <https://github.com/jsk-ros-pkg/jsk_common/issues/1141>`_
+* [jsk_data] Documentation about `$ jsk_data` cli
+* [jsk_data] Refactor: add cmd_pubinfo to __all\_\_
+* [jsk_data] Select filename with percol in pubinfo
+* [jsk_data] add camera parm to pr2_play.launch
+* [jsk_data] Estimate filename if longer than 40
+  Because gdrive does not return full title if it is longer than 40 Closes `#1155 <https://github.com/jsk-ros-pkg/jsk_common/issues/1155>`_
+* [jsk_data] returning files does not work for zsh comp
+* [jsk_data] Add file completion in bash
+* [jsk_data] Refactor: indentation and comment
+* [jsk_data] Display view url by pubinfo
+* [jsk_data] Check existence of .ssh/config
+* [jsk_data] Config key check when getting config from .ssh/config Closes `#1137 <https://github.com/jsk-ros-pkg/jsk_common/issues/1137>`_
+* [jsk_data] Refactor cmd_put with google_drive_download_url
+* [jsk_data] Add pubinfo subcommand
+* [jsk_data] Remove old Makefile
+* [jsk_data] Remove old jsk_data shell function
+* [jsk_data] Add completion script for jsk_data
+* [jsk_data] Add jsk_data command
+* [jsk_data] Show size of files when listing remote bag files
+* Add jsk_data function to handle data from anywhere
+* [jsk_data] Record pgain and dgain in case something happens
+* [jsk_tools] Use roslaunch internaly in rosbag_always.py in order to enable respawning
+* [jsk_data/hrp2_rosbag_always.sh] Record more topics
+* [jsk_tools] Record /urata_status topic in hrp2_rosbag_always.sh
+* [jsk_data] Popup notification on desktop when removing a bag file
+* [jsk_data] Handle bag files correctly with multiple ordered index
+* [jsk_data/rosbag_always.py] Supress message about directory size and colorize message about removing bag files
+* [jsk_data] Add more topics to record in hrp2_rosbag_always.sh
+* Contributors: Kentaro Wada, Ryohei Ueda, Yusuke Oshiro, Yuto Inagaki, Eisoku Kuroiwa, Iori Yanokura
+
 2.0.3 (2015-07-24)
 ------------------
 

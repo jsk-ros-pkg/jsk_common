@@ -2,6 +2,18 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tilt_laser] Remove image_rect pipeline temporary because of high load. It is needed to be tuned.
+* [jsk_tilt_laser] Add image_rect multi_resolution pipeline
+* [jsk_tilt_laser] Add NODELET_INDEX options to use same manager with different rosparam by nodelets_i
+* [jsk_tilt_laser] Separate left camera stereo image pipeline
+* [jsk_tilt_laser] Include for multi resolution image for right camera
+* [jsk_tilt_laser] Add viewer to check multisense local topics
+* [jsk_tilt_laser] Specify twist_frame_id of multisense laser to publish velocity
+* [jsk_tilt_laser] Add run_distance_filters argument to disable filtering based on distance
+* Contributors: Ryohei Ueda, hrpuser, iori
+
 2.0.3 (2015-07-24)
 ------------------
 * [jsk_topic_tools] Rewrite multisense_remote.launch with standalone_complex_nodelet

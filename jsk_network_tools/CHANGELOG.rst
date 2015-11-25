@@ -2,6 +2,19 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_network_tools] Disable test
+* [jsk_network_tools] Do not run rostest unless CATKIN_ENABLE_TESTING is false
+* [jsk_topic_tools] Add name attribute to test node
+* [jsk_network_tools] Depends on roscpp and rospy
+* [jsk_network_tools/silverhammer_highspeed_internal_receiver] Chop msg.data length to actual received size
+* [jsk_network_tools] Update last_received_seq_id correctly at first time
+* [jsk_network_tools] Add kbps and mbps unit to network_status
+* [jsk_network_tools] Add ${hostname}/nonlocal/{receive, transmit} topics to accumurate all the communication amount except for localhost
+* [jsk_network_tools] Add C++ implementation of silverhammer_highspeed_receiver. It cooperates with python thin wrapper and bridged via ros between them.
+* Contributors: Ryohei Ueda
+
 2.0.3 (2015-07-24)
 ------------------
 

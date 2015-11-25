@@ -2,6 +2,61 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] test related things in CATKIN_ENABLE_TESTING block
+* [jsk_topic_tools] Test warnNoRemap  Closes `jsk-ros-pkg/jsk_recognition#1322 <https://github.com/jsk-ros-pkg/jsk_recognition/issues/1322>`_
+* [jsk_topic_tools/rosping_existence] Speak dead nodes
+* Use gcc -z defs to check undefined symbols in shared objects  Related to https://github.com/jsk-ros-pkg/jsk_recognition/pull/1330
+* [jsk_topic_tools] Retry to 3 times
+* [jsk_topic_tools] Test rosparam_utils.cpp with gtest
+* [jsk_topic_tools] Test warn_no_remap
+* [jsk_topic_tools] Test jsk_topic_tools.log_util
+* [jsk_topic_tools] Test jsk_topic_tools.name_util
+* [jsk_topic_tools] add_library src/log_utils.cpp
+* build_depend -> test_depend roscpp_tutorials
+* Reasonable connection num for connection_based_nodelet
+* [jsk_topic_tools] Use retry for <test> tag
+* Refactor test_hz_measure.py as good example
+* Refactor test_connection.py as good example
+* Refactor: test_block.py as good example
+* [jsk_topic_tools] display input/output by --inout
+* [jsk_topic_tools] Fix style (indent)
+* [jsk_topic_tools] Follow name rule *_utils.py
+* [jsk_topic_tools] warnNoRemap for cpp nodes
+* Generate Documentation for jsk_topic_tools
+* [jsk_topic_tools] Function to warn with no remappings
+* [jsk_topic_tools] Correctly return instance
+* [jsk_topic_tools] Retry test max to 3 times
+* [jsk_topic_tools] add topic_statistics.py
+* [jsk_topic_tools] Correctly unsubscribe with multiple publishers
+* [jsk_topic_tools] ``add_rostest`` problem should be fixed in latest catkin For https://github.com/jsk-ros-pkg/jsk_common/pull/1178#issuecomment-147396447
+* [jsk_topic_tools] Describe about ~always_subscribe in warning
+* [jsk_topic_tools] Add ~always_subscribe param for ConnectionBasedTransport
+* [jsk_topic_tools] Correctly set connection status
+* [jsk_topic_tools] Add log_utils.py
+* [jsk_topic_tools] Add python-enum34 as run_depend
+* [jsk_topic_tools] List depends in alphabetical order
+* [jsk_topic_tools] Test ConnectionBasedTransport
+* [jsk_topic_tools] Test ConnectionBasedNodelet with rostest
+* [jsk_topic_tools] Rename to test_connection_based_nodelet.test
+* [jsk_topic_tools] Python ConnectionBasedTransport
+* [jsk_topic_tools] Utility to publish PoseStamped with given static transformation
+* [jsk_topic_tools/ConnectionBasedNodelet] Read `verbose_connection` as well as `~verbose_connection`
+* [jsk_topic_tools/ConnectionBasedNodelet] `~verbose_connection` parameter to print verbose messages about connection
+* [jsk_topic_tools] Ros error for rosparam type conversion
+* [jsk_topic_tools] Warn when no connection in a few sec Closes `#1132 <https://github.com/jsk-ros-pkg/jsk_common/issues/1132>`_  The warning message should be write with ROS_INFO,  for no many warning when running with roslaunch.
+* [jsk_topic_tools] Supress output messages from testing
+* [jsk_topic_tools] Depends on roscpp and rostime explicitly
+* [jsk_topic_tools] Faster implementation of test_topic_compare.py by removing magic sleep
+* [jsk_topic_tools/ConnectionBasedNodelet] Add latch option to advertise template method
+* [jsk_topic_tools/LightweightThrottle] Clean-up codes and added some comments
+* [jsk_topic_tools] Add readme about standalone_complexed_nodelet
+* [jsk_topic_tools] check /run_id param to know roscore is restarted or not
+* [jsk_topic_tools/standalone_complexed_nodelet] Fix handling of reampping name resolvance
+* [jsk_topic_tools] Add space after [functionname]
+* Contributors: Yuki Furuta, Kei Okada, Kentaro Wada, Ryohei Ueda
+
 2.0.3 (2015-07-24)
 ------------------
 * [jsk_topic_tools] Install missing executables

@@ -2,6 +2,50 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools/rosping_existence] Speak dead nodes
+* [jsk_tools] Remove test stdout space, This should be reasonable because rosparam also strip parameter,   automatically.
+* [jsk_tools] Warning about designed for test.  After long discussion at `#1216 <https://github.com/jsk-ros-pkg/jsk_common/issues/1216>`_
+* [jsk_tools] test_stdout.py tests each lines
+* [jsk_tools] Add delay_timestamp.py
+* [jsk_tools] Install run_tmux for gdb debugging. That is described here:  http://wiki.ros.org/roslaunch/Tutorials/Roslaunch%20Nodes%20in%20Valgrind%20or%20GDB
+* [jsk_tools] Add rosrecord shell function
+* [jsk_tools] Set calc_md5.py to correct dir (src)
+* [jsk_tools] Add ~shell param for test_stdout.py
+* [jsk_tools] FIx dot.emacs to run euslisp correctly
+* [jsk_tools] Add test utility node test_stdout
+* [jsk_tools] Add ntp_monitor to local_pc_monitor
+* [jsk_tools] add rosbag_record_interactive. select topic using zenity and record them
+* [jsk_tools] show minorticks and grid
+* [jsk_tools] Correct order of ROS_IP in list of hostname -I.  Closes `#1170 <https://github.com/jsk-ros-pkg/jsk_common/issues/1170>`_
+* [jsk_tools] Add document about roscore_regardless.py
+* [jsk_tools] Commandline tool for selection with percol
+* [jsk_tools] Add completion for restart_travis
+* [jsk_tools] Add documentation for restart_travis
+* [jsk_tools] Add restart_travis function
+* [jsk_tools] Disable vi-mode in tmux
+* [jsk_tools] Add document about tmux.conf
+* [jsk_tools] New users to force_to_rename_changelog_user.py.
+* Remove no need stdout in rossetip
+* [jsk_tools] Add document about inferior-lisp-mode
+* [jsk_tools] Write to stderr when rossetip fails
+* [jsk_tools] Do not create duplicated inferior-lisp buffer
+* [jsk_tools/force_to_rename_changelog_user.py] New 3 users
+* [jsk_tools] Use keyboard to toggle legend
+* [jsk_common/bag_plotter] Optimize bag parsing speed by topics keyword of read_messages method
+* [jsk_tools] Add rosemacs-el to dependency
+* [jsk_tools/bag_plotter] Synchronize x axis zoom/pan and add cheap button to toggle legend
+* [jsk_tools/bag_plotter] Toggle legend by clicking
+* [jsk_tools/bag_plotter] Support manual layout of figures
+* [jsk_tools/bag_plotter] Support plotting of array
+* [jsk_tools/bag_plotter] Support multiple bag files
+* [jsk_tools/bag_plotter.py] Support --duration and --start option
+* [jsk_tools/bag_plotter] Use interactive mode of matplotlib to enable Ctrl-C
+* [jsk_tools] use hostname to search ip
+* [jsk_tools] Add dot-files directory, which is copied from JSK internal svn, to share common setup in shared-users
+* Contributors: Eisoku Kuroiwa, Yuki Furuta, Kentaro Wada, Ryohei Ueda
+
 2.0.3 (2015-07-24)
 ------------------
 * [jsk_tools/99.jsk_tools.sh] fix typo

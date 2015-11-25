@@ -2,6 +2,23 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [image_view2] Visualize depth image
+* [image_view2] Describe about msg types with topics
+* [image_view2] Describe about some publising topics
+* [image_view2] Publish cropped image with roi Currently this is only work with rectangle mode.
+* [image_view2] Describe ~interactive_mode actual value
+* [image_view2] Add document about grabcut rect interaction
+* [image_view2] Add document about grabcut interaction
+* [image_view2] Add document about poly interaction
+* [image_view2] Add document about line interaction
+* [image_view2] Add documentation about rectangle mode interaction
+* [image_view2] Add document about subscribing topics and advertising services
+* [image_view2] Fix typo in document: ImageMarker -> ImageMarker2
+* [image_view2] Add README.md
+* Contributors: Kei Okada, Kentaro Wada, Ryohei Ueda
+
 2.0.3 (2015-07-24)
 ------------------
 

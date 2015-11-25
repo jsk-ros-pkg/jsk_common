@@ -2,6 +2,14 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [dynamic_tf_publisher] Moreh helpful debug message and fix several typos
+* [dynamic_tf_publisher] Use with to acquire lock
+* [dynamic_tf_publisher] Advertise services at the last of initialization
+* [dynamic_tf_publisher] Check service collision in launching tf_publish
+* Contributors: Ryohei Ueda
+
 2.0.3 (2015-07-24)
 ------------------
 
