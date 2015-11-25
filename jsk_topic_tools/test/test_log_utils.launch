@@ -1,0 +1,12 @@
+<launch>
+  <!--
+    This file should not be called from rostest but ``catkin run_tests``.
+    So the extension is .launch
+  -->
+
+  <test test-name="test_log_utils"
+        pkg="jsk_topic_tools" type="test_log_utils">
+    <remap from="~remap" to="~remapped" />
+  </test>
+
+</launch>
