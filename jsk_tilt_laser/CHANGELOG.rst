@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.4 (2015-11-25)
+------------------
 * [jsk_tilt_laser] Remove image_rect pipeline temporary because of high load. It is needed to be tuned.
 * [jsk_tilt_laser] Add image_rect multi_resolution pipeline
 * [jsk_tilt_laser] Add NODELET_INDEX options to use same manager with different rosparam by nodelets_i

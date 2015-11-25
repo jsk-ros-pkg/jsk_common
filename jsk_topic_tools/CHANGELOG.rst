@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.4 (2015-11-25)
+------------------
 * [jsk_topic_tools] test related things in CATKIN_ENABLE_TESTING block
 * [jsk_topic_tools] Test warnNoRemap  Closes `jsk-ros-pkg/jsk_recognition#1322 <https://github.com/jsk-ros-pkg/jsk_recognition/issues/1322>`_
 * [jsk_topic_tools/rosping_existence] Speak dead nodes

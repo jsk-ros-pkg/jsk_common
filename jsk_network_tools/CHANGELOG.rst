@@ -2,8 +2,8 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.4 (2015-11-25)
+------------------
 * [jsk_network_tools] Disable test
 * [jsk_network_tools] Do not run rostest unless CATKIN_ENABLE_TESTING is false
 * [jsk_topic_tools] Add name attribute to test node

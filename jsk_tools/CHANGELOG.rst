@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.4 (2015-11-25)
+------------------
 * [jsk_topic_tools/rosping_existence] Speak dead nodes
 * [jsk_tools] Remove test stdout space, This should be reasonable because rosparam also strip parameter,   automatically.
 * [jsk_tools] Warning about designed for test.  After long discussion at `#1216 <https://github.com/jsk-ros-pkg/jsk_common/issues/1216>`_

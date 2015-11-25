@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.4 (2015-11-25)
+------------------
 * [jsk_data/hrp2_rosbag_always.sh] Record capture points
 * [jsk_data] Add stamp to file basename
 * [jsk_data] Add flake8 code style check
