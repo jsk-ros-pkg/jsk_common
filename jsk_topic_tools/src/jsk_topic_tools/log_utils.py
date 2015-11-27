@@ -6,7 +6,7 @@ import inspect
 import rosgraph
 import rospy
 
-from jsk_topic_tools.name_util import unresolve_name
+from jsk_topic_tools.name_utils import unresolve_name
 
 
 def _log_msg_with_called_location(msg):
