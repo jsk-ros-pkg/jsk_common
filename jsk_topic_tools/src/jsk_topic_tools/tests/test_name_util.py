@@ -3,7 +3,7 @@
 
 from nose.tools import assert_equal
 
-from jsk_topic_tools.name_util import unresolve_name
+from jsk_topic_tools.name_utils import unresolve_name
 
 
 def test_unresolve_name_0():
