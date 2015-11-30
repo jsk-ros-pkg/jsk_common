@@ -2,6 +2,13 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Rename _util.py -> _utils.py
+* [jsk_topic_tools] Also fix import in test_name_util.py: name_util -> name_utils
+* [jsk_topic_tools] Fix renamed module import in log_utils: name_util -> name_utils
+* Contributors: Iori Kumagai, Kentaro Wada, Yuto Inagaki
+
 2.0.4 (2015-11-25)
 ------------------
 * [jsk_topic_tools] test related things in CATKIN_ENABLE_TESTING block

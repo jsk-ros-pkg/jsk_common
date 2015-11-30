@@ -2,6 +2,9 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.0.4 (2015-11-25)
 ------------------
 * [jsk_topic_tools/rosping_existence] Speak dead nodes
@@ -162,7 +165,7 @@ Changelog for package jsk_tools
 * [jsk_tools] Display ROS_IP in rossetmaster for zsh
 * [jsk_tool] Add script to add git commit aliases like commit-ueda
 * [jsk_tools] Remove -a option from zshrc.ros
-* Contributors: Kei Okada, Kentaro Wada, Ryohei Ueda, iori
+* Contributors: Kei Okada, Kentaro Wada, Ryohei Ueda, Iori Kumagai
 
 1.0.66 (2015-04-03)
 -------------------

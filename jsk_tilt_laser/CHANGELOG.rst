@@ -2,6 +2,9 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.0.4 (2015-11-25)
 ------------------
 * [jsk_tilt_laser] Remove image_rect pipeline temporary because of high load. It is needed to be tuned.
@@ -12,7 +15,7 @@ Changelog for package jsk_tilt_laser
 * [jsk_tilt_laser] Add viewer to check multisense local topics
 * [jsk_tilt_laser] Specify twist_frame_id of multisense laser to publish velocity
 * [jsk_tilt_laser] Add run_distance_filters argument to disable filtering based on distance
-* Contributors: Ryohei Ueda, hrpuser, iori
+* Contributors: Ryohei Ueda, hrpuser, Iori Kumagai
 
 2.0.3 (2015-07-24)
 ------------------

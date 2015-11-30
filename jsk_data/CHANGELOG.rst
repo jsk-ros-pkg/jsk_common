@@ -2,6 +2,9 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.0.4 (2015-11-25)
 ------------------
 * [jsk_data/hrp2_rosbag_always.sh] Record capture points
@@ -202,7 +205,7 @@ Changelog for package jsk_data
 * set save_all_image false in default
 * add argument save_all_image to hrp2_record.launch. default is true.
 * enable to set other_topic as argument
-* Contributors: mmurooka
+* Contributors: Masaki Murooka
 
 1.0.40 (2014-09-19)
 -------------------
