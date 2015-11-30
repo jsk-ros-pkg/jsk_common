@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.5 (2015-11-30)
+------------------
 * [jsk_topic_tools] Rename _util.py -> _utils.py
 * [jsk_topic_tools] Also fix import in test_name_util.py: name_util -> name_utils
 * [jsk_topic_tools] Fix renamed module import in log_utils: name_util -> name_utils
