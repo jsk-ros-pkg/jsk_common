@@ -9,7 +9,7 @@ import rospy
 from rostopic import ROSTopicHz as _ROSTopicHz
 
 import numpy as np
-import tabulate
+from texttable import Texttable
 
 
 class ROSTopicHz(_ROSTopicHz):
@@ -99,8 +99,11 @@ def main():
             show_topics, stats = show_topics[sort_indices], stats[sort_indices]
             stats = np.hstack((show_topics.reshape(-1, 1), stats)).tolist()
             # print stats result
-            headers = ['topic', 'rate', 'min_delta', 'max_delta', 'std_dev']
-            print(tabulate.tabulate(stats, headers=headers))
+            header = ['topic', 'rate', 'min_delta', 'max_delta', 'std_dev']
+            table = Texttable(max_width=0)
+            table.set_deco(Texttable.HEADER)
+            table.add_rows([header] + stats)
+            print(table.draw())
         # wait for next check
         rospy.rostime.wallsleep(1.0)
 
