@@ -46,7 +46,7 @@ def colored(string, color):
     else:
         return string
 
-class TopicPublishedChecker():
+class TopicPublishedChecker(object):
     is_topic_published = False
     is_topic_published_lock = Lock()
     def __init__(self, topic_name, timeout=5, echo=False, data_class=None):
@@ -86,6 +86,7 @@ class TopicPublishedChecker():
                     return False
         finally:
             self.sub.unregister()
+        return True
 
 def checkTopicIsPublished(topic_name, class_name = None,
                           ok_message = "",
