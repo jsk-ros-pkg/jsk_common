@@ -2,6 +2,12 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tools] Add tool to test published topic (check msg comes)
+* [jsk_tools] Set parent class as object and return bool in check()
+* Contributors: Kentaro Wada
+
 2.0.5 (2015-11-30)
 ------------------
 
