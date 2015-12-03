@@ -2,7 +2,7 @@
 jsk_common
 ==========
 
-jsk_recognition is common stacks used in JSK lab.
+jsk_common is common stacks used in JSK lab.
 
 The code is open source, and `available on github`_.
 
