@@ -1,4 +1,7 @@
-# Dynamixel users
+jsk_tilt_laser
+==============
+
+## Dynamixel users
 Need to set udev to get permission to `/dev/ttyUSB0`
 
 Please add `/etc/udev/rules.d/80-dynamixel.rules` file with following content:
