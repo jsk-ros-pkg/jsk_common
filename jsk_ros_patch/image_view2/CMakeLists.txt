@@ -2,7 +2,21 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(image_view2)
 
-find_package(catkin REQUIRED COMPONENTS roscpp dynamic_reconfigure  cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_generation std_srvs)
+find_package(catkin REQUIRED COMPONENTS
+  cv_bridge
+  dynamic_reconfigure
+  geometry_msgs
+  image_geometry
+  image_transport
+  jsk_recognition_utils
+  message_generation
+  message_filters
+  roscpp
+  sensor_msgs
+  std_msgs
+  std_srvs
+  tf
+)
 
 generate_dynamic_reconfigure_options(
   cfg/ImageView2.cfg

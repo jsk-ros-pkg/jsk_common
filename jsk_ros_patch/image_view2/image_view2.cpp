@@ -35,6 +35,9 @@
 
 #include "image_view2.h"
 #include <exception>
+#include <jsk_recognition_utils/cv_utils.h>
+
+
 namespace image_view2{
   ImageView2::ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), window_initialized_(false),space_(10)
   {
@@ -1176,6 +1179,9 @@ namespace image_view2{
         double min, max;
         cv::minMaxIdx(input_image, &min, &max);
         cv::convertScaleAbs(input_image, original_image_, 255 / max);
+      } else if (msg->encoding == sensor_msgs::image_encodings::TYPE_32SC1) {
+        cv::Mat input_image = cv_bridge::toCvCopy(msg)->image;
+        jsk_recognition_utils::labelToRGB(input_image, original_image_);
       } else {
         try {
           original_image_ = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
