@@ -12,6 +12,7 @@ catkin_python_setup()
 add_message_files(
   FILES TopicInfo.msg
 )
+find_package(Boost REQUIRED COMPONENTS program_options)
 
 add_service_files(
   FILES List.srv Update.srv ChangeTopic.srv PassthroughDuration.srv
@@ -26,7 +27,7 @@ catkin_package(
     CFG_EXTRAS nodelet.cmake
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs")
 #include_directories(${Boost_INCLUDE_DIRS})
 add_executable(standalone_complexed_nodelet src/standalone_complexed_nodelet.cpp)
