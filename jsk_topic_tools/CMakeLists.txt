@@ -12,7 +12,6 @@ catkin_python_setup()
 add_message_files(
   FILES TopicInfo.msg
 )
-find_package(Boost REQUIRED COMPONENTS program_options)
 
 add_service_files(
   FILES List.srv Update.srv ChangeTopic.srv PassthroughDuration.srv
