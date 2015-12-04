@@ -1,0 +1,24 @@
+<launch>
+  <node pkg="jsk_topic_tools" type="standalone_complexed_nodelet"
+        name="manager">
+    <rosparam>
+      nodelets:
+        - name: relay
+          type: jsk_topic_tools/Relay
+          remappings:
+            - from: ~input
+              to: /foo
+        - name: relay2
+          type: jsk_topic_tools/Relay
+          remappings:
+            - from: ~input
+              to: relay/output
+        - name: relay3
+          type: jsk_topic_tools/Relay
+          remappings:
+            - from: ~input
+              to: relay2/output
+    </rosparam>
+  </node>
+  <node pkg="rostopic" type="rostopic" name="foo_pub" args="pub foo std_msgs/String '{data: foooo}' -r 1" />
+</launch>
