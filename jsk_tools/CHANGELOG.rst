@@ -2,6 +2,24 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tools] Add test for test_stdout.py
+* [jsk_tools] Install to share with source permissions
+* [jsk_tools] Install to bin/* correctly
+* [jsk_tools/bag_plotter] Optimize parsing rosbag file by
+  caching accessor
+* [jsk_tools] Replace image of topic_hz_monitor
+  The command in the image was wrong in previous version.
+* [jsk_tools] Fix style of markdown
+* [jsk_tools] Use texttable which is released on apt
+* [jsk_tools] Add topic_hz_monitor.py
+* [jsk_tools] Add kill_after_seconds.py. It will kill a process after
+  specified seconds. It is useful to handle roslaunch for benchmarking.
+* [jsk_tools] Remove ws_doctor.py
+  wstool>=0.1.12 does show equivalent information by ``wstool info``
+* Contributors: Kei Okada, Kentaro Wada, Ryohei Ueda
+
 2.0.6 (2015-12-02)
 ------------------
 * [jsk_tools] Add tool to test published topic (check msg comes)

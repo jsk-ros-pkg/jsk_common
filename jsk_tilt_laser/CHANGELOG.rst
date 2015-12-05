@@ -2,6 +2,11 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* jsk_tilt_laser/README.md: fix section/subsection
+* Contributors: Kei Okada
+
 2.0.6 (2015-12-02)
 ------------------
 

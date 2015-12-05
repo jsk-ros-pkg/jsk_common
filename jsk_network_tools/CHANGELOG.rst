@@ -2,6 +2,9 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.0.6 (2015-12-02)
 ------------------
 

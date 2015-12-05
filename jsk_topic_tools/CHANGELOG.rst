@@ -2,6 +2,14 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Use ccache if installed to make it fast to generate obj file
+* [jsk_topic_tools] Fix linking for boost_program_options
+* [jsk_topic_tools] Add sample launch file for standalone_complexed_nodelet
+* [jsk_topic_tools] Show input/output topics with --inout opt
+* Contributors: Kentaro Wada, Ryohei Ueda
+
 2.0.6 (2015-12-02)
 ------------------
 
