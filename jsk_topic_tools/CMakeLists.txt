@@ -14,7 +14,8 @@ find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp ro
   nodelet tf
   geometry_msgs
   eigen_conversions
-  topic_tools)
+  topic_tools
+  image_transport)
 catkin_python_setup()
 add_message_files(
   FILES TopicInfo.msg
