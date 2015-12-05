@@ -40,7 +40,7 @@
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
 #include <boost/thread.hpp>
-
+#include <image_transport/image_transport.h>
 #include "jsk_topic_tools/log_utils.h"
 
 namespace jsk_topic_tools
@@ -91,6 +91,35 @@ namespace jsk_topic_tools
     virtual void connectionCallback(const ros::SingleSubscriberPublisher& pub);
 
     /** @brief
+     * callback function which is called when new subscriber come for image
+     * publisher
+     */
+    virtual void imageConnectionCallback(
+      const image_transport::SingleSubscriberPublisher& pub);
+
+    /** @brief
+     * callback function which is called when new subscriber come for camera
+     * image publisher
+     */
+    virtual void cameraConnectionCallback(
+      const image_transport::SingleSubscriberPublisher& pub);
+    
+    /** @brief
+     * callback function which is called when new subscriber come for
+     * camera info publisher
+     */
+    virtual void cameraInfoConnectionCallback(
+      const ros::SingleSubscriberPublisher& pub);
+    
+    /** @brief
+     * callback function which is called when new subscriber come for camera
+     * image publisher or camera info publisher.
+     * This function is called from cameraConnectionCallback
+     * or cameraInfoConnectionCallback.
+     */
+    virtual void cameraConnectionBaseCallback();
+
+    /** @brief
      * callback function which is called when walltimer
      * duration run out.
      */
@@ -128,9 +157,9 @@ namespace jsk_topic_tools
     {
       boost::mutex::scoped_lock lock(connection_mutex_);
       ros::SubscriberStatusCallback connect_cb
-        = boost::bind( &ConnectionBasedNodelet::connectionCallback, this, _1);
+        = boost::bind(&ConnectionBasedNodelet::connectionCallback, this, _1);
       ros::SubscriberStatusCallback disconnect_cb
-        = boost::bind( &ConnectionBasedNodelet::connectionCallback, this, _1);
+        = boost::bind(&ConnectionBasedNodelet::connectionCallback, this, _1);
       bool latch;
       nh.param("latch", latch, false);
       ros::Publisher ret = nh.advertise<T>(topic, queue_size,
@@ -144,6 +173,75 @@ namespace jsk_topic_tools
     }
 
     /** @brief
+     * Advertise an image topic and watch the publisher. Publishers which are
+     * created by this method.
+     * It automatically reads latch boolean parameter from nh and it and
+     * publish topic with appropriate latch parameter.
+     *
+     * @param nh NodeHandle.
+     * @param it ImageTransport
+     * @param topic topic name to advertise.
+     * @param queue_size queue size for publisher.
+     * @param latch set true if latch topic publication.
+     * @return Publisher for the advertised topic.
+     */
+    image_transport::Publisher
+    advertiseImage(ros::NodeHandle& nh,
+                   image_transport::ImageTransport& it,
+                   const std::string& topic,
+                   int queue_size)
+    {
+      boost::mutex::scoped_lock lock(connection_mutex_);
+      image_transport::SubscriberStatusCallback connect_cb
+        = boost::bind(&ConnectionBasedNodelet::imageConnectionCallback,
+                      this, _1);
+      image_transport::SubscriberStatusCallback disconnect_cb
+        = boost::bind(&ConnectionBasedNodelet::imageConnectionCallback,
+                      this, _1);
+      bool latch;
+      nh.param("latch", latch, false);
+      image_transport::Publisher pub = it.advertise(topic, 1,
+                                                    connect_cb,
+                                                    disconnect_cb,
+                                                    ros::VoidPtr(),
+                                                    latch);
+      image_publishers_.push_back(pub);
+      return pub;
+    }
+
+    
+    image_transport::CameraPublisher
+    advertiseCamera(ros::NodeHandle& nh,
+                    image_transport::ImageTransport& it,
+                    const std::string& topic,
+                    int queue_size)
+    {
+      boost::mutex::scoped_lock lock(connection_mutex_);
+      image_transport::SubscriberStatusCallback connect_cb
+        = boost::bind(&ConnectionBasedNodelet::cameraConnectionCallback,
+                      this, _1);
+      image_transport::SubscriberStatusCallback disconnect_cb
+        = boost::bind(&ConnectionBasedNodelet::cameraConnectionCallback,
+                      this, _1);
+      ros::SubscriberStatusCallback info_connect_cb
+        = boost::bind(&ConnectionBasedNodelet::cameraInfoConnectionCallback,
+                      this, _1);
+      ros::SubscriberStatusCallback info_disconnect_cb
+        = boost::bind(&ConnectionBasedNodelet::cameraInfoConnectionCallback,
+                      this, _1);
+      bool latch;
+      nh.param("latch", latch, false);
+      image_transport::CameraPublisher
+        pub = it.advertiseCamera(topic, 1,
+                                 connect_cb, disconnect_cb,
+                                 info_connect_cb, info_disconnect_cb,
+                                 ros::VoidPtr(),
+                                 latch);
+      camera_publishers_.push_back(pub);
+      return pub;
+    }
+    
+    /** @brief
      * mutex to call subscribe() and unsubscribe() in
      * critical section.
      */
@@ -153,6 +251,16 @@ namespace jsk_topic_tools
      * List of watching publishers
      */
     std::vector<ros::Publisher> publishers_;
+
+    /** @brief
+     * List of watching image publishers
+     */
+    std::vector<image_transport::Publisher> image_publishers_;
+
+    /** @brief
+     * List of watching camera publishers
+     */
+    std::vector<image_transport::CameraPublisher> camera_publishers_;
 
     /** @brief
      * Shared pointer to nodehandle.

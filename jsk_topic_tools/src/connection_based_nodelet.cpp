@@ -103,4 +103,83 @@ namespace jsk_topic_tools
       }
     }
   }
+  
+  void ConnectionBasedNodelet::imageConnectionCallback(
+    const image_transport::SingleSubscriberPublisher& pub)
+  {
+    if (verbose_connection_) {
+      JSK_NODELET_INFO("New image connection or disconnection is detected");
+    }
+    if (!always_subscribe_) {
+      boost::mutex::scoped_lock lock(connection_mutex_);
+      for (size_t i = 0; i < image_publishers_.size(); i++) {
+        image_transport::Publisher pub = image_publishers_[i];
+        if (pub.getNumSubscribers() > 0) {
+          if (!ever_subscribed_) {
+            ever_subscribed_ = true;
+          }
+          if (connection_status_ != SUBSCRIBED) {
+            if (verbose_connection_) {
+              JSK_NODELET_INFO("Subscribe input topics");
+            }
+            subscribe();
+            connection_status_ = SUBSCRIBED;
+          }
+          return;
+        }
+      }
+      if (connection_status_ == SUBSCRIBED) {
+        if (verbose_connection_) {
+          JSK_NODELET_INFO("Unsubscribe input topics");
+        }
+        unsubscribe();
+        connection_status_ = NOT_SUBSCRIBED;
+      }
+    }
+  }
+
+  void ConnectionBasedNodelet::cameraConnectionCallback(
+    const image_transport::SingleSubscriberPublisher& pub)
+  {
+    cameraConnectionBaseCallback();
+  }
+
+  void ConnectionBasedNodelet::cameraInfoConnectionCallback(
+    const ros::SingleSubscriberPublisher& pub)
+  {
+    cameraConnectionBaseCallback();
+  }
+
+  void ConnectionBasedNodelet::cameraConnectionBaseCallback()
+  {
+    if (verbose_connection_) {
+      JSK_NODELET_INFO("New image connection or disconnection is detected");
+    }
+    if (!always_subscribe_) {
+      boost::mutex::scoped_lock lock(connection_mutex_);
+      for (size_t i = 0; i < camera_publishers_.size(); i++) {
+        image_transport::CameraPublisher pub = camera_publishers_[i];
+        if (pub.getNumSubscribers() > 0) {
+          if (!ever_subscribed_) {
+            ever_subscribed_ = true;
+          }
+          if (connection_status_ != SUBSCRIBED) {
+            if (verbose_connection_) {
+              JSK_NODELET_INFO("Subscribe input topics");
+            }
+            subscribe();
+            connection_status_ = SUBSCRIBED;
+          }
+          return;
+        }
+      }
+      if (connection_status_ == SUBSCRIBED) {
+        if (verbose_connection_) {
+          JSK_NODELET_INFO("Unsubscribe input topics");
+        }
+        unsubscribe();
+        connection_status_ = NOT_SUBSCRIBED;
+      }
+    }
+  }
 }
