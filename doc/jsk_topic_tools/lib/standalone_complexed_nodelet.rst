@@ -74,3 +74,6 @@ nodelet definition should follow next format:
         remappings:
         ...
 
+Examples
+========
+- `simple.launch <https://github.com/jsk-ros-pkg/jsk_common/blob/master/jsk_topic_tools/sample/standalone_complexed_nodelet/simple.launch>`_
