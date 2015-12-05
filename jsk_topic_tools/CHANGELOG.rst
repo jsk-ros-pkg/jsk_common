@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.7 (2015-12-05)
+------------------
 * Use ccache if installed to make it fast to generate obj file
 * [jsk_topic_tools] Fix linking for boost_program_options
 * [jsk_topic_tools] Add sample launch file for standalone_complexed_nodelet

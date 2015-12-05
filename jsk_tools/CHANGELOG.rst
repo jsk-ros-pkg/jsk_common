@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.7 (2015-12-05)
+------------------
 * [jsk_tools] Add test for test_stdout.py
 * [jsk_tools] Install to share with source permissions
 * [jsk_tools] Install to bin/* correctly
