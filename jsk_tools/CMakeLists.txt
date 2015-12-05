@@ -16,6 +16,7 @@ catkin_add_env_hooks(99.jsk_tools-completion SHELLS bash zsh DIRECTORY ${CMAKE_C
 
 install(DIRECTORY src test bin dot-files
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  USE_SOURCE_PERMISSIONS
   )
 install(DIRECTORY bin/
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
