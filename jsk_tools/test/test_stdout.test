@@ -1,0 +1,10 @@
+<launch>
+
+  <test test-name="test_stdout"
+        name="test_stdout"
+        pkg="jsk_tools" type="test_stdout.py">
+    <param name="~command" value="echo spam" />
+    <param name="stdout" value="spam" />
+  </test>
+
+</launch>
