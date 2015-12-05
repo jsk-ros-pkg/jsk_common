@@ -17,16 +17,26 @@ except:
     sys.exit(1)
 from colorama import Fore, Style
 
-def accessMessageSlot(msg, field):
-    if len(field) == 0:
+class MessageFieldAccessor():
+    _is_slot_array_regexp = re.compile("\[([0-9]+)\]$")
+    _extract_slot_array_regexp = re.compile("(.*)\[([0-9]+)\]$")
+    def __init__(self, field):
+        # field = ["hoge", "fuga", "piyo[3]"]
+        self.parsed_fields = []
+        for f in field:
+            if self._is_slot_array_regexp.search(f):
+                res = self._extract_slot_array_regexp.match(f)
+                self.parsed_fields.append(res.group(1))
+                self.parsed_fields.append(int(res.group(2)))
+            else:
+                self.parsed_fields.append(f)
+    def parse(self, msg):
+        for f in self.parsed_fields:
+            if isinstance(f, int):
+                msg = msg[f]
+            else:
+                msg = getattr(msg, f)
         return msg
-    # check field has array accessor or not
-    # print field[0]
-    if re.search("\[([0-9]+)\]", field[0]):
-        res = re.match("(.*)\[([0-9]+)\]", field[0])
-        return accessMessageSlot(getattr(msg, res.group(1))[int(res.group(2))], field[1:])
-    else:
-        return accessMessageSlot(getattr(msg, field[0]), field[1:])
 
 def expandArrayFields(fields, topics):
     ret_fields = []
@@ -48,6 +58,7 @@ class PlotData():
     def __init__(self, options):
         (self.fields_orig, self.topics) = expandArrayFields(options["field"], options["topic"])
         self.fields = [f.split("/") for f in self.fields_orig]
+        self.field_accessors = [MessageFieldAccessor(f) for f in self.fields]
         self.values = []
         for i in range(len(self.fields)):
             self.values.append([])
@@ -58,7 +69,7 @@ class PlotData():
         for target_topic, i in zip(self.topics, range(len(self.topics))):
             if target_topic == topic:
                 self.values[i].append((value.header.stamp,
-                                       accessMessageSlot(value, self.fields[i])))
+                                       self.field_accessors[i].parse(value)))
     def filter(self, start_time, end_time):
         for i in range(len(self.values)):
             self.values[i] = [v for v in self.values[i]
@@ -189,7 +200,7 @@ class BagPlotter():
             return gs[i]
         elif self.global_options["layout"] == "manual":
             return gs[topic_data.options["layout"][1], topic_data.options["layout"][0]]
-            
+
     def plot(self):
         plt.interactive(True)
         min_stamp = None
@@ -203,7 +214,10 @@ class BagPlotter():
                 widgets = [Fore.GREEN + "%s: " % (abag) + Fore.RESET, Percentage(), Bar()]
                 pbar = ProgressBar(maxval=message_num, widgets=widgets).start()
                 counter = 0
-                for topic, msg, timestamp in bag.read_messages(topics=self.all_topics):
+                read_data = [(topic, msg, timestamp)
+                             for topic, msg, timestamp
+                             in bag.read_messages(topics=self.all_topics)]
+                for topic, msg, timestamp in read_data:
                     pbar.update(counter)
                     for topic_data in self.topic_data:
                         topic_data.addValue(topic, msg)
