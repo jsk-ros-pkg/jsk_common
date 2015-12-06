@@ -15,5 +15,9 @@ install(DIRECTORY launch rvizconfig scripts
 )
 
 if (CATKIN_ENABLE_TESTING)
+  find_package(roslint REQUIRED)
+  roslint_python(src/jsk_data)
+  roslint_add_test()
+
   catkin_add_nosetests(src/jsk_data/tests)
 endif()
