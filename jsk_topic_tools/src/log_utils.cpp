@@ -33,6 +33,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
+#include <string>
+#include <vector>
 #include "jsk_topic_tools/log_utils.h"
 
 
@@ -43,10 +45,12 @@ namespace jsk_topic_tools
   {
     bool no_warning = true;
     ros::M_string remappings = ros::names::getRemappings();
-    for (size_t i = 0; i < names.size(); i++) {
+    for (size_t i = 0; i < names.size(); i++)
+    {
       std::string resolved_name = ros::names::resolve(/*name=*/names[i],
                                                       /*_remap=*/false);
-      if (remappings.find(resolved_name) == remappings.end()) {
+      if (remappings.find(resolved_name) == remappings.end())
+      {
         ROS_WARN("[%s] '%s' has not been remapped.",
                  ros::this_node::getName().c_str(), names[i].c_str());
         no_warning = false;
@@ -55,4 +59,4 @@ namespace jsk_topic_tools
     return no_warning;
   }
 
-}
+}  // namespace jsk_topic_tools

@@ -99,6 +99,7 @@ target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 
 if (CATKIN_ENABLE_TESTING)
   find_package(roslint REQUIRED)
+  roslint_cpp(src/log_utils.cpp)
   roslint_python(src/jsk_topic_tools)
   roslint_add_test()
   find_package(rostest REQUIRED)
