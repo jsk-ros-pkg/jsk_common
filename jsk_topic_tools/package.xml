@@ -54,6 +54,7 @@
   <run_depend>image_transport</run_depend>
   <run_depend>sound_play</run_depend>
   <test_depend>roscpp_tutorials</test_depend>
+  <test_depend>roslint</test_depend>
   <export>
     <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>
   </export>
