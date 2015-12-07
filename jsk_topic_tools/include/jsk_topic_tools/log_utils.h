@@ -84,8 +84,6 @@
 #define JSK_ROS_FATAL_STREAM(...) \
   ROS_FATAL_STREAM("[" << __PRETTY_FUNCTION__ << "] " << __VA_ARGS__)
 
-#endif
-
 namespace jsk_topic_tools
 {
 
@@ -97,3 +95,5 @@ namespace jsk_topic_tools
   bool warnNoRemap(const std::vector<std::string> names);
 
 }
+
+#endif
