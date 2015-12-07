@@ -1,5 +1,7 @@
 import rosbag
 import yaml
+import matplotlib
+matplotlib.use("WXAgg")
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Button
