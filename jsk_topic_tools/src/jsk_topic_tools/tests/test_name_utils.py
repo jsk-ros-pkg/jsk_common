@@ -11,6 +11,7 @@ def test_unresolve_name_0():
     name = 'relay_0/input'
     assert_equal(unresolve_name(node_name, name), '~input')
 
+
 def test_unresolve_name_1():
     node_name = 'relay_0'
     name = 'relay_1/input'

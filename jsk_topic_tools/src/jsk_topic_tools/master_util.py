@@ -4,6 +4,7 @@ import os
 
 previous_run_id = None
 
+
 def isMasterAlive():
     """
     return True if master alive and return False if
@@ -13,7 +14,8 @@ def isMasterAlive():
     try:
         # first check the host is available
         master = rospy.get_master()
-        master_host = re.search('http://([a-zA-Z0-9\-_]*):', master.getUri()[2]).groups(1)[0]
+        master_host = re.search('http://([a-zA-Z0-9\-_]*):',
+                                master.getUri()[2]).groups(1)[0]
         response = os.system("ping -W 10 -c 1 " + master_host + " > /dev/null")
         if response != 0:
             print "master machine looks down"

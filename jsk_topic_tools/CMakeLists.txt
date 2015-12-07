@@ -9,7 +9,7 @@ if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
-find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp rostest std_msgs std_srvs
+find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp std_msgs std_srvs
   rostime
   nodelet tf
   geometry_msgs
@@ -98,6 +98,11 @@ add_dependencies(jsk_topic_tools ${PROJECT_NAME}_gencpp)
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 
 if (CATKIN_ENABLE_TESTING)
+  find_package(roslint REQUIRED)
+  roslint_cpp(src/log_utils.cpp)
+  roslint_python(src/jsk_topic_tools)
+  roslint_add_test()
+  find_package(rostest REQUIRED)
   add_rostest(test/test_topic_buffer.test)
   add_rostest(test/test_topic_buffer_close_wait.test)
   add_rostest(test/test_topic_buffer_fixed_rate.test)
