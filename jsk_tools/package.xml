@@ -34,5 +34,6 @@
   <!-- <build_depend>mjpeg_server</build_depend> -->
   <!-- <run_depend>mjpeg_server</run_depend> -->
   <!-- <test_depend>mjpeg_server</test_depend> -->
+  <test_depend>rostest</test_depend>
 
 </package>
