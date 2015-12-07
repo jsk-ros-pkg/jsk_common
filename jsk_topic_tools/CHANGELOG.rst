@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.8 (2015-12-07)
+------------------
 * [jsk_topic_tools] Add roslint_cpp for src/log_utils.cpp
 * [jsk_topic_tools] Add roslint_python
 * [jsk_topic_tools] Refactor CMakeLists.txt by moving rostest find_package

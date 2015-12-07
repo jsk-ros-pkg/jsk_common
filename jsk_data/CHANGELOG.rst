@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.8 (2015-12-07)
+------------------
 * [jsk_data] Add roslint
 * Contributors: Kentaro Wada
 
