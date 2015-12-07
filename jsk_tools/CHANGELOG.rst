@@ -2,6 +2,11 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add rostest package.xml
+* Contributors: Kei Okada
+
 2.0.7 (2015-12-05)
 ------------------
 * [jsk_tools] Add test for test_stdout.py

@@ -2,6 +2,17 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Add roslint_cpp for src/log_utils.cpp
+* [jsk_topic_tools] Add roslint_python
+* [jsk_topic_tools] Refactor CMakeLists.txt by moving rostest find_package
+* [jsk_topic_tools] Fix for pep8
+* [jsk_topic_tools/ConnectionBasedNodelet] Support image_transport.
+  Add advertiseImage and advertiseCamera.
+  closes `#1198 <https://github.com/jsk-ros-pkg/jsk_common/issues/1198>`_
+* Contributors: Kentaro Wada, Ryohei Ueda
+
 2.0.7 (2015-12-05)
 ------------------
 * Use ccache if installed to make it fast to generate obj file
