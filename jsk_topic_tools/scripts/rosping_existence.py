@@ -122,7 +122,10 @@ def checkNodeExistence(stat):
             sound = SoundRequest()
             sound.sound = SoundRequest.SAY
             sound.command = SoundRequest.PLAY_ONCE
-            sound.arg = " ".join(nodes).replace("/", "").replace("_", " ") + " are dead"
+            if speak_text:
+                sound.arg = speak_text
+            else:
+                sound.arg = " ".join(nodes).replace("/", "").replace("_", " ") + " is dead"
             g_robotsound_pub.publish(sound)
     else:
         stat.summary(diagnostic_msgs.msg.DiagnosticStatus.OK,
@@ -143,9 +146,10 @@ if __name__ == "__main__":
     # nodes = [n.namespace + n.name for n in config.nodes]
     nodes = argv[1:]
     speak = rospy.get_param("~speak", False)
+    speak_text = rospy.get_param("~speak_test", "")
     if speak:
         g_robotsound_pub = rospy.Publisher("/robotsound", SoundRequest)
-    r = rospy.Rate(0.1)
+    r = rospy.Rate(0.01)
     while not rospy.is_shutdown():
         updater.update()
         r.sleep()
