@@ -206,3 +206,21 @@ rosrecord () {
     return 1
   fi
 }
+
+
+_jsk_tools_what_ros_pkg () {
+  looking_path=$(pwd)
+  found=$(find $looking_path -maxdepth 1 -iname package.xml | wc -l)
+  while [ $found -eq 0 ]; do
+    looking_path=$(dirname $looking_path)
+    [ "$looking_path" = "/" ] && return
+    found=$(find $looking_path -maxdepth 1 -iname package.xml | wc -l)
+  done
+  echo $(basename $looking_path)
+}
+jsk_git_commit_verbose () {
+  tmp_file=$(mktemp -t XXXXX)
+  changed=$(git status --porcelain | grep '^M' | awk '{printf "\t %s\n", $2}')
+  echo "[$(_jsk_tools_what_ros_pkg)] \n\nModified:\n${changed}" > ${tmp_file}
+  git commit --verbose --template ${tmp_file}
+}
