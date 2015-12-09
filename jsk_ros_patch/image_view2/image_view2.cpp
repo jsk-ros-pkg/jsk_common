@@ -1037,7 +1037,7 @@ namespace image_view2{
   {
     if (mode_ == MODE_RECTANGLE) {
       // publish rectangle cropped image
-      cv::Rect screen_rect(window_selection_.x, window_selection_.y, window_selection_.width, window_selection_.height);
+      cv::Rect screen_rect(cv::Point(window_selection_.x, window_selection_.y), cv::Point(window_selection_.x + window_selection_.width, window_selection_.y + window_selection_.height));
       cv::Mat cropped_img = original_image_(screen_rect);
       rectangle_img_pub_.publish(
         cv_bridge::CvImage(
