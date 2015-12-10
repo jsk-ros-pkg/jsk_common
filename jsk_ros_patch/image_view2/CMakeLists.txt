@@ -47,3 +47,8 @@ install(TARGETS image_view2 points_rectangle_extractor
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest(test/rectangle_mouse_event.test)
+endif()
