@@ -4,8 +4,6 @@
 import argparse
 import sys
 
-from enum import Enum
-
 import rospy
 
 from jsk_topic_tools.name_utils import unresolve_name
@@ -14,9 +12,8 @@ from jsk_topic_tools.name_utils import unresolve_name
 __all__ = ('ConnectionBasedTransport',)
 
 
-ConnectionStatus = Enum('ConnectionStatus', 'SUBSCRIBED NOT_SUBSCRIBED')
-SUBSCRIBED = ConnectionStatus.SUBSCRIBED
-NOT_SUBSCRIBED = ConnectionStatus.NOT_SUBSCRIBED
+SUBSCRIBED = 0
+NOT_SUBSCRIBED = 1
 
 
 # define a new metaclass which overrides the '__call__' function
