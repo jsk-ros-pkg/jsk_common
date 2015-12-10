@@ -23,7 +23,7 @@ install(DIRECTORY bin/
   USE_SOURCE_PERMISSIONS
   )
 
-set(BIN_EXECUTABLES ros_console.py run_tmux)
+set(BIN_EXECUTABLES git-jsk-commit ros_console.py run_tmux)
 foreach(exec ${BIN_EXECUTABLES})
   add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_BIN_DESTINATION}/${exec}
     COMMAND cmake -E make_directory ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_BIN_DESTINATION}
