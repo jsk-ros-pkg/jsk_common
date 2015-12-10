@@ -14,8 +14,14 @@ _in_what_ros_pkg () {
 git_jsk_commit () {
   tmp_file=$(mktemp -t XXXXX)
   changed=$(git status --porcelain | grep '^M' | awk '{printf "\t %s\n", $2}')
+  if [ "$changed" != "" ]; then
+    changed="Modified:\n${changed}"
+  fi
   added=$(git status --porcelain | grep '^A' | awk '{printf "\t %s\n", $2}')
-  echo "[$(_in_what_ros_pkg)] \n\nModified:\n${changed}\nAdded:\n${added}" > ${tmp_file}
+  if [ "$added" != "" ]; then
+    added="Added:\n${added}"
+  fi
+  echo "[$(_in_what_ros_pkg)] \n\n${changed}\n${added}" > ${tmp_file}
   git commit --verbose --template ${tmp_file} $@
 }
 
