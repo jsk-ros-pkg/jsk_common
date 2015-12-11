@@ -21,7 +21,11 @@ git_jsk_commit () {
   if [ "$added" != "" ]; then
     added="Added:\n${added}"
   fi
-  echo "[$(_in_what_ros_pkg)] \n\n${changed}\n${added}" > ${tmp_file}
+  pkg=$(_in_what_ros_pkg)
+  if [ "$pkg" != "" ]; then
+    pkg="[${pkg}] "
+  fi
+  echo "${pkg}\n\n${changed}\n${added}" > ${tmp_file}
   git commit --verbose --template ${tmp_file} $@
 }
 
