@@ -1,11 +1,8 @@
-jsk_tools
-=========
-
-
 sanity\_lib.py
--------------
+==============
 
-### check Topic is published
+
+## check Topic is published
 
 - If you set `echo` param as True, the topic message will be shown in terminal
 
@@ -16,7 +13,7 @@ from std_msgs.msg import String
 rospy.init_node("check_sanity", anonymous = True)
 checkTopicIsPublished("/chatter", String)
 ```
-### check Node State
+## check Node State
 There is 4 cases
 - Node exists, and you want to exist.
 - Node exists, and you don't want to exist
@@ -32,37 +29,10 @@ rospy.init_node("check_sanity", anonymous = True)
 checkNodeState("/listener", True)
 ```
 
-### check Params
+## check Params
 **Example**
 ```
 from jsk_tools.sanity_lib import *
 rospy.init_node("check_sanity", anonymous = True)
 checkROSParam("/param_test", 5)
-```
-
-
-emacs
------
-We strongly recommend to use `dot.emacs` for common user.
-
-```lisp
-(load "~/ros/hydro/src/jsk-ros-pkg/jsk_common/jsk_tools/dot-files/dot.emacs")
-```
-
-
-### inferior-lisp-mode
-![](images/inferior-lisp.gif)
-
-inferior-lisp-mode is a classic lisp environment on emacs.
-You can invoke roseus by `C-c e`.
-
-When you use inferior-lisp-mode, you can immediately evaluate sexpression
-without copy-and-paste it by `C-x C-e`.
-
-tmux
-----
-Write following line in your `~/.tmux.conf`
-
-```
-source-file ~/ros/hydro/src/jsk-ros-pkg/jsk_common/jsk_tools/dot-files/tmux.conf
 ```
