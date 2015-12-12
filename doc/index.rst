@@ -15,4 +15,5 @@ This repository contains following ros packages:
 .. toctree::
    :maxdepth: 1
 
+   jsk_tools/index
    jsk_topic_tools/index
