@@ -54,5 +54,13 @@ install(TARGETS image_view2 points_rectangle_extractor
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  add_rostest(test/rectangle_mouse_event.test)
+  execute_process(
+    COMMAND python -c "import sys; sys.exit(ord('$ENV{ROS_DISTRO}'[0]) >= ord('indigo'[0]))"
+    RESULT_VARIABLE DISTRO_GE_INDIGO
+  )
+  if(${DISTRO_GE_INDIGO})
+    # FIXME: jsk_tools/test_topic_published.py does not work on hydro travis/jenkins
+    # https://github.com/jsk-ros-pkg/jsk_common/pull/1293#issuecomment-164158260
+    add_rostest(test/rectangle_mouse_event.launch)
+  endif()
 endif()
