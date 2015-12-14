@@ -106,7 +106,7 @@ def ping(node_name, max_count=None, verbose=False):
     return True
 
 def checkNodeExistence(stat):
-    global nodes
+    global nodes, speak_text
     result = {}
     have_dead = False
     for n in nodes:
@@ -146,7 +146,7 @@ if __name__ == "__main__":
     # nodes = [n.namespace + n.name for n in config.nodes]
     nodes = argv[1:]
     speak = rospy.get_param("~speak", False)
-    speak_text = rospy.get_param("~speak_test", "")
+    speak_text = rospy.get_param("~speak_text", "")
     if speak:
         g_robotsound_pub = rospy.Publisher("/robotsound", SoundRequest)
     r = rospy.Rate(0.01)
