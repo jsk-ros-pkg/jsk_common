@@ -2,7 +2,7 @@ jsk_common
 ===
 
 [![Build Status](https://travis-ci.org/jsk-ros-pkg/jsk_common.svg?branch=master)](https://travis-ci.org/jsk-ros-pkg/jsk_common)
-[![Read the Docs](https://readthedocs.org/projects/pip/badge/?version=latest)](https://jsk-common.readthedocs.org)
+[![Read the Docs](https://readthedocs.org/projects/jsk-docs/badge/?version=latest)](http://jsk-docs.readthedocs.org/en/latest/jsk_common/doc/index.html)
 [![Slack](https://img.shields.io/badge/slack-jsk--robotics-e100e1.svg)](http://jsk-robotics.slack.com)
 [![Join the chat at https://gitter.im/jsk-ros-pkg/jsk_common](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jsk-ros-pkg/jsk_common?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
