@@ -26,7 +26,7 @@ git_jsk_commit () {
     pkg="[${pkg}] "
   fi
   echo "${pkg}\n\n${changed}\n${added}" > ${tmp_file}
-  git commit --verbose --template ${tmp_file} $@
+  git commit --verbose --template ${tmp_file} "$*"
 }
 
 git_jsk_commit $@

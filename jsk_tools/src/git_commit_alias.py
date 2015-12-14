@@ -22,7 +22,7 @@ for page in result:
             if len(alias_name.split(" ")) > 0:
                 alias_name = name.split(" ")[-1]
             alias_command = "commit-%s" % alias_name.lower()
-            alias = "commit --author='%s <%s>'" % (name, email)
+            alias = "jsk-commit --author='%s <%s>'" % (name, email)
             subprocess.check_call(["git", "config", "--global", 
                                    "alias.%s" % alias_command,
                                    alias])
