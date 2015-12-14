@@ -1,0 +1,8 @@
+<launch>
+  <test test-name="local_pc_monitor_launch_test"
+        pkg="jsk_tools" type="roslaunch-check.sh"
+        args="$(find jsk_tools)/launch/local_pc_monitor.launch" />
+  <test test-name="local_pc_monitor_launch_test"
+        pkg="jsk_tools" type="roslaunch-check.sh"
+        args="$(find jsk_tools)/launch/record_axis_camera.launch" />
+</launch>
