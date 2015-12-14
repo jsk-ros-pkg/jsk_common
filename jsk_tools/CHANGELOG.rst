@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.9 (2015-12-14)
+------------------
 * [jsk_tools] test_topic_published.py doesn't work on hydro travis/jenkins
   Modified:
   jsk_tools/CMakeLists.txt

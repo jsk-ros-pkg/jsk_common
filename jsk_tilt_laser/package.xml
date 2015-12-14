@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>jsk_tilt_laser</name>
-  <version>2.0.8</version>
+  <version>2.0.9</version>
   <description>The jsk_tilt_laser package</description>
 
   <maintainer email="youhei@jsk.imi.i.u-tokyo.ac.jp">YoheiKakiuchi</maintainer>

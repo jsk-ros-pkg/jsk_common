@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.9 (2015-12-14)
+------------------
 * [jsk_topic_tools] Fix typo: test -> text in rosping_existence.py
 * [jsk_topic_tools] Stop using enum34 and use just int
 * [jsk_topic_tools/rosping_existence] Add ~speak_text parameter to customization

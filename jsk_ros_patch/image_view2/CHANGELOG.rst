@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.9 (2015-12-14)
+------------------
 * [image_view2] Not test on hydro (jsk_tools/test_topic_published.py does not work on travis/jenkins)
   Modified:
   jsk_ros_patch/image_view2/CMakeLists.txt
