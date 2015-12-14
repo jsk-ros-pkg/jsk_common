@@ -2,6 +2,59 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tools] test_topic_published.py doesn't work on hydro travis/jenkins
+  Modified:
+  jsk_tools/CMakeLists.txt
+* [jsk_tools] Add roslint_python for jsk_tools
+* [jsk_tools] Test test_topic_published.py
+* [jsk_tools] Remove [] when not found pkg name
+* [jsk_tools] Move dot-files and python library doc
+  Modified:
+  doc/jsk_tools/index.rst
+  jsk_tools/README.md
+  Added:
+  doc/jsk_tools/dot-files/emacs.md
+  doc/jsk_tools/dot-files/tmux.md
+* [jsk_tools] Move cl tools from README to sphinx
+  Modified:
+  doc/index.rst
+  jsk_tools/README.md
+  Added:
+  doc/jsk_tools/cltools/bag_plotter.md
+  doc/jsk_tools/cltools/restart_travis.md
+  doc/jsk_tools/cltools/rosbag_record_interactive.md
+  doc/jsk_tools/cltools/roscore_regardless.md
+  doc/jsk_tools/cltools/setup_env_for_ros.md
+  doc/jsk_tools/cltools/topic_hz_monitor.md
+  doc/jsk_tools/index.rst
+  jsk_tools/doc
+* [jsk_tools] List added files in git-jsk-commit
+* [jsk_tools]
+  Modified:
+  jsk_tools/bin/git-jsk-commit
+* [jsk_tools] git-jsk-commit as git's subcommand
+  Usage:
+  ```
+  git jsk-commit -a
+  ```
+  Modified:
+  jsk_tools/CMakeLists.txt
+  jsk_tools/env-hooks/99.jsk_tools.sh
+* [jsk_tools] Add wstool info information to report_issue.sh
+* [jsk_tools] Add tool to make commit message informative
+  This is proposed by @k-okada and discussed on `#1202 <https://github.com/jsk-ros-pkg/jsk_common/issues/1202>`_
+  Modified:
+  jsk_tools/env-hooks/99.jsk_tools.sh
+* [jsk_tools] Add tool to help reporting issue
+  It will generate a gist like https://gist.github.com/anonymous/6e1a34227eeb8ef3013c
+  See `#1187 <https://github.com/jsk-ros-pkg/jsk_common/issues/1187>`_.
+* [jsk_tools/force_to_rename_changelog_user] Add new rule
+* [jsk_tools/bag_plotter] Use wxagg for matplotlib backend to speed-up
+  plotting
+* Contributors: Kentaro Wada, Ryohei Ueda
+
 2.0.8 (2015-12-07)
 ------------------
 * add rostest package.xml

@@ -2,6 +2,29 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [image_view2] Not test on hydro (jsk_tools/test_topic_published.py does not work on travis/jenkins)
+  Modified:
+  jsk_ros_patch/image_view2/CMakeLists.txt
+* [image_view2] Use ccache if installed to make it fast to generate object files
+* [image_view2] Install test dir for rostest after installed
+  Modified:
+  jsk_ros_patch/image_view2/CMakeLists.txt
+* [image_view2] Refactor package.xml (sort and remove no need)
+  Modified:
+  jsk_ros_patch/image_view2/package.xml
+* [image_view2] Test screenrectangle image with mouse event
+  Closes https://github.com/jsk-ros-pkg/jsk_common/issues/1247
+  Modified:
+  jsk_ros_patch/image_view2/package.xml
+  Added:
+  jsk_ros_patch/image_view2/test/publish_lena.py
+  jsk_ros_patch/image_view2/test/publish_mouse_event.py
+  jsk_ros_patch/image_view2/test/rectangle_mouse_event.test
+* [image_view2] avoid segfo caused by minus width for rectangle
+* Contributors: Kentaro Wada, Ryohei Ueda, Yu Ohara
+
 2.0.8 (2015-12-07)
 ------------------
 

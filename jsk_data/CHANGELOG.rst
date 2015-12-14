@@ -2,6 +2,12 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_data] Deepends on jsk_topic_tools
+  Taking over https://github.com/jsk-ros-pkg/jsk_common/pull/1196
+* Contributors: Ryohei Ueda
+
 2.0.8 (2015-12-07)
 ------------------
 * [jsk_data] Add roslint

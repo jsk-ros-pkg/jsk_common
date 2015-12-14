@@ -2,6 +2,16 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Fix typo: test -> text in rosping_existence.py
+* [jsk_topic_tools] Stop using enum34 and use just int
+* [jsk_topic_tools/rosping_existence] Add ~speak_text parameter to customization
+* [jsk_topic_tools/log_utils] Fix include guard.
+  Define warnNoRemap in include guard section.
+* [jsk_topic_tools] Find Boost_LIBRARIES once nodelet.cmake
+* Contributors: Kentaro Wada, Ryohei Ueda
+
 2.0.8 (2015-12-07)
 ------------------
 * [jsk_topic_tools] Add roslint_cpp for src/log_utils.cpp
