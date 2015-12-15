@@ -38,7 +38,8 @@
 
   <test test-name="image_view2_topics"
         name="image_view2_topics"
-        pkg="jsk_tools" type="test_topic_published.py">
+        pkg="jsk_tools" type="test_topic_published.py"
+        retry="3">
     <rosparam>
       topic_0: /camera_0/image/screenrectangle_image
       timeout_0: 10
