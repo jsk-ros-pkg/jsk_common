@@ -5,6 +5,7 @@
   <arg name="LOAD5_THRESHOLD" default="3.0" />
   <arg name="ENFORCE_CLOCK_SPEED" default="false" />
   <arg name="NTP_HOSTNAME" default="cmachine"/>
+  <arg name="NO_NTP_MONITOR" default="false" />
   <group ns="pc_monitor">
     <node pkg="pr2_computer_monitor"
           name="$(anon cpu_monitor)"
@@ -20,7 +21,8 @@
     <node pkg="pr2_computer_monitor"
           name="$(anon ntp_monitor)"
           type="ntp_monitor.py"
-          args="$(arg NTP_HOSTNAME)"/>
+          args="$(arg NTP_HOSTNAME)"
+          unless="$(arg NO_NTP_MONITOR)"/>
     <node pkg="jsk_network_tools"
           type="network_status.py"
           name="$(anon network_status)">
