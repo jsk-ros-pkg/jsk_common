@@ -32,7 +32,14 @@ If you are not confident about writing good commit log, write like this:
 [${package}/${program_name}] short description
 
 concrete description
+
+Modified:
+  - modified_file
+...
 ```
+
+We have [`$ git jsk-commit`](https://github.com/jsk-ros-pkg/jsk_common/blob/master/jsk_tools/bin/git-jsk-commit) command to help you to follow above style of commit message.
+
 
 # Coding Style
 **Please follow other codes in the same package.**
