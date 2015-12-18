@@ -1,0 +1,30 @@
+<launch>
+
+  <arg name="ns" default="/kinect2/hd" />
+
+  <group ns="$(arg ns)">
+    <node name="$(anon republish_image_color_rect)"
+          pkg="image_transport" type="republish"
+          args="compressed raw">
+      <remap from="in" to="image_color_rect" />
+      <remap from="out" to="image_color_rect" />
+    </node>
+
+    <node name="$(anon republish_image_depth_rect)"
+          pkg="image_transport" type="republish"
+          args="compressed raw">
+      <remap from="in" to="image_depth_rect" />
+      <remap from="out" to="image_depth_rect" />
+    </node>
+
+    <node name="pc_xyzrgb"
+          pkg="nodelet" type="nodelet"
+          args="standalone depth_image_proc/point_cloud_xyzrgb">
+      <remap from="depth_registered/points" to="points" />
+      <remap from="depth_registered/image_rect" to="image_depth_rect" />
+      <remap from="rgb/camera_info" to="camera_info" />
+      <remap from="rgb/image_rect_color" to="image_color_rect" />
+    </node>
+  </group>
+
+</launch>
