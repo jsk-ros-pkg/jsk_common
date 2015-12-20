@@ -17,3 +17,4 @@ This repository contains following ros packages:
 
    jsk_tools/index
    jsk_topic_tools/index
+   tips
