@@ -191,18 +191,3 @@ restart_travis() {
 rosbag_record_interactive() {
     rosbag record $(zenity --list --column topics $(rostopic list) --multiple --separator=' ')
 }
-
-rosrecord () {
-  if rostopic list &>/dev/null; then
-    local topics timestamp
-    timestamp=$(date +%Y-%m-%d-%H-%M-%S)
-    echo "Recording to $timestamp"
-    mkdir -p $timestamp
-    cd $timestamp
-    rosparam dump "${timestamp}_rosparam.yaml"
-    rosbag record $(rostopic list | percol | xargs) --output-name=$timestamp --size=2000 --split --buffsize=0
-    cd ..
-  else
-    return 1
-  fi
-}
