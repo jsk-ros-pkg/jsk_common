@@ -27,12 +27,19 @@
     <remap from="/multisense/image_points2_color" to="/multisense_local/image_points2_color" if="$(arg local)"/>
     <remap from="/multisense/organized_image_points2" to="/multisense_local/organized_image_points2" if="$(arg local)"/>
     <remap from="/multisense/organized_image_points2_color" to="/multisense_local/organized_image_points2_color" if="$(arg local)"/>
+    <remap from="joint_states" to="/multisense_local/joint_states" if="$(arg local)"/>
     <include file="$(find multisense_bringup)/multisense.launch" if="$(arg run_driver)">
       <arg name="ip_address" value="$(arg ip_address)" />
       <arg name="namespace" value="$(arg namespace)" />
       <arg name="mtu" value="$(arg mtu)" />
       <arg name="launch_robot_state_publisher" value="$(arg use_robot_description)" />
     </include>
+    <group if="$(arg local)">
+      <node pkg="jsk_topic_tools" type="relay" name="multisense_joint_states_relay">
+        <remap from="~input" to="/multisense_local/joint_states" />
+        <remap from="~output" to="/joint_states" />
+      </node>
+    </group>
   </group>
   <!--
       Overwrite multisense/multisense_driver/tf_prefix parameter.
@@ -66,6 +73,7 @@
      <arg name="fixed_frame_id" value="$(arg fixed_frame_id)" />
      <arg name="assemble_cloud" value="$(arg assemble_cloud)"/>
      <arg name="run_distance_filters" value="$(arg run_distance_filters)" />
+     <arg name="local" value="$(arg local)" />
    </include>
    <!-- modify multisense parameters -->
    <node pkg="dynamic_reconfigure" type="dynparam" args="set /multisense motor_speed 1.0" name="set_multisense_spindle_speed" />
