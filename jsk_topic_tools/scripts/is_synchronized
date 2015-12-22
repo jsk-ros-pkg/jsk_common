@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from __future__ import print_function
+import argparse
+import sys
+
+import message_filters
+import rospy
+
+from rostopic import get_topic_class
+
+
+class IsSynchronized(object):
+
+    def __init__(self, topics):
+        self.is_sync = False
+        self.subs = []
+        for tp in topics:
+            msg_class, real_topic, _ = get_topic_class(tp, blocking=True)
+            self.subs.append(message_filters.Subscriber(real_topic, msg_class))
+            print('subscribed to [{}]'.format(real_topic))
+        sync = message_filters.TimeSynchronizer(self.subs, queue_size=100)
+        sync.registerCallback(self.callback)
+
+    def callback(self, *msg):
+        self.is_sync = True
+
+    def __del__(self):
+        self.sub1.sub.unregister()
+        self.sub2.sub.unregister()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('topics', nargs='+',
+                        help='topics which should be synchronized')
+    args = parser.parse_args()
+    topics = args.topics
+    if len(topics) < 2:
+        print('[WARNING] Please specify at least 2 topics', file=sys.stderr)
+        sys.exit(1)
+    check_sync = IsSynchronized(topics=topics)
+    print('listening these topics for 5 seconds')
+    rospy.rostime.wallsleep(5)
+    result = 'synchronized' if check_sync.is_sync else 'not synchronized'
+    print("these {} topics are: '{}'".format(len(topics), result))
+
+
+if __name__ == '__main__':
+    rospy.init_node('is_synchronized', anonymous=True)
+    main()
