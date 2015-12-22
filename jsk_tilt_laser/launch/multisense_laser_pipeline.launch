@@ -4,6 +4,7 @@
   <arg name="fixed_frame_id" default="head_root" />
   <arg name="assemble_cloud" default="/multisense/lidar_scan_filtered"/>
   <arg name="run_distance_filters" default="true" />
+  <arg name="local" default="false" />
   <node name="tilt_scan_to_cloud"
         pkg="laser_filters" type="scan_to_cloud_filter_chain"
         output="screen">
@@ -14,7 +15,8 @@
         type: laser_filters/ScanShadowsFilter
         params:
           min_angle: 0
-          max_angle: 175
+#          max_angle: 175
+          max_angle: 165
           neighbors: 5
           window: 5
       - name: dark_shadows
@@ -37,6 +39,7 @@
         type="standalone_complexed_nodelet"
         name="multisense_laser"
         output="screen">
+    <remap from="/tf" to="/tf_null" /> <!--we do not need tf here-->
     <rosparam subst_value="true">
     nodelets:
       - name: laser_x_filter
@@ -79,6 +82,10 @@
         remappings:
           - from: ~input
             to: /$(arg namespace)/joint_states
+            unless: $(arg local)
+          - from: ~input
+            to: /$(arg namespace)_local/joint_states
+            if: $(arg local)
           - from: ~input/cloud
             to: $(arg assemble_cloud)
       - name: multisense_laser_relay
