@@ -9,6 +9,7 @@ import sys
 import click
 from jsk_tools.cltool import percol_select
 
+from jsk_data.gdrive import list_gdrive
 from jsk_data.ssh import connect_ssh
 from jsk_data.ssh import get_user_by_hostname
 from jsk_data.util import filename_with_timestamp
@@ -153,28 +154,23 @@ def cmd_put(public, filename):
               help='Print out download command')
 def cmd_pubinfo(filename, show_dl_cmd):
     if not filename:
-        candidates = _list_aries_files(public=True)
+        # FIXME: gdrive does not return full title if it is longer than 40
+        candidates = list_gdrive().splitlines()[1:]  # skip header
         selected = percol_select(candidates)
         if len(selected) != 1:
             sys.stderr.write('Please select 1 filename.\n')
             sys.exit(1)
-        filename = selected[0]
+        filename = selected[0].split()[1]
 
-    with connect_ssh(HOST, LOGIN_USER) as ssh:
-        cmd = '{dir}/scripts/list-public-data.sh'.format(dir=DATA_DIR)
-        _, stdout, stderr = ssh.exec_command(cmd)
-        stdout.next()  # drop header
-        for line in stdout.readlines():
-            file_id, title = line.split()[:2]
-            # FIXME: gdrive does not return full title if it is longer than 40
-            if len(filename) > 40:
-                filename = filename[:19] + '...' + filename[-18:]
-            if filename == title:
-                break
-        else:
-            sys.stderr.write('file not found: {0}\n'.format(filename))
-            sys.stderr.write('Run `jsk_data ls --public` to find files.\n')
-            return
+    stdout = list_gdrive()
+    for line in stdout.splitlines()[1:]:  # skip header
+        file_id, title = line.split()[:2]
+        if filename == title:
+            break
+    else:
+        sys.stderr.write('file not found: {0}\n'.format(filename))
+        sys.stderr.write('Run `jsk_data ls --public` to find files.\n')
+        return
 
     dl_url = google_drive_file_url(file_id, download=True)
     if show_dl_cmd:
