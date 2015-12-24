@@ -10,6 +10,7 @@ import click
 from jsk_tools.cltool import percol_select
 
 from jsk_data.gdrive import download_gdrive
+from jsk_data.gdrive import info_gdrive
 from jsk_data.gdrive import list_gdrive
 from jsk_data.gdrive import upload_gdrive
 from jsk_data.ssh import connect_ssh
@@ -176,6 +177,7 @@ def cmd_pubinfo(filename, show_dl_cmd):
     for line in stdout.splitlines():
         file_id, title = line.split()[:2]
         if filename == title:
+            filename = info_gdrive(id=file_id, only_filename=True)
             break
     else:
         sys.stderr.write('file not found: {0}\n'.format(filename))

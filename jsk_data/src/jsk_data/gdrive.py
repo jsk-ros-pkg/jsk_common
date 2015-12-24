@@ -44,6 +44,21 @@ def list_gdrive():
     return run_gdrive(args=args)
 
 
+def info_gdrive(id, only_filename=False):
+    _init_gdrive()
+    args = 'info --id {id}'.format(id=id)
+    info = run_gdrive(args=args)
+    if only_filename:
+        return _info_gdrive_filename(stdout=info)
+    return info
+
+
+def _info_gdrive_filename(stdout):
+    for line in stdout.splitlines():
+        if line.startswith('Title: '):
+            return line.split()[-1]
+
+
 def upload_gdrive(filename):
     _init_gdrive()
     args = 'upload --file {file} --parent {id}'.format(file=filename,
