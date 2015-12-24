@@ -45,9 +45,11 @@ class TestTopicPublished(unittest.TestCase):
             checkers.append(checker)
         for negative, checker in zip(self.negatives, checkers):
             if negative:
-                assert_false(checker.check())
+                msg = '{} is published'.format(checker.topic_name)
+                assert_false(checker.check(), msg)
             else:
-                assert_true(checker.check())
+                msg = '{} is not published'.format(checker.topic_name)
+                assert_true(checker.check(), msg)
 
 
 if __name__ == '__main__':
