@@ -47,4 +47,4 @@ def upload_gdrive(filename):
     _init_gdrive()
     args = 'upload --file {file} --parent {id}'.format(file=filename,
                                                        id=DIR_ID)
-    run_gdrive(args=args)
+    return run_gdrive(args=args)

@@ -10,6 +10,7 @@ import click
 from jsk_tools.cltool import percol_select
 
 from jsk_data.gdrive import list_gdrive
+from jsk_data.gdrive import upload_gdrive
 from jsk_data.ssh import connect_ssh
 from jsk_data.ssh import get_user_by_hostname
 from jsk_data.util import filename_with_timestamp
@@ -128,31 +129,26 @@ def cmd_put(public, filename):
             sys.exit(1)
         os.rename(filename_org, filename)
 
-    print('Uploading to aries...')
-    cmd = 'rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no"\
-           --bwlimit=100000 {file} {usr}@{host}:{dir}/{lv}/'
-    cmd = cmd.format(file=filename, usr=LOGIN_USER, host=HOST,
-                     dir=DATA_DIR, lv=public_level)
-    subprocess.call(shlex.split(cmd))
-    print('Done.')
-    if public_level == 'private':
-        sys.exit(0)
-
-    print('Uploading to Google Drive...')
-    with connect_ssh(HOST, LOGIN_USER) as ssh:
-        cmd = '{dir}/scripts/upload-public-data.sh {dir}/public/{file}'
-        cmd = cmd.format(dir=DATA_DIR, file=filename)
-        _, stdout, stderr = ssh.exec_command(cmd)
-        for line in stdout.readlines():
+    if public:
+        print('Uploading to Google Drive...')
+        stdout = upload_gdrive(filename)
+        for line in stdout.splitlines():
             if line.startswith('Title:'):
                 filename = line.split(' ')[-1].strip()
             elif line.startswith('Id:'):
                 file_id = line.split(' ')[-1].strip()
-        sys.stderr.write(stderr.read())
-    print('Done.')
-    print('You can download it by:')
-    dl_url = google_drive_file_url(file_id, download=True)
-    print('$ wget {url} -O {file}'.format(url=dl_url, file=filename))
+        print('Done.')
+        print('You can download it by:')
+        dl_url = google_drive_file_url(file_id, download=True)
+        print('$ wget {url} -O {file}'.format(url=dl_url, file=filename))
+    else:
+        print('Uploading to aries...')
+        cmd = 'rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no"\
+            --bwlimit=100000 {file} {usr}@{host}:{dir}/{lv}/'
+        cmd = cmd.format(file=filename, usr=LOGIN_USER, host=HOST,
+                        dir=DATA_DIR, lv=public_level)
+        subprocess.call(shlex.split(cmd))
+        print('Done.')
 
 
 @cli.command(name='pubinfo', help='Show public data info.')
