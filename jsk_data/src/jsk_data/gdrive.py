@@ -12,6 +12,12 @@ import sys
 DIR_ID = '0B9P1L--7Wd2vUGplQkVLTFBWcFE'
 
 
+def open_gdrive():
+    url = 'https://drive.google.com/drive/u/1/folders/{}'.format(DIR_ID)
+    cmd = "gnome-open '{url}'".format(url=url)
+    subprocess.call(cmd, shell=True)
+
+
 def run_gdrive(args=None, stdout=True):
     if args is None:
         args = ''
