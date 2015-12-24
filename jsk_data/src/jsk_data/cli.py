@@ -9,6 +9,7 @@ import sys
 import click
 from jsk_tools.cltool import percol_select
 
+from jsk_data.gdrive import download_gdrive
 from jsk_data.gdrive import list_gdrive
 from jsk_data.gdrive import upload_gdrive
 from jsk_data.ssh import connect_ssh
@@ -48,7 +49,11 @@ def cli():
 def cmd_get(public, query):
     """Download specified file."""
     if not query:
-        candidates = _list_aries_files(public=public)
+        if public:
+            lines = list_gdrive().splitlines()[1:]  # skip header
+            candidates = [l.split()[1] for l in lines]
+        else:
+            candidates = _list_aries_files(public=public)
         selected = percol_select(candidates)
         if len(selected) != 1:
             sys.stderr.write('Please select 1 filename.\n')
@@ -56,12 +61,14 @@ def cmd_get(public, query):
         query = selected[0]
         sys.stderr.write('Selected: {0}\n'.format(query))
 
-    public_level = 'public' if public else 'private'
-    cmd = 'rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no"\
-           --bwlimit=100000 {usr}@{host}:{dir}/{lv}/{q} .'
-    cmd = cmd.format(usr=LOGIN_USER, host=HOST,
-                     dir=DATA_DIR, lv=public_level, q=query)
-    subprocess.call(shlex.split(cmd))
+    if public:
+        download_gdrive(filename=query)
+    else:
+        cmd = 'rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no"\
+            --bwlimit=100000 {usr}@{host}:{dir}/{lv}/{q} .'
+        cmd = cmd.format(usr=LOGIN_USER, host=HOST,
+                        dir=DATA_DIR, lv=public_level, q=query)
+        subprocess.call(shlex.split(cmd))
 
 
 def _list_aries_files(public, query=None, ls_options=None):

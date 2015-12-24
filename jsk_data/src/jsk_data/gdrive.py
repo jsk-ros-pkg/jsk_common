@@ -5,6 +5,7 @@
 
 import os
 import subprocess
+import sys
 
 
 # directory id in google drive of jsk
@@ -48,3 +49,19 @@ def upload_gdrive(filename):
     args = 'upload --file {file} --parent {id}'.format(file=filename,
                                                        id=DIR_ID)
     return run_gdrive(args=args)
+
+
+def download_gdrive(filename):
+    _init_gdrive()
+    if len(filename) > 40:
+        filename = filename[:19] + '...' + filename[-18:]
+    for line in list_gdrive().splitlines()[1:]:
+        file_id, title = line.split()[:2]
+        if filename == title:
+            break
+    else:
+        sys.stderr.write('file not found: {0}\n'.format(filename))
+        sys.stderr.write('Run `jsk_data ls --public` to find files.\n')
+        return
+    args = 'download --id {}'.format(file_id)
+    run_gdrive(args=args)
