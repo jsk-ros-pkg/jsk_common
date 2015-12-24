@@ -40,7 +40,7 @@ def _init_gdrive():
 
 def list_gdrive():
     _init_gdrive()
-    args = '''list --query " '{id}' in parents"'''.format(id=DIR_ID)
+    args = '''list --query " '{id}' in parents" --noheader'''.format(id=DIR_ID)
     return run_gdrive(args=args)
 
 

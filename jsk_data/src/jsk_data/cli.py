@@ -50,7 +50,7 @@ def cmd_get(public, query):
     """Download specified file."""
     if not query:
         if public:
-            lines = list_gdrive().splitlines()[1:]  # skip header
+            lines = list_gdrive().splitlines()
             candidates = [l.split()[1] for l in lines]
         else:
             candidates = _list_aries_files(public=public)
@@ -165,7 +165,7 @@ def cmd_put(public, filename):
 def cmd_pubinfo(filename, show_dl_cmd):
     if not filename:
         # FIXME: gdrive does not return full title if it is longer than 40
-        candidates = list_gdrive().splitlines()[1:]  # skip header
+        candidates = list_gdrive().splitlines()
         selected = percol_select(candidates)
         if len(selected) != 1:
             sys.stderr.write('Please select 1 filename.\n')
@@ -173,7 +173,7 @@ def cmd_pubinfo(filename, show_dl_cmd):
         filename = selected[0].split()[1]
 
     stdout = list_gdrive()
-    for line in stdout.splitlines()[1:]:  # skip header
+    for line in stdout.splitlines():
         file_id, title = line.split()[:2]
         if filename == title:
             break
