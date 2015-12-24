@@ -97,7 +97,14 @@ def cmd_ls(public, query, show_size, sort, reverse):
     if reverse:
         ls_options.append('--reverse')
 
-    print('\n'.join(_list_aries_files(public, query, ls_options)))
+    if public:
+        if ls_options:
+            sys.stderr.write(
+                'WARNING: if public=True, ignores all ls options\n')
+        sys.stdout.write(list_gdrive())
+    else:
+        print('\n'.join(_list_aries_files(public, query, ls_options)))
+
 
 
 @cli.command(name='put', help='Upload file to aries.')
