@@ -9,6 +9,7 @@ import sys
 import click
 from jsk_tools.cltool import percol_select
 
+from jsk_data.gdrive import delete_gdrive
 from jsk_data.gdrive import download_gdrive
 from jsk_data.gdrive import info_gdrive
 from jsk_data.gdrive import list_gdrive
@@ -197,3 +198,24 @@ View URL: {view_url}
 Download URL: {dl_url}'''.format(id=file_id, file=filename,
                                  view_url=view_url, dl_url=dl_url)
         print(info)
+
+
+@cli.command(name='delete', help='Delete specified file.')
+@click.option('-p', '--public', is_flag=True, help='Handle public files.')
+@click.argument('filename', default='')
+def cmd_delete(public, filename):
+    """Delete specified file."""
+    if not public:
+        sys.stderr.write('ERROR: public=False is not supported\n')
+        sys.exit(1)
+
+    if not filename:
+        # FIXME: gdrive does not return full title if it is longer than 40
+        candidates = list_gdrive().splitlines()
+        selected = percol_select(candidates)
+        if len(selected) != 1:
+            sys.stderr.write('Please select 1 filename.\n')
+            sys.exit(1)
+        filename = selected[0].split()[1]
+
+    delete_gdrive(filename=filename)

@@ -66,17 +66,28 @@ def upload_gdrive(filename):
     return run_gdrive(args=args)
 
 
-def download_gdrive(filename):
-    _init_gdrive()
+def _find_id_by_filename(filename):
     if len(filename) > 40:
         filename = filename[:19] + '...' + filename[-18:]
-    for line in list_gdrive().splitlines()[1:]:
+    for line in list_gdrive().splitlines():
         file_id, title = line.split()[:2]
         if filename == title:
-            break
+            return file_id
     else:
         sys.stderr.write('file not found: {0}\n'.format(filename))
         sys.stderr.write('Run `jsk_data ls --public` to find files.\n')
         return
+
+
+def download_gdrive(filename):
+    _init_gdrive()
+    file_id = _find_id_by_filename(filename)
     args = 'download --id {}'.format(file_id)
+    run_gdrive(args=args)
+
+
+def delete_gdrive(filename):
+    _init_gdrive()
+    file_id = _find_id_by_filename(filename)
+    args = 'delete --id {}'.format(file_id)
     run_gdrive(args=args)
