@@ -67,20 +67,17 @@ def cmd_get(public, query):
         download_gdrive(filename=query)
     else:
         cmd = 'rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no"\
-            --bwlimit=100000 {usr}@{host}:{dir}/{lv}/{q} .'
-        cmd = cmd.format(usr=LOGIN_USER, host=HOST,
-                        dir=DATA_DIR, lv=public_level, q=query)
+            --bwlimit=100000 {usr}@{host}:{dir}/private/{q} .'
+        cmd = cmd.format(usr=LOGIN_USER, host=HOST, dir=DATA_DIR, q=query)
         subprocess.call(shlex.split(cmd))
 
 
-def _list_aries_files(public, query=None, ls_options=None):
-    public_level = 'public' if public else 'private'
+def _list_aries_files(query=None, ls_options=None):
     query = query or ''
     ls_options = ls_options or []
     with connect_ssh(HOST, LOGIN_USER) as ssh:
-        cmd = 'ls {opt} {dir}/{lv}/{q}'
-        cmd = cmd.format(opt=' '.join(ls_options), dir=DATA_DIR,
-                         lv=public_level, q=query)
+        cmd = 'ls {opt} {dir}/private/{q}'
+        cmd = cmd.format(opt=' '.join(ls_options), dir=DATA_DIR, q=query)
         _, stdout, _ = ssh.exec_command(cmd)
         files = stdout.read().splitlines()
     return files
@@ -113,8 +110,7 @@ def cmd_ls(public, query, show_size, sort, reverse):
                 'WARNING: if public=True, ignores all ls options\n')
         sys.stdout.write(list_gdrive())
     else:
-        print('\n'.join(_list_aries_files(public, query, ls_options)))
-
+        print('\n'.join(_list_aries_files(query, ls_options)))
 
 
 @cli.command(name='put', help='Upload file to aries.')
@@ -125,8 +121,6 @@ def cmd_ls(public, query, show_size, sort, reverse):
 @click.argument('filename', required=True, type=click.Path(exists=True))
 def cmd_put(public, filename):
     """Upload file to aries."""
-    public_level = 'public' if public else 'private'
-
     filename_org = filename
     filename = filename_with_timestamp(filename)
     if filename_org != filename:
@@ -153,9 +147,9 @@ def cmd_put(public, filename):
     else:
         print('Uploading to aries...')
         cmd = 'rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no"\
-            --bwlimit=100000 {file} {usr}@{host}:{dir}/{lv}/'
+            --bwlimit=100000 {file} {usr}@{host}:{dir}/private/'
         cmd = cmd.format(file=filename, usr=LOGIN_USER, host=HOST,
-                        dir=DATA_DIR, lv=public_level)
+                         dir=DATA_DIR)
         subprocess.call(shlex.split(cmd))
         print('Done.')
 
