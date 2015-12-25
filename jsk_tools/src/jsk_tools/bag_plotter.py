@@ -239,10 +239,12 @@ class BagPlotter():
         if no_valid_data:
             print Fore.RED + "Cannot find valid data in bag files, valid topics are:\n%s" % ", ".join(self.all_topics) + Fore.RESET
             return
-        title = ("""Plot from [%s] to [%s] (%d secs)""" %
-                 (str(time.ctime(min_stamp.to_sec())),
-                str(time.ctime(max_stamp.to_sec())),
-                (max_stamp - min_stamp).to_sec()))
+        title = ("""Plot %s using %s from [%s] to [%s] (%d secs)""" %
+                 (", ".join(self.bag_file),
+                  self.conf_file,
+                  str(time.ctime(min_stamp.to_sec())),
+                  str(time.ctime(max_stamp.to_sec())),
+                  (max_stamp - min_stamp).to_sec()))
         start_time = rospy.Duration(self.start_time) + min_stamp
         if self.duration:
             end_time = start_time + rospy.Duration(self.duration)
