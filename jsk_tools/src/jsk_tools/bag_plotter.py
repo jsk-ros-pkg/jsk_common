@@ -1,13 +1,19 @@
+#!/usr/bin/env python
+
 import rosbag
 import yaml
 import matplotlib
-matplotlib.use("WXAgg")
+import sys
+if "-o" in sys.argv:            # write to file mode
+    matplotlib.use("AGG")
+else:
+    matplotlib.use("WXAgg")
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Button
 import time
 from progressbar import *
-import sys
+
 import argparse
 import rospy
 import re
@@ -88,7 +94,7 @@ class PlotData():
             ax.plot(xs, ys, label=self.topics[i] + "/" + self.fields_orig[i])
         ax.set_title(self.options["title"])
         if show_legend and self.options["legend"]:
-            ax.legend(prop={'size': '8'})
+            legend = ax.legend(prop={'size': '8'}, frameon=False)
         ax.minorticks_on()
         ax.grid(True)
         self.ax = ax
@@ -112,7 +118,9 @@ class BagPlotter():
                             help='Duration to plot')
         parser.add_argument('--start-time', '-s', type=int, default=0,
                             help='Start time to plot')
+        parser.add_argument('-o', help='Write to file')
         args = parser.parse_args()
+        self.output_file = args.o
         self.bag_file = args.bag
         self.conf_file = args.config
         self.duration = args.duration
@@ -214,7 +222,7 @@ class BagPlotter():
                 message_num = sum([topic["messages"] for topic in info["topics"]
                                    if topic["topic"] in self.all_topics])
                 widgets = [Fore.GREEN + "%s: " % (abag) + Fore.RESET, Percentage(), Bar()]
-                pbar = ProgressBar(maxval=message_num, widgets=widgets).start()
+                pbar = ProgressBar(maxval=max(1, message_num), widgets=widgets).start()
                 counter = 0
                 read_data = [(topic, msg, timestamp)
                              for topic, msg, timestamp
@@ -261,10 +269,15 @@ class BagPlotter():
         # Compute layout
         self.start_time = start_time
         self.plotAll(fig, start_time, self.show_legend)
-        self.printUsage()
-        self.runp = True
-        while self.runp:
-            plt.pause(1)
+        if self.output_file:
+            fig = matplotlib.pyplot.gcf()
+            fig.set_size_inches(40, 30)
+            fig.savefig(self.output_file)
+        else:
+            self.printUsage()
+            self.runp = True
+            while self.runp:
+                plt.pause(1)
     def keyPress(self, event):
         if event.key == "l" or event.key == "L":
             self.toggleLegend()
