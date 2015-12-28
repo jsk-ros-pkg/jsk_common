@@ -9,6 +9,11 @@ import sys
 import click
 from jsk_tools.cltool import percol_select
 
+from jsk_data.gdrive import delete_gdrive
+from jsk_data.gdrive import download_gdrive
+from jsk_data.gdrive import info_gdrive
+from jsk_data.gdrive import list_gdrive
+from jsk_data.gdrive import upload_gdrive
 from jsk_data.ssh import connect_ssh
 from jsk_data.ssh import get_user_by_hostname
 from jsk_data.util import filename_with_timestamp
@@ -46,7 +51,11 @@ def cli():
 def cmd_get(public, query):
     """Download specified file."""
     if not query:
-        candidates = _list_aries_files(public=public)
+        if public:
+            lines = list_gdrive().splitlines()
+            candidates = [l.split()[1] for l in lines]
+        else:
+            candidates = _list_aries_files(public=public)
         selected = percol_select(candidates)
         if len(selected) != 1:
             sys.stderr.write('Please select 1 filename.\n')
@@ -54,22 +63,21 @@ def cmd_get(public, query):
         query = selected[0]
         sys.stderr.write('Selected: {0}\n'.format(query))
 
-    public_level = 'public' if public else 'private'
-    cmd = 'rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no"\
-           --bwlimit=100000 {usr}@{host}:{dir}/{lv}/{q} .'
-    cmd = cmd.format(usr=LOGIN_USER, host=HOST,
-                     dir=DATA_DIR, lv=public_level, q=query)
-    subprocess.call(shlex.split(cmd))
+    if public:
+        download_gdrive(filename=query)
+    else:
+        cmd = 'rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no"\
+            --bwlimit=100000 {usr}@{host}:{dir}/private/{q} .'
+        cmd = cmd.format(usr=LOGIN_USER, host=HOST, dir=DATA_DIR, q=query)
+        subprocess.call(shlex.split(cmd))
 
 
-def _list_aries_files(public, query=None, ls_options=None):
-    public_level = 'public' if public else 'private'
+def _list_aries_files(query=None, ls_options=None):
     query = query or ''
     ls_options = ls_options or []
     with connect_ssh(HOST, LOGIN_USER) as ssh:
-        cmd = 'ls {opt} {dir}/{lv}/{q}'
-        cmd = cmd.format(opt=' '.join(ls_options), dir=DATA_DIR,
-                         lv=public_level, q=query)
+        cmd = 'ls {opt} {dir}/private/{q}'
+        cmd = cmd.format(opt=' '.join(ls_options), dir=DATA_DIR, q=query)
         _, stdout, _ = ssh.exec_command(cmd)
         files = stdout.read().splitlines()
     return files
@@ -96,7 +104,13 @@ def cmd_ls(public, query, show_size, sort, reverse):
     if reverse:
         ls_options.append('--reverse')
 
-    print('\n'.join(_list_aries_files(public, query, ls_options)))
+    if public:
+        if ls_options:
+            sys.stderr.write(
+                'WARNING: if public=True, ignores all ls options\n')
+        sys.stdout.write(list_gdrive())
+    else:
+        print('\n'.join(_list_aries_files(query, ls_options)))
 
 
 @cli.command(name='put', help='Upload file to aries.')
@@ -107,8 +121,6 @@ def cmd_ls(public, query, show_size, sort, reverse):
 @click.argument('filename', required=True, type=click.Path(exists=True))
 def cmd_put(public, filename):
     """Upload file to aries."""
-    public_level = 'public' if public else 'private'
-
     filename_org = filename
     filename = filename_with_timestamp(filename)
     if filename_org != filename:
@@ -120,31 +132,26 @@ def cmd_put(public, filename):
             sys.exit(1)
         os.rename(filename_org, filename)
 
-    print('Uploading to aries...')
-    cmd = 'rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no"\
-           --bwlimit=100000 {file} {usr}@{host}:{dir}/{lv}/'
-    cmd = cmd.format(file=filename, usr=LOGIN_USER, host=HOST,
-                     dir=DATA_DIR, lv=public_level)
-    subprocess.call(shlex.split(cmd))
-    print('Done.')
-    if public_level == 'private':
-        sys.exit(0)
-
-    print('Uploading to Google Drive...')
-    with connect_ssh(HOST, LOGIN_USER) as ssh:
-        cmd = '{dir}/scripts/upload-public-data.sh {dir}/public/{file}'
-        cmd = cmd.format(dir=DATA_DIR, file=filename)
-        _, stdout, stderr = ssh.exec_command(cmd)
-        for line in stdout.readlines():
+    if public:
+        print('Uploading to Google Drive...')
+        stdout = upload_gdrive(filename)
+        for line in stdout.splitlines():
             if line.startswith('Title:'):
                 filename = line.split(' ')[-1].strip()
             elif line.startswith('Id:'):
                 file_id = line.split(' ')[-1].strip()
-        sys.stderr.write(stderr.read())
-    print('Done.')
-    print('You can download it by:')
-    dl_url = google_drive_file_url(file_id, download=True)
-    print('$ wget {url} -O {file}'.format(url=dl_url, file=filename))
+        print('Done.')
+        print('You can download it by:')
+        dl_url = google_drive_file_url(file_id, download=True)
+        print('$ wget {url} -O {file}'.format(url=dl_url, file=filename))
+    else:
+        print('Uploading to aries...')
+        cmd = 'rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no"\
+            --bwlimit=100000 {file} {usr}@{host}:{dir}/private/'
+        cmd = cmd.format(file=filename, usr=LOGIN_USER, host=HOST,
+                         dir=DATA_DIR)
+        subprocess.call(shlex.split(cmd))
+        print('Done.')
 
 
 @cli.command(name='pubinfo', help='Show public data info.')
@@ -153,28 +160,24 @@ def cmd_put(public, filename):
               help='Print out download command')
 def cmd_pubinfo(filename, show_dl_cmd):
     if not filename:
-        candidates = _list_aries_files(public=True)
+        # FIXME: gdrive does not return full title if it is longer than 40
+        candidates = list_gdrive().splitlines()
         selected = percol_select(candidates)
         if len(selected) != 1:
             sys.stderr.write('Please select 1 filename.\n')
             sys.exit(1)
-        filename = selected[0]
+        filename = selected[0].split()[1]
 
-    with connect_ssh(HOST, LOGIN_USER) as ssh:
-        cmd = '{dir}/scripts/list-public-data.sh'.format(dir=DATA_DIR)
-        _, stdout, stderr = ssh.exec_command(cmd)
-        stdout.next()  # drop header
-        for line in stdout.readlines():
-            file_id, title = line.split()[:2]
-            # FIXME: gdrive does not return full title if it is longer than 40
-            if len(filename) > 40:
-                filename = filename[:19] + '...' + filename[-18:]
-            if filename == title:
-                break
-        else:
-            sys.stderr.write('file not found: {0}\n'.format(filename))
-            sys.stderr.write('Run `jsk_data ls --public` to find files.\n')
-            return
+    stdout = list_gdrive()
+    for line in stdout.splitlines():
+        file_id, title = line.split()[:2]
+        if filename == title:
+            filename = info_gdrive(id=file_id, only_filename=True)
+            break
+    else:
+        sys.stderr.write('file not found: {0}\n'.format(filename))
+        sys.stderr.write('Run `jsk_data ls --public` to find files.\n')
+        return
 
     dl_url = google_drive_file_url(file_id, download=True)
     if show_dl_cmd:
@@ -189,3 +192,24 @@ View URL: {view_url}
 Download URL: {dl_url}'''.format(id=file_id, file=filename,
                                  view_url=view_url, dl_url=dl_url)
         print(info)
+
+
+@cli.command(name='delete', help='Delete specified file.')
+@click.option('-p', '--public', is_flag=True, help='Handle public files.')
+@click.argument('filename', default='')
+def cmd_delete(public, filename):
+    """Delete specified file."""
+    if not public:
+        sys.stderr.write('ERROR: public=False is not supported\n')
+        sys.exit(1)
+
+    if not filename:
+        # FIXME: gdrive does not return full title if it is longer than 40
+        candidates = list_gdrive().splitlines()
+        selected = percol_select(candidates)
+        if len(selected) != 1:
+            sys.stderr.write('Please select 1 filename.\n')
+            sys.exit(1)
+        filename = selected[0].split()[1]
+
+    delete_gdrive(filename=filename)
