@@ -13,6 +13,7 @@ from jsk_data.gdrive import delete_gdrive
 from jsk_data.gdrive import download_gdrive
 from jsk_data.gdrive import info_gdrive
 from jsk_data.gdrive import list_gdrive
+from jsk_data.gdrive import open_gdrive
 from jsk_data.gdrive import upload_gdrive
 from jsk_data.ssh import connect_ssh
 from jsk_data.ssh import get_user_by_hostname
@@ -213,3 +214,8 @@ def cmd_delete(public, filename):
         filename = selected[0].split()[1]
 
     delete_gdrive(filename=filename)
+
+
+@cli.command(name='pubopen', help='Go to see files on browser')
+def cmd_pubopen():
+    open_gdrive()
