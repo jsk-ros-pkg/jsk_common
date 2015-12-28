@@ -103,7 +103,7 @@ int main(int argc, char **argv)
       std::cout << "[WARNING] See: https://github.com/jsk-ros-pkg/jsk_common/issues/1145" << std::endl;
     }
     ros::param::set("~always_subscribe", original_value);  // restore always_subscribe value
-    exit(0);
+    return 0;
   }
 
   manager.load(ros::this_node::getName(), "@NODELET@", remappings, my_argv);
