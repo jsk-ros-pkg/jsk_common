@@ -39,7 +39,6 @@
         type="standalone_complexed_nodelet"
         name="multisense_laser"
         output="screen">
-    <remap from="/tf" to="/tf_null" /> <!--we do not need tf here-->
     <rosparam subst_value="true">
     nodelets:
       - name: laser_x_filter
@@ -48,30 +47,40 @@
         remappings:
           - from: ~input
             to: tilt_laser_listener/output_cloud
+          - from: /tf
+            to: /tf_null
       - name: laser_y_filter
         type: pcl/PassThrough
         if: $(arg run_distance_filters)
         remappings:
           - from: ~input
             to: laser_x_filter/output
+          - from: /tf
+            to: /tf_null
       - name: laser_z_filter
         type: pcl/PassThrough
         if: $(arg run_distance_filters)
         remappings:
           - from: ~input
             to: laser_y_filter/output
+          - from: /tf
+            to: /tf_null
       - name: laser_downsampler
         type: pcl/VoxelGrid
         if: $(arg run_distance_filters)
         remappings:
           - from: ~input
             to: laser_z_filter/output
+          - from: /tf
+            to: /tf_null
       - name: laser_downsampler
         type: pcl/VoxelGrid
         unless: $(arg run_distance_filters)
         remappings:
           - from: ~input
             to: tilt_laser_listener/output_cloud
+          - from: /tf
+            to: /tf_null
       - name: laser_camera_cloud
         type: jsk_pcl/TfTransformCloud
         remappings:
