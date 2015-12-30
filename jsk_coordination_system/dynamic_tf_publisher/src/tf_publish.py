@@ -31,8 +31,8 @@ class dynamic_tf_publisher:
         except rospy.ROSException, e:
             rospy.Service(name, srv, callback)
     def __init__(self):
-        self.pub_tf = rospy.Publisher("/tf", tf.msg.tfMessage)
-        self.pub_tf_mine = rospy.Publisher("~tf", tf.msg.tfMessage)
+        self.pub_tf = rospy.Publisher("/tf", tf.msg.tfMessage) if (os.getenv('ROS_DISTRO') in ['electric', 'fuerte', 'groovy']) else rospy.Publisher("/tf", tf.msg.tfMessage, queue_size=1)
+        self.pub_tf_mine = rospy.Publisher("~tf", tf.msg.tfMessage) if (os.getenv('ROS_DISTRO') in ['electric', 'fuerte', 'groovy']) else rospy.Publisher("~tf", tf.msg.tfMessage, queue_size=1)
         self.cur_tf = dict()
         self.original_parent = dict()
         self.update_tf = dict()
