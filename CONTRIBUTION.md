@@ -98,7 +98,7 @@ writing cool code.
    Method should be camel-case and starting with lower case.
 * include guard
 
-   ```c+++
+   ```c++
    #ifndef PACKAGE_NAME_HEADER_FILE_NAME_H_
    #define PACKAGE_NAME_HEADER_FILE_NAME_H_
    ...
@@ -106,7 +106,7 @@ writing cool code.
    ```
 * Function and method
 
-  ```
+  ```c++
   int foo() {
     int bar_bar = 0;
     return 0;
