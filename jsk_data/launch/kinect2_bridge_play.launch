@@ -24,6 +24,9 @@
       <remap from="depth_registered/image_rect" to="image_depth_rect" />
       <remap from="rgb/camera_info" to="camera_info" />
       <remap from="rgb/image_rect_color" to="image_color_rect" />
+      <rosparam>
+        exact_sync: true
+      </rosparam>
     </node>
   </group>
 
