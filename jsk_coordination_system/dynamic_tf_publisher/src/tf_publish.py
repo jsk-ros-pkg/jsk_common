@@ -18,9 +18,6 @@ import tf.msg
 import thread
 from threading import Lock
 import yaml
-import os
-if os.getenv('ROS_DISTRO') != 'electric' :
-    import genpy
 
 class dynamic_tf_publisher:
     def advertiseServiceUnlessFound(self, name, srv, callback):
@@ -31,8 +28,8 @@ class dynamic_tf_publisher:
         except rospy.ROSException, e:
             rospy.Service(name, srv, callback)
     def __init__(self):
-        self.pub_tf = rospy.Publisher("/tf", tf.msg.tfMessage)
-        self.pub_tf_mine = rospy.Publisher("~tf", tf.msg.tfMessage)
+        self.pub_tf = rospy.Publisher("/tf", tf.msg.tfMessage, queue_size=1)
+        self.pub_tf_mine = rospy.Publisher("~tf", tf.msg.tfMessage, queue_size=1)
         self.cur_tf = dict()
         self.original_parent = dict()
         self.update_tf = dict()
@@ -47,10 +44,7 @@ class dynamic_tf_publisher:
         # check the cache
         if self.use_cache and rospy.has_param('dynamic_tf_publisher'+rospy.get_name()) :
             tfm = tf.msg.tfMessage()
-            if os.getenv('ROS_DISTRO') != 'electric' :
-                genpy.message.fill_message_args(tfm,[yaml.load(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))])
-            else :
-                roslib.message.fill_message_args(tfm,[yaml.load(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))])
+            roslib.message.fill_message_args(tfm,[yaml.load(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))])
             for pose in tfm.transforms :
                 self.cur_tf[pose.child_frame_id] = pose
         self.advertiseServiceUnlessFound('/set_dynamic_tf', SetDynamicTF, self.set_tf)
