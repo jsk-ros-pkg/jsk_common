@@ -18,7 +18,6 @@ import tf.msg
 import thread
 from threading import Lock
 import yaml
-import genpy
 
 class dynamic_tf_publisher:
     def advertiseServiceUnlessFound(self, name, srv, callback):
