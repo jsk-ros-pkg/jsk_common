@@ -56,7 +56,7 @@ def cmd_get(public, query):
             lines = list_gdrive().splitlines()
             candidates = [l.split()[1] for l in lines]
         else:
-            candidates = _list_aries_files(public=public)
+            candidates = _list_aries_files()
         selected = percol_select(candidates)
         if len(selected) != 1:
             sys.stderr.write('Please select 1 filename.\n')
