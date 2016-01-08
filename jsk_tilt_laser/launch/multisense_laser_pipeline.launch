@@ -97,6 +97,17 @@
             if: $(arg local)
           - from: ~input/cloud
             to: $(arg assemble_cloud)
+      - name: tilt_laser_listener_snapshot
+        type: jsk_pcl/TiltLaserListener
+        remappings:
+          - from: ~input
+            to: /$(arg namespace)/joint_states
+            unless: $(arg local)
+          - from: ~input
+            to: /$(arg namespace)_local/joint_states
+            if: $(arg local)
+          - from: ~input/cloud
+            to: $(arg assemble_cloud)
       - name: multisense_laser_relay
         type: jsk_topic_tools/Relay
         remappings:
@@ -150,6 +161,19 @@
       twist_frame_id: head_hokuyo_frame
       overwrap_angle: 0.0
       skip_number: 10
+    </rosparam>
+  </group>
+  <group ns="tilt_laser_listener_snapshot">
+    <rosparam subst_value="true">
+      laser_type: infinite_spindle_half
+#      laser_type: infinite_spindle
+      joint_name: motor_joint
+      use_laser_assembler: true
+      not_use_laser_assembler_service: true
+      twist_frame_id: head_hokuyo_frame
+      overwrap_angle: 0.0
+      skip_number: 1
+      clear_assembled_scans: true
     </rosparam>
   </group>
 </launch>
