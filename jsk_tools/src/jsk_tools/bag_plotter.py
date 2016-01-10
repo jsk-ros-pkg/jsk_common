@@ -13,7 +13,7 @@ import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Button
 import time
 from progressbar import *
-
+from std_msgs.msg import Header
 import argparse
 import rospy
 import re
@@ -24,6 +24,12 @@ except:
     print "Please install colorama by pip install colorama"
     sys.exit(1)
 from colorama import Fore, Style
+
+class MessageWrapper():
+    def __init__(self, obj, header):
+        self.__field__ = dict()
+        self.obj = obj
+        self.header = header
 
 class MessageFieldAccessor():
     _is_slot_array_regexp = re.compile("\[([0-9]+)\]$")
@@ -77,7 +83,7 @@ class PlotData():
         for target_topic, i in zip(self.topics, range(len(self.topics))):
             if target_topic == topic:
                 self.values[i].append((value.header.stamp,
-                                       self.field_accessors[i].parse(value)))
+                                       self.field_accessors[i].parse(value.obj)))
     def filter(self, start_time, end_time):
         for i in range(len(self.values)):
             self.values[i] = [v for v in self.values[i]
@@ -229,6 +235,12 @@ class BagPlotter():
                              in bag.read_messages(topics=self.all_topics)]
                 for topic, msg, timestamp in read_data:
                     pbar.update(counter)
+                    # check topic has header field
+                    if not hasattr(msg, "header"):
+                        msg = MessageWrapper(msg, Header())
+                        msg.header.stamp = timestamp
+                    else:
+                        msg = MessageWrapper(msg, msg.header)
                     for topic_data in self.topic_data:
                         topic_data.addValue(topic, msg)
                         no_valid_data = False
