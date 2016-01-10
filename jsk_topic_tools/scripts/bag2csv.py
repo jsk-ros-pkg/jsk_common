@@ -31,7 +31,7 @@ def message_to_csv(stream, msg, flatten=False):
                 msg_str = "\"" + msg_str + "\""
         stream.write("," + msg_str)
 
-def message_type_to_csv(stream, msg, parent_content_name=""):
+def message_type_to_csv(stream, msg, parent_content_name="", flatten=False):
     """
     stream: StringIO
     msg: message
@@ -39,7 +39,11 @@ def message_type_to_csv(stream, msg, parent_content_name=""):
     try:
         for s in type(msg).__slots__:
             val = msg.__getattribute__(s)
-            message_type_to_csv(stream, val, ".".join([parent_content_name,s]))
+            if flatten and type(val) == tuple:
+                for i in range(len(val)):
+                    stream.write("," + ".".join([parent_content_name, s, str(i)]))
+            else:
+                stream.write("," + ".".join([parent_content_name, s]))
     except:
         stream.write("," + parent_content_name)
 
@@ -54,7 +58,7 @@ def format_csv_filename(form, topic_name):
     ret = ret.replace('%d', nowtime)
     ret = ret.replace('%u', str(uuid.uuid4()))
     return ret
-        
+
 def bag_to_csv(options, args):
     try:
         bag = rosbag.Bag(args[0])
@@ -81,11 +85,11 @@ def bag_to_csv(options, args):
                 # header
                 if options.header:
                     stream.write("time")
-                    message_type_to_csv(stream, msg)
+                    message_type_to_csv(stream, msg, flatten = options.flatten)
                     stream.write('\n')
 
             stream.write(datetime.fromtimestamp(time.to_time()).strftime('%Y/%m/%d/%H:%M:%S.%f'))
-            message_to_csv(stream, msg, flatten=not options.header)
+            message_to_csv(stream, msg, flatten = options.flatten)
             stream.write('\n')
         [s.close for s in streamdict.values()]
     except Exception as e:
@@ -111,6 +115,9 @@ if __name__ == '__main__':
     parser.add_option("-n", "--no-header", dest="header",
                       action="store_false", default=True,
                       help="no header / flatten array value")
+    parser.add_option("-f", "--flatten", dest="flatten",
+                      action="store_true",
+                      help="output the list type topic with flatten format", default=False)
     (options, args) = parser.parse_args()
 
     if len(args) != 1:
