@@ -70,9 +70,12 @@ def expandArrayFields(fields, topics):
 
 class PlotData():
     def __init__(self, options):
+        self.label = None
+        self.legend_font_size = 8
         (self.fields_orig, self.topics) = expandArrayFields(options["field"], options["topic"])
         self.fields = [f.split("/") for f in self.fields_orig]
         self.field_accessors = [MessageFieldAccessor(f) for f in self.fields]
+        self.time_offset = options["time_offset"]
         self.values = []
         for i in range(len(self.fields)):
             self.values.append([])
@@ -95,12 +98,15 @@ class PlotData():
         else:
             ax = fig.add_subplot(layout)
         for vs, i in zip(self.values, range(len(self.values))):
-            xs = [v[0].to_sec() - min_stamp.to_sec() for v in vs]
+            xs = [v[0].to_sec() - min_stamp.to_sec() + self.time_offset for v in vs]
             ys = [v[1] for v in vs]
-            ax.plot(xs, ys, label=self.topics[i] + "/" + self.fields_orig[i])
+            if self.label:
+                ax.plot(xs, ys, label=self.label[i])
+            else:
+                ax.plot(xs, ys, label=self.topics[i] + "/" + self.fields_orig[i])
         ax.set_title(self.options["title"])
         if show_legend and self.options["legend"]:
-            legend = ax.legend(prop={'size': '8'}, frameon=False)
+            legend = ax.legend(prop={'size': self.legend_font_size}, frameon=False)
         ax.minorticks_on()
         ax.grid(True)
         self.ax = ax
@@ -167,6 +173,7 @@ class BagPlotter():
         global_options = self.readOption(data, "global", dict())
         self.global_options = dict()
         self.global_options["layout"] = self.readOption(global_options, "layout", "vertical")
+        self.global_options["legend_font_size"] = self.readOption(global_options, "legend_font_size", 8)
     def setPlotOptions(self, data):
         plot_options = self.readOption(data, "plots", [])
         if len(plot_options) == 0:
@@ -180,6 +187,7 @@ class BagPlotter():
             opt["type"] = self.readOption(opt, "type", "line")
             opt["legend"] = self.readOption(opt, "legend", True)
             opt["layout"] = self.readOption(opt, "layout", None)
+            opt["time_offset"] = self.readOption(opt, "time_offset", 0)
             if self.global_options["layout"] == "manual" and opt["layout"] == None:
                 raise BagPlotterException("Need to specify layout field for manual layout")
             if not opt.has_key("topic"):
@@ -194,8 +202,11 @@ class BagPlotter():
                 raise BagPlotterException("lengt of topic and field should be same")
             for topic in opt["topic"]:
                 self.all_topics.add(topic)
-                
             self.topic_data.append(PlotData(opt))
+            if "label" in opt:
+                print "set", opt["label"]
+                self.topic_data[-1].label = opt["label"]
+            self.topic_data[-1].legend_font_size = self.global_options["legend_font_size"]
             self.plot_options.append(opt)
     def layoutGridSize(self):
         if self.global_options["layout"] == "vertical":
