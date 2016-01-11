@@ -70,12 +70,23 @@ def expandArrayFields(fields, topics):
 
 class PlotData():
     def __init__(self, options):
-        self.label = None
         self.legend_font_size = 8
         (self.fields_orig, self.topics) = expandArrayFields(options["field"], options["topic"])
         self.fields = [f.split("/") for f in self.fields_orig]
         self.field_accessors = [MessageFieldAccessor(f) for f in self.fields]
         self.time_offset = options["time_offset"]
+        if "label" in options:
+            self.label = options["label"]
+        else:
+            self.label = None
+        if "xlabel" in options:
+            self.xlabel = options["xlabel"]
+        else:
+            self.xlabel = None
+        if "ylabel" in options:
+            self.ylabel = options["ylabel"]
+        else:
+            self.ylabel = None
         self.values = []
         for i in range(len(self.fields)):
             self.values.append([])
@@ -105,6 +116,10 @@ class PlotData():
             else:
                 ax.plot(xs, ys, label=self.topics[i] + "/" + self.fields_orig[i])
         ax.set_title(self.options["title"])
+        if self.xlabel:
+            ax.set_xlabel(self.xlabel)
+        if self.ylabel:
+            ax.set_ylabel(self.ylabel)
         if show_legend and self.options["legend"]:
             legend = ax.legend(prop={'size': self.legend_font_size}, frameon=False)
         ax.minorticks_on()
@@ -130,6 +145,7 @@ class BagPlotter():
                             help='Duration to plot')
         parser.add_argument('--start-time', '-s', type=int, default=0,
                             help='Start time to plot')
+        parser.add_argument('--no-title', action='store_true', help='Do not show title')
         parser.add_argument('-o', help='Write to file')
         args = parser.parse_args()
         self.output_file = args.o
@@ -137,6 +153,7 @@ class BagPlotter():
         self.conf_file = args.config
         self.duration = args.duration
         self.start_time = args.start_time
+        self.no_title = args.no_title
     def processConfFile(self):
         """
         conf file format is:
@@ -203,9 +220,6 @@ class BagPlotter():
             for topic in opt["topic"]:
                 self.all_topics.add(topic)
             self.topic_data.append(PlotData(opt))
-            if "label" in opt:
-                print "set", opt["label"]
-                self.topic_data[-1].label = opt["label"]
             self.topic_data[-1].legend_font_size = self.global_options["legend_font_size"]
             self.plot_options.append(opt)
     def layoutGridSize(self):
@@ -286,7 +300,8 @@ class BagPlotter():
             
         fig = plt.figure(facecolor="1.0")
         self.fig = fig
-        fig.suptitle(title)
+        if not self.no_title:
+            fig.suptitle(title)
         self.show_legend = True
         fig.canvas.mpl_connect('key_press_event', self.keyPress)
         # Compute layout
