@@ -18,7 +18,8 @@ def callback(data):
     status = data.status
     for s in status:
         if s.name.startswith("/Power System/Smart Battery"):
-            results[s.name] = { "HardwareID": s.hardware_id }
+            if s.name not in results:
+                results[s.name] = { "HardwareID": s.hardware_id }
             for kv in s.values:
                 if(kv.key.startswith("Full Charge Capacity (mAh)")):
                     results[s.name]["FullCapacity"] = int(kv.value)
@@ -33,13 +34,16 @@ def callback(data):
     keep_flag = False
 
 def getColor(result):
-    cap = result["FullCapacity"]
-    if cap > 5500:
-        return Fore.GREEN
-    elif cap > 4000:
-        return Fore.YELLOW
-    else:
-        return Fore.RED
+    try:
+        cap = result["FullCapacity"]
+        if cap > 5500:
+            return Fore.GREEN
+        elif cap > 4000:
+            return Fore.YELLOW
+        else:
+            return Fore.RED
+    except:
+        return ""
 
 def output():
     global results
@@ -49,7 +53,7 @@ def output():
     print fmt.format("Battery Name", *sorted_keys)
     for name in sorted_names:
         color = getColor(results[name])
-        v = [results[name][k] for k in sorted_keys]
+        v = [results[name][k] if k in results[name] else "N/A" for k in sorted_keys]
         print color + fmt.format(name, *v) + Fore.RESET
 
 if __name__ == '__main__':
