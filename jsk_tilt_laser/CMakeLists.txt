@@ -6,12 +6,16 @@ project(jsk_tilt_laser)
 if(NOT $ENV{ROS_DISTRO} STREQUAL "groovy")
   set(laser_assembler "laser_assembler")
 endif(NOT $ENV{ROS_DISTRO} STREQUAL "groovy")
+if(NOT APPLE)
+  set(multisense_lib multisense_lib)
+endif(NOT APPLE)
 
 find_package(catkin REQUIRED
   dynamic_reconfigure sensor_msgs ${laser_assembler}
   tf_conversions tf cmake_modules
-  multisense_lib
+  ${multisense_lib}
   )
+
 
 find_package(Eigen REQUIRED)
 include_directories(${Eigen_INCLUDE_DIRS} ${CATKIN_INCLUDE_DIRS})
@@ -37,10 +41,12 @@ if(NOT $ENV{ROS_DISTRO} STREQUAL "groovy")
     )
 endif(NOT $ENV{ROS_DISTRO} STREQUAL "groovy")
 
-add_executable(multisense_killer src/multisense_killer.cpp)
-target_link_libraries(multisense_killer ${catkin_LIBRARIES})
-install(TARGETS multisense_killer
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  )
+if(NOT APPLE)
+  add_executable(multisense_killer src/multisense_killer.cpp)
+  target_link_libraries(multisense_killer ${catkin_LIBRARIES})
+  install(TARGETS multisense_killer
+    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    )
+endif(NOT APPLE)
