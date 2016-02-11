@@ -56,12 +56,19 @@ def expandArrayFields(fields, topics):
     ret_fields = []
     ret_topics = []
     for f, t in zip(fields, topics):
-        if re.search("\[([0-9]+):([0-9]+)\]", f): # [X:Y]
-            res = re.match(".*\[([0-9]+):([0-9]+)\]", f)
-            X = int(res.group(1))
-            Y = int(res.group(2))
-            for i in range(X, Y):
-                ret_fields.append(re.sub("\[[0-9+:[0-9]+\]", "[" + str(i) + "]", f))
+        search = re.search("\[.*\]" , f)
+        if search:
+            tmp=search.group().strip("[]").split(",")
+            def colon2fig(txt):
+                ret=re.match("([0-9]+):([0-9]+)",txt)
+                if ret:
+                    return range(int(ret.group(1)),int(ret.group(2)))
+                else:
+                    return [int(txt)]
+            tmp=map(colon2fig,tmp)
+            fList=reduce(lambda x,y: x+y,tmp)
+            for i in fList:
+                ret_fields.append(re.sub("\[.*\]", "[" + str(i) + "]", f))
                 ret_topics.append(t)
         else:
             ret_fields.append(f)
