@@ -34,7 +34,7 @@ REPLACE_RULES={
     "iori": "Iori Kumagai",
     "wesleypchan": "Wesley Chan",
     "mmurooka": "Masaki Murooka",
-    "MasakiMurooka": "Masaki Murooka",
+    "masakimurooka": "Masaki Murooka",
     "iory": "Iori Yanokura"}
 
 def remove_duplicates(values):
