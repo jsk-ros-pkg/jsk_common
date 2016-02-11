@@ -16,7 +16,6 @@ def main():
     pub_minus = rospy.Publisher('~minus_rect_event', MouseEvent, queue_size=1)
 
     rospy.loginfo('Waiting for image_view2 launch..')
-    rospy.sleep(5)
 
     width = rospy.get_param('~image_width')
     height = rospy.get_param('~image_height')
@@ -31,14 +30,15 @@ def main():
         MouseEvent(type=2, x=width/4, y=height/4, width=width, height=height),
     ]
     rate = rospy.Rate(10)
-    for e in plus_events:
-        e.header.stamp = rospy.get_rostime()
-        pub_plus.publish(e)
-        rate.sleep()
-    for e in minus_events:
-        e.header.stamp = rospy.get_rostime()
-        pub_minus.publish(e)
-        rate.sleep()
+    while not rospy.is_shutdown():
+        for e in plus_events:
+            e.header.stamp = rospy.get_rostime()
+            pub_plus.publish(e)
+            rate.sleep()
+        for e in minus_events:
+            e.header.stamp = rospy.get_rostime()
+            pub_minus.publish(e)
+            rate.sleep()
 
 
 if __name__ == '__main__':
