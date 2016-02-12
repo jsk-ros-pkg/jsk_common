@@ -172,6 +172,16 @@ namespace jsk_topic_tools
       return ret;
     }
 
+    image_transport::Publisher
+    advertiseImage(ros::NodeHandle& nh,
+                   image_transport::ImageTransport& it,
+                   const std::string& topic,
+                   int queue_size)
+    {
+      NODELET_WARN("advertiseImage with ImageTransport is deprecated");
+      return advertiseImage(nh, topic, queue_size);
+    }
+    
     /** @brief
      * Advertise an image topic and watch the publisher. Publishers which are
      * created by this method.
@@ -179,7 +189,6 @@ namespace jsk_topic_tools
      * publish topic with appropriate latch parameter.
      *
      * @param nh NodeHandle.
-     * @param it ImageTransport
      * @param topic topic name to advertise.
      * @param queue_size queue size for publisher.
      * @param latch set true if latch topic publication.
@@ -187,7 +196,6 @@ namespace jsk_topic_tools
      */
     image_transport::Publisher
     advertiseImage(ros::NodeHandle& nh,
-                   image_transport::ImageTransport& it,
                    const std::string& topic,
                    int queue_size)
     {
@@ -200,19 +208,29 @@ namespace jsk_topic_tools
                       this, _1);
       bool latch;
       nh.param("latch", latch, false);
-      image_transport::Publisher pub = it.advertise(topic, 1,
-                                                    connect_cb,
-                                                    disconnect_cb,
-                                                    ros::VoidPtr(),
-                                                    latch);
+      image_transport::Publisher pub = image_transport::ImageTransport(nh).advertise(
+        topic, 1,
+        connect_cb,
+        disconnect_cb,
+        ros::VoidPtr(),
+        latch);
       image_publishers_.push_back(pub);
       return pub;
     }
 
-    
+
     image_transport::CameraPublisher
     advertiseCamera(ros::NodeHandle& nh,
                     image_transport::ImageTransport& it,
+                    const std::string& topic,
+                    int queue_size)
+    {
+      NODELET_WARN("advertiseCamera with ImageTransport is deprecated");
+      return advertiseCamera(nh, it, topic, queue_size);
+    }
+    
+    image_transport::CameraPublisher
+    advertiseCamera(ros::NodeHandle& nh,
                     const std::string& topic,
                     int queue_size)
     {
@@ -232,11 +250,12 @@ namespace jsk_topic_tools
       bool latch;
       nh.param("latch", latch, false);
       image_transport::CameraPublisher
-        pub = it.advertiseCamera(topic, 1,
-                                 connect_cb, disconnect_cb,
-                                 info_connect_cb, info_disconnect_cb,
-                                 ros::VoidPtr(),
-                                 latch);
+        pub = image_transport::ImageTransport(nh).advertiseCamera(
+          topic, 1,
+          connect_cb, disconnect_cb,
+          info_connect_cb, info_disconnect_cb,
+          ros::VoidPtr(),
+          latch);
       camera_publishers_.push_back(pub);
       return pub;
     }
