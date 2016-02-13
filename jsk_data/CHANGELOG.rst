@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.10 (2016-02-13)
+-------------------
 * [jsk_data] Fix deprecated arg in jsk_data command
 * [jsk_data] exact_sync: true for publishing points
   Modified:

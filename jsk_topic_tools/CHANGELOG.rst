@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.10 (2016-02-13)
+-------------------
 * [jsk_topic_tools] Fix topic to advertise by advertiseImage and advertiseCamera
 * Support jsk_tilt_laser and jsk_topic_tools on OS X
 * [jsk_topic_tools] Find Boost with quiet option always in order

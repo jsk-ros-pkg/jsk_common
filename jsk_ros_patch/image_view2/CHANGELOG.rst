@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.10 (2016-02-13)
+-------------------
 * [image_view2] retry 3 to avoid 'failed to launch' error
 * Contributors: Kentaro Wada
 

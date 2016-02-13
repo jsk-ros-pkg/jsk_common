@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.10 (2016-02-13)
+-------------------
 * Support jsk_tilt_laser and jsk_topic_tools on OS X
 * [jsk_tilt_laser] Publish snapshot laser assembled cloud
 * [jsk_tilt_laser] Remap tf topics only for pcl_ros nodelets
