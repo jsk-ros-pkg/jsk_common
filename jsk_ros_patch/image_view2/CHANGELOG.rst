@@ -2,6 +2,11 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [image_view2] retry 3 to avoid 'failed to launch' error
+* Contributors: Kentaro Wada
+
 2.0.9 (2015-12-14)
 ------------------
 * [image_view2] Not test on hydro (jsk_tools/test_topic_published.py does not work on travis/jenkins)

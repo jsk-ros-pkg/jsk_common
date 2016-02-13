@@ -2,6 +2,13 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [tf_publisher.py] do not import genpy since it is not used
+* [tf_publish.py] remove backward compatibility
+* queue_size is new in hydro and necessary from indigo
+* Contributors: Eisoku Kuroiwa
+
 2.0.9 (2015-12-14)
 ------------------
 

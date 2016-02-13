@@ -2,6 +2,11 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update maintainer of jsk_network_tools and jsk_topic_tools
+* Contributors: Ryohei Ueda
+
 2.0.9 (2015-12-14)
 ------------------
 

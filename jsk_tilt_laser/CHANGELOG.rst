@@ -2,6 +2,18 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Support jsk_tilt_laser and jsk_topic_tools on OS X
+* [jsk_tilt_laser] Publish snapshot laser assembled cloud
+* [jsk_tilt_laser] Remap tf topics only for pcl_ros nodelets
+* [jsk_tilt_laser] Optimize /joint_states and /tf around multisense.
+  1. Add /multisense_local/joint_states topic for the nodes which
+  are only interested in multisense joint angles
+  2. Remap /tf to /tf_null in multisense_laser to avoid tf listening
+  from pcl/PassThrough
+* Contributors: Ryohei Ueda
+
 2.0.9 (2015-12-14)
 ------------------
 

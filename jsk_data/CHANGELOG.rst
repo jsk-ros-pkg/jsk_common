@@ -2,6 +2,37 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_data] Fix deprecated arg in jsk_data command
+* [jsk_data] exact_sync: true for publishing points
+  Modified:
+  - jsk_data/launch/kinect2_bridge_play.launch
+* [jsk_data] Describe about pubopen and delete subcommands
+  Modified:
+  - jsk_data/README.md
+* [jsk_data] Add pubopen subcommand to open GoogleDrive
+  Modified:
+  - jsk_data/src/jsk_data/cli.py
+  - jsk_data/src/jsk_data/gdrive.py
+* [jsk_data] Fix style and cleanup not used public_level
+* [jsk_data] Support deleting file only public
+* [jsk_data] Show fullname by pubinfo
+* [jsk_data] Use --noheader option for listing
+* [jsk_data] Download file from gdrive
+* [jsk_data] Upload to gdrive with gdrive module
+* [jsk_data] Use gdrive module for ls
+* [jsk_data] Use gdrive wrapper for pubinfo
+* [jsk_data] Add wrapper for drive command
+* [jsk_data] Add drive binary for linux x64 v1.9.0 from prasmussen/gdrive
+  see https://github.com/prasmussen/gdrive/releases/tag/1.9.0
+  Added:
+  - jsk_data/scripts/drive-linux-x64
+* [jsk_data] Add playback launch for kinect2 using kinect2_bridge
+  The reason I'd like to put this at this package is
+  that installing kinect2_bridge package is not so easy.
+* Contributors: Kentaro Wada
+
 2.0.9 (2015-12-14)
 ------------------
 * [jsk_data] Deepends on jsk_topic_tools

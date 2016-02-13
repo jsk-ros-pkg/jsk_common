@@ -2,6 +2,29 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Fix topic to advertise by advertiseImage and advertiseCamera
+* Support jsk_tilt_laser and jsk_topic_tools on OS X
+* [jsk_topic_tools] Find Boost with quiet option always in order
+  to avoid link error with boost programs options.
+* [jsk_topic_tools] Add script to synchronize timestamp of topics
+  and republish them for visualization
+* [jsk_topic_tools/scripts/bag2csv.py] support flatten option in bag2csv.
+* [jsk_topic_tools] Return to avoid segfault when --inout opt
+  Modified:
+  - jsk_topic_tools/cmake/single_nodelet_exec.cpp.in
+* [jsk_topic_tools] Add symlink to doc
+* [jsk_topic_tools] Add tool to check synchronized topics
+  Added:
+  - jsk_topic_tools/scripts/is_synchronized.py
+* [jsk_topic_tools] Stop using roslint as test
+  Need https://github.com/jsk-ros-pkg/jsk_travis/pull/219
+  Modified:
+  jsk_topic_tools/CMakeLists.txt
+* Update maintainer of jsk_network_tools and jsk_topic_tools
+* Contributors: Kentaro Wada, Masaki Murooka, Ryohei Ueda
+
 2.0.9 (2015-12-14)
 ------------------
 * [jsk_topic_tools] Fix typo: test -> text in rosping_existence.py

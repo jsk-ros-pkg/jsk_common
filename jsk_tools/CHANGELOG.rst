@@ -2,6 +2,59 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Use "$@" to pass arguments in git-jsk-commit
+  Closes https://github.com/jsk-ros-pkg/jsk_common/issues/1319
+  Modified:
+  - jsk_tools/bin/git-jsk-commit
+* Update force_to_rename_changelog_user.py
+  https://github.com/jsk-ros-pkg/jsk_common/blob/master/jsk_tools/bin/force_to_rename_changelog_user.py#L58 checks key with lower case, if there is a way to find key with case-insensitive like `(find author autohr_list :test #'(lambda (x y) (str= (lower-case x) (lower-case y)))`, please let me know,
+  ```
+  author = author.lower()
+  if author in REPLACE_RULES:
+  replaced_authors.append(REPLACE_RULES[author])
+  ``
+* [jsk_tools/src/jsk_tools/bag_plotter.py] support yaml field such as [1,2,4-6]
+* [jsk_tools/bin/battery_capacity_summary.py] print N/A for non available data
+* [bag_plotter.py] Support xlabel and ylabel
+* [jsk_tools/bag_plotter] Add label field
+  Modified:
+  - jsk_tools/src/jsk_tools/bag_plotter.py
+* [jsk_tools/bag_plotter] Support messages which does not have header
+  Modified:
+  - jsk_tools/src/jsk_tools/bag_plotter.py
+* [jsk_tools/bin/battery_capacity_summary.py] more battery info
+* [jsk_tools/bag_plotter] Add -o to save figure automatically
+* [jsk_tools] Add bag file name to the title of plot by bag_plotter.py
+* [jsk_tools] Reasonable test result message
+  Modified:
+  - jsk_tools/src/test_topic_published.py
+* [jsk_tools] Add rosview
+  Upstream PR: https://github.com/ros/ros/pull/99
+  Modified:
+  - jsk_tools/env-hooks/99.jsk_tools.bash
+  - jsk_tools/env-hooks/99.jsk_tools.zsh
+* [jsk_tools] Remove rosrecord: I found this function is not so useful
+* Merge pull request `#1309 <https://github.com/jsk-ros-pkg/jsk_common/issues/1309>`_ from wkentaro/git-jsk-commit-markdown-bullet
+  [jsk_tools] Add bullet for git-jsk-commit to beautify as markdown
+* [jsk_tools] Add topic delay monitor
+  upstream PR: `ros/ros_comm#719 <https://github.com/ros/ros_comm/issues/719>`_
+  Added:
+  jsk_tools/src/topic_delay_monitor.py
+* [jsk_tools] Add bullet for git-jsk-commit to beautify as markdown
+  Modified:
+  - jsk_tools/bin/git-jsk-commit
+* [jsk_tools] Add NO_NTP_MONITOR argument to skip ntp monotoring
+  in local_pc_monitor.launch
+* [jsk_tools] Use jsk-commit for git alias like 'commit-ueda'.
+  * Use "$@" in jsk-commit to keep quotes across shell script.
+  * Use jsk-commit command for commit-ueda, commit-mmurooka and so on
+  Modified:
+  jsk_tools/bin/git-jsk-commit
+  jsk_tools/src/git_commit_alias.py
+* Contributors: Yuki Furuta, Kei Okada, Kentaro Wada, Ryo KOYAMA, Ryohei Ueda
+
 2.0.9 (2015-12-14)
 ------------------
 * [jsk_tools] test_topic_published.py doesn't work on hydro travis/jenkins
