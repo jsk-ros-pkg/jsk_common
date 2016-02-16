@@ -52,6 +52,7 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
 
     def __init__(self):
         super(ConnectionBasedTransport, self).__init__()
+        self.is_initialized = False
         self._publishers = []
         self._ever_subscribed = False
         self._connection_status = NOT_SUBSCRIBED
@@ -59,6 +60,7 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
                     self._warn_never_subscribed_cb, oneshot=True)
 
     def _post_init(self):
+        self.is_initialized = True
         if rospy.get_param('~always_subscribe', False):
             self.subscribe()
             self._connection_status = SUBSCRIBED
