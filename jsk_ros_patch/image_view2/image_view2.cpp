@@ -1423,7 +1423,7 @@ namespace image_view2{
         screen_msg.polygon.points[0].y = window_selection_.y * resize_y_;
         screen_msg.polygon.points[1].x = (window_selection_.x + window_selection_.width) * resize_x_;
         screen_msg.polygon.points[1].y = (window_selection_.y + window_selection_.height) * resize_y_;
-        screen_msg.header.stamp = last_msg_->header.stamp;
+        screen_msg.header = last_msg_->header;
         ROS_INFO("Publish rectangle point %s (%f %f %f %f)", rectangle_pub_.getTopic().c_str(),
                  screen_msg.polygon.points[0].x, screen_msg.polygon.points[0].y,
                  screen_msg.polygon.points[1].x, screen_msg.polygon.points[1].y);
