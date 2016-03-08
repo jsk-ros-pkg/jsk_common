@@ -16,6 +16,7 @@ catkin_package(
     LIBRARIES
 )
 
+include_directories(${catkin_INCLUDE_DIRS})
 add_executable(multi_map_server src/main.cpp)
 target_link_libraries(multi_map_server ${catkin_LIBRARIES} SDL SDL_image yaml-cpp)
 
