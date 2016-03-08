@@ -9,7 +9,7 @@ if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
-find_package(catkin REQUIRED COMPONENTS roscpp dynamic_reconfigure  cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_generation std_srvs)
+find_package(catkin REQUIRED COMPONENTS roscpp rostest dynamic_reconfigure cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_generation std_srvs pcl_ros image_view)
 
 generate_dynamic_reconfigure_options(
   cfg/ImageView2.cfg
@@ -23,7 +23,7 @@ add_service_files(
   FILES ChangeMode.srv
   )
 
-include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(${catkin_INCLUDE_DIRS})
 
 # Image viewers
 find_package(OpenCV REQUIRED)
@@ -44,7 +44,7 @@ generate_messages(DEPENDENCIES geometry_msgs std_msgs)
 
 catkin_package(
     DEPENDS OpenCV PCL
-    CATKIN_DEPENDS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters
+    CATKIN_DEPENDS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_runtime
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
 )
@@ -60,7 +60,6 @@ install(TARGETS image_view2 points_rectangle_extractor
 )
 
 if(CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
   execute_process(
     COMMAND python -c "import sys; sys.exit(ord('$ENV{ROS_DISTRO}'[0]) >= ord('indigo'[0]))"
     RESULT_VARIABLE DISTRO_GE_INDIGO
