@@ -35,7 +35,7 @@ catkin_package(
     LIBRARIES # TODO
 )
 
-include_directories(${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS})
+include_directories(${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS} ${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake)
 
 # Image viewers
 add_executable(image_view2 image_view2.cpp image_view2_node.cpp)
