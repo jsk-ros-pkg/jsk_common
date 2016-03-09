@@ -1697,8 +1697,13 @@ namespace image_view2{
   {
     if (use_window) {
       if (!window_initialized_) {
+#if CV_MAJOR_VERSION >= 3
+          cv::namedWindow(window_name_.c_str(), autosize_ ? CV_WINDOW_AUTOSIZE : 0);
+#endif
         cv::setMouseCallback(window_name_.c_str(), &ImageView2::mouseCb, this);
+#if CV_MAJOR_VERSION < 3
         cv::namedWindow(window_name_.c_str(), autosize_ ? CV_WINDOW_AUTOSIZE : 0);
+#endif  
         window_initialized_ = false;
       }
       if(!image_.empty()) {

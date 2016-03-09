@@ -37,7 +37,7 @@ find_package(Boost REQUIRED COMPONENTS signals)
 include_directories(${Boost_INCLUDE_DIRS})
 find_package(PCL REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})
-target_link_libraries(points_rectangle_extractor ${Boost_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(points_rectangle_extractor ${Boost_LIBRARIES} ${catkin_LIBRARIES} )
 add_dependencies(points_rectangle_extractor ${PROJECT_NAME}_gencpp)
 
 generate_messages(DEPENDENCIES geometry_msgs std_msgs)
