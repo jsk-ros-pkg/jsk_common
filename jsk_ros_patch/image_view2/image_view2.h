@@ -36,9 +36,6 @@
 #ifndef IMAGE_VIEW2_H_
 #define IMAGE_VIEW2_H_
 
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
@@ -64,6 +61,9 @@
 #include <image_view2/ImageView2Config.h>
 
 #include <image_view2/MouseEvent.h>
+
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #define DEFAULT_COLOR  CV_RGB(255,0,0)
 #define USER_ROI_COLOR CV_RGB(255,0,0)

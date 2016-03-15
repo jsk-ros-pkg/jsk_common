@@ -1697,12 +1697,12 @@ namespace image_view2{
   {
     if (use_window) {
       if (!window_initialized_) {
-        cv::setMouseCallback(window_name_.c_str(), &ImageView2::mouseCb, this);
-        cv::namedWindow(window_name_.c_str(), autosize_ ? CV_WINDOW_AUTOSIZE : 0);
-        window_initialized_ = false;
+          cv::namedWindow(window_name_.c_str(), autosize_ ? CV_WINDOW_AUTOSIZE : 0);
+          cv::setMouseCallback(window_name_.c_str(), &ImageView2::mouseCb, this);
+          window_initialized_ = false;
       }
       if(!image_.empty()) {
-        cv::imshow(window_name_.c_str(), image_);
+          cv::imshow(window_name_.c_str(), image_);
       }
     }
   }
