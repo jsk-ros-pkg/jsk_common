@@ -36,8 +36,8 @@
 #ifndef IMAGE_VIEW2_H_
 #define IMAGE_VIEW2_H_
 
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
