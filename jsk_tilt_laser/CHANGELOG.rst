@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.11 (2016-03-20)
+-------------------
 * remove dynamic_reconfigure.parameter_generator, which only used for rosbuild
 * CATKIN_INCLUDE_DIRS -> catkin_INCLUDE_DIRS
 * Contributors: Kei Okada, Kentaro Wada

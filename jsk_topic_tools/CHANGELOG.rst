@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.11 (2016-03-20)
+-------------------
 * [jsk_topic_tools] Set property is_initialized
   Modified:
   - jsk_topic_tools/src/jsk_topic_tools/transport.py

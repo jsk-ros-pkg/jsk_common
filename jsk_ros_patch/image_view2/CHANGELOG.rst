@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.11 (2016-03-20)
+-------------------
 * Fix header of screenrectangle topic to include frame_id
   Modified:
   - jsk_ros_patch/image_view2/image_view2.cpp

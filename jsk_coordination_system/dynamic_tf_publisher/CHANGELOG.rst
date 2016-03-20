@@ -2,8 +2,8 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.11 (2016-03-20)
+-------------------
 * remove dynamic_reconfigure.parameter_generator, which only used for rosbuild
 * Contributors: Kei Okada
 
