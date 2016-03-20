@@ -2,6 +2,13 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] Set property is_initialized
+  Modified:
+  - jsk_topic_tools/src/jsk_topic_tools/transport.py
+* Contributors: Kentaro Wada
+
 2.0.10 (2016-02-13)
 -------------------
 * [jsk_topic_tools] Fix topic to advertise by advertiseImage and advertiseCamera

@@ -2,6 +2,11 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove dynamic_reconfigure.parameter_generator, which only used for rosbuild
+* Contributors: Kei Okada
+
 2.0.10 (2016-02-13)
 -------------------
 * Update maintainer of jsk_network_tools and jsk_topic_tools

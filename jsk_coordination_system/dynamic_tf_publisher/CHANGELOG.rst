@@ -2,6 +2,11 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove dynamic_reconfigure.parameter_generator, which only used for rosbuild
+* Contributors: Kei Okada
+
 2.0.10 (2016-02-13)
 -------------------
 * [tf_publisher.py] do not import genpy since it is not used

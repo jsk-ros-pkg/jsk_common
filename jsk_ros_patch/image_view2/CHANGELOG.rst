@@ -2,6 +2,15 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix header of screenrectangle topic to include frame_id
+  Modified:
+  - jsk_ros_patch/image_view2/image_view2.cpp
+* remove dynamic_reconfigure.parameter_generator, which only used for rosbuild
+* [image_view2] Keep publishing test data
+* Contributors: Kei Okada, Kentaro Wada, Ryohei Ueda
+
 2.0.10 (2016-02-13)
 -------------------
 * [image_view2] retry 3 to avoid 'failed to launch' error
