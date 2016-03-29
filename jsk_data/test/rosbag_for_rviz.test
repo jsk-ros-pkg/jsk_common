@@ -1,0 +1,19 @@
+<launch>
+
+  <node name="pub_dummy_0"
+        pkg="rostopic" type="rostopic"
+        args="pub /dummy_0 std_msgs/Bool 'data: False' -r 10" />
+  <node name="rviz_dummy"
+        pkg="rostopic" type="rostopic"
+        args="hz /dummy_0" />
+
+  <node name="rosbag_for_rviz"
+        pkg="jsk_data" type="rosbag_for_rviz.py"
+        args="--duration=10" />
+
+  <test test-name="test_rosbag_for_rviz"
+        name="test_rosbag_for_rviz"
+        pkg="jsk_data" type="test_rosbag_for_rviz.py">
+  </test>
+
+</launch>

@@ -15,6 +15,7 @@
   <test_depend>python-freezegun-pip</test_depend>
   <test_depend>python-nose</test_depend>
   <test_depend>roslint</test_depend>
+  <test_depend>rostest</test_depend>
   <export>
   </export>
 </package>
