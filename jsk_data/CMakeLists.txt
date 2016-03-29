@@ -19,5 +19,8 @@ if (CATKIN_ENABLE_TESTING)
   roslint_python(src/jsk_data)
   roslint_add_test()
 
+  find_package(rostest REQUIRED)
+  add_rostest(test/rosbag_for_rviz.test)
+
   catkin_add_nosetests(src/jsk_data/tests)
 endif()

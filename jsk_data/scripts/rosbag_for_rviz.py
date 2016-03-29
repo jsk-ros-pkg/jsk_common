@@ -24,8 +24,7 @@ def is_node_connectable(master, node_name):
     return True
 
 
-def main():
-    master = rosgraph.Master(ID)
+def get_rviz_nodes(master):
     rviz_nodes = []
     try:
         nodes = rosnode._sub_rosnode_listnodes().splitlines()
@@ -35,24 +34,36 @@ def main():
     for n in nodes:
         if re.search('/rviz', n) and is_node_connectable(master, n):
             rviz_nodes.append(n)
-    if not rviz_nodes:
-        sys.stderr.write('Error: rviz nodes not found!\n')
+    return rviz_nodes
+
+
+def main():
+    master = rosgraph.Master(ID)
+
+    for _ in xrange(3):
+        rviz_nodes = get_rviz_nodes(master)
+        if rviz_nodes:
+            for n in rviz_nodes:
+                print('Found rviz node: {}'.format(n))
+            break
+        sys.stderr.write('Error: No rviz nodes found! Waiting for 1 sec..\n')
+        rospy.sleep(1)
+    else:
+        sys.stderr.write('Error: Timeout!\n')
         sys.exit(1)
 
-    # go through the master system state first
-    try:
-        state = master.getSystemState()
-        pub_topics = master.getPublishedTopics('/')
-    except socket.error:
-        sys.stderr.write('Unable to communicate with master!')
+    state = master.getSystemState()
 
     topics = []
     for n in rviz_nodes:
         subs = [t for t, l in state[1] if n in l]
         topics.extend(subs)
+    if not topics:
+        sys.stderr.write('Error: No topics found!\n')
+        sys.exit(1)
 
     argv = sys.argv
-    argv.append('record')
+    argv.insert(1, 'record')
     if len(argv) > 1:
         argv.extend(topics)
     rosbag.rosbagmain(argv)
