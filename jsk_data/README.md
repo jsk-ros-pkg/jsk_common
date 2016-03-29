@@ -69,3 +69,24 @@ optional arguments:
   --save-dir SAVE_DIR  directory to store rosbag
   --max-size MAX_SIZE  maximum size of rosbags in save_dir
 ```
+
+
+rosbag\_for\_rviz.py
+------------------
+
+This is to record all topics subscribed from rviz node, in order to record topics for playing later
+and creating demo movies.
+
+**Note**
+Node name of rviz should start with '/rviz'.
+
+Usage:
+
+```bash
+$ rviz -d $(rospack find rviz)/default.rviz
+$ rosrun jsk_data rosbag_for_rviz.py
+Found rviz node: /rviz_1459260977125132860
+[ INFO] [1459260987.192261200]: Subscribing to /tf
+[ INFO] [1459260987.194573348]: Subscribing to /tf_static
+[ INFO] [1459260987.196886950]: Recording to 2016-03-29-23-16-27.bag.
+```
