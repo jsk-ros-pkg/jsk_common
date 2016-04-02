@@ -41,8 +41,8 @@ def main():
         print('[WARNING] Please specify at least 2 topics', file=sys.stderr)
         sys.exit(1)
     check_sync = IsSynchronized(topics=topics)
-    print('listening these topics for 5 seconds')
-    rospy.rostime.wallsleep(5)
+    print('listening these topics for 5 seconds in rostime')
+    rospy.sleep(rospy.Duration(5))
     result = 'synchronized' if check_sync.is_sync else 'not synchronized'
     print("these {} topics are: '{}'".format(len(topics), result))
 
