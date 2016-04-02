@@ -27,6 +27,11 @@ class IsSynchronized(object):
     def callback(self, *msg):
         self.is_sync = True
 
+    def wait_for_sync(self):
+        print('listening these topics for 5 seconds in rostime')
+        rospy.sleep(rospy.Duration(5))
+        return self.is_sync
+
     def __del__(self):
         for sub in self.subs:
             sub.unregister()
@@ -47,11 +52,10 @@ def main():
     queue_size = args.queue_size
 
     check_sync = IsSynchronized(topics=topics, queue_size=queue_size)
-    print('listening these topics for 5 seconds in rostime')
-    rospy.sleep(rospy.Duration(5))
-    result = 'synchronized' if check_sync.is_sync else 'not synchronized'
-    print("these {} topics are: '{}'".format(len(topics), result))
-    sys.exit(~check_sync.is_sync)
+    is_sync = check_sync.wait_for_sync()
+    result = 'synchronized' if is_sync else 'not synchronized'
+    print("these topics are: '{}'".format(result))
+    sys.exit(~is_sync)
 
 
 if __name__ == '__main__':
