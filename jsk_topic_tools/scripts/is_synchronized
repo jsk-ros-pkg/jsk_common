@@ -13,14 +13,15 @@ from rostopic import get_topic_class
 
 class IsSynchronized(object):
 
-    def __init__(self, topics):
+    def __init__(self, topics, queue_size):
         self.is_sync = False
         self.subs = []
         for tp in topics:
             msg_class, real_topic, _ = get_topic_class(tp, blocking=True)
-            self.subs.append(message_filters.Subscriber(real_topic, msg_class))
+            sub = message_filters.Subscriber(real_topic, msg_class)
+            self.subs.append(sub)
             print('subscribed to [{}]'.format(real_topic))
-        sync = message_filters.TimeSynchronizer(self.subs, queue_size=100)
+        sync = message_filters.TimeSynchronizer(self.subs, queue_size=queue_size)
         sync.registerCallback(self.callback)
 
     def callback(self, *msg):
@@ -35,12 +36,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('topics', nargs='+',
                         help='topics which should be synchronized')
+    parser.add_argument('-q', '--queue-size', type=int, default=100,
+                        help='Size of queue for the synchronization')
     args = parser.parse_args()
+
     topics = args.topics
     if len(topics) < 2:
         print('[WARNING] Please specify at least 2 topics', file=sys.stderr)
         sys.exit(1)
-    check_sync = IsSynchronized(topics=topics)
+    queue_size = args.queue_size
+
+    check_sync = IsSynchronized(topics=topics, queue_size=queue_size)
     print('listening these topics for 5 seconds in rostime')
     rospy.sleep(rospy.Duration(5))
     result = 'synchronized' if check_sync.is_sync else 'not synchronized'
