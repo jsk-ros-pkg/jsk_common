@@ -27,8 +27,8 @@ class IsSynchronized(object):
         self.is_sync = True
 
     def __del__(self):
-        self.sub1.sub.unregister()
-        self.sub2.sub.unregister()
+        for sub in self.subs:
+            sub.unregister()
 
 
 def main():
