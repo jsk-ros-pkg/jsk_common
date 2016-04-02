@@ -45,6 +45,7 @@ def main():
     rospy.sleep(rospy.Duration(5))
     result = 'synchronized' if check_sync.is_sync else 'not synchronized'
     print("these {} topics are: '{}'".format(len(topics), result))
+    sys.exit(~check_sync.is_sync)
 
 
 if __name__ == '__main__':
