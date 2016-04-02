@@ -13,14 +13,15 @@ from rostopic import get_topic_class
 
 class IsSynchronized(object):
 
-    def __init__(self, topics, queue_size):
+    def __init__(self, topics, timeout, queue_size):
         self.is_sync = False
+        self.timeout = timeout
+
         self.subs = []
         for tp in topics:
             msg_class, real_topic, _ = get_topic_class(tp, blocking=True)
             sub = message_filters.Subscriber(real_topic, msg_class)
             self.subs.append(sub)
-            print('subscribed to [{}]'.format(real_topic))
         sync = message_filters.TimeSynchronizer(self.subs, queue_size=queue_size)
         sync.registerCallback(self.callback)
 
@@ -28,9 +29,20 @@ class IsSynchronized(object):
         self.is_sync = True
 
     def wait_for_sync(self):
-        print('listening these topics for 5 seconds in rostime')
-        rospy.sleep(rospy.Duration(5))
-        return self.is_sync
+        print('listening these topics for at most {} seconds in rostime'
+              .format(self.timeout))
+        tick = 0.1
+        elapsed_time = 0
+        while True:
+            rospy.sleep(rospy.Duration(tick))
+            elapsed_time += tick
+            if self.is_sync:
+                print('synchronized in {} seconds'.format(elapsed_time))
+                return True
+            if elapsed_time >= self.timeout:
+                break
+        print('timeout for {} seconds'.format(self.timeout))
+        return False
 
     def __del__(self):
         for sub in self.subs:
@@ -41,6 +53,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('topics', nargs='+',
                         help='topics which should be synchronized')
+    parser.add_argument('-t', '--timeout', type=int, default=5,
+                        help='Timeout for the test of synchronization')
     parser.add_argument('-q', '--queue-size', type=int, default=100,
                         help='Size of queue for the synchronization')
     args = parser.parse_args()
@@ -49,13 +63,15 @@ def main():
     if len(topics) < 2:
         print('[WARNING] Please specify at least 2 topics', file=sys.stderr)
         sys.exit(1)
+    timeout = args.timeout
     queue_size = args.queue_size
 
-    check_sync = IsSynchronized(topics=topics, queue_size=queue_size)
+    check_sync = IsSynchronized(topics=topics, timeout=timeout,
+                                queue_size=queue_size)
     is_sync = check_sync.wait_for_sync()
     result = 'synchronized' if is_sync else 'not synchronized'
     print("these topics are: '{}'".format(result))
-    sys.exit(~is_sync)
+    sys.exit(0 if is_sync else 1)
 
 
 if __name__ == '__main__':
