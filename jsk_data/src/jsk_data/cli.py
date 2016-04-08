@@ -161,13 +161,16 @@ def cmd_put(public, filename):
               help='Print out download command')
 def cmd_pubinfo(filename, show_dl_cmd):
     if not filename:
-        # FIXME: gdrive does not return full title if it is longer than 40
         candidates = list_gdrive().splitlines()
         selected = percol_select(candidates)
         if len(selected) != 1:
             sys.stderr.write('Please select 1 filename.\n')
             sys.exit(1)
         filename = selected[0].split()[1]
+
+    # FIXME: gdrive does not return full title if it is longer than 40
+    if len(filename) > 40:
+        filename = filename[:19] + '...' + filename[-18:]
 
     stdout = list_gdrive()
     for line in stdout.splitlines():
