@@ -60,6 +60,8 @@ namespace jsk_topic_tools
   void ConnectionBasedNodelet::onInitPostProcess()
   {
     if (always_subscribe_) {
+      boost::mutex::scoped_lock lock(connection_mutex_);
+      ever_subscribed_ = true;
       subscribe();
     }
   }
