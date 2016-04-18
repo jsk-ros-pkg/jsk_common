@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.12 (2016-04-18)
+-------------------
 * Test tool with shell command with catkin
   Modified:
   - jsk_tools/CMakeLists.txt
