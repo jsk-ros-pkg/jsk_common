@@ -30,7 +30,7 @@ class TestTopicPublished(unittest.TestCase):
                 continue
             self.topics.append(value)
             id = name.replace('topic_', '')
-            self.timeouts.append(rospy.get_param('~timeout_{}'.format(id)))
+            self.timeouts.append(rospy.get_param('~timeout_{}'.format(id), 10))
             self.negatives.append(
                 rospy.get_param('~negative_{}'.format(id), False))
         if not self.topics:
