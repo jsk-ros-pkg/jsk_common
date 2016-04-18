@@ -2,6 +2,27 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Test tool with shell command with catkin
+  Modified:
+  - jsk_tools/CMakeLists.txt
+  Added:
+  - jsk_tools/cmake/run_shell_test.py
+  - jsk_tools/cmake/shell_test.cmake.em
+* Handle shell and dotfiles for shared computers
+  Modified:
+  - jsk_tools/CMakeLists.txt
+  Added:
+  - jsk_tools/env-hooks/99.dotfile.bash
+  - jsk_tools/env-hooks/99.dotfile.zsh
+  - doc/jsk_tools/cltools/dotfile.rst
+* Reuse roscat in rosview shell function
+  Modified:
+  - jsk_tools/env-hooks/99.jsk_tools.bash
+  - jsk_tools/env-hooks/99.jsk_tools.zsh
+* Contributors: Kentaro Wada
+
 2.0.11 (2016-03-20)
 -------------------
 

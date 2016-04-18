@@ -2,6 +2,9 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.0.11 (2016-03-20)
 -------------------
 * remove dynamic_reconfigure.parameter_generator, which only used for rosbuild
@@ -110,7 +113,7 @@ Changelog for package jsk_network_tools
 * [jsk_network_tools] Including pr2_description/upload_pr2.launch in order
   to set /robot_description
 * [jsk_network_tools] Support jaxon in compressing/decompressing angle-vector
-* Contributors: Yuki Furuta, Kei Okada, MasakiMurooka, Ryohei Ueda
+* Contributors: Yuki Furuta, Kei Okada, Masaki Murooka, Ryohei Ueda
 
 1.0.66 (2015-04-03)
 -------------------

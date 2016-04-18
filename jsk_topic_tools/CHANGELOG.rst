@@ -2,6 +2,20 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Set flag of subscribed even when always_subscribe
+  Modified:
+  - jsk_topic_tools/src/connection_based_nodelet.cpp
+* Show test condition for 'scripts/is_synchronized'
+* Support timeout and exit fastly
+* Add method of wait_for_sync in 'scripts/is_synchronized'
+* Set queue_size as 100
+* Fix unregistering of the subscribers
+* Exit with exit code to represent the synchronization
+* Use rostime to check synchronization
+* Contributors: Kentaro Wada
+
 2.0.11 (2016-03-20)
 -------------------
 * [jsk_topic_tools] Set property is_initialized

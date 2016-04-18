@@ -2,6 +2,11 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Omitted name of filename for gdrive go cli
+* Contributors: Kentaro Wada
+
 2.0.11 (2016-03-20)
 -------------------
 
