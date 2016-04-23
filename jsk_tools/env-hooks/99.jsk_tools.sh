@@ -78,8 +78,12 @@ rossetlocal() {
 }
 
 rossetip_dev() {
-    local device=${1-"(eth0|eth1|eth2|eth3|eth4|wlan0|wlan1|wlan2|wlan3|wlan4)"}
-    export ROS_IP=`PATH=$PATH:/sbin LANGUAGE=en LANG=C ifconfig | egrep -A1 "${device}"| grep inet\  | grep -v 127.0.0.1 | sed 's/.*inet addr:\([0-9\.]*\).*/\1/' | head -1`
+    local device=${1-"(eth0|eth1|eth2|eth3|eth4|wlan0|wlan1|wlan2|wlan3|wlan4|en0|en1|en2|en3|lo0)"}
+    if [ "$(uname -s)" = "Darwin" ]; then
+      export ROS_IP=`PATH=$PATH:/sbin LANGUAGE=en LANG=C ifconfig | egrep -A1 "${device}"| grep inet\  | grep -v 127.0.0.1 | sed 's/.*inet \([0-9\.]*\).*/\1/' | head -1`
+    else
+      export ROS_IP=`PATH=$PATH:/sbin LANGUAGE=en LANG=C ifconfig | egrep -A1 "${device}"| grep inet\  | grep -v 127.0.0.1 | sed 's/.*inet addr:\([0-9\.]*\).*/\1/' | head -1`
+    fi
     export ROS_HOSTNAME=$ROS_IP
 }
 
@@ -104,7 +108,7 @@ rossetip_addr() {
 }
 
 rossetip() {
-    local device=${1-"(eth0|eth1|eth2|eth3|eth4|wlan0|wlan1|wlan2|wlan3|wlan4)"}
+    local device=${1-"(eth0|eth1|eth2|eth3|eth4|wlan0|wlan1|wlan2|wlan3|wlan4|en0|en1|en2|en3|lo0)"}
     if [[ $device =~ [0-9]+.[0-9]+.[0-9]+.[0-9]+ ]]; then
         export ROS_IP="$device"
     else
