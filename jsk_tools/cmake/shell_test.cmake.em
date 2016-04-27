@@ -10,6 +10,7 @@ function(jsk_tools_add_shell_test)
   cmake_parse_arguments(_shell_test "" "" "COMMAND;DEPENDENCIES" ${ARGN})
 
   string(REPLACE " " "_" testname ${_shell_test_COMMAND})
+  string(REPLACE "/" "_" testname ${testname})
   set(output_path ${CATKIN_TEST_RESULTS_DIR}/${PROJECT_NAME})
   set(output_file_name "shell-test_${testname}.xml")
   set(cmd "${CMAKE_COMMAND} -E make_directory ${output_path}")
