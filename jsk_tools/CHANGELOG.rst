@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.13 (2016-04-29)
+-------------------
 * Fix setting ROS_IP with rossetip on OSX
 * Replace slash to create a valid test name
   Modified:
