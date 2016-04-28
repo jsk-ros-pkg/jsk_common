@@ -9,6 +9,9 @@ set(shell_test_script ${jsk_tools_DIR}/run_shell_test.py)
 function(jsk_tools_add_shell_test)
   cmake_parse_arguments(_shell_test "" "" "COMMAND;DEPENDENCIES" ${ARGN})
 
+  # command need to be a string
+  string(REPLACE ";" " " _shell_test_COMMAND "${_shell_test_COMMAND}")
+  # convert command to test name
   string(REPLACE " " "_" testname ${_shell_test_COMMAND})
   string(REPLACE "/" "_" testname ${testname})
   set(output_path ${CATKIN_TEST_RESULTS_DIR}/${PROJECT_NAME})
