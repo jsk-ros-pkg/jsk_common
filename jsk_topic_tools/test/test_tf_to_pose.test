@@ -1,0 +1,24 @@
+<launch>
+
+  <node name="static_tf_publisher"
+        pkg="tf" type="static_transform_publisher"
+        args="0 0 1 0 0 0 base_link head_link 100" />
+
+  <node name="tf_to_pose"
+        pkg="jsk_topic_tools" type="tf_to_pose.py">
+    <rosparam>
+      src_frame: base_link
+      dst_frame: head_link
+    </rosparam>
+  </node>
+
+  <test test-name="test_tf_to_pose"
+        name="test_tf_to_pose"
+        pkg="jsk_tools" type="test_topic_published.py">
+    <rosparam>
+      topic_0: /tf_to_pose/output
+      timeout_0: 10
+    </rosparam>
+  </test>
+
+</launch>

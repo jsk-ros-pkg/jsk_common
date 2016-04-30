@@ -121,6 +121,11 @@ if (CATKIN_ENABLE_TESTING)
   target_link_libraries(test_rosparam_utils ${PROJECT_NAME})
   add_rostest_gtest(test_log_utils test/test_log_utils.launch src/tests/test_log_utils.cpp)
   target_link_libraries(test_log_utils ${PROJECT_NAME})
+  if("$ENV{ROS_DISTRO}" STRGREATER "hydro")
+    # FIXME: jsk_tools/test_topic_published.py does not work on hydro travis/jenkins
+    # https://github.com/jsk-ros-pkg/jsk_common/pull/1293#issuecomment-164158260
+    add_rostest(test/test_tf_to_pose.test)
+  endif()
 endif()
 
 install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
