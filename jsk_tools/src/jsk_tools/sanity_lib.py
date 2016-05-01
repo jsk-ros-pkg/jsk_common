@@ -55,7 +55,7 @@ class TopicPublishedChecker(object):
         self.launched_time = rospy.Time.now()
         self.first_time_callback = True
         self.echo = echo
-        print " Checking %s" % (topic_name)
+        print " Checking %s for %d seconds" % (topic_name, timeout)
         msg_class, _, _ = rostopic.get_topic_class(topic_name, blocking=True)
         if (data_class is not None) and (msg_class is not data_class):
             raise rospy.ROSException('Topic msg type is different.')
