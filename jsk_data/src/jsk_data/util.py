@@ -29,7 +29,6 @@ def filename_with_timestamp(filename, sep=None):
 
 
 def google_drive_file_url(id, download=False):
-    url = 'https://drive.google.com/uc?id={0}'.format(id)
-    if download:
-        url += '&export=download'
+    cmd = 'uc' if download else 'open'
+    url = 'https://drive.google.com/{0}?id={1}'.format(cmd, id)
     return url
