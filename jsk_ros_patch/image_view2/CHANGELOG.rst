@@ -2,6 +2,11 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.13 (2016-04-29)
+-------------------
+* Support OpenCV3
+* Contributors: Kentaro Wada
+
 2.0.12 (2016-04-18)
 -------------------
 

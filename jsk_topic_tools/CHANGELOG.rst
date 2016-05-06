@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.13 (2016-04-29)
+-------------------
+
 2.0.12 (2016-04-18)
 -------------------
 * Set flag of subscribed even when always_subscribe

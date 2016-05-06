@@ -15,7 +15,7 @@ catkin_add_env_hooks(99.config_switch SHELLS bash zsh DIRECTORY ${CMAKE_CURRENT_
 catkin_add_env_hooks(99.jsk_tools SHELLS sh bash zsh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
 catkin_add_env_hooks(99.jsk_tools-completion SHELLS bash zsh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
 
-install(DIRECTORY src test bin dot-files
+install(DIRECTORY src test bin dot-files cmake
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
   )
@@ -49,4 +49,6 @@ if (CATKIN_ENABLE_TESTING)
     add_rostest(test/test_topic_published.launch)
   endif()
   add_rostest(test/test_stdout.test)
+  find_package(jsk_tools REQUIRED)
+  jsk_tools_add_shell_test(COMMAND echo "testing jsk_tools_add_shell_test")
 endif()

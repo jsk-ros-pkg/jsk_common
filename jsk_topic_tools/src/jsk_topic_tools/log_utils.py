@@ -11,12 +11,16 @@ from jsk_topic_tools.name_utils import unresolve_name
 
 def _log_msg_with_called_location(msg):
     try:
-        return '[{cls}::{method}] {msg}'.format(
+        return '[{node}] [{cls}::{method}] {msg}'.format(
+            node=rospy.get_name(),
             cls=inspect.stack()[2][0].f_locals['self'].__class__.__name__,
             method=inspect.stack()[2][0].f_code.co_name,
             msg=msg)
     except KeyError:
-        return msg
+        return '[{node}] [{func}] {msg}'.format(
+            node=rospy.get_name(),
+            func=inspect.stack()[2][0].f_code.co_name,
+            msg=msg)
 
 
 def jsk_logdebug(msg):

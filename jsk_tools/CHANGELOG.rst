@@ -2,6 +2,14 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.13 (2016-04-29)
+-------------------
+* Fix setting ROS_IP with rossetip on OSX
+* Replace slash to create a valid test name
+  Modified:
+  - jsk_tools/cmake/shell_test.cmake.em
+* Contributors: Kentaro Wada
+
 2.0.12 (2016-04-18)
 -------------------
 * Test tool with shell command with catkin
