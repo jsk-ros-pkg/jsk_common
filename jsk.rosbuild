@@ -19,10 +19,15 @@ function usage {
     echo >&2 "          [--from-source] install jsk and related packages from source code"
     echo >&2 "          [--from-full-source] install whole ros system using source code"
     echo >&2 "          [-r|--repositories] comma separated list of repositories to install"
+    echo >&2 "          [-c|--continue] "
     exit 0
 }
 
 function error {
+    if [ "$CONTINUE" == "yes" ]; then
+	echo "ERR occured, but continue install process"
+	return
+    fi
     echo "export ROS_HOME=$ROS_HOME"
     echo "source $ROS_INSTALLDIR/devel/setup.bash"
     (cd $ROS_INSTALLDIR/build; catkin_test_results --all; echo "done")
@@ -31,13 +36,14 @@ function error {
 trap error ERR
 
 # command line parse
-OPT=`getopt -o hipeynsr: -l help,show-install,show-package,show-environment,yes,rtm,start-jsk,rtm-ros-robotics,rbrapp,h8,h8-tools,euslib,tendon,tendon-robot,unreleased,from-source,from-full-source,use-shadow-fixed,no-sudo,repositories -- $*`
+OPT=`getopt -o hipeynsr:c -l help,show-install,show-package,show-environment,yes,rtm,start-jsk,rtm-ros-robotics,rbrapp,h8,h8-tools,euslib,tendon,tendon-robot,unreleased,from-source,from-full-source,shadow-fixed,no-sudo,repositories,continue -- $*`
 if [ $? != 0 ]; then
     usage
 fi
 DEBIAN_REPOSITORY='http://packages.ros.org/ros/ubuntu'
 SUDO=sudo
 INSTALL_REPOSITORIES=''
+CONTINUE=''
 
 eval set -- $OPT
 while [ -n "$1" ] ; do
@@ -48,7 +54,7 @@ while [ -n "$1" ] ; do
 	-e|--show-environment) SHOW="environment"; shift;;
 	-y|--yes) YES="-y"; shift;;
 	-n|--dry-run) DRY=true; shift;;
-	-s|--use-shadow) DEBIAN_REPOSITORY='http://packages.ros.org/ros-shadow-fixed/ubuntu'; shift;;
+	-s|--shadow-fixed) DEBIAN_REPOSITORY='http://packages.ros.org/ros-shadow-fixed/ubuntu'; shift;;
 	--rtm|--start-jsk|--rtm-ros-robotics) RTM_ROS_ROBOTICS=true; shift;;
 	--rbrapp) RBRAPP=true; shift;;
 	--euslib) EUSLIB=true; shift;;
@@ -58,6 +64,7 @@ while [ -n "$1" ] ; do
 	--from-source) USE_SOURCE=true; shift;;
 	--from-full-source) USE_SOURCE=full; shift;;
 	--no-sudo) SUDO='echo "[NO_SUDO] skipping"'; shift;;
+	-c|--continue) CONTINUE="yes"; shift;;
 	-r|--repositories) shift; INSTALL_REPOSITORIES=$1; shift;;
 	--) shift; break;;
 	*) echo "Unknown option($1)"; usage;;
@@ -277,7 +284,7 @@ function compile-pkg {
     # rosdep install
     if [ "$NO_SUDO" != "true" ]; then
         (cd ${ROS_INSTALLDIR}/src &&
-                $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION ROS_PACKAGE_PATH="$ROS_PACKAGE_PATH:${ROS_INSTALLDIR}_parent/src:${ROS_INSTALLDIR}/src" $COMMAND bash)
+                $COMMAND wget https://raw.github.com/jsk-ros-pkg/jsk_travis/master/rosdep-install.sh -O - | ROS_DISTRO=$DISTRIBUTION ROS_PACKAGE_PATH="$ROS_PACKAGE_PATH:${ROS_INSTALLDIR}_parent/src:${ROS_INSTALLDIR}/src" ROSDEP_ADDITIONAL_OPTIONS='-n -q -r --ignore-src' $COMMAND bash)
     fi
     ## do compile for upstream
     $COMMAND source /opt/ros/$DISTRIBUTION/setup.sh
