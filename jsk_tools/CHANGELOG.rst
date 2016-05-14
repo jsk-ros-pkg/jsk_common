@@ -2,6 +2,15 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Stable ros version check by STRGREATER
+* Install cmake directory for executables for catkin
+* Support passing command as array
+* jsk_tools/src/test_topic_published.py: set default timeout to 10 sec
+* jsk_tools/src/sanity_lib.py: add timouetout informatoin
+* Contributors: Kei Okada, Kentaro Wada
+
 2.0.13 (2016-04-29)
 -------------------
 * Fix setting ROS_IP with rossetip on OSX

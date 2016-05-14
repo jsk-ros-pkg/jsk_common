@@ -2,6 +2,11 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix for error when using opencv3
+* Contributors: Krishneel Chaudhary
+
 2.0.13 (2016-04-29)
 -------------------
 * Support OpenCV3
