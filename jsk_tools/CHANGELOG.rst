@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.14 (2016-05-14)
+-------------------
 * Stable ros version check by STRGREATER
 * Install cmake directory for executables for catkin
 * Support passing command as array

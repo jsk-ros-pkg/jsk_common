@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.14 (2016-05-14)
+-------------------
 * Show node name and func name by log_utils
 * Contributors: Kentaro Wada
 
