@@ -1,6 +1,7 @@
 jsk_common
 ===
 
+[![GitHub version](https://badge.fury.io/gh/jsk-ros-pkg%2Fjsk_common.svg)](https://badge.fury.io/gh/jsk-ros-pkg%2Fjsk_common)
 [![Build Status](https://travis-ci.org/jsk-ros-pkg/jsk_common.svg?branch=master)](https://travis-ci.org/jsk-ros-pkg/jsk_common)
 [![Read the Docs](https://readthedocs.org/projects/jsk-docs/badge/?version=latest)](http://jsk-docs.readthedocs.org/en/latest/jsk_common/doc/index.html)
 [![Slack](https://img.shields.io/badge/slack-jsk--robotics-e100e1.svg)](http://jsk-robotics.slack.com)
