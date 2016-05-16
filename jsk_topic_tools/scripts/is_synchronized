@@ -5,6 +5,7 @@
 from __future__ import print_function
 import argparse
 import sys
+from collections import OrderedDict
 
 import message_filters
 import rospy
@@ -14,17 +15,25 @@ from rostopic import get_topic_class
 
 class IsSynchronized(object):
 
-    def __init__(self, topics, timeout, queue_size):
+    def __init__(self, topics, timeout, queue_size,
+                 use_async=False, slop=None):
         self.is_sync = False
         self.timeout = timeout
         self.queue_size = queue_size
+        self.use_async = use_async
+        self.slop = slop
 
         self.subs = []
         for tp in topics:
             msg_class, real_topic, _ = get_topic_class(tp, blocking=True)
             sub = message_filters.Subscriber(real_topic, msg_class)
             self.subs.append(sub)
-        sync = message_filters.TimeSynchronizer(self.subs, queue_size=queue_size)
+        if use_async:
+            sync = message_filters.ApproximateTimeSynchronizer(
+                self.subs, queue_size=queue_size, slop=slop)
+        else:
+            sync = message_filters.TimeSynchronizer(
+                self.subs, queue_size=queue_size)
         sync.registerCallback(self.callback)
 
     def callback(self, *msg):
@@ -34,16 +43,19 @@ class IsSynchronized(object):
         topics = ''.join('\n  - {} [{}]'.format(sub.sub.name,
                                                sub.sub.data_class._type)
                          for sub in self.subs)
-        condition = {
-            'timeout': self.timeout,
-            'queue_size': self.queue_size,
-            'topics': topics,
-        }
-        print('''****************** Test Condition ******************
-timeout: {timeout} seconds
-queue_size: {queue_size}
-topics: {topics}
-****************************************************'''.format(**condition))
+        sync_policy = 'Approximate' if self.use_async else 'Exact'
+        condition = OrderedDict(
+            timeout='{0} seconds'.format(self.timeout),
+            queue_size=self.queue_size,
+            topics=topics,
+            sync_policy=sync_policy,
+        )
+        if self.slop is not None:
+            condition['slop'] = self.slop
+        print('****************** Test Condition ******************')
+        for key, value in condition.items():
+            print(key, ': ', value, sep='')
+        print('****************************************************')
 
     def wait_for_sync(self):
         print('listening these topics for at most {} seconds in rostime'
@@ -74,6 +86,11 @@ def main():
                         help='Timeout for the test of synchronization')
     parser.add_argument('-q', '--queue-size', type=int, default=100,
                         help='Size of queue for the synchronization')
+    parser.add_argument('-a', '--approximate-sync', action='store_true',
+                        help='Flag to use approximate synchronization')
+    parser.add_argument(
+        '--slop', type=float, default=None,
+        help='Allowed time delta in approximate synchronization')
     args = parser.parse_args()
 
     topics = args.topics
@@ -82,9 +99,20 @@ def main():
         sys.exit(1)
     timeout = args.timeout
     queue_size = args.queue_size
+    use_async = args.approximate_sync
+    slop = args.slop
+
+    # validate arguments for approximate sync
+    if not use_async and slop is not None:
+        print('[WARNING] --slop is used with approximate synchronization.'
+              'Ignoring...', file=sys.stderr)
+        slop = None
+    if use_async and slop is None:
+        slop = 0.1
 
     check_sync = IsSynchronized(topics=topics, timeout=timeout,
-                                queue_size=queue_size)
+                                queue_size=queue_size, use_async=use_async,
+                                slop=slop)
     check_sync.show_test_condition()
     is_sync = check_sync.wait_for_sync()
     result = 'synchronized' if is_sync else 'not synchronized'

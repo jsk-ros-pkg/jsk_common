@@ -9,7 +9,9 @@ What is this?
 =============
 
 Tool to check if specified topics are 'synchronized' or not.
-'synchronized' means timestamps completely match.
+'synchronized' means timestamps completely match with 'Exact' synchronization policy (default).
+With 'Approximate' policy (with ``--approximate-sync`` option), it means the timestamps'
+difference falls within 'slop' (default ``0.1`` seconds).
 
 
 Usage
@@ -17,7 +19,8 @@ Usage
 
 .. code-block:: bash
 
-  usage: is_synchronized [-h] [-t TIMEOUT] [-q QUEUE_SIZE] topics [topics ...]
+  usage: is_synchronized [-h] [-t TIMEOUT] [-q QUEUE_SIZE] [-a] [--slop SLOP]
+                         topics [topics ...]
 
   positional arguments:
     topics                topics which should be synchronized
@@ -28,6 +31,9 @@ Usage
                           Timeout for the test of synchronization
     -q QUEUE_SIZE, --queue-size QUEUE_SIZE
                           Size of queue for the synchronization
+    -a, --approximate-sync
+                          Flag to use approximate synchronization
+    --slop SLOP           Allowed time delta in approximate synchronization
 
 Example
 =======
