@@ -104,23 +104,32 @@ if (CATKIN_ENABLE_TESTING)
   set(ROSLINT_CPP_OPTS "--filter=-whitespace/parens,-whitespace/braces")
   roslint_cpp()
   roslint_python()
+  macro(jsk_topic_tools_add_rostest file)
+    list(APPEND jsk_topic_tools_test_files ${file})
+    add_rostest(${file})
+  endmacro()
   find_package(rostest REQUIRED)
-  add_rostest(test/test_topic_buffer.test)
-  add_rostest(test/test_topic_buffer_close_wait.test)
-  add_rostest(test/test_topic_buffer_fixed_rate.test)
-  add_rostest(test/test_topic_buffer_fixed_rate_and_update_rate.test)
-  add_rostest(test/test_topic_buffer_update_rate.test)
-  add_rostest(test/test_lightweight_throttle.test)
-  add_rostest(test/test_topic_compare.test)
-  add_rostest(test/test_hz_measure.test)
-  add_rostest(test/test_block.test)
-  add_rostest(test/test_connection_based_nodelet.test)
-  add_rostest(test/test_connection_based_transport.test)
+  jsk_topic_tools_add_rostest(test/test_topic_buffer.test)
+  jsk_topic_tools_add_rostest(test/test_topic_buffer_close_wait.test)
+  jsk_topic_tools_add_rostest(test/test_topic_buffer_fixed_rate.test)
+  jsk_topic_tools_add_rostest(test/test_topic_buffer_fixed_rate_and_update_rate.test)
+  jsk_topic_tools_add_rostest(test/test_topic_buffer_update_rate.test)
+  jsk_topic_tools_add_rostest(test/test_lightweight_throttle.test)
+  jsk_topic_tools_add_rostest(test/test_topic_compare.test)
+  jsk_topic_tools_add_rostest(test/test_hz_measure.test)
+  jsk_topic_tools_add_rostest(test/test_block.test)
+  jsk_topic_tools_add_rostest(test/test_connection_based_nodelet.test)
+  jsk_topic_tools_add_rostest(test/test_connection_based_transport.test)
   catkin_add_nosetests(src/jsk_topic_tools/tests)
   catkin_add_gtest(test_rosparam_utils src/tests/test_rosparam_utils.cpp)
   target_link_libraries(test_rosparam_utils ${PROJECT_NAME})
   add_rostest_gtest(test_log_utils test/test_log_utils.launch src/tests/test_log_utils.cpp)
   target_link_libraries(test_log_utils ${PROJECT_NAME})
+  if("$ENV{ROS_DISTRO}" STRGREATER "hydro")
+    # FIXME: jsk_tools/test_topic_published.py does not work on hydro travis/jenkins
+    # https://github.com/jsk-ros-pkg/jsk_common/pull/1293#issuecomment-164158260
+    jsk_topic_tools_add_rostest(test/test_tf_to_pose.test)
+  endif()
 endif()
 
 install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
@@ -142,7 +151,14 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 #   )
 
-install(DIRECTORY scripts launch test cmake config sample
+install(FILES ${jsk_topic_tools_test_files}
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/test)
+install(DIRECTORY test
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  USE_SOURCE_PERMISSIONS
+  PATTERN "*.test" EXCLUDE
+  )
+install(DIRECTORY scripts launch cmake config sample
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
   )
