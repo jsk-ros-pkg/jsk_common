@@ -4,10 +4,6 @@
 
 # jsk-ros-pkg
 - git:
-    uri: https://github.com/jsk-ros-pkg/openrave_planning.git
-    local-name: jsk-ros-pkg/openrave_planning
-    version: master
-- git:
     uri: https://github.com/jsk-ros-pkg/jsk_visualization.git
     local-name: jsk-ros-pkg/jsk_visualization
     version: master
