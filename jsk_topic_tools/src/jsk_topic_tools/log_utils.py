@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import cPickle as pickle
 import inspect
 
 import rosgraph
@@ -41,6 +42,56 @@ def jsk_logerr(msg):
 
 def jsk_logfatal(msg):
     rospy.logfatal(_log_msg_with_called_location(msg))
+
+
+class LoggingThrottle(object):
+
+    last_logging_time_table = {}
+
+    def __call__(self, id, logging_func, period, msg):
+        """Do logging specified message periodically.
+
+        - id (str): Id to identify the caller
+        - logging_func (function): Function to do logging.
+        - period (float): Period to do logging in second unit.
+        - msg (object): Message to do logging.
+        """
+        now = rospy.Time.now()
+
+        last_logging_time = self.last_logging_time_table.get(id)
+
+        if (last_logging_time is None or
+              (now - last_logging_time) > rospy.Duration(period)):
+            logging_func(msg)
+            self.last_logging_time_table[id] = now
+
+
+_logging_throttle = LoggingThrottle()
+
+
+def logdebug_throttle(period, msg):
+    id = pickle.dumps(inspect.stack()[1][1:])
+    _logging_throttle(id, rospy.logdebug, period, msg)
+
+
+def loginfo_throttle(period, msg):
+    id = pickle.dumps(inspect.stack()[1][1:])
+    _logging_throttle(id, rospy.loginfo, period, msg)
+
+
+def logwarn_throttle(period, msg):
+    id = pickle.dumps(inspect.stack()[1][1:])
+    _logging_throttle(id, rospy.logwarn, period, msg)
+
+
+def logerr_throttle(period, msg):
+    id = pickle.dumps(inspect.stack()[1][1:])
+    _logging_throttle(id, rospy.logerr, period, msg)
+
+
+def logfatal_throttle(period, msg):
+    id = pickle.dumps(inspect.stack()[1][1:])
+    _logging_throttle(id, rospy.logfatal, period, msg)
 
 
 def warn_no_remap(*names):
