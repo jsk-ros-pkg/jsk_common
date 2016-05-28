@@ -1,0 +1,8 @@
+<launch>
+
+  <test test-name="test_python_log_utils"
+        name="test_python_log_utils"
+        pkg="jsk_topic_tools" type="test_python_log_utils.py">
+  </test>
+
+</launch>
