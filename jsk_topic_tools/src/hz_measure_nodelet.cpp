@@ -54,7 +54,7 @@ namespace jsk_topic_tools
   {
     ros::Time now = ros::Time::now();
     buffer_.push(now);
-    if (buffer_.size() > average_message_num_) {
+    if (buffer_.size() > average_message_num_) {  
       ros::Time oldest = buffer_.front();
       double whole_time = (now - oldest).toSec();
       double average_time = whole_time / (buffer_.size() - 1);
