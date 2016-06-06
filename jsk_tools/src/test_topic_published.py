@@ -9,11 +9,36 @@ from nose.tools import assert_true
 from nose.tools import assert_false
 
 import rospy
-from jsk_tools.sanity_lib import TopicPublishedChecker
+import rostopic
 
 
 PKG = 'jsk_tools'
 NAME = 'test_topic_published'
+
+
+class TopicPublishedChecker(object):
+
+    """Utility clas to topic is published"""
+
+    def __init__(self, topic_name, timeout=10):
+        self.topic_name = topic_name
+        self.msg = None
+        rospy.loginfo('Getting message class for topic [%s]' % topic_name)
+        msg_class = rostopic.get_topic_class(topic_name, blocking=True)[0]
+        self.deadline = rospy.Time.now() + rospy.Duration(timeout)
+        self.sub = rospy.Subscriber(topic_name, msg_class, self._callback)
+
+    def check(self):
+        while not rospy.is_shutdown():
+            if (self.msg is None) and (rospy.Time.now() < self.deadline):
+                rospy.sleep(0.1)
+            else:
+                break
+        return self.msg is not None
+
+    def _callback(self, msg):
+        if rospy.Time.now() < self.deadline:
+            self.msg = msg
 
 
 class TestTopicPublished(unittest.TestCase):
