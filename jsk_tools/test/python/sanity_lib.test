@@ -1,0 +1,13 @@
+<launch>
+
+  <node name="node_0"
+        pkg="rostopic" type="rostopic"
+        args="pub /input std_msgs/String '{data: input}' -r 10">
+  </node>
+
+  <test test-name="test_sanity_lib"
+        name="test_sanity_lib"
+        pkg="jsk_tools" type="test_sanity_lib.py">
+  </test>
+
+</launch>
