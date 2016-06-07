@@ -18,6 +18,13 @@ This package includes several useful library for ROS software.
 
    ./scripts/*
 
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :caption: class
+
+   ./class/*
+
 
 C++ API documentation
 ---------------------

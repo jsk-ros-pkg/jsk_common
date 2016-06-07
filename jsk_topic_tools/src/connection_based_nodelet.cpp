@@ -41,8 +41,17 @@ namespace jsk_topic_tools
   void ConnectionBasedNodelet::onInit()
   {
     connection_status_ = NOT_SUBSCRIBED;
-    nh_.reset (new ros::NodeHandle (getMTNodeHandle ()));
-    pnh_.reset (new ros::NodeHandle (getMTPrivateNodeHandle ()));
+    bool use_multithread;
+    ros::param::param<bool>("~use_multithread_callback", use_multithread, true);
+    if (use_multithread) {
+      JSK_NODELET_DEBUG("use multithread callback");
+      nh_.reset (new ros::NodeHandle (getMTNodeHandle ()));
+      pnh_.reset (new ros::NodeHandle (getMTPrivateNodeHandle ()));
+    } else {
+      JSK_NODELET_DEBUG("use singlethread callback");
+      nh_.reset (new ros::NodeHandle (getNodeHandle ()));
+      pnh_.reset (new ros::NodeHandle (getPrivateNodeHandle ()));
+    }
     pnh_->param("always_subscribe", always_subscribe_, false);
     pnh_->param("verbose_connection", verbose_connection_, false);
     if (!verbose_connection_) {
