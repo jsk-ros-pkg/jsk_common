@@ -15,15 +15,6 @@ catkin_add_env_hooks(99.config_switch SHELLS bash zsh DIRECTORY ${CMAKE_CURRENT_
 catkin_add_env_hooks(99.jsk_tools SHELLS sh bash zsh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
 catkin_add_env_hooks(99.jsk_tools-completion SHELLS bash zsh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
 
-install(DIRECTORY src test bin dot-files cmake
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  USE_SOURCE_PERMISSIONS
-  )
-install(DIRECTORY bin/
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  USE_SOURCE_PERMISSIONS
-  )
-
 set(BIN_EXECUTABLES git-jsk-commit ros_console.py run_tmux)
 foreach(exec ${BIN_EXECUTABLES})
   add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_BIN_DESTINATION}/${exec}
@@ -41,15 +32,36 @@ if (CATKIN_ENABLE_TESTING)
   roslint_python(src/test_stdout.py)
   roslint_add_test()
   find_package(rostest REQUIRED)
+  macro(jsk_tools_add_rostest file)
+    list(APPEND jsk_tools_test_files ${file})
+    add_rostest(${file})
+  endmacro()
   if("$ENV{ROS_DISTRO}" STRGREATER "hydro")
     # FIXME: jsk_tools/test_topic_published.py does not work on hydro travis/jenkins
     # https://github.com/jsk-ros-pkg/jsk_common/pull/1293#issuecomment-164158260
-    add_rostest(test/test_topic_published.launch)
+    jsk_tools_add_rostest(test/test_topic_published.launch)
     # FIXME: jsk_tools/sanity_lib.py does not work on hydro travis/jenkins
     # https://github.com/jsk-ros-pkg/jsk_common/pull/1405#issuecomment-225218625
-    add_rostest(test/python/sanity_lib.test)
+    jsk_tools_add_rostest(test/python/sanity_lib.test)
   endif()
-  add_rostest(test/test_stdout.test)
+  jsk_tools_add_rostest(test/test_stdout.test)
   find_package(jsk_tools REQUIRED)
   jsk_tools_add_shell_test(COMMAND echo "testing jsk_tools_add_shell_test")
 endif()
+
+# install test files that really works
+install(FILES ${jsk_topic_tools_test_files}
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/test)
+install(DIRECTORY test
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  USE_SOURCE_PERMISSIONS
+  PATTERN "*.test" EXCLUDE
+  )
+install(DIRECTORY src bin dot-files cmake
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  USE_SOURCE_PERMISSIONS
+  )
+install(DIRECTORY bin/
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  USE_SOURCE_PERMISSIONS
+  )
