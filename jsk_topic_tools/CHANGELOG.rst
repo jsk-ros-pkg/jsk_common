@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.15 (2016-06-13)
+-------------------
 * add parameter for selecting MultiThread callback or SingleThread callback
 * Test LoggingThrottle
 * Implement logXXX_throttle

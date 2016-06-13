@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.15 (2016-06-13)
+-------------------
 * Install test files that works properly
 * Comment out sanity_lib.py testing on hydro
 * Simplify to make sanity_lib work on Travis
