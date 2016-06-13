@@ -23,7 +23,7 @@ env:
     - CATKIN_PARALLEL_TEST_JOBS="-j1"
     - USE_JENKINS=true
   matrix:
-    - ROS_DISTRO=hydro USE_DEB=false
+    - ROS_DISTRO=hydro USE_DEB=false CATKIN_TOOLS_BUILD_OPTIONS='-iv --summarize --no-status --no-color'
     - ROS_DISTRO=indigo USE_DEB=true
     - ROS_DISTRO=indigo USE_DEB=true BEFORE_SCRIPT='$CI_SOURCE_PATH/.travis_before_script_opencv3.bash'
     - ROS_DISTRO=jade USE_DEB=true
