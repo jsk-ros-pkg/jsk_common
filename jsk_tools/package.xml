@@ -21,6 +21,7 @@
   <run_depend>python-colorama</run_depend>
   <run_depend>python-pygithub3</run_depend>
   <run_depend>python-slacker-cli</run_depend>
+  <run_depend>python-termcolor</run_depend>
   <run_depend>python-texttable</run_depend>
   <run_depend>rosgraph_msgs</run_depend>
   <run_depend>rospy</run_depend>

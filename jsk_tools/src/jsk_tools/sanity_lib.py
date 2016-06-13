@@ -16,6 +16,7 @@ except:
 pip install colorama"""
     sys.exit(1)
 from colorama import Fore, Style
+import termcolor
 
 def okMessage(msg):
     print Fore.GREEN + "[OK]    %s" % (msg) + Fore.RESET
@@ -27,6 +28,7 @@ def indexMessage(msg):
     print
     print Fore.LIGHTCYAN_EX + "  == %s ==" % (msg) + Fore.RESET
 
+import genpy.message
 from sensor_msgs.msg import Image, JointState, Imu
 
 def colored(string, color):
@@ -46,47 +48,38 @@ def colored(string, color):
     else:
         return string
 
+
 class TopicPublishedChecker(object):
-    is_topic_published = False
-    is_topic_published_lock = Lock()
+
+    """Utility class to check if topic is published"""
+
     def __init__(self, topic_name, timeout=5, echo=False, data_class=None):
+        self.msg = None
         self.topic_name = topic_name
-        self.timeout = timeout
-        self.launched_time = rospy.Time.now()
-        self.first_time_callback = True
+        self.deadline = rospy.Time.now() + rospy.Duration(timeout)
         self.echo = echo
-        print " Checking %s for %d seconds" % (topic_name, timeout)
+        print(' Checking %s for %d seconds' % (topic_name, timeout))
         msg_class, _, _ = rostopic.get_topic_class(topic_name, blocking=True)
         if (data_class is not None) and (msg_class is not data_class):
             raise rospy.ROSException('Topic msg type is different.')
         self.sub = rospy.Subscriber(topic_name, msg_class, self.callback)
+
     def callback(self, msg):
-        with self.is_topic_published_lock:
-            if self.echo and self.first_time_callback:
-                print Fore.MAGENTA + "--- Echo "+ self.topic_name, Fore.RESET
-                self.first_time_callback = False
-                field_filter_fn = rostopic.create_field_filter(False, True)
-                callback_echo = rostopic.CallbackEcho(self.topic_name, None, plot=False,
-                                                      filter_fn=None,
-                                                      echo_clear=False, echo_all_topics=False,
-                                                      offset_time=False, count=None,
-                                                      field_filter_fn=field_filter_fn)
-                print Fore.CYAN
-                callback_echo.callback(msg, {"topic":self.topic_name,
-                                             "type_infomation":None})
-                print Fore.RESET
-            self.is_topic_published = True
+        if self.echo and self.msg is None:  # this is first time
+            termcolor.cprint('--- Echo %s' % self.topic_name, 'magenta')
+            field_filter = rostopic.create_field_filter(echo_nostr=False, echo_noarr=True)
+            termcolor.cprint(genpy.message.strify_message(msg, field_filter=field_filter), 'cyan')
+        self.msg = msg
+
     def check(self):
-        try:
-            while not rospy.is_shutdown():
-                with self.is_topic_published_lock:
-                    if self.is_topic_published:
-                        return self.is_topic_published
-                if (rospy.Time.now() - self.launched_time).to_sec() > self.timeout:
-                    return False
-        finally:
-            self.sub.unregister()
-        return True
+        while not rospy.is_shutdown():
+            if self.msg is not None:
+                return True
+            elif rospy.Time.now() > self.deadline:
+                return False
+            else:
+                rospy.sleep(0.1)
+
 
 def checkTopicIsPublished(topic_name, class_name = None,
                           ok_message = "",
