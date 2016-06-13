@@ -2,6 +2,17 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add parameter for selecting MultiThread callback or SingleThread callback
+* Test LoggingThrottle
+* Implement logXXX_throttle
+* Support async in is_synchronized
+* Install only usable *.test files
+* Test and documentize tf_to_pose.py
+* Transform tf to pose and publish it
+* Contributors: Kentaro Wada, Yohei Kakiuchi
+
 2.0.14 (2016-05-14)
 -------------------
 * Show node name and func name by log_utils

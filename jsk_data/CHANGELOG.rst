@@ -2,6 +2,11 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add data_collection_server.py
+* Contributors: Kentaro Wada
+
 2.0.14 (2016-05-14)
 -------------------
 * Add utility to download data (ex. test_data/trained_data)

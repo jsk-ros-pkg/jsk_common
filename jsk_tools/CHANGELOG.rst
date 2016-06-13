@@ -2,6 +2,15 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Install test files that works properly
+* Comment out sanity_lib.py testing on hydro
+* Simplify to make sanity_lib work on Travis
+* Fix style of code 'test_topic_published.py'
+* fix test_topic_published.py to sleep in the beginning when rosbag is used
+* Contributors: Kentaro Wada, Yusuke Niitani
+
 2.0.14 (2016-05-14)
 -------------------
 * Stable ros version check by STRGREATER

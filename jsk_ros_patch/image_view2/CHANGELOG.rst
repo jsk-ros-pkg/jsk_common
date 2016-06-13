@@ -2,6 +2,9 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.0.14 (2016-05-14)
 -------------------
 * fix for error when using opencv3
