@@ -1,0 +1,8 @@
+- git:
+    uri: https://github.com/jsk-ros-pkg/jsk_common_msgs.git
+    local-name: jsk-ros-pkg/jsk_common_msgs
+    version: 2.0.1
+- git:
+    uri: https://github.com/jsk-ros-pkg/jsk_3rdparty.git
+    local-name: jsk-ros-pkg/jsk_3rdparty
+    version: 2.0.14
