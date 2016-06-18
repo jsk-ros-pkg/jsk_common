@@ -24,6 +24,7 @@
     <node name="video_recorder" pkg="image_view" type="video_recorder" output="screen">
       <remap from="image" to="image_rect_color" />
       <param name="filename" value="$(arg filename)" />
+      <param name="max_depth_range" value="0.0" />
     </node>
   </group>
 </launch>
