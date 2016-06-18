@@ -31,7 +31,7 @@ TEST(LogUtils, testGetFunctionName){
 }
 
 int main(int argc, char **argv){
-  ros::init(argc, argv, "simple_lookup_transform");
+  ros::init(argc, argv, "test_log_utils");
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
