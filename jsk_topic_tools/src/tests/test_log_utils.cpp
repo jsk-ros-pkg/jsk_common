@@ -22,6 +22,14 @@ TEST(LogUtils, testWarnNoRemap){
   EXPECT_EQ(false, actual);
 }
 
+TEST(LogUtils, testGetFunctionName){
+  std::string name = std::string(
+    "virtual void jsk_topic_tools::ConnectionBasedNodelet::warnNeverSubscribedCallback(const ros::WallTimerEvent&)");
+  std::string actual = jsk_topic_tools::getFunctionName(name);
+  std::string expected = std::string("jsk_topic_tools::ConnectionBasedNodelet::warnNeverSubscribedCallback");
+  ASSERT_STREQ(expected.c_str(), actual.c_str());
+}
+
 int main(int argc, char **argv){
   ros::init(argc, argv, "simple_lookup_transform");
   testing::InitGoogleTest(&argc, argv);
