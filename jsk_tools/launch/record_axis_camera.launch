@@ -1,4 +1,5 @@
 <launch>
+  <arg name="stamped_filename" default="false" />
   <arg name="filename" default="output.avi" />
   <arg name="hostname" default="133.11.216.141" />
   <arg name="username" default="root" />
@@ -23,8 +24,11 @@
     <node name="image_proc" pkg="image_proc" type="image_proc" />
     <node name="video_recorder" pkg="image_view" type="video_recorder" output="screen">
       <remap from="image" to="image_rect_color" />
-      <param name="filename" value="$(arg filename)" />
-      <param name="max_depth_range" value="0.0" />
+      <rosparam subst_value="true">
+        stamped_filename: $(arg stamped_filename)
+        filename: $(arg filename)
+        max_depth_range: 0.0
+      </rosparam>
     </node>
   </group>
 </launch>
