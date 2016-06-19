@@ -2,6 +2,14 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix unreasonable test name of test_log_utils.cpp
+* Add test for getFunctionName
+* Use JSK_NODELET_WARN in connection_based_nodelet
+* Show only func name in JSK_XXX log utils
+* Contributors: Kentaro Wada
+
 2.0.15 (2016-06-13)
 -------------------
 * add parameter for selecting MultiThread callback or SingleThread callback

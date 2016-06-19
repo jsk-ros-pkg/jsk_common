@@ -2,6 +2,9 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.0.15 (2016-06-13)
 -------------------
 * Add data_collection_server.py
