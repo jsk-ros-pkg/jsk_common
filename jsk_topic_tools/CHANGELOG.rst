@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.16 (2016-06-19)
+-------------------
 * Fix unreasonable test name of test_log_utils.cpp
 * Add test for getFunctionName
 * Use JSK_NODELET_WARN in connection_based_nodelet

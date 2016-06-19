@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.16 (2016-06-19)
+-------------------
 * Fix video recording to avoid the bug in image_view
   https://github.com/ros-perception/image_pipeline/issues/187
 * Contributors: Kentaro Wada
