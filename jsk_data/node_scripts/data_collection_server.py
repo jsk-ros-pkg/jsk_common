@@ -99,8 +99,9 @@ class DataCollectionServer(object):
                     f.write(str(value))
             else:
                 raise ValueError
-        rospy.loginfo('Saved data to {}'.format(save_dir))
-        return TriggerResponse(success=True)
+        message = 'Saved data to {}'.format(save_dir)
+        rospy.loginfo(message)
+        return TriggerResponse(success=True, message=message)
 
 
 if __name__ == '__main__':
