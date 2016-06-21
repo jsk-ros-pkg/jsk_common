@@ -7,9 +7,12 @@
   <maintainer email="ueda@jsk.t.u-tokyo.ac.jp">Ryohei Ueda</maintainer>
   <license>BSD</license>
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>message_generation</build_depend>
   <run_depend>depth_image_proc</run_depend>
   <run_depend>image_transport</run_depend>
   <run_depend>jsk_topic_tools</run_depend>
+  <run_depend>message_runtime</run_depend>
   <run_depend>paramiko</run_depend>
   <run_depend>python-click</run_depend>
   <test_depend>python-freezegun-pip</test_depend>
