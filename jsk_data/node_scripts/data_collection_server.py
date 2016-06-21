@@ -46,8 +46,8 @@ class DataCollectionServer(object):
         dynamic_reconfigure.server.Server(
             DataCollectionServerConfig, self.reconfig_cb)
         self.msg = {}
-        self.topics = rospy.get_param('~topics')
-        self.params = rospy.get_param('~params')
+        self.topics = rospy.get_param('~topics', [])
+        self.params = rospy.get_param('~params', [])
         self.server = rospy.Service('~save_request', Trigger, self.service_cb)
         self.subs = []
         for topic in self.topics:
