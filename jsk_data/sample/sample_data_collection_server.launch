@@ -1,0 +1,23 @@
+<launch>
+
+  <rosparam>
+    string: spam
+  </rosparam>
+
+  <node name="data_collection_server"
+        pkg="jsk_data" type="data_collection_server.py">
+    <rosparam>
+      save_dir: ~/.ros/jsk_data/sample
+      params:
+        - key: /string
+          fname: string.txt
+          savetype: Text
+    </rosparam>
+  </node>
+
+  <node name="rqt_service_caller"
+        pkg="rqt_gui" type="rqt_gui"
+        args="--perspective-file $(find jsk_data)/sample/config/sample_data_collection_server.perspective">
+  </node>
+
+</launch>
