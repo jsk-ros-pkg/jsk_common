@@ -11,8 +11,6 @@ from jsk_tools import sanity_lib
 import rospy
 import std_msgs.msg
 
-import termcolor
-
 
 class TestSanityLib(unittest.TestCase):
 
