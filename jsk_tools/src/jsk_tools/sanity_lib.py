@@ -16,7 +16,6 @@ except:
 pip install colorama"""
     sys.exit(1)
 from colorama import Fore, Style
-import termcolor
 
 def okMessage(msg):
     print Fore.GREEN + "[OK]    %s" % (msg) + Fore.RESET
@@ -66,9 +65,9 @@ class TopicPublishedChecker(object):
 
     def callback(self, msg):
         if self.echo and self.msg is None:  # this is first time
-            termcolor.cprint('--- Echo %s' % self.topic_name, 'magenta')
+            print(colored('--- Echo %s' % self.topic_name, 'purple'))
             field_filter = rostopic.create_field_filter(echo_nostr=False, echo_noarr=True)
-            termcolor.cprint(genpy.message.strify_message(msg, field_filter=field_filter), 'cyan')
+            print(colored(genpy.message.strify_message(msg, field_filter=field_filter), 'cyan'))
         self.msg = msg
 
     def check(self):
