@@ -9,6 +9,7 @@ import os.path as osp
 import pickle as pkl
 
 import cv2
+import yaml
 
 import cv_bridge
 import dynamic_reconfigure.server
@@ -97,6 +98,11 @@ class DataCollectionServer(object):
             if param['savetype'] == 'Text':
                 with open(osp.join(save_dir, param['fname']), 'w') as f:
                     f.write(str(value))
+            if param['savetype'] == 'YAML':
+                content = yaml.safe_dump(value, allow_unicode=True,
+                                         default_flow_style=False)
+                with open(osp.join(save_dir, param['fname']), 'w') as f:
+                    f.write(content)
             else:
                 raise ValueError
         message = 'Saved data to {}'.format(save_dir)
