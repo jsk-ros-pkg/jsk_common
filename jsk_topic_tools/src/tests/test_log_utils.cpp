@@ -30,6 +30,32 @@ TEST(LogUtils, testGetFunctionName){
   ASSERT_STREQ(expected.c_str(), actual.c_str());
 }
 
+TEST(LogUtils, testJSKROSXXX){
+  JSK_ROS_DEBUG("Testing JSK_ROS_DEBUG: %ld", ros::Time::now().toNSec());
+  JSK_ROS_INFO("Testing JSK_ROS_INFO: %ld", ros::Time::now().toNSec());
+  JSK_ROS_WARN("Testing JSK_ROS_WARN: %ld", ros::Time::now().toNSec());
+  JSK_ROS_ERROR("Testing JSK_ROS_ERROR: %ld", ros::Time::now().toNSec());
+  JSK_ROS_FATAL("Testing JSK_ROS_FATAL: %ld", ros::Time::now().toNSec());
+
+  JSK_ROS_DEBUG_STREAM("Testing " << "JSK_ROS_DEBUG_STREAM: " << ros::Time::now().toNSec());
+  JSK_ROS_INFO_STREAM("Testing " << "JSK_ROS_INFO_STREAM: " << ros::Time::now().toNSec());
+  JSK_ROS_WARN_STREAM("Testing " << "JSK_ROS_WARN_STREAM: " << ros::Time::now().toNSec());
+  JSK_ROS_ERROR_STREAM("Testing " << "JSK_ROS_ERROR_STREAM: " << ros::Time::now().toNSec());
+  JSK_ROS_FATAL_STREAM("Testing " << "JSK_ROS_FATAL_STREAM: " << ros::Time::now().toNSec());
+
+  JSK_ROS_DEBUG_THROTTLE(1, "Testing JSK_ROS_DEBUG_THROTTLE: %ld", ros::Time::now().toNSec());
+  JSK_ROS_INFO_THROTTLE(1, "Testing JSK_ROS_INFO_THROTTLE: %ld", ros::Time::now().toNSec());
+  JSK_ROS_WARN_THROTTLE(1, "Testing JSK_ROS_WARN_THROTTLE: %ld", ros::Time::now().toNSec());
+  JSK_ROS_ERROR_THROTTLE(1, "Testing JSK_ROS_ERROR_THROTTLE: %ld", ros::Time::now().toNSec());
+  JSK_ROS_FATAL_THROTTLE(1, "Testing JSK_ROS_FATAL_THROTTLE: %ld", ros::Time::now().toNSec());
+
+  JSK_ROS_DEBUG_STREAM_THROTTLE(1, "Testing " << "JSK_ROS_DEBUG_STREAM_THROTTLE: " << ros::Time::now().toNSec());
+  JSK_ROS_INFO_STREAM_THROTTLE(1, "Testing " << "JSK_ROS_INFO_STREAM_THROTTLE: " << ros::Time::now().toNSec());
+  JSK_ROS_WARN_STREAM_THROTTLE(1, "Testing " << "JSK_ROS_WARN_STREAM_THROTTLE: " << ros::Time::now().toNSec());
+  JSK_ROS_ERROR_STREAM_THROTTLE(1, "Testing " << "JSK_ROS_ERROR_STREAM_THROTTLE: " << ros::Time::now().toNSec());
+  JSK_ROS_FATAL_STREAM_THROTTLE(1, "Testing " << "JSK_ROS_FATAL_STREAM_THROTTLE: " << ros::Time::now().toNSec());
+}
+
 int main(int argc, char **argv){
   ros::init(argc, argv, "test_log_utils");
   testing::InitGoogleTest(&argc, argv);

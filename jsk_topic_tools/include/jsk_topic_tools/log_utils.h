@@ -105,4 +105,26 @@ namespace jsk_topic_tools
 #define JSK_ROS_FATAL_STREAM(...) \
   ROS_FATAL_STREAM("[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 
+#define JSK_ROS_DEBUG_THROTTLE(rate, str, ...) \
+  ROS_DEBUG_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
+#define JSK_ROS_INFO_THROTTLE(rate, str, ...) \
+  ROS_INFO_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
+#define JSK_ROS_WARN_THROTTLE(rate, str, ...) \
+  ROS_WARN_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
+#define JSK_ROS_ERROR_THROTTLE(rate, str, ...) \
+  ROS_ERROR_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
+#define JSK_ROS_FATAL_THROTTLE(rate, str, ...) \
+  ROS_FATAL_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
+
+#define JSK_ROS_DEBUG_STREAM_THROTTLE(rate,...) \
+  ROS_DEBUG_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
+#define JSK_ROS_INFO_STREAM_THROTTLE(rate,...) \
+  ROS_INFO_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
+#define JSK_ROS_WARN_STREAM_THROTTLE(rate,...) \
+  ROS_WARN_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
+#define JSK_ROS_ERROR_STREAM_THROTTLE(rate,...) \
+  ROS_ERROR_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
+#define JSK_ROS_FATAL_STREAM_THROTTLE(rate,...) \
+  ROS_FATAL_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
+
 #endif
