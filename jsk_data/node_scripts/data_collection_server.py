@@ -92,18 +92,22 @@ class DataCollectionServer(object):
                 with open(osp.join(save_dir, topic['fname']), 'wb') as f:
                     pkl.dump(depth, f)
             else:
+                rospy.logerr('Unexpected savetype for topic: {}'
+                             .format(topic['savetype']))
                 raise ValueError
         for param in self.params:
             value = rospy.get_param(param['key'])
             if param['savetype'] == 'Text':
                 with open(osp.join(save_dir, param['fname']), 'w') as f:
                     f.write(str(value))
-            if param['savetype'] == 'YAML':
+            elif param['savetype'] == 'YAML':
                 content = yaml.safe_dump(value, allow_unicode=True,
                                          default_flow_style=False)
                 with open(osp.join(save_dir, param['fname']), 'w') as f:
                     f.write(content)
             else:
+                rospy.logerr('Unexpected savetype for param: {}'
+                             .format(param['savetype']))
                 raise ValueError
         message = 'Saved data to {}'.format(save_dir)
         rospy.loginfo(message)
