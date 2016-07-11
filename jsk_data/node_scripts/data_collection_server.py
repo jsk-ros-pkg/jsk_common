@@ -7,12 +7,14 @@ from __future__ import print_function
 import os
 import os.path as osp
 import pickle as pkl
+import sys
 
 import cv2
 import yaml
 
 import cv_bridge
 import dynamic_reconfigure.server
+from jsk_topic_tools.log_utils import jsk_logfatal
 import roslib.message
 import rospy
 from std_srvs.srv import Trigger
@@ -48,7 +50,23 @@ class DataCollectionServer(object):
             DataCollectionServerConfig, self.reconfig_cb)
         self.msg = {}
         self.topics = rospy.get_param('~topics', [])
+        # validation for saving topics
+        for topic in self.topics:
+            required_fields = ['name', 'msg_class', 'fname', 'savetype']
+            for field in required_fields:
+                if field not in topic:
+                    jsk_logfatal("Required field '{}' for topic is missing"
+                                 .format(field))
+                    sys.exit(1)
         self.params = rospy.get_param('~params', [])
+        # validation for saving params
+        for param in self.params:
+            required_fields = ['key', 'fname', 'savetype']
+            for field in required_fields:
+                if field not in topic:
+                    jsk_logfatal("Required field '{}' for param is missing"
+                                 .format(field))
+                    sys.exit(1)
         self.server = rospy.Service('~save_request', Trigger, self.service_cb)
         self.subs = []
         for topic in self.topics:
