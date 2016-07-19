@@ -90,16 +90,22 @@ class DataCollectionServer(object):
 
     def service_cb(self, req):
         now = rospy.Time.now()
-        while any(msg.header.stamp < now for msg in self.msg.values()):
+        saving_msgs = {}
+        slop = 0.1
+        while len(saving_msgs) < len(self.topics):
+            for topic in self.topics:
+                if topic['name'] in saving_msgs:
+                    continue
+                if ((topic['name'] in self.msg) and
+                     abs(now - self.msg[topic['name']].header.stamp <
+                         rospy.Duration(slop))):
+                    saving_msgs[topic['name']] = self.msg[topic['name']]
             rospy.sleep(0.1)
         save_dir = osp.join(self.save_dir, str(now.to_nsec()))
         if not osp.exists(save_dir):
             os.makedirs(save_dir)
         for topic in self.topics:
-            msg = self.msg.get(topic['name'], None)
-            if msg is None:
-                os.removedirs(save_dir)
-                return TriggerResponse(success=False)
+            msg = saving_msgs[topic['name']]
             if topic['savetype'] == 'ColorImage':
                 bridge = cv_bridge.CvBridge()
                 img = bridge.imgmsg_to_cv2(msg, 'bgr8')
