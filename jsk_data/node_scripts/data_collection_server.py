@@ -109,6 +109,10 @@ class DataCollectionServer(object):
                 depth = bridge.imgmsg_to_cv2(msg)
                 with open(osp.join(save_dir, topic['fname']), 'wb') as f:
                     pkl.dump(depth, f)
+            elif topic['savetype'] == 'LabelImage':
+                bridge = cv_bridge.CvBridge()
+                label = bridge.imgmsg_to_cv2(msg)
+                cv2.imwrite(osp.join(save_dir, topic['fname']), label)
             else:
                 rospy.logerr('Unexpected savetype for topic: {}'
                              .format(topic['savetype']))
