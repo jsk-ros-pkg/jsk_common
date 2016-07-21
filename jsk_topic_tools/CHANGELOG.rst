@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.17 (2016-07-21)
+-------------------
 * Add JSK_ROS_XXX_THROTTLE, JSK_ROS_XXX_STREAM_THROTTLE
 * Contributors: Kentaro Wada
 

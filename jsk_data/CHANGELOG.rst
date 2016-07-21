@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.17 (2016-07-21)
+-------------------
 * Validate rosparams of data_collection_server.py
 * Fix bug for new savetype YAML in data_collection_server.py
 * Add YAML savetype to data_collection_server

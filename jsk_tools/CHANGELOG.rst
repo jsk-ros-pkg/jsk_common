@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.17 (2016-07-21)
+-------------------
 * Remove dependency on python-termcolor
   Fix `#413 <https://github.com/jsk-ros-pkg/jsk_common/issues/413>`_
 * Contributors: Kentaro Wada
