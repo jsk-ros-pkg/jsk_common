@@ -2,6 +2,11 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.17 (2016-07-21)
+-------------------
+* Add JSK_ROS_XXX_THROTTLE, JSK_ROS_XXX_STREAM_THROTTLE
+* Contributors: Kentaro Wada
+
 2.0.16 (2016-06-19)
 -------------------
 * Fix unreasonable test name of test_log_utils.cpp

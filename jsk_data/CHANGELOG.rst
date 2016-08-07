@@ -2,6 +2,17 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.17 (2016-07-21)
+-------------------
+* Validate rosparams of data_collection_server.py
+* Fix bug for new savetype YAML in data_collection_server.py
+* Add YAML savetype to data_collection_server
+* Add sample for data_collection_server in jsk_data
+* Return saved message as TriggerResponse in data_collection_server
+* Make params as optional for data_collection_server
+* Change dynamically save_dir parameter in data_collection_server
+* Contributors: Kentaro Wada
+
 2.0.16 (2016-06-19)
 -------------------
 

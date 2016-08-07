@@ -2,6 +2,12 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.17 (2016-07-21)
+-------------------
+* Remove dependency on python-termcolor
+  Fix `#413 <https://github.com/jsk-ros-pkg/jsk_common/issues/413>`_
+* Contributors: Kentaro Wada
+
 2.0.16 (2016-06-19)
 -------------------
 * Fix video recording to avoid the bug in image_view
