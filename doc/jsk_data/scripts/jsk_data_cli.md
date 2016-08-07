@@ -1,11 +1,4 @@
-jsk\_data
-=========
-
-A stack for data management tools which are used in JSK lab.
-
-
-`$ jsk_data` command
---------------------
+# jsk\_data command
 
 `jsk_data` is command line interface to rename, upload and download data, and
 this is fully designed for JSK lab members.
@@ -48,24 +41,4 @@ There are following sub commands. See `jsk_data [sub command] --help` for more d
 
 **Screencast**
 
-![](./images/jsk_data_cli_screencast.gif)
-
-rosbag_always.py
-----------------
-rosbag_always.py can record bag files even if roscore is restarted.
-It also removes old bag files if recorded bag files exceed specified size.
-
-```
-$ rosrun jsk_data rosbag_always.py -h
-usage: rosbag_always.py [-h] --topics TOPICS --size SIZE --save-dir SAVE_DIR
-                        --max-size MAX_SIZE
-
-rosbag record regardless of rosmaster status
-
-optional arguments:
-  -h, --help           show this help message and exit
-  --topics TOPICS      topics to record
-  --size SIZE          size of each rosbag
-  --save-dir SAVE_DIR  directory to store rosbag
-  --max-size MAX_SIZE  maximum size of rosbags in save_dir
-```
+![](images/jsk_data_cli.gif)

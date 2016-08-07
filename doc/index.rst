@@ -22,5 +22,6 @@ ROS Packages:
 .. toctree::
    :maxdepth: 1
 
+   jsk_data/index
    jsk_tools/index
    jsk_topic_tools/index
