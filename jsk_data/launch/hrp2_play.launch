@@ -4,6 +4,7 @@
   <arg name="launch_openni" default="false"/>
   <arg name="launch_multisense" default="true" />
   <arg name="launch_robot_model" default="true"/>
+  <arg name="use_collada_model" default="false"/>
   <arg name="use_gui" default="false"/>
   <arg name="rosbag_option" default="--clock -l" />
   <arg name="use_xterm" default="false" />
@@ -11,7 +12,10 @@
   
   <!-- set params for rviz -->
   <param name="use_sim_time" value="true" />
-  <param if="$(arg launch_robot_model)" name="robot_description" textfile="$(find hrpsys_ros_bridge_tutorials)/models/$(arg ROBOT).dae" />
+  <group if="$(arg launch_robot_model)" >
+    <param name="robot_description" textfile="$(find hrpsys_ros_bridge_tutorials)/models/$(arg ROBOT).dae" if="$(arg use_collada_model)"  />
+    <param name="robot_description" textfile="$(find hrpsys_ros_bridge_tutorials)/models/$(arg ROBOT)_WH_SENSORS.urdf" unless="$(arg use_collada_model)" />
+  </group>
 
   <!-- setup openni_launch -->
   <include if="$(arg launch_openni)" file="$(find jsk_pcl_ros)/launch/openni2_remote.launch">
