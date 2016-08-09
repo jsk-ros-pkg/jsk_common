@@ -1,5 +1,7 @@
 <launch>
+  <arg name="stamped_filename" default="false" />
   <arg name="filename" default="output.avi" />
+  <arg name="fps" default="15" />
   <arg name="hostname" default="133.11.216.141" />
   <arg name="username" default="root" />
   <arg name="camera_info_url" default="package://jsk_tools/info/133_11_216_141.yaml" />
@@ -23,8 +25,12 @@
     <node name="image_proc" pkg="image_proc" type="image_proc" />
     <node name="video_recorder" pkg="image_view" type="video_recorder" output="screen">
       <remap from="image" to="image_rect_color" />
-      <param name="filename" value="$(arg filename)" />
-      <param name="max_depth_range" value="0.0" />
+      <rosparam subst_value="true">
+        fps: $(arg fps)
+        stamped_filename: $(arg stamped_filename)
+        filename: $(arg filename)
+        max_depth_range: 0.0
+      </rosparam>
     </node>
   </group>
 </launch>
