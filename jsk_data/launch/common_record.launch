@@ -3,6 +3,8 @@
   <arg name="other_regex_topics" default=""/>
   <arg name="other_options" default=""/>
 
+  <arg name="machine" default="localhost" />
+  <machine name="localhost" address="localhost" />
 
   <arg name="save_openni" default="true" />
   <arg name="save_openni2" default="false" />
@@ -47,6 +49,7 @@
 
   <!-- execute -->
   <node name="default_rosbag_record" pkg="rosbag" type="record"
+        machine="$(arg machine)"
         args="$(arg openni_topics)
               $(arg openni2_topics) 
               $(arg robot_model_topics) 

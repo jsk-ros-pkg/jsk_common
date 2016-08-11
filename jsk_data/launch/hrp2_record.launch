@@ -8,6 +8,7 @@
   <arg name="save_all_image" default="false" />
   <arg name="save_multisense" default="false" />
   <arg name="other_topics" default=""/>
+  <arg name="machine" default="localhost" />
 
   <include file="$(find jsk_data)/launch/common_record.launch">
     <arg name="camera_namespace" value="$(arg camera_namespace)" />
@@ -30,5 +31,6 @@
                                     /zmp" />
     <arg name="save_dir" value="$(arg save_dir)" />
     <arg name="bagfile_prefix" value="$(arg bagfile_prefix)" />
+    <arg name="machine" value="$(arg machine)" />
   </include>
 </launch>

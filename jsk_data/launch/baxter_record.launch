@@ -12,6 +12,7 @@
   <arg name="camera_namespace" default="openni"/>
   <arg name="save_dir" default="/tmp/bagfile/"/>
   <arg name="bagfile_prefix" default="data" />
+  <arg name="machine" default="localhost" />
   <!--                          -->
   <!--       Conditions         -->
   <!--                          -->
@@ -47,5 +48,6 @@
 				    $(arg robot_model_topics)
 				    $(arg hand_range_topics)" />
     <arg name="other_regex_topics" value="$(arg all_button_topics)"/>
+    <arg name="machine" value="$(arg machine)" />
   </include>
 </launch>
