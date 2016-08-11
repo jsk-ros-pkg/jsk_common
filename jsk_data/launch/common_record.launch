@@ -11,7 +11,8 @@
   <arg name="save_multisense" default="false" />
   <arg name="camera_namespace" default="openni"/>
   
-  <arg name="save_dir" default="$(env HOME)/.ros"/>
+  <arg name="save_dir" default="$(env HOME)/.ros" /> <!-- destination directory of bagfile -->
+  <arg name="bagfile_prefix"/> <!-- prefix of bagfile name (filename is prefix_date.bag) -->
   <param name="mk_save_dir" command="mkdir -p $(arg save_dir)" />
   <!--                          -->
   <!--       Conditions         -->
@@ -50,7 +51,7 @@
               $(arg openni2_topics) 
               $(arg robot_model_topics) 
               $(arg other_topics)
-              -o $(arg save_dir) 
+              -o $(arg save_dir)/$(arg bagfile_prefix)
               $(arg other_options)
 	      -e
               $(arg all_image_topics)
