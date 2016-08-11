@@ -26,4 +26,12 @@ if (CATKIN_ENABLE_TESTING)
   roslint_add_test()
 
   catkin_add_nosetests(src/jsk_data/tests)
+
+  find_package(roslaunch REQUIRED)
+  roslaunch_add_file_check(launch/baxter_play.launch)
+  roslaunch_add_file_check(launch/pr2_play.launch)
+  roslaunch_add_file_check(launch/baxter_record.launch)
+  roslaunch_add_file_check(launch/hrp2_record.launch)
+  roslaunch_add_file_check(launch/pr2_record.launch)
+  roslaunch_add_file_check(launch/urata_record.launch)
 endif()
