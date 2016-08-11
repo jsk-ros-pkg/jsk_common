@@ -11,7 +11,7 @@
   <arg name="save_hand_range" default="true" />
   <arg name="camera_namespace" default="openni"/>
   <arg name="save_dir" default="/tmp/bagfile/"/>
-  <arg name="bagfile_prefix" default="" />
+  <arg name="bagfile_prefix" default="data" />
   <!--                          -->
   <!--       Conditions         -->
   <!--                          -->

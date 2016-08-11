@@ -11,7 +11,7 @@
   <arg name="save_multisense" default="false" />
   <arg name="camera_namespace" default="openni"/>
   
-  <arg name="save_dir" default="$(env HOME)/.ros" /> <!-- destination directory of bagfile -->
+  <arg name="save_dir"/> <!-- destination directory of bagfile -->
   <arg name="bagfile_prefix"/> <!-- prefix of bagfile name (filename is prefix_date.bag) -->
   <param name="mk_save_dir" command="mkdir -p $(arg save_dir)" />
   <!--                          -->

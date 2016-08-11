@@ -1,7 +1,7 @@
 <launch>
   <!-- for HRP2 -->
   <arg name="save_dir" default="/tmp/hrp2_rosbag"/>
-  <arg name="bagfile_prefix" default="" />
+  <arg name="bagfile_prefix" default="data" />
   <arg name="camera_namespace" default="camera" />
   <arg name="save_openni" default="true" />
   <arg name="save_robot_model" default="true" />
