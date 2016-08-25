@@ -7,13 +7,19 @@ from rostopic import get_topic_class
 
 
 def callback(*msgs):
+    stamp = None
     for msg, pub in zip(msgs, pubs):
+        if stamp is None:
+            stamp = msg.header.stamp
+        else:
+            msg.header.stamp = stamp
         pub.publish(msg)
 
 
 if __name__ == '__main__':
     rospy.init_node('synchrnoze_republish')
     topics = rospy.get_param('~topics')
+    use_async = rospy.get_param('~approximate_sync', False)
     pubs = []
     subs = []
     for i, topic in enumerate(topics):
@@ -24,6 +30,10 @@ if __name__ == '__main__':
         pubs.append(pub)
         sub = message_filters.Subscriber(topic, msg_class)
         subs.append(sub)
-    sync = message_filters.TimeSynchronizer(subs, queue_size=100)
+    if use_async:
+        sync = message_filters.ApproximateTimeSynchronizer(
+            subs, queue_size=100, slop=0.1)
+    else:
+        sync = message_filters.TimeSynchronizer(subs, queue_size=100)
     sync.registerCallback(callback)
     rospy.spin()
