@@ -85,7 +85,7 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         path = osp.join(pkg_path, path)
     # prepare cache dir
     ros_home = os.getenv('ROS_HOME', osp.expanduser('~/.ros'))
-    cache_dir = osp.join(ros_home, 'data')
+    cache_dir = osp.join(ros_home, 'data', pkg_name)
     if not osp.exists(cache_dir):
         os.makedirs(cache_dir)
     cache_file = osp.join(cache_dir, osp.basename(path))
