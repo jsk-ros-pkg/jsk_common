@@ -78,10 +78,10 @@ def download_data(pkg_name, path, url, md5, download_client=None,
             download_client = 'wget'
     if compressed_bags is None:
         compressed_bags = []
-    # get package path
-    rp = rospkg.RosPack()
-    pkg_path = rp.get_path(pkg_name)
     if not osp.isabs(path):
+        # get package path
+        rp = rospkg.RosPack()
+        pkg_path = rp.get_path(pkg_name)
         path = osp.join(pkg_path, path)
     # prepare cache dir
     ros_home = os.getenv('ROS_HOME', osp.expanduser('~/.ros'))
@@ -109,5 +109,8 @@ def download_data(pkg_name, path, url, md5, download_client=None,
     if extract:
         extract_file(path, to_directory=osp.dirname(path))
     for compressed_bag in compressed_bags:
-        compressed_bag = osp.join(pkg_path, compressed_bag)
+        if not osp.isabs(compressed_bag):
+            rp = rospkg.RosPack()
+            pkg_path = rp.get_path(pkg_name)
+            compressed_bag = osp.join(pkg_path, compressed_bag)
         decompress_rosbag(compressed_bag, quiet=quiet)
