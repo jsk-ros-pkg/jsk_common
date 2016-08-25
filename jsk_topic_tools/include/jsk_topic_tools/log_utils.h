@@ -83,6 +83,28 @@ namespace jsk_topic_tools
 #define JSK_NODELET_FATAL_STREAM(...) \
   NODELET_FATAL_STREAM("[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 
+#define JSK_NODELET_DEBUG_THROTTLE(rate, str, ...) \
+  NODELET_DEBUG_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
+#define JSK_NODELET_INFO_THROTTLE(rate, str, ...) \
+  NODELET_INFO_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
+#define JSK_NODELET_WARN_THROTTLE(rate, str, ...) \
+  NODELET_WARN_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
+#define JSK_NODELET_ERROR_THROTTLE(rate, str, ...) \
+  NODELET_ERROR_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
+#define JSK_NODELET_FATAL_THROTTLE(rate, str, ...) \
+  NODELET_FATAL_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
+
+#define JSK_NODELET_DEBUG_STREAM_THROTTLE(rate,...) \
+  NODELET_DEBUG_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
+#define JSK_NODELET_INFO_STREAM_THROTTLE(rate,...) \
+  NODELET_INFO_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
+#define JSK_NODELET_WARN_STREAM_THROTTLE(rate,...) \
+  NODELET_WARN_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
+#define JSK_NODELET_ERROR_STREAM_THROTTLE(rate,...) \
+  NODELET_ERROR_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
+#define JSK_NODELET_FATAL_STREAM_THROTTLE(rate,...) \
+  NODELET_FATAL_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
+
 #define JSK_ROS_DEBUG(str,...) \
   ROS_DEBUG("[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_ROS_INFO(str,...) \
