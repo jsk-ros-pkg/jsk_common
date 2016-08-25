@@ -15,12 +15,13 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <!-- list depends in alphabetical order -->
+  <!-- list build_depend in alphabetical order -->
   <build_depend>diagnostic_msgs</build_depend>
   <build_depend>diagnostic_updater</build_depend>
   <build_depend>dynamic_tf_publisher</build_depend>
   <build_depend>eigen_conversions</build_depend>
   <build_depend>geometry_msgs</build_depend>
+  <build_depend>image_transport</build_depend>
   <build_depend>message_generation</build_depend>
   <build_depend>nodelet</build_depend>
   <build_depend>roscpp</build_depend>
@@ -33,27 +34,35 @@
   <build_depend>std_srvs</build_depend>
   <build_depend>tf</build_depend>
   <build_depend>topic_tools</build_depend>
-  <build_depend>image_transport</build_depend>
+
+  <!-- list run_depend in alphabetical order -->
   <run_depend>diagnostic_msgs</run_depend>
   <run_depend>diagnostic_updater</run_depend>
   <run_depend>dynamic_tf_publisher</run_depend>
   <run_depend>eigen_conversions</run_depend>
   <run_depend>geometry_msgs</run_depend>
+  <run_depend>image_transport</run_depend>
   <run_depend>message_runtime</run_depend>
   <run_depend>nodelet</run_depend>
+  <run_depend>python-opencv</run_depend>
+  <run_depend>python-scipy</run_depend>
+  <run_depend>python-numpy</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>roslaunch</run_depend>
   <run_depend>rosnode</run_depend>
   <run_depend>rostime</run_depend>
   <run_depend>rostopic</run_depend>
+  <run_depend>sound_play</run_depend>
+  <run_depend>sensor_msgs</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>std_srvs</run_depend>
   <run_depend>tf</run_depend>
   <run_depend>topic_tools</run_depend>
-  <run_depend>image_transport</run_depend>
-  <run_depend>sound_play</run_depend>
+
+  <!-- list test_depend in alphabetical order -->
   <test_depend>roscpp_tutorials</test_depend>
   <test_depend>roslint</test_depend>
+
   <export>
     <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>
   </export>
