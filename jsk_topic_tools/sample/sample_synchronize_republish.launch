@@ -1,0 +1,31 @@
+<launch>
+
+  <arg name="gui" default="true" />
+
+  <node name="static_image_publisher_0"
+        pkg="jsk_topic_tools" type="static_image_publisher.py">
+  </node>
+
+  <node name="static_image_publisher_1"
+        pkg="jsk_topic_tools" type="static_image_publisher.py">
+  </node>
+
+  <node name="synchronize_republish"
+        pkg="jsk_topic_tools" type="synchronize_republish.py">
+    <rosparam>
+      approximate_sync: true
+      topics:
+        - static_image_publisher_0/output
+        - static_image_publisher_1/output
+    </rosparam>
+  </node>
+
+  <group if="$(arg gui)">
+    <node name="is_synchronized"
+          pkg="jsk_topic_tools" type="is_synchronized"
+          args="/synchronize_republish/pub_00 /synchronize_republish/pub_01"
+          launch-prefix="xterm -e">
+    </node>
+  </group>
+
+</launch>
