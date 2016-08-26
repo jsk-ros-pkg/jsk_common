@@ -56,5 +56,6 @@
   <test_depend>roslint</test_depend>
   <export>
     <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>
+    <nodelet plugin="${prefix}/jsk_topic_tools_test_nodelet.xml"/>
   </export>
 </package>
