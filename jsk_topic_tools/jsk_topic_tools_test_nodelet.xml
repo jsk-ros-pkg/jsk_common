@@ -1,0 +1,8 @@
+<library path="lib/libjsk_topic_tools_test">
+  <class name="jsk_topic_tools_test/LogUtils" type="LogUtils"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      Test nodelet for logging macros.
+    </description>
+  </class>
+</library>
