@@ -1,0 +1,12 @@
+<launch>
+  <arg name="network_interface" default="wlan0" />
+  <arg name="warning_quality" default="0.4" />
+  <arg name="update_rate" default="1.0" />
+
+  <node name="wifi_status"
+        pkg="jsk_network_tools" type="wifi_status.py">
+    <param name="network_interface" value="$(arg network_interface)" />
+    <param name="warning_quality" value="$(arg warning_quality)" />
+    <param name="update_rate" value="$(arg update_rate)" />
+  </node>
+</launch>

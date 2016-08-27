@@ -17,6 +17,7 @@ add_message_files(
   OpenNISample.msg
   AllTypeTest.msg
   SilverhammerInternalBuffer.msg
+  WifiStatus.msg
 )
 add_service_files(
   FILES
