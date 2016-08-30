@@ -27,6 +27,7 @@
   <run_depend>rqt_reconfigure</run_depend>
   <run_depend>axis_camera</run_depend>
   <run_depend>pr2_computer_monitor</run_depend>
+  <run_depend>iproute2</run_depend>
   <run_depend>jsk_network_tools</run_depend>
   <run_depend>jsk_topic_tools</run_depend>
   <run_depend>rosbag</run_depend>

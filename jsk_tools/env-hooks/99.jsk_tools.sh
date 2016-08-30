@@ -64,6 +64,7 @@ rossetmaster() {
     fi
     echo -e "\e[1;31mset ROS_MASTER_URI to $ROS_MASTER_URI\e[m"
 }
+
 rossetrobot() {
     echo -e "\e[1;31m *** rossetrobot is obsoleted, use rossetmaster ***\e[m"
     rossetmaster $@
@@ -78,37 +79,29 @@ rossetlocal() {
 }
 
 rossetip_dev() {
-    local device=${1-"(eth0|eth1|eth2|eth3|eth4|wlan0|wlan1|wlan2|wlan3|wlan4|en0|en1|en2|en3|lo0)"}
-    if [ "$(uname -s)" = "Darwin" ]; then
-      export ROS_IP=`PATH=$PATH:/sbin LANGUAGE=en LANG=C ifconfig | egrep -A1 "${device}"| grep inet\  | grep -v 127.0.0.1 | sed 's/.*inet \([0-9\.]*\).*/\1/' | head -1`
-    else
-      export ROS_IP=`PATH=$PATH:/sbin LANGUAGE=en LANG=C ifconfig | egrep -A1 "${device}"| grep inet\  | grep -v 127.0.0.1 | sed 's/.*inet addr:\([0-9\.]*\).*/\1/' | head -1`
-    fi
+    local device=${1-'(eth|wlan|en|lo)[0-9]*'}
+    export ROS_IP=`LANG=C ip -o -4 a | grep -E "^[0-9]+: $device" | tail -n1 | sed -e 's@^.*inet *\([0-9\.]*\).*$@\1@g'`
     export ROS_HOSTNAME=$ROS_IP
 }
 
 rossetip_addr() {
     local target_host=${1-"133.11.216.211"}
-    ##target_hostip=$(host ${target_host} | sed -n -e 's/.*address \(.*\)/\1/gp')
     # Check if target_host looks like ip address or not
     if [ "$(echo $target_host | sed -e 's/[0-9\.]//g')" != "" ]; then
-        target_hostip=$(timeout 0.001 getent hosts ${target_host} | cut -f 1 -d ' ')
-    fi
-    local mask_target_ip=$(echo ${target_hostip} | cut -d. -f1-3)
-    for ip in $(hostname -I); do
-        if echo $ip | egrep "^172.17.42.|^127.0." >/dev/null; then
-            # skip docker/local host
-            continue
-        elif echo $ip | grep "$mask_target_ip" >/dev/null; then
-            export ROS_IP=$ip
-            break
+        target_host_ip=$(timeout 0.01 getent hosts ${target_host} | cut -f 1 -d ' ')
+        if [ "$target_host_ip" = "" ]; then
+            echo -e "\e[1;31mCould not resolve ip from address. Subnet may be different\e[m"
+            rossetip_dev
+            return 0
         fi
-    done
-   export ROS_HOSTNAME=$ROS_IP
+        target_host=$target_host_ip
+    fi
+    export ROS_IP=$(ip -o -4 route get $target_host | awk "/$target_host/ "'{print $5}')
+    export ROS_HOSTNAME=$ROS_IP
 }
 
 rossetip() {
-    local device=${1-"(eth0|eth1|eth2|eth3|eth4|wlan0|wlan1|wlan2|wlan3|wlan4|en0|en1|en2|en3|lo0)"}
+    local device=${1-'(eth|wlan|en|lo)[0-9]*'}
     if [[ $device =~ [0-9]+.[0-9]+.[0-9]+.[0-9]+ ]]; then
         export ROS_IP="$device"
     else
@@ -148,6 +141,7 @@ rosn() {
         fi
     fi
 }
+
 rost() {
     if [ "$1" = "" ]; then
         select=$(rostopic list | percol | xargs -n 1 rostopic info | percol)
