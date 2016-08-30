@@ -2,6 +2,9 @@
   <arg name="other_topics" default=""/>
   <arg name="other_options" default=""/>
 
+  <arg name="machine" default="c1" />
+  <include file="$(find pr2_machine)/pr2.machine" />
+
   <!-- for PR2 -->
   <arg name="save_openni" default="true" />
   <arg name="save_tilt_scan" default="true" />
@@ -13,6 +16,7 @@
   <arg name="save_prosilica" default="false" />
   <arg name="camera_namespace" default="openni"/>
   <arg name="save_dir" default="/removable/bagfile/"/>
+  <arg name="bagfile_prefix" default="data" />
   <arg name="remove_c2" default="true" />
   <!--                          -->
   <!--       Conditions         -->
@@ -63,6 +67,7 @@
     <arg name="save_all_image" value="$(arg save_all_image)" />
     <arg name="camera_namespace" value="$(arg camera_namespace)" />
     <arg name="save_dir" value="$(arg save_dir)" />
+    <arg name="bagfile_prefix" value="$(arg bagfile_prefix)" />
     <arg name="other_options" value="$(arg other_options)" />
     <arg name="other_topics" value="$(arg other_topics)
                                     $(arg base_scan_topics)
@@ -71,8 +76,10 @@
                                     $(arg pressure_topics) 
                                     $(arg gripper_command_topics) 
                                     $(arg prosilica_topics)" />
+    <arg name="machine" value="$(arg machine)" />
   </include>
   <node if  ="$(arg save_prosilica)" 
         name="set_prosilica_mode" pkg="dynamic_reconfigure" type="dynparam"
-        args="set /prosilica_driver trigger_mode 'streaming'" />
+        args="set /prosilica_driver trigger_mode 'streaming'"
+        machine="$(arg machine)"/>
 </launch>

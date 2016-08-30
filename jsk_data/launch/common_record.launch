@@ -3,6 +3,8 @@
   <arg name="other_regex_topics" default=""/>
   <arg name="other_options" default=""/>
 
+  <arg name="machine" default="localhost" />
+  <machine name="localhost" address="localhost" />
 
   <arg name="save_openni" default="true" />
   <arg name="save_openni2" default="false" />
@@ -11,7 +13,8 @@
   <arg name="save_multisense" default="false" />
   <arg name="camera_namespace" default="openni"/>
   
-  <arg name="save_dir" default="$(env HOME)/.ros"/>
+  <arg name="save_dir"/> <!-- destination directory of bagfile -->
+  <arg name="bagfile_prefix"/> <!-- prefix of bagfile name (filename is prefix_date.bag) -->
   <param name="mk_save_dir" command="mkdir -p $(arg save_dir)" />
   <!--                          -->
   <!--       Conditions         -->
@@ -46,11 +49,12 @@
 
   <!-- execute -->
   <node name="default_rosbag_record" pkg="rosbag" type="record"
+        machine="$(arg machine)"
         args="$(arg openni_topics)
               $(arg openni2_topics) 
               $(arg robot_model_topics) 
               $(arg other_topics)
-              -o $(arg save_dir) 
+              -o $(arg save_dir)/$(arg bagfile_prefix)
               $(arg other_options)
 	      -e
               $(arg all_image_topics)

@@ -11,6 +11,8 @@
   <arg name="save_hand_range" default="true" />
   <arg name="camera_namespace" default="openni"/>
   <arg name="save_dir" default="/tmp/bagfile/"/>
+  <arg name="bagfile_prefix" default="data" />
+  <arg name="machine" default="localhost" />
   <!--                          -->
   <!--       Conditions         -->
   <!--                          -->
@@ -40,10 +42,12 @@
     <arg name="save_all_image" value="$(arg save_all_image)" />
     <arg name="camera_namespace" value="$(arg camera_namespace)" />
     <arg name="save_dir" value="$(arg save_dir)" />
+    <arg name="bagfile_prefix" value="$(arg bagfile_prefix)" />
     <arg name="other_options" value="$(arg other_options)" />
     <arg name="other_topics" value="$(arg other_topics)
 				    $(arg robot_model_topics)
 				    $(arg hand_range_topics)" />
     <arg name="other_regex_topics" value="$(arg all_button_topics)"/>
+    <arg name="machine" value="$(arg machine)" />
   </include>
 </launch>

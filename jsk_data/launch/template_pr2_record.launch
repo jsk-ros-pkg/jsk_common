@@ -5,6 +5,7 @@
     <arg name="other_options" value=""/>
 
     <!-- for PR2 -->
+    <arg name="machine" value="c1" />
     <arg name="save_openni" value="true" />
     <arg name="save_tilt_scan" value="true" />
     <arg name="save_base_scan" value="true" />
@@ -14,6 +15,7 @@
     <arg name="save_gripper_command" default="true" />
     <arg name="camera_namespace" value="openni"/>
     <arg name="save_dir" value="/removable/bagfile/"/>
+    <arg name="bagfile_prefix" value="data" />
   </include>
 
 </launch>
