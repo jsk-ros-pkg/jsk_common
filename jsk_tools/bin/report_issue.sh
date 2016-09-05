@@ -25,7 +25,7 @@ output_package() {
 
 echo \`\`\` >> ${OUTPUT_FILE}
 
-echo "$(cd $ROS_WORKSPACE; cd src || cd ../src ; wstool info)" >> ${OUTPUT_FILE}
+echo "$(wstool info)" >> ${OUTPUT_FILE}
 echo \`\`\` >> ${OUTPUT_FILE}
 
 echo "Package | Type | version"  >> ${OUTPUT_FILE}
