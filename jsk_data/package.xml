@@ -9,15 +9,25 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>dynamic_reconfigure</build_depend>
   <build_depend>message_generation</build_depend>
+  <run_depend>baxter_description</run_depend>
   <run_depend>depth_image_proc</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
   <run_depend>image_transport</run_depend>
   <run_depend>jsk_topic_tools</run_depend>
   <run_depend>message_runtime</run_depend>
+  <run_depend>nodelet</run_depend>
+  <run_depend>openni_launch</run_depend>
   <run_depend>paramiko</run_depend>
+  <run_depend>pr2_description</run_depend>
   <run_depend>python-click</run_depend>
   <run_depend>python-yaml</run_depend>  <!-- apt -->
+  <run_depend>rosbag</run_depend>
+  <run_depend>rqt_bag</run_depend>
+  <run_depend>rviz</run_depend>
+  <run_depend>xacro</run_depend>
   <test_depend>python-freezegun-pip</test_depend>
   <test_depend>python-nose</test_depend>
+  <test_depend>roslaunch</test_depend>
   <test_depend>roslint</test_depend>
   <export>
   </export>
