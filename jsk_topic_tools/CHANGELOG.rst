@@ -2,6 +2,29 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [synchronize_republish.py] Republish after approximate synchronization (`#1443 <https://github.com/jsk-ros-pkg/jsk_common/issues/1443>`_)
+
+  * Add sample for synchronize_republish.py
+  * Add script to publish statid image for sample/testing
+  * Republish after approxiamte synchronization
+  * Refactor synchrnoze_republish.py (making it pythonic)
+
+* Refactor CMake files (`#1447 <https://github.com/jsk-ros-pkg/jsk_common/issues/1447>`_)
+
+  * Use project exported library for linking target library
+  * Add ::test namespace to avoid conflicts of nodelet class name
+  * Rename to have log_utils in the filename
+  * Nodelet should be have suffix of _nodelet
+
+* add JSK_NODELET_LOG_THROTTLE (`#1446 <https://github.com/jsk-ros-pkg/jsk_common/issues/1446>`_)
+
+  * [jsk_topic_tools] add test for JSK_NODELET_LOG
+  * [jsk_topic_tools/src/log_utils.h] add THROTTLE to JSK_NODELET_LOG
+
+* Contributors: Kei Okada, Kentaro Wada, Yuki Furuta
+
 2.0.17 (2016-07-21)
 -------------------
 * Add JSK_ROS_XXX_THROTTLE, JSK_ROS_XXX_STREAM_THROTTLE

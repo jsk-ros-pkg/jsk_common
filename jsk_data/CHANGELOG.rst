@@ -1,6 +1,40 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1;3409;0c^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Forthcoming
+-----------
+
+* record.launch : add bagfile_prefix arg, add machine argument (https://github.com/jsk-ros-pkg/jsk_common/pull/1437, https://github.com/jsk-ros-pkg/jsk_common/pull/1438)
+
+  * jsk_data/CMakeLists.txt : pr2_record could not run on travis
+  * [jsk_data] add machine argument for record.launch
+  * [jsk_data] add bagfile_prefix arg for record.launch
+  * jsk_data/CMakeLists.txt : check if baxter_description is installed
+  * [jsk_data] add pr2_description to run_depend
+  * [jsk_data] add xacro to run_depend for testing
+  * [jsk_data] add baxter_description to run_depend for testing
+  * [jsk_data] add bagfile_prefix arg for record.launch
+
+* hrp2_play.launch use urdf model with hand for robot_description when  playing with hrp2. (`#1434 <https://github.com/jsk-ros-pkg/jsk_common/pull/1434>`_)
+* pr2_play.launch: Remap /kinect_head topics to /kinect_head_c2 to play rosbag for pr2. (`#1431 <https://github.com/jsk-ros-pkg/jsk_common/pull/1431>`_)
+
+* download_data.py: Add pkg_name for cache_dir to avoid data filename conflicts (`#1442 <https://github.com/jsk-ros-pkg/jsk_common/issues/1442>`_ )
+
+  * Add pkg_name for cache_dir to avoid data filename conflicts
+  * Support setting abspath for downloading data
+
+* data_collection_server.py: Another saving type LabelImage of data_collection_server (`#1427 <https://github.com/jsk-ros-pkg/jsk_common/issues/1427>`_)
+
+* camera_coords_change_trigger : Add trigger node for data collection by camera coords change  (`#1432 <https://github.com/jsk-ros-pkg/jsk_common/issues/1432>`_)
+  Originally developped in
+  https://github.com/furushchev/jsk_semantics_201607/blob/master/jsk_pr2_wandering/node_scripts/camera_coords_change_trigger.py.
+
+* synchronize_republish.py : Synchronize properly with slop for slow topics  (`#1428 <https://github.com/jsk-ros-pkg/jsk_common/issues/1428>`_)
+
+* Move README to sphinx docs for jsk_data package   (`#1433 <https://github.com/jsk-ros-pkg/jsk_common/issues/1433>`_)
+
+* Contributors: Kei Okada, Kentaro Wada, Masaki Murooka, Yuki Furuta
 
 2.0.17 (2016-07-21)
 -------------------

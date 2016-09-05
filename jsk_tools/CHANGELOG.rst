@@ -2,6 +2,20 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* now wstool info can run from any directory (`#1452 <https://github.com/jsk-ros-pkg/jsk_common/issues/1452>`_)
+  Closes (`#1317 <https://github.com/jsk-ros-pkg/jsk_common/issues/1318>`_)
+
+* use ip command for rossetip for better compatibility (`#1436 <https://github.com/jsk-ros-pkg/jsk_common/issues/1436>`_)
+
+  * [jsk_tools] add iproute2 to run_depend
+  * [jsk_tools/env-hooks/99.jsk_tools.sh] use ip for rossetip instead of ifconfig
+
+* Stamped filename for recoding video with axis camera (`#1424 <https://github.com/jsk-ros-pkg/jsk_common/issues/1424>`_)
+
+* Contributors: Kei Okada, Kentaro Wada, Yuki Furuta
+
 2.0.17 (2016-07-21)
 -------------------
 * Remove dependency on python-termcolor
