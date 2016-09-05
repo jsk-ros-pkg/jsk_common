@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.0 (2016-09-06)
+------------------
 * [synchronize_republish.py] Republish after approximate synchronization (`#1443 <https://github.com/jsk-ros-pkg/jsk_common/issues/1443>`_)
 
   * Add sample for synchronize_republish.py

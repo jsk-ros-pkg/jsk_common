@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.0 (2016-09-06)
+------------------
 
 * record.launch : add bagfile_prefix arg, add machine argument (https://github.com/jsk-ros-pkg/jsk_common/pull/1437, https://github.com/jsk-ros-pkg/jsk_common/pull/1438)
 
