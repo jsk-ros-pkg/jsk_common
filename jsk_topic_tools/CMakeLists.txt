@@ -150,7 +150,9 @@ install(TARGETS topic_buffer_server topic_buffer_client jsk_topic_tools
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 
-install(FILES jsk_topic_tools_nodelet.xml
+install(FILES
+  jsk_topic_tools_nodelet.xml
+  jsk_topic_tools_test_nodelet.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 install(DIRECTORY include/${PROJECT_NAME}/
