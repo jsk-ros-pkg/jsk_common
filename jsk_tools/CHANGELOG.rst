@@ -2,6 +2,9 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.1.0 (2016-09-06)
 ------------------
 * now wstool info can run from any directory (`#1452 <https://github.com/jsk-ros-pkg/jsk_common/issues/1452>`_)

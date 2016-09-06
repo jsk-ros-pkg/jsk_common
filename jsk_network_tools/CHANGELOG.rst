@@ -2,6 +2,9 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.1.0 (2016-09-06)
 ------------------
 * [jsk_network_tools] add wifi_status.py (https://github.com/jsk-ros-pkg/jsk_common/pull/1448)

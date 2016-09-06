@@ -2,6 +2,11 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix missing installation of jsk_topic_tools_test_nodelet.xml
+* Contributors: Kentaro Wada
+
 2.1.0 (2016-09-06)
 ------------------
 * [synchronize_republish.py] Republish after approximate synchronization (`#1443 <https://github.com/jsk-ros-pkg/jsk_common/issues/1443>`_)
