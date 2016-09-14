@@ -88,6 +88,12 @@ def download_data(pkg_name, path, url, md5, download_client=None,
             return
         pkg_path = rp.get_path(pkg_name)
         path = osp.join(pkg_path, path)
+        if not osp.exists(osp.dirname(path)):
+            try:
+                os.makedirs(osp.dirname(path))
+            except OSError as e:
+                print('\033[31mCould not make direcotry {dir} {err}\033[0m'.format(dir=osp.dirname(path), err=e))
+                return
     # prepare cache dir
     ros_home = os.getenv('ROS_HOME', osp.expanduser('~/.ros'))
     cache_dir = osp.join(ros_home, 'data', pkg_name)
@@ -104,8 +110,6 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         os.remove(path)
         os.symlink(cache_file, path)
     elif not osp.exists(path):
-        if not osp.exists(osp.dirname(path)):
-            os.makedirs(osp.dirname(path))
         os.symlink(cache_file, path)  # create link
     else:
         # not link and exists so skipping
