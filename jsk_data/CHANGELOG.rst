@@ -2,6 +2,11 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* src/jsk_data/download_data.py : create path direcotory before download data and return if permission denied, catch resourceNotFound
+* Contributors: Kei Okada
+
 2.1.1 (2016-09-07)
 ------------------
 
