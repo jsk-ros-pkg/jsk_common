@@ -23,6 +23,10 @@ Parameters
 
   Frames to compute transform to get the relative pose.
 
+- `rate` (Float, default: 1.)
+
+  Publishing rate [Hz].
+
 
 Example
 -------
