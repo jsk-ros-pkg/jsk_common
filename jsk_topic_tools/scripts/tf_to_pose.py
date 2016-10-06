@@ -35,6 +35,7 @@ if __name__ == '__main__':
     pub = rospy.Publisher('~output', PoseStamped, queue_size=1)
     src_frame = rospy.get_param('~src_frame')
     dst_frame = rospy.get_param('~dst_frame')
-    timer = rospy.Timer(rospy.Duration(1), cb)
+    rate = rospy.get_param('~rate', 1.)
+    timer = rospy.Timer(rospy.Duration(1.0 / rate), cb)
     listener = tf.TransformListener()
     rospy.spin()
