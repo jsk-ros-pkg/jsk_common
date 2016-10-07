@@ -18,7 +18,6 @@
   <!-- list build_depend in alphabetical order -->
   <build_depend>diagnostic_msgs</build_depend>
   <build_depend>diagnostic_updater</build_depend>
-  <build_depend>dynamic_tf_publisher</build_depend>
   <build_depend>eigen_conversions</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>image_transport</build_depend>
@@ -38,7 +37,6 @@
   <!-- list run_depend in alphabetical order -->
   <run_depend>diagnostic_msgs</run_depend>
   <run_depend>diagnostic_updater</run_depend>
-  <run_depend>dynamic_tf_publisher</run_depend>
   <run_depend>eigen_conversions</run_depend>
   <run_depend>geometry_msgs</run_depend>
   <run_depend>image_transport</run_depend>
