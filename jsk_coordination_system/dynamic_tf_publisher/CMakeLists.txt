@@ -65,8 +65,30 @@ install(DIRECTORY scripts/
 )
 
 install(DIRECTORY samples
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  PATTERN ".svn" EXCLUDE)
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+        USE_SOURCE_PERMISSIONS
+)
 
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+
+# ------------------------------------------------------------------------------------
+# Test
+# ------------------------------------------------------------------------------------
+if(CATKIN_ENABLE_TESTING)
+  find_package(roslaunch REQUIRED)
+  find_package(roslint REQUIRED)
+  find_package(rostest REQUIRED)
+  set(ROSLINT_CPP_OPTS "--filter=-whitespace/parens,-whitespace/braces")
+  roslint_cpp()
+  roslint_python()
+  # declare rostest
+  macro(jsk_add_rostest rostest_file)
+    add_rostest(${rostest_file})
+    roslaunch_add_file_check(${rostest_file})
+  endmacro()
+  if("$ENV{ROS_DISTRO}" STRGREATER "hydro")
+    # roslaunch_add_file_check in hydro is too strict
+    jsk_add_rostest(test/test_dynamic_tf_publisher.test)
+  endif()
+endif()
