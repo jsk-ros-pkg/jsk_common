@@ -52,11 +52,13 @@ class TopicPublishedChecker(object):
 
     """Utility class to check if topic is published"""
 
-    def __init__(self, topic_name, timeout=5, echo=False, data_class=None):
+    def __init__(self, topic_name, timeout=5, echo=False,
+                 data_class=None, echo_noarr=False):
         self.msg = None
         self.topic_name = topic_name
         self.deadline = rospy.Time.now() + rospy.Duration(timeout)
         self.echo = echo
+        self.echo_noarr = echo_noarr
         print(' Checking %s for %d seconds' % (topic_name, timeout))
         msg_class, _, _ = rostopic.get_topic_class(topic_name, blocking=True)
         if (data_class is not None) and (msg_class is not data_class):
@@ -66,7 +68,7 @@ class TopicPublishedChecker(object):
     def callback(self, msg):
         if self.echo and self.msg is None:  # this is first time
             print(colored('--- Echo %s' % self.topic_name, 'purple'))
-            field_filter = rostopic.create_field_filter(echo_nostr=False, echo_noarr=True)
+            field_filter = rostopic.create_field_filter(echo_nostr=False, echo_noarr=self.echo_noarr)
             print(colored(genpy.message.strify_message(msg, field_filter=field_filter), 'cyan'))
         self.msg = msg
 
@@ -85,7 +87,8 @@ def checkTopicIsPublished(topic_name, class_name = None,
                           error_message = "",
                           timeout = 1,
                           other_topics = [],
-                          echo = False):
+                          echo = False,
+                          echo_noarr = False):
     """
     @type class_name: type
     @property class_name:
@@ -94,7 +97,8 @@ def checkTopicIsPublished(topic_name, class_name = None,
     """
     checkers = []
     checkers.append(TopicPublishedChecker(topic_name, timeout, echo,
-                                          data_class=class_name))
+                                          data_class=class_name,
+                                          echo_noarr=echo_noarr))
     if other_topics:
         for (tpc_name, cls) in other_topics:
             checkers.append(TopicPublishedChecker(tpc_name, timeout, echo,
