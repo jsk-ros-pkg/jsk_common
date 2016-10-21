@@ -61,92 +61,139 @@ namespace jsk_topic_tools
 
 }
 
+#define JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX() \
+  std::cerr << "DEPRECATION WARNING: JSK_NODELET_XXX log macros are deprecated, and please use NODELET_XXX instead." << " "; \
+  std::cerr << "(See https://github.com/jsk-ros-pkg/jsk_common/issues/1461)" << std::endl;
+#define JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX() \
+  std::cerr << "DEPRECATION WARNING: JSK_ROS_XXX log utils are deprecated, and please use ROS_XXX instead." << " "; \
+  std::cerr << "(See https://github.com/jsk-ros-pkg/jsk_common/issues/1461)" << std::endl;
+
 #define JSK_NODELET_DEBUG(str,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_DEBUG("[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_NODELET_INFO(str,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_INFO("[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_NODELET_WARN(str,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_WARN("[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_NODELET_ERROR(str,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_ERROR("[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_NODELET_FATAL(str,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_FATAL("[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 
 #define JSK_NODELET_DEBUG_STREAM(...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_DEBUG_STREAM("[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_NODELET_INFO_STREAM(...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_INFO_STREAM("[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_NODELET_WARN_STREAM(...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_WARN_STREAM("[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_NODELET_ERROR_STREAM(...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_ERROR_STREAM("[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_NODELET_FATAL_STREAM(...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_FATAL_STREAM("[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 
 #define JSK_NODELET_DEBUG_THROTTLE(rate, str, ...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_DEBUG_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_NODELET_INFO_THROTTLE(rate, str, ...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_INFO_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_NODELET_WARN_THROTTLE(rate, str, ...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_WARN_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_NODELET_ERROR_THROTTLE(rate, str, ...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_ERROR_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_NODELET_FATAL_THROTTLE(rate, str, ...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_FATAL_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 
 #define JSK_NODELET_DEBUG_STREAM_THROTTLE(rate,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_DEBUG_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_NODELET_INFO_STREAM_THROTTLE(rate,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_INFO_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_NODELET_WARN_STREAM_THROTTLE(rate,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_WARN_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_NODELET_ERROR_STREAM_THROTTLE(rate,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_ERROR_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_NODELET_FATAL_STREAM_THROTTLE(rate,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
   NODELET_FATAL_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 
 #define JSK_ROS_DEBUG(str,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_DEBUG("[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_ROS_INFO(str,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_INFO("[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_ROS_WARN(str,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_WARN("[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_ROS_ERROR(str,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_ERROR("[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_ROS_FATAL(str,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_FATAL("[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 
 #define JSK_ROS_DEBUG_STREAM(...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_DEBUG_STREAM("[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_ROS_INFO_STREAM(...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_INFO_STREAM("[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_ROS_WARN_STREAM(...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_WARN_STREAM("[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_ROS_ERROR_STREAM(...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_ERROR_STREAM("[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_ROS_FATAL_STREAM(...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_FATAL_STREAM("[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 
 #define JSK_ROS_DEBUG_THROTTLE(rate, str, ...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_DEBUG_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_ROS_INFO_THROTTLE(rate, str, ...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_INFO_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_ROS_WARN_THROTTLE(rate, str, ...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_WARN_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_ROS_ERROR_THROTTLE(rate, str, ...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_ERROR_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 #define JSK_ROS_FATAL_THROTTLE(rate, str, ...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_FATAL_THROTTLE(rate, "[%s] " str, jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str(), ##__VA_ARGS__)
 
 #define JSK_ROS_DEBUG_STREAM_THROTTLE(rate,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_DEBUG_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_ROS_INFO_STREAM_THROTTLE(rate,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_INFO_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_ROS_WARN_STREAM_THROTTLE(rate,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_WARN_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_ROS_ERROR_STREAM_THROTTLE(rate,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_ERROR_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 #define JSK_ROS_FATAL_STREAM_THROTTLE(rate,...) \
+  JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX(); \
   ROS_FATAL_STREAM_THROTTLE(rate, "[" << jsk_topic_tools::getFunctionName(__PRETTY_FUNCTION__).c_str() << "] " << __VA_ARGS__)
 
 #endif
