@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import tempfile
+
+import cv2
+import requests
+import slacker_cli
+
+import cv_bridge
+from jsk_gui_msgs.msg import SlackMessage
+import rospy
+
+
+class PostToSlackServer(object):
+
+    def __init__(self, default_channel=None):
+        """Server for posting message to slack.
+
+        Args:
+          - default_channel (str): Default channel name to post
+                (ex. @user, #general).
+        """
+        self.tmpdir = tempfile.mkdtemp()
+        self.token = rospy.get_param('~slack_token', None)
+        if not self.token:
+            self.token = os.environ.get('SLACK_TOKEN')
+        self.default_channel = self._get_slacker_channel(default_channel)
+        self.slacker = slacker_cli.Slacker(self.token)
+        self.sub = rospy.Subscriber('~input', SlackMessage, self.msg_cb)
+
+    def upload_file(self, filename, channel):
+        # FIXME: Slacker.files.upload does not work to upload image.
+        with open(filename, 'rb') as f:
+            params = {'token': self.token, 'channels': channel}
+            requests.post('https://slack.com/api/files.upload',
+                          params=params, files={'file': f})
+
+    def _get_slacker_channel(self, channel):
+        if channel.startswith('#'):
+            return channel
+        elif channel.startswith('@'):
+            to_user = channel[1:]
+            im_id = slacker_cli.get_im_id(self.token, to_user)
+            return im_id or channel
+        rospy.logerr('Unsupported channel: {}'.format(msg.channel))
+
+    def msg_cb(self, msg):
+        channel = msg.channel
+        if not channel:
+            channel = self.default_channel
+        self.slacker.chat.post_message(
+            channel=channel,
+            text=msg.text,
+            as_user=True,
+        )
+        if msg.image.data:
+            bridge = cv_bridge.CvBridge()
+            img = bridge.imgmsg_to_cv2(
+                msg.image, desired_encoding='bgr8')
+            tmpfile = os.path.join(
+                self.tmpdir,
+                '{stamp}.jpg'
+                .format(stamp=msg.image.header.stamp.to_nsec()))
+            cv2.imwrite(tmpfile, img)
+            self.upload_file(tmpfile, channel)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--channel', type=str, help='Channel to post')
+    args = parser.parse_args(rospy.myargv()[1:])
+
+    rospy.init_node('post_to_slack_server')
+    PostToSlackServer(args.channel)
+    rospy.spin()
