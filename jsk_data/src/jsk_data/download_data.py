@@ -4,6 +4,7 @@ import os.path as osp
 import re
 import shlex
 import subprocess
+import shutil
 import sys
 import tarfile
 import zipfile
@@ -26,15 +27,19 @@ def extract_file(path, to_directory='.'):
 
     cwd = os.getcwd()
     os.chdir(to_directory)
+    root_files = []
     try:
         file = opener(path, mode)
         try:
             file.extractall()
+            root_files = list(set(name.split('/')[0]
+                                  for name in file.getnames()))
         finally:
             file.close()
     finally:
         os.chdir(cwd)
     print('...done')
+    return root_files
 
 
 def decompress_rosbag(path, quiet=False):
@@ -116,7 +121,16 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         sys.stderr.write("WARNING: '{0}' exists\n".format(path))
         return
     if extract:
-        extract_file(path, to_directory=osp.dirname(path))
+        # extract files in cache dir and create symlink for them
+        extracted_files = extract_file(cache_file, to_directory=cache_dir)
+        for file_ in extracted_files:
+            file_ = osp.join(cache_dir, file_)
+            dst_dir = osp.join(osp.split(path)[0], osp.basename(file_))
+            if osp.islink(dst_dir):
+                os.remove(dst_dir)
+            elif osp.exists(dst_dir):
+                shutil.rmtree(dst_dir)
+            os.symlink(file_, dst_dir)
     for compressed_bag in compressed_bags:
         if not osp.isabs(compressed_bag):
             rp = rospkg.RosPack()
