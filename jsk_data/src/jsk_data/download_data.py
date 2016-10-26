@@ -125,12 +125,14 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         extracted_files = extract_file(cache_file, to_directory=cache_dir)
         for file_ in extracted_files:
             file_ = osp.join(cache_dir, file_)
-            dst_dir = osp.join(osp.split(path)[0], osp.basename(file_))
-            if osp.islink(dst_dir):
-                os.remove(dst_dir)
-            elif osp.exists(dst_dir):
-                shutil.rmtree(dst_dir)
-            os.symlink(file_, dst_dir)
+            dst_path = osp.join(osp.split(path)[0], osp.basename(file_))
+            if osp.islink(dst_path):
+                os.remove(dst_path)
+            elif osp.exists(dst_path) and not osp.isdir(dst_path):
+                os.remove(dst_path)
+            elif osp.exists(dst_path) and osp.isdir(dst_path):
+                shutil.rmtree(dst_path)
+            os.symlink(file_, dst_path)
     for compressed_bag in compressed_bags:
         if not osp.isabs(compressed_bag):
             rp = rospkg.RosPack()
