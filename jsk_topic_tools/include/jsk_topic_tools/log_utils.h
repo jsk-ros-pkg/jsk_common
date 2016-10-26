@@ -62,11 +62,11 @@ namespace jsk_topic_tools
 }
 
 #define JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX() \
-  ROS_WARN("DEPRECATION WARNING: JSK_NODELET_XXX log macros are deprecated, and please use NODELET_XXX instead." \
-           " (See https://github.com/jsk-ros-pkg/jsk_common/issues/1461)");
+  ROS_WARN_ONCE("DEPRECATION WARNING: JSK_NODELET_XXX log macros are deprecated, and please use NODELET_XXX instead." \
+                " (See https://github.com/jsk-ros-pkg/jsk_common/issues/1461)");
 #define JSK_TOPIC_TOOLS_DEPRECATED_JSK_ROS_XXX() \
-  ROS_WARN("DEPRECATION WARNING: JSK_ROS_XXX log utils are deprecated, and please use ROS_XXX instead." \
-           " (See https://github.com/jsk-ros-pkg/jsk_common/issues/1461)");
+  ROS_WARN_ONCE("DEPRECATION WARNING: JSK_ROS_XXX log utils are deprecated, and please use ROS_XXX instead." \
+                " (See https://github.com/jsk-ros-pkg/jsk_common/issues/1461)");
 
 #define JSK_NODELET_DEBUG(str,...) \
   JSK_TOPIC_TOOLS_DEPRECATED_JSK_NODELET_XXX(); \
