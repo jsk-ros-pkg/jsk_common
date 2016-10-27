@@ -44,11 +44,11 @@ namespace jsk_topic_tools
     bool use_multithread;
     ros::param::param<bool>("~use_multithread_callback", use_multithread, true);
     if (use_multithread) {
-      JSK_NODELET_DEBUG("use multithread callback");
+      NODELET_DEBUG("use multithread callback");
       nh_.reset (new ros::NodeHandle (getMTNodeHandle ()));
       pnh_.reset (new ros::NodeHandle (getMTPrivateNodeHandle ()));
     } else {
-      JSK_NODELET_DEBUG("use singlethread callback");
+      NODELET_DEBUG("use singlethread callback");
       nh_.reset (new ros::NodeHandle (getNodeHandle ()));
       pnh_.reset (new ros::NodeHandle (getPrivateNodeHandle ()));
     }
@@ -78,14 +78,14 @@ namespace jsk_topic_tools
   void ConnectionBasedNodelet::warnNeverSubscribedCallback(const ros::WallTimerEvent& event)
   {
     if (!ever_subscribed_) {
-      JSK_NODELET_WARN("'%s' subscribes topics only with child subscribers.", nodelet::Nodelet::getName().c_str());
+      NODELET_WARN("'%s' subscribes topics only with child subscribers.", nodelet::Nodelet::getName().c_str());
     }
   }
 
   void ConnectionBasedNodelet::connectionCallback(const ros::SingleSubscriberPublisher& pub)
   {
     if (verbose_connection_) {
-      JSK_NODELET_INFO("New connection or disconnection is detected");
+      NODELET_INFO("New connection or disconnection is detected");
     }
     if (!always_subscribe_) {
       boost::mutex::scoped_lock lock(connection_mutex_);
@@ -97,7 +97,7 @@ namespace jsk_topic_tools
           }
           if (connection_status_ != SUBSCRIBED) {
             if (verbose_connection_) {
-              JSK_NODELET_INFO("Subscribe input topics");
+              NODELET_INFO("Subscribe input topics");
             }
             subscribe();
             connection_status_ = SUBSCRIBED;
@@ -107,7 +107,7 @@ namespace jsk_topic_tools
       }
       if (connection_status_ == SUBSCRIBED) {
         if (verbose_connection_) {
-          JSK_NODELET_INFO("Unsubscribe input topics");
+          NODELET_INFO("Unsubscribe input topics");
         }
         unsubscribe();
         connection_status_ = NOT_SUBSCRIBED;
@@ -119,7 +119,7 @@ namespace jsk_topic_tools
     const image_transport::SingleSubscriberPublisher& pub)
   {
     if (verbose_connection_) {
-      JSK_NODELET_INFO("New image connection or disconnection is detected");
+      NODELET_INFO("New image connection or disconnection is detected");
     }
     if (!always_subscribe_) {
       boost::mutex::scoped_lock lock(connection_mutex_);
@@ -131,7 +131,7 @@ namespace jsk_topic_tools
           }
           if (connection_status_ != SUBSCRIBED) {
             if (verbose_connection_) {
-              JSK_NODELET_INFO("Subscribe input topics");
+              NODELET_INFO("Subscribe input topics");
             }
             subscribe();
             connection_status_ = SUBSCRIBED;
@@ -141,7 +141,7 @@ namespace jsk_topic_tools
       }
       if (connection_status_ == SUBSCRIBED) {
         if (verbose_connection_) {
-          JSK_NODELET_INFO("Unsubscribe input topics");
+          NODELET_INFO("Unsubscribe input topics");
         }
         unsubscribe();
         connection_status_ = NOT_SUBSCRIBED;
@@ -164,7 +164,7 @@ namespace jsk_topic_tools
   void ConnectionBasedNodelet::cameraConnectionBaseCallback()
   {
     if (verbose_connection_) {
-      JSK_NODELET_INFO("New image connection or disconnection is detected");
+      NODELET_INFO("New image connection or disconnection is detected");
     }
     if (!always_subscribe_) {
       boost::mutex::scoped_lock lock(connection_mutex_);
@@ -176,7 +176,7 @@ namespace jsk_topic_tools
           }
           if (connection_status_ != SUBSCRIBED) {
             if (verbose_connection_) {
-              JSK_NODELET_INFO("Subscribe input topics");
+              NODELET_INFO("Subscribe input topics");
             }
             subscribe();
             connection_status_ = SUBSCRIBED;
@@ -186,7 +186,7 @@ namespace jsk_topic_tools
       }
       if (connection_status_ == SUBSCRIBED) {
         if (verbose_connection_) {
-          JSK_NODELET_INFO("Unsubscribe input topics");
+          NODELET_INFO("Unsubscribe input topics");
         }
         unsubscribe();
         connection_status_ = NOT_SUBSCRIBED;

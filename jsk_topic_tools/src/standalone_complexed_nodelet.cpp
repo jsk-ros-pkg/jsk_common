@@ -81,7 +81,7 @@ int main(int argc, char** argv)
       private_nh.param(root_name, nodelets_values, nodelets_values);
       if (nodelets_values.getType() == XmlRpc::XmlRpcValue::TypeArray) {
         for (size_t i_nodelet = 0; i_nodelet < nodelets_values.size(); i_nodelet++) {
-          JSK_ROS_INFO("i_nodelet %lu", i_nodelet);
+          ROS_INFO("i_nodelet %lu", i_nodelet);
           XmlRpc::XmlRpcValue onenodelet_param = nodelets_values[i_nodelet];
           if (onenodelet_param.getType() == XmlRpc::XmlRpcValue::TypeStruct) {
             std::string name, type;
@@ -96,14 +96,14 @@ int main(int argc, char** argv)
               name = nh.resolveName((std::string)onenodelet_param["name"]);
             }
             else {
-              JSK_ROS_FATAL("element ~nodelets should have name field");
+              ROS_FATAL("element ~nodelets should have name field");
               return 1;
             }
             if (onenodelet_param.hasMember("type")) {
               type = (std::string)onenodelet_param["type"];
             }
             else {
-              JSK_ROS_FATAL("element ~nodelets should have type field");
+              ROS_FATAL("element ~nodelets should have type field");
               return 1;
             }
             if (onenodelet_param.hasMember("remappings")) {
@@ -132,51 +132,51 @@ int main(int argc, char** argv)
                         ros::NodeHandle nodelet_nh = ros::NodeHandle(parentName(name));
                         to = nodelet_nh.resolveName(to);
                       }
-                      JSK_ROS_INFO("remapping: %s => %s", from.c_str(), to.c_str());
+                      ROS_INFO("remapping: %s => %s", from.c_str(), to.c_str());
                       remappings[from] = to;
                     }
                     else {
-                      JSK_ROS_FATAL("remappings parameter requires from and to fields");
+                      ROS_FATAL("remappings parameter requires from and to fields");
                       return 1;
                     }
                   }
                   else {
-                    JSK_ROS_FATAL("remappings should be an array");
+                    ROS_FATAL("remappings should be an array");
                     return 1;
                   }
                 }
               }
               else {
-                JSK_ROS_FATAL("remappings should be an array");
+                ROS_FATAL("remappings should be an array");
                 return 1;
               }
             }
             // Done reading parmaeter for one nodelet
           
             if (!manager.load(name, type, remappings, my_argv)) {
-              JSK_ROS_ERROR("Failed to load nodelet [%s -- %s]", name.c_str(), type.c_str());
+              ROS_ERROR("Failed to load nodelet [%s -- %s]", name.c_str(), type.c_str());
             }
             else {
-              JSK_ROS_INFO("Succeeded to load nodelet [%s -- %s]", name.c_str(), type.c_str());
+              ROS_INFO("Succeeded to load nodelet [%s -- %s]", name.c_str(), type.c_str());
             }
           }
           else {
-            JSK_ROS_FATAL("element ~nodelets should be a dictionay");
+            ROS_FATAL("element ~nodelets should be a dictionay");
             return 1;
           }
         }
       }
       else {
-        JSK_ROS_FATAL("~nodelets should be a list");
+        ROS_FATAL("~nodelets should be a list");
         return 1;
       }
     }
   }
-  JSK_ROS_INFO("done reading parmaeters");
+  ROS_INFO("done reading parmaeters");
   std::vector<std::string> loaded_nodelets = manager.listLoadedNodelets();
-  JSK_ROS_INFO("loaded nodelets: %lu", loaded_nodelets.size());
+  ROS_INFO("loaded nodelets: %lu", loaded_nodelets.size());
   for (size_t i = 0; i < loaded_nodelets.size(); i++) {
-    JSK_ROS_INFO("loaded nodelet: %s", loaded_nodelets[i].c_str());
+    ROS_INFO("loaded nodelet: %s", loaded_nodelets[i].c_str());
   }
   ros::spin();
   return 0;
