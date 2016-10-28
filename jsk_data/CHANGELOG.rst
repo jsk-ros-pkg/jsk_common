@@ -2,6 +2,13 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* jsk_data/src/jsk_data/download_data.py: Create softlink for extracted files in download_data (`#1467 <https://github.com/jsk-ros-pkg/jsk_common/pull/1467>`_)
+  - For multiple workspaces like in jenkins.
+* Fix removing of symlink destination path (`#1469 <https://github.com/jsk-ros-pkg/jsk_common/pull/1469>`_)
+* Contributors: Kentaro Wada
+
 2.1.2 (2016-09-14)
 ------------------
 * src/jsk_data/download_data.py : create path direcotory before download data and return if permission denied, catch resourceNotFound
