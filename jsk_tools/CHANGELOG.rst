@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.0 (2016-10-28)
+------------------
 * jsk_tools/src/post_to_slack_server: Post to slack via String message input (`#1466 <https://github.com/jsk-ros-pkg/jsk_common/issues/1466>`_)
 * jsk_tools/src/jsk_tools/migration.py: Add utility class to migrate rosmsg (`#1464 <https://github.com/jsk-ros-pkg/jsk_common/issues/1464>`_)
 * jsk_tools/src/jsk_tools/sanity_lib.py : Support echo_noarr in

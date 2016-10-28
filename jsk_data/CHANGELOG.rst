@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.0 (2016-10-28)
+------------------
 * jsk_data/src/jsk_data/download_data.py: Create softlink for extracted files in download_data (`#1467 <https://github.com/jsk-ros-pkg/jsk_common/pull/1467>`_)
   - For multiple workspaces like in jenkins.
 * Fix removing of symlink destination path (`#1469 <https://github.com/jsk-ros-pkg/jsk_common/pull/1469>`_)

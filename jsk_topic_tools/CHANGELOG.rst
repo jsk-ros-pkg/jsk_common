@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.0 (2016-10-28)
+------------------
 * include/jsk_topic_tools/log_utils.h : JSK_ROS_XXX logging macros are not necessary just recently. Its feature is already covered by ROSCONSOLE_FORMAT environmental variable. http://wiki.ros.org/rosconsole#Console_Output_Formatting  (`#1461 <https://github.com/jsk-ros-pkg/jsk_common/issues/1461>`_)
 
   * Stop using deprecated jsk_topic_tools/log_utils.h (`#1470 <https://github.com/jsk-ros-pkg/jsk_common/issues/1470>`_)
