@@ -86,7 +86,10 @@ class DataCollectionServer(object):
             sub.unregister()
 
     def sub_cb(self, msg, topic_name):
-        self.msg[topic_name] = msg
+        self.msg[topic_name] = {
+                'stamp': msg.header.stamp if msg._has_header else rospy.Time.now(),
+                'msg': msg
+                }
 
     def service_cb(self, req):
         now = rospy.Time.now()
@@ -97,9 +100,9 @@ class DataCollectionServer(object):
                 if topic['name'] in saving_msgs:
                     continue
                 if ((topic['name'] in self.msg) and
-                     abs(now - self.msg[topic['name']].header.stamp <
+                     abs(now - self.msg[topic['name']]['stamp'] <
                          rospy.Duration(slop))):
-                    saving_msgs[topic['name']] = self.msg[topic['name']]
+                    saving_msgs[topic['name']] = self.msg[topic['name']]['msg']
             rospy.sleep(0.1)
         save_dir = osp.join(self.save_dir, str(now.to_nsec()))
         if not osp.exists(save_dir):
