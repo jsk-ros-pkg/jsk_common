@@ -119,6 +119,25 @@ class DataCollectionServer(object):
                 bridge = cv_bridge.CvBridge()
                 label = bridge.imgmsg_to_cv2(msg)
                 cv2.imwrite(osp.join(save_dir, topic['fname']), label)
+            elif topic['savetype'] == 'TransformStamped':
+                transform = {}
+                transform['parent_frame_id'] = msg.header.frame_id
+                transform['child_frame_id'] = msg.child_frame_id
+                transform['translation'] = [
+                        msg.transform.translation.x,
+                        msg.transform.translation.y,
+                        msg.transform.translation.z
+                        ]
+                transform['rotation'] = [
+                        msg.transform.rotation.x,
+                        msg.transform.rotation.y,
+                        msg.transform.rotation.z,
+                        msg.transform.rotation.w
+                        ]
+                content = yaml.safe_dump(transform, allow_unicode=True,
+                                         default_flow_style=False)
+                with open(osp.join(save_dir, topic['fname']), 'w') as f:
+                    f.write(content)
             else:
                 rospy.logerr('Unexpected savetype for topic: {}'
                              .format(topic['savetype']))
