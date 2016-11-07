@@ -17,6 +17,7 @@ import dynamic_reconfigure.server
 from jsk_topic_tools.log_utils import jsk_logfatal
 import roslib.message
 import rospy
+import genpy
 from std_srvs.srv import Trigger
 from std_srvs.srv import TriggerResponse
 
@@ -86,7 +87,10 @@ class DataCollectionServer(object):
             sub.unregister()
 
     def sub_cb(self, msg, topic_name):
-        self.msg[topic_name] = msg
+        self.msg[topic_name] = {
+                'stamp': msg.header.stamp if msg._has_header else rospy.Time.now(),
+                'msg': msg
+                }
 
     def service_cb(self, req):
         now = rospy.Time.now()
@@ -97,9 +101,9 @@ class DataCollectionServer(object):
                 if topic['name'] in saving_msgs:
                     continue
                 if ((topic['name'] in self.msg) and
-                     abs(now - self.msg[topic['name']].header.stamp <
+                     abs(now - self.msg[topic['name']]['stamp'] <
                          rospy.Duration(slop))):
-                    saving_msgs[topic['name']] = self.msg[topic['name']]
+                    saving_msgs[topic['name']] = self.msg[topic['name']]['msg']
             rospy.sleep(0.1)
         save_dir = osp.join(self.save_dir, str(now.to_nsec()))
         if not osp.exists(save_dir):
@@ -119,6 +123,10 @@ class DataCollectionServer(object):
                 bridge = cv_bridge.CvBridge()
                 label = bridge.imgmsg_to_cv2(msg)
                 cv2.imwrite(osp.join(save_dir, topic['fname']), label)
+            elif topic['savetype'] == 'YAML':
+                msg_yaml = genpy.message.strify_message(msg)
+                with open(osp.join(save_dir, topic['fname']), 'w') as f:
+                    f.write(msg_yaml)
             else:
                 rospy.logerr('Unexpected savetype for topic: {}'
                              .format(topic['savetype']))
