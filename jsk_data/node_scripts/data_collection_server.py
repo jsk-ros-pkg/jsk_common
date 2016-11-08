@@ -64,7 +64,7 @@ class DataCollectionServer(object):
         for param in self.params:
             required_fields = ['key', 'fname', 'savetype']
             for field in required_fields:
-                if field not in topic:
+                if field not in param:
                     jsk_logfatal("Required field '{}' for param is missing"
                                  .format(field))
                     sys.exit(1)
