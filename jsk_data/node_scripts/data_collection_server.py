@@ -88,9 +88,9 @@ class DataCollectionServer(object):
 
     def sub_cb(self, msg, topic_name):
         self.msg[topic_name] = {
-                'stamp': msg.header.stamp if msg._has_header else rospy.Time.now(),
-                'msg': msg
-                }
+            'stamp': msg.header.stamp if msg._has_header else rospy.Time.now(),
+            'msg': msg
+            }
 
     def service_cb(self, req):
         now = rospy.Time.now()
