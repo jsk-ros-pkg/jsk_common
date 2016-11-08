@@ -100,9 +100,9 @@ class DataCollectionServer(object):
             for topic in self.topics:
                 if topic['name'] in saving_msgs:
                     continue
+                stamp = self.msg[topic['name']]['stamp']
                 if ((topic['name'] in self.msg) and
-                     abs(now - self.msg[topic['name']]['stamp'] <
-                         rospy.Duration(slop))):
+                        abs(now - stamp < rospy.Duration(slop))):
                     saving_msgs[topic['name']] = self.msg[topic['name']]['msg']
             rospy.sleep(0.1)
         save_dir = osp.join(self.save_dir, str(now.to_nsec()))
