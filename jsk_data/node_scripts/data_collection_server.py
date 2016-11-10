@@ -64,7 +64,7 @@ class DataCollectionServer(object):
         for param in self.params:
             required_fields = ['key', 'fname', 'savetype']
             for field in required_fields:
-                if field not in topic:
+                if field not in param:
                     jsk_logfatal("Required field '{}' for param is missing"
                                  .format(field))
                     sys.exit(1)
@@ -88,9 +88,9 @@ class DataCollectionServer(object):
 
     def sub_cb(self, msg, topic_name):
         self.msg[topic_name] = {
-                'stamp': msg.header.stamp if msg._has_header else rospy.Time.now(),
-                'msg': msg
-                }
+            'stamp': msg.header.stamp if msg._has_header else rospy.Time.now(),
+            'msg': msg
+            }
 
     def service_cb(self, req):
         now = rospy.Time.now()
@@ -100,9 +100,9 @@ class DataCollectionServer(object):
             for topic in self.topics:
                 if topic['name'] in saving_msgs:
                     continue
+                stamp = self.msg[topic['name']]['stamp']
                 if ((topic['name'] in self.msg) and
-                     abs(now - self.msg[topic['name']]['stamp'] <
-                         rospy.Duration(slop))):
+                        abs(now - stamp < rospy.Duration(slop))):
                     saving_msgs[topic['name']] = self.msg[topic['name']]['msg']
             rospy.sleep(0.1)
         save_dir = osp.join(self.save_dir, str(now.to_nsec()))
