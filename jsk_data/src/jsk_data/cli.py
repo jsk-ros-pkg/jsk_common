@@ -109,7 +109,7 @@ def cmd_ls(public, query, show_size, sort, reverse):
         if ls_options:
             sys.stderr.write(
                 'WARNING: if public=True, ignores all ls options\n')
-        sys.stdout.write(list_gdrive())
+        sys.stdout.write(list_gdrive() or "")
     else:
         print('\n'.join(_list_aries_files(query, ls_options)))
 
