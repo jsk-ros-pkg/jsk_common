@@ -60,6 +60,7 @@ class DataCollectionServer(object):
                                  .format(field))
                     sys.exit(1)
         self.params = rospy.get_param('~params', [])
+        self.slop = rospy.get_param('~slop', 0.1)
         # validation for saving params
         for param in self.params:
             required_fields = ['key', 'fname', 'savetype']
@@ -95,16 +96,17 @@ class DataCollectionServer(object):
     def service_cb(self, req):
         now = rospy.Time.now()
         saving_msgs = {}
-        slop = 0.1
         while len(saving_msgs) < len(self.topics):
             for topic in self.topics:
                 if topic['name'] in saving_msgs:
                     continue
                 stamp = self.msg[topic['name']]['stamp']
                 if ((topic['name'] in self.msg) and
-                        abs(now - stamp) < rospy.Duration(slop)):
+                        abs(now - stamp) < rospy.Duration(self.slop)):
                     saving_msgs[topic['name']] = self.msg[topic['name']]['msg']
-            rospy.sleep(0.1)
+                if now < stamp:
+                    rospy.logwarn('timestamp exceeds starting time, try bigger slop')
+            rospy.sleep(self.slop)
         save_dir = osp.join(self.save_dir, str(now.to_nsec()))
         if not osp.exists(save_dir):
             os.makedirs(save_dir)
