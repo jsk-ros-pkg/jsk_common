@@ -17,6 +17,7 @@ import dynamic_reconfigure.server
 from jsk_topic_tools.log_utils import jsk_logfatal
 import roslib.message
 import rospy
+import genpy
 from std_srvs.srv import Trigger
 from std_srvs.srv import TriggerResponse
 
@@ -59,11 +60,12 @@ class DataCollectionServer(object):
                                  .format(field))
                     sys.exit(1)
         self.params = rospy.get_param('~params', [])
+        self.slop = rospy.get_param('~slop', 0.1)
         # validation for saving params
         for param in self.params:
             required_fields = ['key', 'fname', 'savetype']
             for field in required_fields:
-                if field not in topic:
+                if field not in param:
                     jsk_logfatal("Required field '{}' for param is missing"
                                  .format(field))
                     sys.exit(1)
@@ -86,21 +88,25 @@ class DataCollectionServer(object):
             sub.unregister()
 
     def sub_cb(self, msg, topic_name):
-        self.msg[topic_name] = msg
+        self.msg[topic_name] = {
+            'stamp': msg.header.stamp if msg._has_header else rospy.Time.now(),
+            'msg': msg
+            }
 
     def service_cb(self, req):
         now = rospy.Time.now()
         saving_msgs = {}
-        slop = 0.1
         while len(saving_msgs) < len(self.topics):
             for topic in self.topics:
                 if topic['name'] in saving_msgs:
                     continue
+                stamp = self.msg[topic['name']]['stamp']
                 if ((topic['name'] in self.msg) and
-                     abs(now - self.msg[topic['name']].header.stamp <
-                         rospy.Duration(slop))):
-                    saving_msgs[topic['name']] = self.msg[topic['name']]
-            rospy.sleep(0.1)
+                        abs(now - stamp) < rospy.Duration(self.slop)):
+                    saving_msgs[topic['name']] = self.msg[topic['name']]['msg']
+                if now < stamp:
+                    rospy.logwarn('timestamp exceeds starting time, try bigger slop')
+            rospy.sleep(self.slop)
         save_dir = osp.join(self.save_dir, str(now.to_nsec()))
         if not osp.exists(save_dir):
             os.makedirs(save_dir)
@@ -119,6 +125,10 @@ class DataCollectionServer(object):
                 bridge = cv_bridge.CvBridge()
                 label = bridge.imgmsg_to_cv2(msg)
                 cv2.imwrite(osp.join(save_dir, topic['fname']), label)
+            elif topic['savetype'] == 'YAML':
+                msg_yaml = genpy.message.strify_message(msg)
+                with open(osp.join(save_dir, topic['fname']), 'w') as f:
+                    f.write(msg_yaml)
             else:
                 rospy.logerr('Unexpected savetype for topic: {}'
                              .format(topic['savetype']))
