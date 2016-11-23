@@ -115,23 +115,27 @@ def cmd_ls(public, query, show_size, sort, reverse):
 
 
 @cli.command(name='put', help='Upload file to aries.')
+@click.argument('filename', required=True, type=click.Path(exists=True))
 @click.option(
     '-p', '--public', is_flag=True,
     help=('Handle public files. It will be uploaded to Google Drive. '
           'Go https://drive.google.com/open?id=0B9P1L--7Wd2vUGplQkVLTFBWcFE'))
-@click.argument('filename', required=True, type=click.Path(exists=True))
-def cmd_put(public, filename):
+@click.option(
+    '--stamped', is_flag=True,
+    help='Rename file to with prefix of timestamp')
+def cmd_put(filename, public, stamped):
     """Upload file to aries."""
-    filename_org = filename
-    filename = filename_with_timestamp(filename)
-    if filename_org != filename:
-        print('Filename is being changed: {0} -> {1}'
-              .format(filename_org, filename))
-        yn = raw_input('Are you sure?[Y/n]: ')
-        if yn not in 'yY':
-            sys.stderr.write('Aborted!')
-            sys.exit(1)
-        os.rename(filename_org, filename)
+    if stamped:
+        filename_org = filename
+        filename = filename_with_timestamp(filename)
+        if filename_org != filename:
+            print('Filename is being changed: {0} -> {1}'
+                  .format(filename_org, filename))
+            yn = raw_input('Are you sure?[Y/n]: ')
+            if yn not in 'yY':
+                sys.stderr.write('Aborted!')
+                sys.exit(1)
+            os.rename(filename_org, filename)
 
     if public:
         print('Uploading to Google Drive...')
