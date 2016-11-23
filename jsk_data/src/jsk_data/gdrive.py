@@ -37,7 +37,7 @@ def _init_gdrive():
     ros_home = os.getenv('ROS_HOME', os.path.expanduser('~/.ros'))
     pkg_ros_home = os.path.join(ros_home, 'jsk_data')
     config = os.path.join(pkg_ros_home, '.gdrive')
-    if os.path.exists(config):
+    if os.path.exists(os.path.join(config, 'token.json')):
         return
     if not os.path.exists(pkg_ros_home):
         os.makedirs(pkg_ros_home)
