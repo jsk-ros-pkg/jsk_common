@@ -89,7 +89,8 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         try:
             pkg_path = rp.get_path(pkg_name)
         except rospkg.ResourceNotFound:
-            print('\033[31m{name} is not found in {path}\033[0m'.format(name=pkg_name, path=rp.list()))
+            print('\033[31m{name} is not found in {path}\033[0m'
+                  .format(name=pkg_name, path=rp.list()))
             return
         pkg_path = rp.get_path(pkg_name)
         path = osp.join(pkg_path, path)
@@ -97,7 +98,8 @@ def download_data(pkg_name, path, url, md5, download_client=None,
             try:
                 os.makedirs(osp.dirname(path))
             except OSError as e:
-                print('\033[31mCould not make direcotry {dir} {err}\033[0m'.format(dir=osp.dirname(path), err=e))
+                print('\033[31mCould not make direcotry {dir} {err}\033[0m'
+                      .format(dir=osp.dirname(path), err=e))
                 return
     # prepare cache dir
     ros_home = os.getenv('ROS_HOME', osp.expanduser('~/.ros'))
