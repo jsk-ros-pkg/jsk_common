@@ -14,8 +14,29 @@ catkin_package(
   CATKIN_DEPENDS message_runtime
 )
 
-catkin_install_python(PROGRAMS scripts/jsk_data DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-install(DIRECTORY launch rvizconfig scripts
+catkin_install_python(PROGRAMS
+  scripts/jsk_data
+  scripts/robot_description_loader.py
+  scripts/robot_description_saver.py
+  scripts/rosbag_always.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(PROGRAMS
+  scripts/copy-pr2-bagfiles
+  scripts/decompress
+  scripts/gen-gif-all
+  scripts/gopro-copy-files.sh
+  scripts/hrp2_rosbag_always.sh
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES amd64* OR
+   ${CMAKE_SYSTEM_PROCESSOR} MATCHES x86_64*)
+  install(PROGRAMS
+    scripts/drive-linux-x64
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
+endif()
+install(DIRECTORY launch rvizconfig
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
 )
