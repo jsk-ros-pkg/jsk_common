@@ -96,7 +96,7 @@ rossetip_addr() {
         fi
         target_host=$target_host_ip
     fi
-    export ROS_IP=$(ip -o -4 route get $target_host | awk "/$target_host/ "'{print $5}')
+    export ROS_IP=$(ip -o -4 route get $target_host | sed -e 's/^.*src \([0-9.]\+\).*$/\1/g')
     export ROS_HOSTNAME=$ROS_IP
 }
 
