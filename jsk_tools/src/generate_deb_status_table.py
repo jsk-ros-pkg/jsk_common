@@ -13,10 +13,14 @@ def generate_deb_status_table(package, rosdistro_from, rosdistro_to):
     DISTROS['kinetic'] = ['wily', 'xenial']
 
     table = []
-    for bit, arch in zip([32, 64], ['i386', 'amd64']):
+    for bit, arch in zip(['hf', '32', '64'], ['armhf', 'i386', 'amd64']):
         if not table:  # first row
             headers = ['Package']
-        row = ['{} ({}-bit)'.format(package, bit)]
+        if arch.startswith('arm'):
+            os_arch = 'arm_u'
+        else:
+            os_arch = 'u'
+        row = ['{} ({})'.format(package, arch)]
         for distro, os_list in DISTROS.items():
             if not (ord(rosdistro_from) <= ord(distro[0]) <=
                     ord(rosdistro_to)):
@@ -27,10 +31,11 @@ def generate_deb_status_table(package, rosdistro_from, rosdistro_to):
                     headers.append(
                         '{} ({})'.format(distro.capitalize(), os.capitalize()))
 
-                url = 'http://build.ros.org/job/{prefix_ros}bin_u{prefix_os}{bit}__{package}__ubuntu_{os}_{arch}__binary'  # NOQA
+                url = 'http://build.ros.org/job/{prefix_ros}bin_{os_arch}{prefix_os}{bit}__{package}__ubuntu_{os}_{arch}__binary'  # NOQA
                 url = url.format(
                     bit=bit,
                     arch=arch,
+                    os_arch=os_arch,
                     prefix_os=os[0].upper(),
                     prefix_ros=distro[0].upper(),
                     package=package,
