@@ -16,10 +16,6 @@ def generate_deb_status_table(package, rosdistro_from, rosdistro_to):
     for bit, arch in zip(['hf', '32', '64'], ['armhf', 'i386', 'amd64']):
         if not table:  # first row
             headers = ['Package']
-        if arch.startswith('arm'):
-            os_arch = 'arm_u'
-        else:
-            os_arch = 'u'
         row = ['{} ({})'.format(package, arch)]
         for distro, os_list in DISTROS.items():
             if not (ord(rosdistro_from) <= ord(distro[0]) <=
@@ -27,6 +23,14 @@ def generate_deb_status_table(package, rosdistro_from, rosdistro_to):
                 continue
 
             for os in os_list:
+                if arch.startswith('arm'):
+                    if os == 'xenial':
+                        os_arch = 'uxhf_u'
+                    else:
+                        os_arch = 'arm_u'
+                else:
+                    os_arch = 'u'
+
                 if not table:  # first row
                     headers.append(
                         '{} ({})'.format(distro.capitalize(), os.capitalize()))
