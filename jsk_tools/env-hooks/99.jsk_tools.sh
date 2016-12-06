@@ -34,6 +34,9 @@ rosdefault() {
 }
 
 _update_prompt() {
+    if [ "${WITHOUT_ROS_PROMPT}" = "" ]; then
+        export WITHOUT_ROS_PROMPT="$PS1"
+    fi
     local master_host=$(echo $ROS_MASTER_URI | cut -d\/ -f3 | cut -d\: -f1)
     if [ "$master_host" = "localhost" ]; then
         if echo $PS1 | grep "\[http://.*\]" > /dev/null
@@ -53,9 +56,6 @@ _update_prompt() {
 }
 
 rossetmaster() {
-    if [ "${WITHOUT_ROS_PROMPT}" = "" ]; then
-        export WITHOUT_ROS_PROMPT="$PS1"
-    fi
     local hostname=${1-"pr1040"}
     local ros_port=${2-"11311"}
     export ROS_MASTER_URI=http://$hostname:$ros_port
