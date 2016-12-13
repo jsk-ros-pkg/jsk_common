@@ -2,6 +2,15 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* env-hooks/99.jsk_tools.sh: Set WITHOUT_ROS_PROMPT at _update_prompt to fix `#1494 <https://github.com/jsk-ros-pkg/jsk_common/issues/1494>`_
+* src/generate_deb_status_table.py : Cope with xenial + arm for deb status table (`#1491 <https://github.com/jsk-ros-pkg/jsk_common/issues/1491>`_)
+* src/generate_deb_status_table.py : Support arm build in
+  generate_deb_status_table.py : Generate deb release table with python script (`#1490 <https://github.com/jsk-ros-pkg/jsk_common/issues/1490>`_)
+* [jsk_tools][99.jsk_tools.sh] fix: issue `#1472 <https://github.com/jsk-ros-pkg/jsk_common/issues/1472>`_
+* Contributors: Kentaro Wada, Yuki Furuta
+
 2.2.0 (2016-10-28)
 ------------------
 * jsk_tools/src/post_to_slack_server: Post to slack via String message input (`#1466 <https://github.com/jsk-ros-pkg/jsk_common/issues/1466>`_)
