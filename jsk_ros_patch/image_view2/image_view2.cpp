@@ -1703,6 +1703,7 @@ namespace image_view2{
       }
       if(!image_.empty()) {
         cv::imshow(window_name_.c_str(), image_);
+        cv::waitKey(3);
       }
     }
   }
