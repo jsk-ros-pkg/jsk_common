@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.1 (2016-12-13)
+------------------
 * CMakeLists.txt : Strict rule of installing scripts
   Fix the part of `#1488 <https://github.com/jsk-ros-pkg/jsk_common/issues/1488>`_
 * jsk_data/src/jsk_data/cli.py: Make stamping as optional in jsk_data (`#1486 <https://github.com/jsk-ros-pkg/jsk_common/issues/1486>`_)

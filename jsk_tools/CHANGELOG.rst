@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.1 (2016-12-13)
+------------------
 * env-hooks/99.jsk_tools.sh: Set WITHOUT_ROS_PROMPT at _update_prompt to fix `#1494 <https://github.com/jsk-ros-pkg/jsk_common/issues/1494>`_
 * src/generate_deb_status_table.py : Cope with xenial + arm for deb status table (`#1491 <https://github.com/jsk-ros-pkg/jsk_common/issues/1491>`_)
 * src/generate_deb_status_table.py : Support arm build in
