@@ -62,6 +62,10 @@ def download(client, url, output, quiet=False):
 
 
 def check_md5sum(path, md5):
+    # validate md5 string length if it is specified
+    if md5 and len(md5) != 32:
+        raise ValueError('md5 must be 32 charactors\n'
+                         'actual: {} ({} charactors)'.format(md5, len(md5)))
     print("Checking md5sum of '{path}'...".format(path=path))
     is_same = hashlib.md5(open(path, 'rb').read()).hexdigest() == md5
     print('...done')
