@@ -21,7 +21,7 @@
   <run_depend>pr2_description</run_depend>
   <run_depend>pr2_machine</run_depend>
   <run_depend>python-click</run_depend>
-  <run_depend>python-gdown</run_depend>
+  <run_depend>python-gdown-pip</run_depend>
   <run_depend>python-yaml</run_depend>  <!-- apt -->
   <run_depend>rosbag</run_depend>
   <run_depend>rqt_bag</run_depend>
