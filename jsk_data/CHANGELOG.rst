@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.2 (2016-12-30)
+------------------
 * package.xml : Fix rosdep key: python-gdown -> python-gdown-pip
   According to https://github.com/ros/rosdistro/pull/13397
 * jsk_data/download_data.py : Check if specified md5 has 32 charactors

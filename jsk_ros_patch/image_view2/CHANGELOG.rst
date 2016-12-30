@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.2 (2016-12-30)
+------------------
 * test/publish_lena.py: lena() is not included in scipy from 0.17
 * src/image_view2.cpp: add cv::waitKey for opencv3 installed from source to fix freezing issue
 * Contributors: Kei Okada

@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.2 (2016-12-30)
+------------------
 * package.xml : rosemacs-el is only available until precise, from indigo, we uses rosemacs (`#1497 <https://github.com/jsk-ros-pkg/jsk_common/issues/1497>`_)
 * src/rostopic_host_sanity : Check host sanity with a script
 * Contributors: Kei Okada, Kentaro Wada
