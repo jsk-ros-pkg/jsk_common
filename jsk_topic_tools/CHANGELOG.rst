@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.2.1 (2016-12-13)
 ------------------
 * add tf_to_transform node (`#1482 <https://github.com/jsk-ros-pkg/jsk_common/issues/1482>`_)

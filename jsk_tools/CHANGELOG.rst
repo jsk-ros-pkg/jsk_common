@@ -2,6 +2,12 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* package.xml : rosemacs-el is only available until precise, from indigo, we uses rosemacs (`#1497 <https://github.com/jsk-ros-pkg/jsk_common/issues/1497>`_)
+* src/rostopic_host_sanity : Check host sanity with a script
+* Contributors: Kei Okada, Kentaro Wada
+
 2.2.1 (2016-12-13)
 ------------------
 * env-hooks/99.jsk_tools.sh: Set WITHOUT_ROS_PROMPT at _update_prompt to fix `#1494 <https://github.com/jsk-ros-pkg/jsk_common/issues/1494>`_
