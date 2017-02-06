@@ -3,17 +3,39 @@
 
 import re
 import sys
+import time
 import unittest
 
 from nose.tools import assert_true
-from nose.tools import assert_false
 
 import rospy
-from jsk_tools.sanity_lib import TopicPublishedChecker
+import rostopic
 
 
 PKG = 'jsk_tools'
 NAME = 'test_topic_published'
+
+
+# https://github.com/ros/ros_comm/blob/kinetic-devel/tools/rostest/nodes/publishtest # NOQA
+class PublishChecker(object):
+    def __init__(self, topic_name, timeout, negative):
+        self.topic_name = topic_name
+        self.negative = negative
+        self.deadline = rospy.Time.now() + rospy.Duration(timeout)
+        msg_class, _, _ = rostopic.get_topic_class(
+            rospy.resolve_name(topic_name), blocking=True)
+        self.msg = None
+        self.sub = rospy.Subscriber(topic_name, msg_class, self._callback)
+
+    def _callback(self, msg):
+        self.msg = msg
+
+    def assert_published(self):
+        if self.msg:
+            return not self.negative
+        if rospy.Time.now() > self.deadline:
+            return self.negative
+        return None
 
 
 class TestTopicPublished(unittest.TestCase):
@@ -44,16 +66,30 @@ class TestTopicPublished(unittest.TestCase):
             rospy.logwarn('/use_sim_time is specified and rostime is 0, /clock is published?')
             rospy.sleep(0.1)
         checkers = []
-        for topic_name, timeout in zip(self.topics, self.timeouts):
-            checker = TopicPublishedChecker(topic_name, timeout)
+        for topic_name, timeout, negative in zip(
+                self.topics, self.timeouts, self.negatives):
+            checker = PublishChecker(topic_name, timeout, negative)
             checkers.append(checker)
-        for negative, checker in zip(self.negatives, checkers):
-            if negative:
-                msg = '{} is published'.format(checker.topic_name)
-                assert_false(checker.check(), msg)
-            else:
-                msg = '{} is not published'.format(checker.topic_name)
-                assert_true(checker.check(), msg)
+
+        topics_finished = []
+        while not rospy.is_shutdown():
+            if len(topics_finished) == len(checkers):
+                break
+            for checker in checkers:
+                if checker.topic_name in topics_finished:
+                    continue
+                ret = checker.assert_published()
+                if ret is None:
+                    continue
+                topics_finished.append(checker.topic_name)
+                if checker.negative:
+                    assert_true(ret, 'Topic [%s] is published' %
+                                     (checker.topic_name))
+                else:
+                    assert_true(
+                        ret, 'Topic [%s] is not published' %
+                             (checker.topic_name))
+            rospy.sleep(0.01)
 
 
 if __name__ == '__main__':
