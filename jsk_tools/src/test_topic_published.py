@@ -62,9 +62,15 @@ class TestTopicPublished(unittest.TestCase):
     def test_published(self):
         """Test topics are published and messages come"""
         use_sim_time = rospy.get_param('/use_sim_time', False)
-        while use_sim_time and (rospy.Time.now() == rospy.Time(0)):
-            rospy.logwarn('/use_sim_time is specified and rostime is 0, /clock is published?')
-            rospy.sleep(0.1)
+        t_start = time.time()
+        while not rospy.is_shutdown() and \
+                use_sim_time and (rospy.Time.now() == rospy.Time(0)):
+            rospy.logwarn('/use_sim_time is specified and rostime is 0, '
+                          '/clock is published?')
+            if time.time() - t_start > 10:
+                self.fail('Timed out (10s) of /clock publication.')
+            time.sleep(1)
+
         checkers = []
         for topic_name, timeout, negative in zip(
                 self.topics, self.timeouts, self.negatives):
