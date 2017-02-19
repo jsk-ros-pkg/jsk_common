@@ -2,8 +2,13 @@
 
 import argparse
 import collections
+import sys
 
-import tabulate
+try:
+    import tabulate
+except ImportError:
+    sys.stderr.write('Please install tabulate: pip install tabulate\n')
+    sys.exit(1)
 
 
 def generate_deb_status_table(package, rosdistro_from, rosdistro_to):
