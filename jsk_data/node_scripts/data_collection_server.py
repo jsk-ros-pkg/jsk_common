@@ -9,19 +9,32 @@ import os.path as osp
 import pickle as pkl
 import sys
 
-import cv2
+import numpy as np
+import PIL.Image
 import yaml
 
 import cv_bridge
 import dynamic_reconfigure.server
+import genpy
 from jsk_topic_tools.log_utils import jsk_logfatal
 import roslib.message
 import rospy
-import genpy
 from std_srvs.srv import Trigger
 from std_srvs.srv import TriggerResponse
 
 from jsk_data.cfg import DataCollectionServerConfig
+
+
+def dump_ndarray(filename, arr):
+    ext = osp.splitext(filename)[1]
+    if ext == '.pkl':
+        pkl.dump(arr, open(filename, 'wb'))
+    elif ext == '.npz':
+        np.savez_compressed(filename, arr)
+    elif ext in ['.png', '.jpg']:
+        PIL.Image.fromarray(arr).save(filename)
+    else:
+        raise ValueError
 
 
 class DataCollectionServer(object):
@@ -93,6 +106,41 @@ class DataCollectionServer(object):
             'msg': msg
             }
 
+    def save_topic(self, topic, msg, savetype, filename):
+        if savetype == 'ColorImage':
+            bridge = cv_bridge.CvBridge()
+            img = bridge.imgmsg_to_cv2(msg, 'rgb8')
+            dump_ndarray(filename, img)
+        elif savetype == 'DepthImage':
+            bridge = cv_bridge.CvBridge()
+            depth = bridge.imgmsg_to_cv2(msg)
+            dump_ndarray(filename, depth)
+        elif savetype == 'LabelImage':
+            bridge = cv_bridge.CvBridge()
+            label = bridge.imgmsg_to_cv2(msg)
+            dump_ndarray(filename, label)
+        elif savetype == 'YAML':
+            msg_yaml = genpy.message.strify_message(msg)
+            with open(filename, 'w') as f:
+                f.write(msg_yaml)
+        else:
+            rospy.logerr('Unexpected savetype for topic: {}'.format(savetype))
+            raise ValueError
+
+    def save_param(self, param, savetype, filename):
+        value = rospy.get_param(param)
+        if savetype == 'Text':
+            with open(filename, 'w') as f:
+                f.write(str(value))
+        elif savetype == 'YAML':
+            content = yaml.safe_dump(value, allow_unicode=True,
+                                     default_flow_style=False)
+            with open(filename, 'w') as f:
+                f.write(content)
+        else:
+            rospy.logerr('Unexpected savetype for param: {}'.format(savetype))
+            raise ValueError
+
     def service_cb(self, req):
         now = rospy.Time.now()
         saving_msgs = {}
@@ -105,48 +153,19 @@ class DataCollectionServer(object):
                         abs(now - stamp) < rospy.Duration(self.slop)):
                     saving_msgs[topic['name']] = self.msg[topic['name']]['msg']
                 if now < stamp:
-                    rospy.logwarn('timestamp exceeds starting time, try bigger slop')
+                    rospy.logwarn(
+                        'timestamp exceeds starting time, try bigger slop')
             rospy.sleep(self.slop)
         save_dir = osp.join(self.save_dir, str(now.to_nsec()))
         if not osp.exists(save_dir):
             os.makedirs(save_dir)
         for topic in self.topics:
             msg = saving_msgs[topic['name']]
-            if topic['savetype'] == 'ColorImage':
-                bridge = cv_bridge.CvBridge()
-                img = bridge.imgmsg_to_cv2(msg, 'bgr8')
-                cv2.imwrite(osp.join(save_dir, topic['fname']), img)
-            elif topic['savetype'] == 'DepthImage':
-                bridge = cv_bridge.CvBridge()
-                depth = bridge.imgmsg_to_cv2(msg)
-                with open(osp.join(save_dir, topic['fname']), 'wb') as f:
-                    pkl.dump(depth, f)
-            elif topic['savetype'] == 'LabelImage':
-                bridge = cv_bridge.CvBridge()
-                label = bridge.imgmsg_to_cv2(msg)
-                cv2.imwrite(osp.join(save_dir, topic['fname']), label)
-            elif topic['savetype'] == 'YAML':
-                msg_yaml = genpy.message.strify_message(msg)
-                with open(osp.join(save_dir, topic['fname']), 'w') as f:
-                    f.write(msg_yaml)
-            else:
-                rospy.logerr('Unexpected savetype for topic: {}'
-                             .format(topic['savetype']))
-                raise ValueError
+            filename = osp.join(save_dir, topic['fname'])
+            self.save_topic(topic['name'], msg, topic['savetype'], filename)
         for param in self.params:
-            value = rospy.get_param(param['key'])
-            if param['savetype'] == 'Text':
-                with open(osp.join(save_dir, param['fname']), 'w') as f:
-                    f.write(str(value))
-            elif param['savetype'] == 'YAML':
-                content = yaml.safe_dump(value, allow_unicode=True,
-                                         default_flow_style=False)
-                with open(osp.join(save_dir, param['fname']), 'w') as f:
-                    f.write(content)
-            else:
-                rospy.logerr('Unexpected savetype for param: {}'
-                             .format(param['savetype']))
-                raise ValueError
+            filename = osp.join(save_dir, param['fname'])
+            self.save_param(param['key'], param['savetype'], filename)
         message = 'Saved data to {}'.format(save_dir)
         rospy.loginfo(message)
         return TriggerResponse(success=True, message=message)
