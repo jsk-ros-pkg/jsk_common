@@ -13,8 +13,10 @@ import tf
 class TFToTransform(object):
     def __init__(self, parent_frame_id, child_frame_id, duration, rate):
         self.duration = rospy.get_param('~duration', duration)
-        self.parent_frame_id = rospy.get_param('~parent_frame_id', parent_frame_id)
-        self.child_frame_id = rospy.get_param('~child_frame_id', child_frame_id)
+        self.parent_frame_id = rospy.get_param('~parent_frame_id',
+                                               parent_frame_id)
+        self.child_frame_id = rospy.get_param('~child_frame_id',
+                                              child_frame_id)
         rate = rospy.get_param('~rate', rate)
         self.pub = rospy.Publisher('~output', TransformStamped, queue_size=1)
         self.listener = tf.TransformListener()
@@ -76,9 +78,9 @@ if __name__ == '__main__':
     args = parser.parse_args(rospy.myargv()[1:])
     rospy.init_node('tf_to_transform')
     tf_pub = TFToTransform(
-            args.parent_frame_id,
-            args.child_frame_id,
-            args.duration,
-            args.rate,
-            )
+        args.parent_frame_id,
+        args.child_frame_id,
+        args.duration,
+        args.rate,
+    )
     rospy.spin()
