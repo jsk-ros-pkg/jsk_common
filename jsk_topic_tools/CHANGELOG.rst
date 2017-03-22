@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.3 (2017-03-23)
+------------------
 * jsk_topic_tools/scripts/tf_to_transform.py: Use different value for duration and rate in tf_to_transform.py (`#1509 <https://github.com/jsk-ros-pkg/jsk_common/issues/1509>`_)
   * Rate can be 50 - 100 for example, but duration should be ~1 [s] even
     so. In previous implementation, the duration will be 1/100 - 1/50 [s]

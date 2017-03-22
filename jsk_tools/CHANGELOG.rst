@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.3 (2017-03-23)
+------------------
 * jsk_tools/src/jsk_tools/migration.py: Fix migration of from XXX.[srv|msg] import YYY (`#1506 <https://github.com/jsk-ros-pkg/jsk_common/issues/1506>`_)
 * jsk_tools/src/generate_deb_status_table.py: Add python-tabulate-pip as a dependency (`#1505 <https://github.com/jsk-ros-pkg/jsk_common/issues/1505>`_)
 * [jsk_tools] Improve test_topic_published.py (check /use_sim_time neatly) (`#1504 <https://github.com/jsk-ros-pkg/jsk_common/issues/1504>`_)
