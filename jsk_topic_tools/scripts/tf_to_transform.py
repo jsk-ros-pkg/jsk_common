@@ -11,22 +11,16 @@ import tf
 
 
 class TFToTransform(object):
-    def __init__(self, parent_frame_id, child_frame_id, duration):
-        if duration is None:
-            self.duration = rospy.get_param('~duration', default=1.0)
-        else:
-            self.duration = duration
-        if parent_frame_id is None:
-            self.parent_frame_id = rospy.get_param('~parent_frame_id')
-        else:
-            self.parent_frame_id = parent_frame_id
-        if child_frame_id is None:
-            self.child_frame_id = rospy.get_param('~child_frame_id')
-        else:
-            self.child_frame_id = child_frame_id
+    def __init__(self, parent_frame_id, child_frame_id, duration, rate):
+        self.duration = rospy.get_param('~duration', duration)
+        self.parent_frame_id = rospy.get_param('~parent_frame_id',
+                                               parent_frame_id)
+        self.child_frame_id = rospy.get_param('~child_frame_id',
+                                              child_frame_id)
+        rate = rospy.get_param('~rate', rate)
         self.pub = rospy.Publisher('~output', TransformStamped, queue_size=1)
         self.listener = tf.TransformListener()
-        rospy.Timer(rospy.Duration(self.duration), self._publish_transform)
+        rospy.Timer(rospy.Duration(1. / rate), self._publish_transform)
 
     def _publish_transform(self, event):
         try:
@@ -37,10 +31,10 @@ class TFToTransform(object):
                 now,
                 timeout=rospy.Duration(self.duration)
                 )
-        except (tf.LookupException,
-                tf.ConnectivityException,
-                tf.ExtrapolationException):
-            rospy.logerr('cannot get transform')
+        except Exception:
+            rospy.logerr(
+                "cannot get transform from '%s' to '%s' in '%.2f' [s]" %
+                (self.parent_frame_id, self.child_frame_id, self.duration))
             return
 
         trans, rot = self.listener.lookupTransform(
@@ -77,13 +71,16 @@ if __name__ == '__main__':
                         help='parent frame id', default=None)
     parser.add_argument('child_frame_id', nargs='?',
                         help='child frame id', default=None)
-    parser.add_argument('--duration', '-d', type=float,
-                        help='Duration [s]: default=1.0', default=None)
+    parser.add_argument('--duration', '-d', type=float, default=1,
+                        help='Duration to resolve tf. default: 1 [s]')
+    parser.add_argument('--rate', '-r', type=float, default=1,
+                        help='Rate of publication. default: 1 [hz]')
     args = parser.parse_args(rospy.myargv()[1:])
     rospy.init_node('tf_to_transform')
     tf_pub = TFToTransform(
-            args.parent_frame_id,
-            args.child_frame_id,
-            args.duration
-            )
+        args.parent_frame_id,
+        args.child_frame_id,
+        args.duration,
+        args.rate,
+    )
     rospy.spin()
