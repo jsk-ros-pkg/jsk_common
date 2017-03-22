@@ -1,6 +1,14 @@
-1;3409;0c^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Forthcoming
+-----------
+* jsk_data/node_scripts/data_collection_server.py: Dump numpy.ndarray as npz file in data_collection_server.py (`#1508 <https://github.com/jsk-ros-pkg/jsk_common/issues/1508>`_)
+  * Fix for flake8
+  * Dump numpy.ndarray as npz file, For small size data using npz_compressed.
+* Add my name to package.xml as a maintainer
+* Contributors: Kentaro Wada
 
 2.2.2 (2016-12-30)
 ------------------
