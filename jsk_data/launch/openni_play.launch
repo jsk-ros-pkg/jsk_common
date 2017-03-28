@@ -1,0 +1,65 @@
+<launch>
+  <arg name="name" doc="full path to bag file" />
+
+  <arg name="camera_namespace" default="camera" />
+  <arg name="rosbag_option"    default="--clock" />
+  <arg name="compressed"       default="false" />
+  <arg name="use_xterm"        default="false" />
+  <arg name="use_gui"          default="false" />
+
+  <param name="use_sim_time" value="true" />
+
+  <arg name="remapping_namespace" default="$(arg camera_namespace)" unless="$(arg compressed)"/>
+  <arg name="remapping_namespace" default="camera_rosbag" if="$(arg compressed)" />
+
+  <!-- openni -->
+  <include file="$(find openni2_launch)/launch/openni2.launch">
+    <arg name="camera" value="$(arg camera_namespace)"/>
+    <arg name="load_driver" value="false" />
+    <arg name="depth_registration" value="true" />
+  </include>
+
+  <!-- decompress -->
+  <group if="$(arg compressed)">
+    <node name="decompress_rgb"
+          pkg="image_transport" type="republish" args="compressed raw">
+      <remap from="in" to="/$(arg remapping_namespace)/rgb/image_raw" />
+      <remap from="out" to="/$(arg camera_namespace)/rgb/image_raw" />
+    </node>
+    <node name="decompress_depth"
+          pkg="image_transport" type="republish" args="compressedDepth raw">
+      <remap from="in" to="/$(arg remapping_namespace)/depth_registered/image_raw" />
+      <remap from="out" to="/$(arg camera_namespace)/depth_registered/image_raw" />
+    </node>
+  </group>
+
+  <!-- rosbag play -->
+  <group>
+    <!-- remapping for compressed images -->
+    <remap from="/$(arg camera_namespace)/rgb/image_raw/compressed"
+           to="/$(arg remapping_namespace)/rgb/image_raw/compressed"
+           if="$(arg compressed)"/>
+    <remap from="/$(arg camera_namespace)/depth_registered/image_raw/compressedDepth"
+           to="/$(arg remapping_namespace)/depth_registered/image_raw/compressedDepth"
+           if="$(arg compressed)"/>
+
+    <group if="$(arg use_xterm)">
+      <node unless="$(arg use_gui)" pkg="rosbag" type="play" name="rosbag_play"
+            launch-prefix="xterm -e"
+            args="$(arg rosbag_option) $(arg name)">
+        <remap from="/$(arg camera_namespace)" to="/$(arg remapping_namespace)" />
+      </node>
+    </group>
+    <group unless="$(arg use_xterm)">
+      <node unless="$(arg use_gui)" pkg="rosbag" type="play" name="rosbag_play"
+            args="$(arg rosbag_option) $(arg name)" >
+        <remap from="/$(arg camera_namespace)" to="/$(arg remapping_namespace)" />
+      </node>
+    </group>
+    <node if="$(arg use_gui)" pkg="rqt_bag" type="rqt_bag" name="rqt_bag"
+          args="$(arg rosbag_option) $(arg name)">
+      <remap from="/$(arg camera_namespace)" to="/$(arg remapping_namespace)" />
+    </node>
+  </group>
+
+</launch>

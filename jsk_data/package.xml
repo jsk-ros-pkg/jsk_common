@@ -28,6 +28,9 @@
   <run_depend>rqt_bag</run_depend>
   <run_depend>rviz</run_depend>
   <run_depend>xacro</run_depend>
+  <run_depend>image_transport</run_depend>
+  <run_depend>compressed_image_transport</run_depend>
+  <run_depend>compressed_depth_image_transport</run_depend>
   <test_depend>python-freezegun-pip</test_depend>
   <test_depend>python-nose</test_depend>
   <test_depend>roslaunch</test_depend>

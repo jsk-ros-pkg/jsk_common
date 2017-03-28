@@ -1,0 +1,45 @@
+<launch>
+  <arg name="name" doc="bag file name prefix" /> <!-- required -->
+
+  <arg name="camera_namespace"        default="camera" />
+  <arg name="record_compressed_rgb"   default="false" />
+  <arg name="record_compressed_depth" default="false" />
+  <arg name="other_topics"            default="/tf" />
+  <arg name="rosbag_option"           default=""
+       doc="options passed as 'rosbag record -o'" />
+
+  <arg name="save_dir"                default="$(optenv HOME /tmp)/" />
+  <!-- workaround to make save directory if not exists -->
+  <param name="mk_save_dir" command="mkdir -p $(arg save_dir)" />
+
+  <!-- rgb image -->
+  <arg unless="$(arg record_compressed_rgb)"
+       name="rgb_topics" value="
+$(arg camera_namespace)/rgb/image_raw
+$(arg camera_namespace)/rgb/camera_info
+"/>
+  <arg if="$(arg record_compressed_rgb)"
+       name="rgb_topics" value="
+$(arg camera_namespace)/rgb/image_raw/compressed
+$(arg camera_namespace)/rgb/camera_info
+"/>
+
+  <!-- depth image -->
+  <arg unless="$(arg record_compressed_depth)"
+       name="depth_topics" value="
+$(arg camera_namespace)/depth_registered/image_raw
+$(arg camera_namespace)/depth_registered/camera_info
+"/>
+  <arg if    ="$(arg record_compressed_depth)"
+       name="depth_topics" value="
+$(arg camera_namespace)/depth_registered/image_raw/compressedDepth
+$(arg camera_namespace)/depth_registered/camera_info
+"/>
+
+  <node name="$(anon rosbag_record)" pkg="rosbag" type="record"
+        args="$(arg rgb_topics)
+              $(arg depth_topics)
+              $(arg other_topics)
+              -o $(arg save_dir)/$(arg name)
+                 $(arg rosbag_option)" />
+</launch>
