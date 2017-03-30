@@ -123,6 +123,12 @@ namespace jsk_topic_tools
      * callback function which is called when walltimer
      * duration run out.
      */
+    virtual void warnOnInitPostProcessCalledCallback(const ros::WallTimerEvent& event);
+
+    /** @brief
+     * callback function which is called when walltimer
+     * duration run out.
+     */
     virtual void warnNeverSubscribedCallback(const ros::WallTimerEvent& event);
 
     /** @brief
@@ -294,7 +300,7 @@ namespace jsk_topic_tools
     /** @brief
      * WallTimer instance for warning about no connection.
      */
-    ros::WallTimer timer_;
+    ros::WallTimer timer_warn_never_subscribed_;
 
     /** @brief
      * A flag to check if any publisher is already subscribed
@@ -323,6 +329,16 @@ namespace jsk_topic_tools
      * true if `~verbose_connection` or `verbose_connection` parameter is true.
      */
     bool verbose_connection_;
+
+    /** @brief
+     * Never warning on not calling onInitPostProcess if true
+     */
+    bool on_init_post_process_called_;
+
+    /** @brief
+     * WallTimer instance for warning about no connection.
+     */
+    ros::WallTimer timer_warn_on_init_post_process_called_;
   private:
     
   };

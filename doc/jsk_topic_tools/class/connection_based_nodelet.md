@@ -18,5 +18,11 @@ Please see [nodelet](http://wiki.ros.org/nodelet)
 
 - `~always_subscribe` (Bool, default: `false`):
 
+  Subscribes topics even if there is no subscribers of advertised topics if `true`.
 - `~verbose_connection` (Bool, default: `false`):
 
+  Show verbose log message on topic connection
+
+- `~no_warn_on_init_post_process` (Bool, default: `false`):
+
+  Never warn if `onInitPostProcess` method is not yet called.
