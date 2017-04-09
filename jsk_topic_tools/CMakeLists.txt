@@ -9,22 +9,30 @@ if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
-find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp std_msgs std_srvs
-  rostime
-  nodelet tf
-  geometry_msgs
+find_package(catkin REQUIRED COMPONENTS
+  dynamic_reconfigure
   eigen_conversions
+  geometry_msgs
+  image_transport
+  message_generation
+  nodelet
+  roscpp
+  rostime
+  std_msgs
+  std_srvs
+  tf
   topic_tools
-  image_transport)
+)
 catkin_python_setup()
 add_message_files(
   FILES TopicInfo.msg
 )
-
 add_service_files(
   FILES List.srv Update.srv ChangeTopic.srv PassthroughDuration.srv
 )
-
+generate_dynamic_reconfigure_options(
+  cfg/LightweightThrottle.cfg
+)
 generate_messages()
 catkin_package(
     DEPENDS
@@ -96,7 +104,7 @@ add_library(jsk_topic_tools SHARED
   src/diagnostic_nodelet.cpp
   src/series_boolean.cpp
   src/counter.cpp)
-add_dependencies(jsk_topic_tools ${PROJECT_NAME}_gencpp)
+add_dependencies(jsk_topic_tools ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_gencfg)
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 
 if (CATKIN_ENABLE_TESTING)
