@@ -26,7 +26,7 @@ def run_gdrive(args=None, stdout=True):
     config = os.path.join(pkg_ros_home, '.gdrive')
     cmd = 'rosrun jsk_data drive-linux-x64 --config {config} {args}'\
           .format(args=args, config=config)
-    if stdout:
+    if stdout and os.path.exists('{config}/token.json'.format(config=config)):
         return subprocess.check_output(cmd, shell=True)
     else:
         subprocess.call(cmd, shell=True)
