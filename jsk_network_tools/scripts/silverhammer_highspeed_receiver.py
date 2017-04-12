@@ -244,5 +244,7 @@ class SilverHammerReceiver:
 if __name__ == "__main__":
     rospy.init_node("silverhammer_highspeed_receiver")
     receiver = SilverHammerReceiver()
-    rospy.on_shutdown(receiver.on_shutdown)
-    receiver.run()
+    try:
+        receiver.run()
+    finally:
+        rospy.on_shutdown(receiver.on_shutdown)
