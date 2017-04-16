@@ -16,6 +16,9 @@
     local-name: jsk-ros-pkg/jsk_roseus
     version: master
 - git:
+    uri: https://github.com/jsk-ros-pkg/geneus.git
+    local-name: jsk-ros-pkg/geneus
+- git:
     uri: https://github.com/jsk-ros-pkg/jsk_robot.git
     local-name: jsk-ros-pkg/jsk_robot
     version: master
