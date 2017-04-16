@@ -1,0 +1,340 @@
+#!/usr/bin/env python
+
+import curses
+import curses.ascii
+import sys
+import rospy
+import rosgraph
+import rostopic
+
+rc=None
+
+class Roschain():
+    NodeMode = "node"
+    TopicMode = "topic"
+
+    def __init__(self, args):
+        self.mode=None
+        self.get_args(args)
+
+    def print_help(self):
+        print "Usage of roschain"
+        print "    roschain -n/-t node_name/topic_name"
+
+    def get_args(self, args):
+        ##if --help or -h , show help
+        if "-h" in args or "--help" in args:
+            self.print_help()
+
+        if len(args) < 3:
+            self.print_help()
+            exit()
+        else:
+            self.target = args[2]
+
+        ##if input has "-n"
+        if "-n" in args:
+            self.mode = Roschain.NodeMode
+        elif "-t" in args:
+            self.mode = Roschain.TopicMode
+        else:
+            self.print_help()
+            exit()
+
+    def get_rostopic_list(self):
+        return rostopic._rostopic_list(None)
+
+    def get_rostopic_info(self, target_topic):
+        master = rosgraph.Master('/rostopic')
+        pubs, subs, _ = master.getSystemState()
+        subs = [x for x in subs if x[0] == target_topic]
+        pubs = [x for x in pubs if x[0] == target_topic]
+
+        if len(subs):
+            subs = subs[0][1]
+        if len(pubs):
+            pubs = pubs[0][1]
+        topic_types = rostopic._master_get_topic_types(master)
+        return (pubs, subs)
+
+    def get_rosnode_info(self, target_node):
+        master = rosgraph.Master('/rostopic')
+        state = master.getSystemState()
+        subs = [t for t, l in state[0] if target_node in l]
+        pubs = [t for t, l in state[1] if target_node in l]
+
+        topic_types = rostopic._master_get_topic_types(master)
+        return (pubs, subs)
+
+    def change_mode(self):
+        if self.mode == Roschain.NodeMode:
+            self.mode = Roschain.TopicMode
+        else:
+            self.mode = Roschain.NodeMode
+
+    def set_new_target(self, target):
+        self.target = target
+        self.change_mode()
+
+    def get_pub_sub_infos(self):
+        if self.mode == Roschain.NodeMode:
+            return self.get_rosnode_info(self.target)
+        else:
+            return self.get_rostopic_info(self.target)
+
+class CursorController:
+    LEFT=0
+    MIDDLE=1
+    RIGHT=2
+    def __init__(self, curses_object):
+        self.column = CursorController.MIDDLE
+        self.row = 0
+        self.curses_object = curses_object
+        self.offset = 3
+
+        self.left_rows = []
+        self.right_rows = []
+        self.middle_rows = []
+
+        self.prev_name = ""
+        curses.init_pair(1, curses.COLOR_RED, curses.COLOR_WHITE)
+        curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_WHITE)
+        curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(4, curses.COLOR_BLUE, curses.COLOR_BLACK)
+        curses.init_pair(5, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        curses.init_pair(6, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+
+    def resetCursor(self):
+        self.row = 0
+        self.column = CursorController.MIDDLE
+
+    def registerNewLeftRightRows(self, left, right):
+        self.resetCursor()
+        self.left_rows = left
+        self.right_rows = right
+
+    def moveRight(self):
+        self.moveRightLeft(True)
+
+    def moveLeft(self):
+        self.moveRightLeft(False)
+
+    def moveRightLeft(self, right):
+        ##RIGHT
+        if right:
+            if self.column == CursorController.LEFT:
+                self.column = CursorController.MIDDLE
+                self.row = 0
+            elif self.column == CursorController.MIDDLE and len(self.right_rows) != 0:
+                self.column = CursorController.RIGHT
+                self.row = 0
+        ##LEFT
+        else:
+            if self.column == CursorController.RIGHT:
+                self.column = CursorController.MIDDLE
+                self.row = 0
+            elif self.column == CursorController.MIDDLE and len(self.left_rows) != 0:
+                self.column = CursorController.LEFT
+                self.row = 0
+
+    def moveUpDown(self, diff):
+        if self.column == CursorController.LEFT:
+            if len(self.left_rows) != self.row + diff and 0 <= self.row + diff:
+                self.row = self.row + diff
+        if self.column == CursorController.RIGHT:
+            if len(self.right_rows) != self.row + diff and 0 <= self.row + diff:
+                self.row = self.row + diff
+
+    def getCursorXY(self):
+        max_y, max_x = self.curses_object.getmaxyx()
+        x = int(max_x * (2 * self.column + 1) / 6)
+        y = 0
+        if self.column == CursorController.MIDDLE:
+            y = int(max_y / 2)
+        elif self.column == CursorController.LEFT:
+            y = self.row + self.offset
+        elif self.column == CursorController.RIGHT:
+            y = self.row + self.offset
+        return (x,y)
+
+    def setLeftRows(self, left_rows):
+        self.left_rows = left_rows
+
+    def setRightRows(self, right_rows):
+        self.right_rows = right_rows
+
+    def setMiddleRow(self, middle_row):
+        self.middle_rows = [middle_row]
+
+    def getLeftRowsPos(self):
+        return self.getRowsPos(self.left_rows, CursorController.LEFT)
+
+    def getRightRowsPos(self):
+        return self.getRowsPos(self.right_rows, CursorController.RIGHT)
+
+    def getMiddleRowsPos(self):
+        return self.getRowsPos(["Dummy_middle"], CursorController.MIDDLE)
+
+    def getRowsPos(self, rows, column):
+        max_y, max_x = self.curses_object.getmaxyx()
+        x = int(max_x * column / 3)
+        if column == CursorController.MIDDLE:
+            return [(x, int(max_y/2))]
+        else:
+            return [(x, self.offset + row) for row in range(len(rows))]
+
+    def drawRows(self, rows, rows_pos, column, mode):
+        cursor_x, cursor_y = self.getCursorXY()
+        color_target_pair = curses.color_pair(3)
+
+        ##Set the topics or nodes color
+        if mode == Roschain.NodeMode and column == CursorController.MIDDLE:
+            color_target_pair = curses.color_pair(4)
+        elif mode == Roschain.TopicMode and column == CursorController.MIDDLE:
+            color_target_pair = curses.color_pair(3)
+        elif mode == Roschain.NodeMode and column != CursorController.MIDDLE:
+            color_target_pair = curses.color_pair(3)
+        elif mode == Roschain.TopicMode and column != CursorController.MIDDLE:
+            color_target_pair = curses.color_pair(4)
+
+        ##Draw the names
+        m_y, max_x = self.curses_object.getmaxyx()
+        max_y =  m_y - 5 # for top and bottom space
+        offset = 0
+
+        if self.row >= max_y and self.column == column:
+            offset = self.row - max_y + 1
+
+        target_rows = rows[offset:offset+max_y]
+        for i,row in enumerate(target_rows):
+            if i > max_y:
+                break
+            
+            x,y = rows_pos[i]
+            if y > m_y - 1:
+                break
+            real_cursor_y = min(cursor_y, max_y+2)
+            if (column == self.column and real_cursor_y == y):
+                if y < max_y+2:
+                    self.curses_object.addstr(y,x,str(row), curses.A_REVERSE)
+                else:
+                    self.curses_object.addstr(max_y+2,x,str(row), curses.A_REVERSE)              
+            elif self.prev_name == str(row):
+                self.curses_object.addstr(y,x,str(row), curses.color_pair(6))
+            else:
+                self.curses_object.addstr(y,x,str(row), color_target_pair)
+
+    def drawTopBar(self, mode):
+        _, max_x = self.curses_object.getmaxyx()
+        column_width = int(max_x / 3.0)
+        offset = int((column_width - 5)/2)
+        if mode == Roschain.NodeMode:
+            self.curses_object.addstr(0,  0,  " "*offset+"Topic"+" "*offset, curses.color_pair(1) )
+            self.curses_object.addstr(0,  column_width,  " "*offset+"Node "+" "*offset, curses.color_pair(2) )
+            self.curses_object.addstr(0,  column_width*2,  " "*offset+"Topic"+" "*offset, curses.color_pair(1) )
+        else:
+            self.curses_object.addstr(0,  0,  " "*offset+"Node "+" "*offset, curses.color_pair(2) )
+            self.curses_object.addstr(0,  column_width,  " "*offset+"Topic"+" "*offset, curses.color_pair(1) )
+            self.curses_object.addstr(0,  column_width*2,  " "*offset+"Node "+" "*offset, curses.color_pair(2) )
+
+    def drawBottomBar(self, mode):
+        max_y ,max_x= self.curses_object.getmaxyx()
+        if self.column == CursorController.LEFT and mode == Roschain.NodeMode:
+            target_topic = self.left_rows[self.row]
+            target_type,_,_ = rostopic.get_topic_type(target_topic)
+            self.curses_object.addstr(max_y - 1, 0, target_type, curses.color_pair(5))
+        if self.column == CursorController.RIGHT and mode == Roschain.NodeMode:
+            target_topic = self.right_rows[self.row]
+            target_type,_,_ = rostopic.get_topic_type(target_topic)
+            self.curses_object.addstr(max_y - 1, 0, target_type, curses.color_pair(5))
+
+        ##Draw line
+        for j in range(max_x):
+            self.curses_object.addch(max_y - 2, j, curses.ACS_HLINE);
+
+    def drawAllRows(self, mode):
+        self.drawRows(self.left_rows, self.getLeftRowsPos(), CursorController.LEFT, mode)
+        self.drawRows(self.middle_rows, self.getMiddleRowsPos(), CursorController.MIDDLE, mode)
+        self.drawRows(self.right_rows, self.getRightRowsPos(), CursorController.RIGHT, mode)
+        self.drawTopBar(mode)
+        self.drawBottomBar(mode)
+
+    def getTargetCell(self, cursor_x, cursor_y):
+        #store current name
+        self.prev_name = self.middle_rows[0]
+
+        max_y, max_x = self.curses_object.getmaxyx()
+        if self.column == CursorController.LEFT:
+            return self.left_rows[cursor_y  - self.offset]
+        elif self.column == CursorController.RIGHT:
+            return self.right_rows[cursor_y - self.offset]
+
+    def checkAbleUpdate(self):
+        if self.column == CursorController.MIDDLE:
+            return False
+        else:
+            return True
+
+def curses_main(args):
+    global rc
+    w    = curses.initscr()
+    curses.cbreak()
+    curses.noecho()
+    curses.curs_set(0)
+    cc = CursorController(w)
+
+    pubs,subs = rc.get_pub_sub_infos()
+
+    cc.setLeftRows(pubs)
+    cc.setMiddleRow(rc.target)
+    cc.setRightRows(subs)
+
+    if len(pubs) != 0 or len(subs) != 0:
+        cc.drawAllRows(rc.mode)
+
+    cursor_x, cursor_y = cc.getCursorXY()
+    w.move(cursor_y, cursor_x)
+
+    while 1:
+        max_y, max_x = w.getmaxyx()
+        s = ""
+        try:
+            s = w.getch()
+        except KeyboardInterrupt, e:
+            exit()
+
+        w.addstr(0,0,str(s))
+        if s == ord('q'):
+            exit()
+        elif s == curses.KEY_UP:
+            cc.moveUpDown(-1)
+        elif s == curses.KEY_DOWN:
+            cc.moveUpDown(1)
+        elif s == curses.KEY_LEFT:
+            cc.moveLeft()
+        elif s == curses.KEY_RIGHT:
+            cc.moveRight()
+            ##Update to New Target
+        elif s == ord('j'):
+            if cc.checkAbleUpdate():
+            ##Which topic or name?
+                target = cc.getTargetCell(cursor_x, cursor_y)
+            ##get
+                rc.set_new_target(target)
+                cc.setMiddleRow(target)
+                pubs, subs  = rc.get_pub_sub_infos()
+            ##Update Infos
+                cc.registerNewLeftRightRows(pubs,subs)
+        elif s == curses.ascii.SOH: ##^a
+            pass
+        else:
+            a = w.getyx()
+
+        w.clear()
+        cc.drawAllRows(rc.mode)
+        cursor_x, cursor_y = cc.getCursorXY()
+
+
+if __name__=="__main__":
+    rc = Roschain(sys.argv)
+    curses.wrapper(curses_main)
