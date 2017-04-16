@@ -1,0 +1,9 @@
+<launch>
+  <arg name="launch_stt" default="true" />
+  <node name="docomo_chat"
+        pkg="docomo_perception" type="chat.py"
+        output="screen" />
+
+  <include file="$(find rwt_speech_recognition)/launch/rwt_speech_recognition.launch"
+           if="$(arg launch_stt)" />
+</launch>
