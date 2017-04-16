@@ -1,0 +1,31 @@
+<launch>
+
+  <arg name="manager" default="/creative_gesture/creative_gesture_nodelet_manager" />
+
+  <node pkg="tf" type="static_transform_publisher" name="creative_gesture_camera_base_link"
+        args="0 0  0 -1.57 0 -1.57  /world /gesture_camera 100" />
+
+  <node name="creative_gesture" pkg="jsk_creative_gesture_launch" type="open_creative_gesture" output="screen" cwd="node"/>
+
+  <group ns="creative_gesture">
+    <node pkg="nodelet" type="nodelet" name="creative_gesture_nodelet_manager"
+          args="manager" output="screen"/>
+
+    <node pkg="nodelet" type="nodelet"
+          name="depth_register"
+          args="load depth_image_proc/register $(arg manager)"
+          output="screen" clear_params="true">
+      <remap from="rgb/camera_info" to="/creative_gesture/rgb/camera_info" />
+      <remap from="depth/camera_info" to="/creative_gesture/depth/camera_info" />
+      <remap from="depth/image_rect" to="/creative_gesture/depth/image_rect" />
+    </node>
+
+    <node pkg="nodelet" type="nodelet"
+          name="point_cloud_xyz"
+          args="load depth_image_proc/point_cloud_xyzrgb $(arg manager)"
+          output="screen" clear_params="true">
+      <remap from="rgb/camera_info" to="/creative_gesture/rgb/camera_info" />
+      <remap from="rgb/image_rect_color" to="/creative_gesture/rgb/image_rect_color" />
+    </node>
+  </group>
+</launch>
