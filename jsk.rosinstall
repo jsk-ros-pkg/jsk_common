@@ -56,6 +56,12 @@
     local-name: jsk-ros-pkg/jsk_3rdparty
     version: master
 - git:
+    uri: https://github.com/jsk-ros-pkg/jsk_common_msgs.git
+    local-name: jsk-ros-pkg/jsk_common_msgs
+- git:
+    uri: https://github.com/jsk-ros-pkg/jsk_3rdparty.git
+    local-name: jsk-ros-pkg/jsk_3rdparty
+- git:
     uri: https://github.com/jsk-ros-pkg/jsk_openni_kinect.git
     local-name: jsk-ros-pkg/jsk_openni_kinect
     version: master
