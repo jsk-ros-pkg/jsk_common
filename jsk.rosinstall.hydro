@@ -10,3 +10,7 @@
     local-name: image_pipeline
     uri: https://github.com/ros-perception/image_pipeline.git
     version: hydro-devel
+- git:
+    local-name: catkin
+    uri: https://github.com/ros/catkin.git
+    version: indigo-devel
