@@ -196,10 +196,10 @@
     local-name: kinematics_msgs
     uri: 'https://github.com/PR2/kinematics_msgs.git'
     version: hydro-devel
-- git:
-    local-name: arm_navigation_msgs
-    uri: 'https://github.com/PR2/arm_navigation_msgs.git'
-    version: hydro-devel
+# - git:
+#     local-name: arm_navigation_msgs
+#     uri: 'https://github.com/PR2/arm_navigation_msgs.git'
+#     version: hydro-devel
 - git:
     local-name: pr2_kinematics
     uri: 'https://github.com/PR2/pr2_kinematics.git'
