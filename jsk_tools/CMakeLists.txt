@@ -9,13 +9,13 @@ catkin_package(
   LIBRARIES #
   INCLUDE_DIRS #
   DEPENDS #
-  CFG_EXTRAS download_package.cmake shell_test.cmake
+  CFG_EXTRAS download_package.cmake shell_test.cmake euslint.cmake
   )
 catkin_add_env_hooks(99.config_switch SHELLS bash zsh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
 catkin_add_env_hooks(99.jsk_tools SHELLS sh bash zsh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
 catkin_add_env_hooks(99.jsk_tools-completion SHELLS bash zsh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
 
-set(BIN_EXECUTABLES git-jsk-commit ros_console.py run_tmux)
+set(BIN_EXECUTABLES git-jsk-commit ros_console.py run_tmux euslint)
 foreach(exec ${BIN_EXECUTABLES})
   add_custom_command(OUTPUT ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_BIN_DESTINATION}/${exec}
     COMMAND cmake -E make_directory ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_BIN_DESTINATION}

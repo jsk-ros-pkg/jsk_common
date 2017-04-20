@@ -1,0 +1,154 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+import argparse
+import sys
+import os
+
+import yaml
+
+
+def parse(source_code, max_linelength):
+    is_block_comment = False
+    result = {
+        'parenthesis_open': 0,
+        'parenthesis_close': 0,
+        'tab': [],
+        'whitespace': [],
+        'linelength': [],
+    }
+    for line_num, line in enumerate(source_code.splitlines()):
+        if line.startswith('#|'):
+            is_block_comment = True
+        elif line.startswith('|#'):
+            is_block_comment = False
+        if is_block_comment:
+            continue
+        is_beginning = True
+        is_line_comment = False
+        is_inline_comment = False
+        has_quote = False
+        whitespace = 0
+        for char in line:
+            if char == ';':
+                if is_beginning:
+                    is_line_comment = True
+                else:
+                    is_inline_comment = True
+                break
+            if char == ' ':
+                if is_beginning is False:
+                    whitespace += 1
+            elif is_beginning and char != '\t':
+                is_beginning = False
+            if char == '(':
+                result['parenthesis_open'] += 1
+            if char == ')':
+                result['parenthesis_close'] += 1
+            if char == '"':
+                has_quote = True
+            if char == '\t':
+                if not line_num+1 in result['tab']:
+                    result['tab'].append(line_num+1)
+        is_comment = is_line_comment or is_inline_comment
+        if len(line.split()) != 0 and is_comment is False \
+           and has_quote is False and whitespace != len(line.split())-1:
+            result['whitespace'].append(line_num+1)
+        if is_line_comment is False \
+           and has_quote is False and len(line) > max_linelength:
+            result['linelength'].append([line_num+1, len(line)])
+    return result
+
+
+def test_parenthesis(result, filepath):
+    if result['parenthesis_open'] != result['parenthesis_close']:
+        print("{0}: parenthesis: number of open/close parenthesises don't much: {1} != {2}"
+              .format(filepath, result['parenthesis_open'], result['parenthesis_close']),
+              file=sys.stderr)
+        return 1
+    return 0
+
+
+def test_tab(result, filepath):
+    if len(result['tab']) != 0:
+        for tab_result in result['tab']:
+            print('{0}:{1}: tab: line contains tab'.format(filepath, tab_result),
+                  file=sys.stderr)
+        return 1
+    return 0
+
+
+def test_whitespace(result, filepath):
+    if len(result['whitespace']) != 0:
+        for whitespace_result in result['whitespace']:
+            print('{0}:{1}: whitespace: line contains invalid whitespace'
+                  .format(filepath, whitespace_result),
+                  file=sys.stderr)
+        return 1
+    return 0
+
+
+def test_linelength(result, max_linelength, filepath):
+    if len(result['linelength']) != 0:
+        for linelength_result in result['linelength']:
+            print('{0}:{1}: linelength: line too long ({2} > {3} characters)'
+                  .format(filepath, linelength_result[0], linelength_result[1], max_linelength),
+                          file=sys.stderr)
+        return 1
+    return 0
+
+
+def lint(filepath, ignore_list, max_linelength):
+    source_code = open(filepath).read()
+    result = parse(source_code, max_linelength)
+
+    test_list = []
+    if not 'parenthesis' in ignore_list:
+        test_list.append(test_parenthesis(result, filepath))
+    if not 'linelength' in ignore_list:
+        test_list.append(test_linelength(result, max_linelength, filepath))
+    if not 'tab' in ignore_list:
+        test_list.append(test_tab(result, filepath))
+    if not 'whitespace' in ignore_list:
+        test_list.append(test_whitespace(result, filepath))
+
+    return sum(test_list)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('path', type=str, help='checking dir or file path')
+    parser.add_argument('-e', '--extension', type=str, help='file extension, defalut: l')
+    parser.add_argument('-l', '--max-linelength', type=int, help='maximum line length, defalut: 100')
+    parser.add_argument('-i', '--ignore', type=str, help='list of ignoring check ids.')
+    args = parser.parse_args()
+
+    path = args.path
+    if args.extension is None:
+        extension = 'l'
+    else:
+        extension = args.extension
+    extension = '.' + extension
+    max_linelength = args.max_linelength
+    if max_linelength is None:
+        max_linelength = 100
+    if args.ignore is None:
+        ignore_list = []
+    else:
+        ignore_list = args.ignore.split(',')
+    retcode = 0
+    if os.path.isfile(path):
+        if lint(path, ignore_list, max_linelength) > 0:
+            retcode = 1
+    else:
+        for root, dirs, files in os.walk(path):
+            for file_ in files:
+                filepath = os.path.join(root, file_)
+                if filepath.endswith(extension): 
+                    if lint(filepath, ignore_list, max_linelength) > 0:
+                        retcode = 1
+    sys.exit(retcode)
+
+
+if __name__ == '__main__':
+    main()
