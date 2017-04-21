@@ -17,6 +17,7 @@ import cv_bridge
 import dynamic_reconfigure.server
 import genpy
 from jsk_topic_tools.log_utils import jsk_logfatal
+import message_filters
 import roslib.message
 import rospy
 from std_srvs.srv import Trigger
@@ -82,19 +83,44 @@ class DataCollectionServer(object):
                     jsk_logfatal("Required field '{}' for param is missing"
                                  .format(field))
                     sys.exit(1)
-        self.server = rospy.Service('~save_request', Trigger, self.service_cb)
-        self.subs = []
-        for topic in self.topics:
-            msg_class = roslib.message.get_message_class(topic['msg_class'])
-            sub = rospy.Subscriber(topic['name'], msg_class, self.sub_cb,
-                                   callback_args=topic['name'])
-            self.subs.append(sub)
+        if rospy.get_param('~with_request', True):
+            self.subs = []
+            for topic in self.topics:
+                msg_class = roslib.message.get_message_class(topic['msg_class'])
+                sub = rospy.Subscriber(topic['name'], msg_class, self.sub_cb,
+                                       callback_args=topic['name'])
+                self.subs.append(sub)
+                self.server = rospy.Service('~save_request', Trigger,
+                                            self.service_cb)
+        else:
+            self.subs = []
+            for topic in self.topics:
+                msg_class = roslib.message.get_message_class(topic['msg_class'])
+                sub = message_filters.Subscriber(topic['name'], msg_class)
+                self.subs.append(sub)
+            self.sync = message_filters.TimeSynchronizer(
+                self.subs, queue_size=rospy.get_param('~queue_size', 10))
+            self.sync.registerCallback(self.sync_sub_cb)
 
     def reconfig_cb(self, config, level):
         self.save_dir = osp.expanduser(config['save_dir'])
         if not osp.exists(self.save_dir):
             os.makedirs(self.save_dir)
         return config
+
+    def sync_sub_cb(self, *msgs):
+        stamp = msgs[0].header.stamp
+        save_dir = osp.join(self.save_dir, str(stamp.to_nsec()))
+        if not osp.exists(save_dir):
+            os.makedirs(save_dir)
+        for i, topic in enumerate(self.topics):
+            filename = osp.join(save_dir, topic['fname'])
+            self.save_topic(
+                topic['name'], msgs[i], topic['savetype'], filename)
+        for param in self.params:
+            filename = osp.join(save_dir, param['fname'])
+            self.save_param(param['key'], param['savetype'], filename)
+        rospy.loginfo('Saved data to %s'% save_dir)
 
     def __del__(self):
         for sub in self.subs:
