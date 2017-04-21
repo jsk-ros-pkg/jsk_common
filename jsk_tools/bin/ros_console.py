@@ -2,11 +2,7 @@
 import rospy
 
 import sys
-try:
-    import colorama
-except:
-    print "Please install colorama by pip install colorama"
-    sys.exit(1)
+import colorama
 from colorama import Fore, Style
 import argparse
 from rosgraph_msgs.msg import Log
