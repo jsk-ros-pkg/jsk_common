@@ -1,0 +1,21 @@
+<launch>
+
+  <node name="dynamic_tf_publisher"
+        pkg="dynamic_tf_publisher" type="dynamic_tf_publisher">
+    <rosparam>
+      parent_frame_id: base_link
+      frame_id: dynamic_link
+      publish_period: 10
+    </rosparam>
+  </node>
+
+  <test test-name="test_dynamic_tf_publisher"
+        name="test_dynamic_tf_publisher"
+        pkg="jsk_tools" type="test_topic_published.py">
+    <rosparam>
+      topic_0: /tf
+      timeout_0: 10
+    </rosparam>
+  </test>
+
+</launch>

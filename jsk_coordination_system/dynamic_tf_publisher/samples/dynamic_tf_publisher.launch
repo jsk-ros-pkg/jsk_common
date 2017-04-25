@@ -1,0 +1,24 @@
+<launch>
+  <arg name="node_name1" default="dynamic_tf_publisher1" />
+  <arg name="node_name2" default="dynamic_tf_publisher2" />
+  <arg name="parent_frame_id" default="head_link" />
+  <arg name="frame_id1" default="dynamic_link1" />
+  <arg name="frame_id2" default="dynamic_link2" />
+
+  <node name="static_tf_publisher"
+        pkg="tf" type="static_transform_publisher"
+        args="0 0 1 0 0 0 base_link $(arg parent_frame_id) 100" />
+
+  <node name="$(arg node_name1)"
+        pkg="dynamic_tf_publisher" type="dynamic_tf_publisher"
+        clear_params="true">
+    <param name="parent_frame_id" type="string" value="$(arg parent_frame_id)" />
+    <param name="frame_id" type="string" value="$(arg frame_id1)" />
+  </node>
+  <node name="$(arg node_name2)"
+        pkg="dynamic_tf_publisher" type="dynamic_tf_publisher"
+        clear_params="true">
+    <param name="parent_frame_id" type="string" value="$(arg frame_id1)" />
+    <param name="frame_id" type="string" value="$(arg frame_id2)" />
+  </node>
+</launch>
