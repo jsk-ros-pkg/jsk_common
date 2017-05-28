@@ -79,6 +79,9 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
     def unsubscribe(self):
         raise NotImplementedError('Please overwrite this method')
 
+    def is_subscribed(self):
+        return self._connection_status == SUBSCRIBED
+
     def peer_subscribe(self, *args, **kwargs):
         rospy.logdebug('[{topic}] is subscribed'.format(topic=args[0]))
         if self._connection_status == NOT_SUBSCRIBED:

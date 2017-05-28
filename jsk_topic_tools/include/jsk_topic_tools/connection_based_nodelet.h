@@ -146,6 +146,11 @@ namespace jsk_topic_tools
     virtual void unsubscribe() = 0;
 
     /** @brief
+     * Returns true when this nodelet subscribes topics, false otherwise.
+     */
+    virtual bool isSubscribed();
+
+    /** @brief
      * Advertise a topic and watch the publisher. Publishers which are
      * created by this method.
      * It automatically reads latch boolean parameter from nh and 
