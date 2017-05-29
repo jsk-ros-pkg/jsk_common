@@ -16,7 +16,6 @@ import yaml
 import cv_bridge
 import dynamic_reconfigure.server
 import genpy
-from jsk_topic_tools.log_utils import jsk_logfatal
 import message_filters
 import roslib.message
 import rospy
@@ -70,8 +69,8 @@ class DataCollectionServer(object):
             required_fields = ['name', 'msg_class', 'fname', 'savetype']
             for field in required_fields:
                 if field not in topic:
-                    jsk_logfatal("Required field '{}' for topic is missing"
-                                 .format(field))
+                    rospy.logfatal("Required field '{}' for topic is missing"
+                                   .format(field))
                     sys.exit(1)
         self.params = rospy.get_param('~params', [])
         self.slop = rospy.get_param('~slop', 0.1)
@@ -80,8 +79,8 @@ class DataCollectionServer(object):
             required_fields = ['key', 'fname', 'savetype']
             for field in required_fields:
                 if field not in param:
-                    jsk_logfatal("Required field '{}' for param is missing"
-                                 .format(field))
+                    rospy.logfatal("Required field '{}' for param is missing"
+                                   .format(field))
                     sys.exit(1)
         if rospy.get_param('~with_request', True):
             self.subs = []
