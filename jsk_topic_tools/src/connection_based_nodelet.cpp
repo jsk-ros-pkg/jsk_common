@@ -87,6 +87,12 @@ namespace jsk_topic_tools
     }
   }
 
+  inline bool ConnectionBasedNodelet::isSubscribed()
+  {
+    return connection_status_ == SUBSCRIBED;
+  }
+
+
   void ConnectionBasedNodelet::warnOnInitPostProcessCalledCallback(const ros::WallTimerEvent& event)
   {
     if (!on_init_post_process_called_) {
