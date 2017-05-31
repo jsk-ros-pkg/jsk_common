@@ -90,8 +90,8 @@ class DataCollectionServer(object):
                 sub = rospy.Subscriber(topic['name'], msg_class, self.sub_cb,
                                        callback_args=topic['name'])
                 self.subs.append(sub)
-                self.server = rospy.Service('~save_request', Trigger,
-                                            self.service_cb)
+            self.server = rospy.Service('~save_request', Trigger,
+                                        self.service_cb)
         else:
             self.subs = []
             for topic in self.topics:
