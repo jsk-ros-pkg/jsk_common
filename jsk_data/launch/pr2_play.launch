@@ -54,7 +54,7 @@
   </group>
   <group unless="$(arg use_xterm)">
     <node unless="$(arg use_gui)" pkg="rosbag" type="play" name="rosbag_play"
-          args="$(arg rosbag_option) $(arg bagfile_names)" />
+          args="$(arg rosbag_option) $(arg bagfile_names)" output="screen" />
   </group>
   <node if="$(arg use_gui)" pkg="rqt_bag" type="rqt_bag" name="rqt_bag" />
 
