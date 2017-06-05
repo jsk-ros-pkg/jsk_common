@@ -32,8 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#include <pluginlib/class_list_macros.h>
-#include "jsk_topic_tools/lightweight_throttle_nodelet.h"
+#include <jsk_topic_tools/lightweight_throttle_nodelet.h>
 
 namespace jsk_topic_tools
 {
@@ -43,7 +42,12 @@ namespace jsk_topic_tools
     latest_stamp_ = ros::Time::now();
     advertised_ = false;
     subscribing_ = false;
-    pnh_.param("update_rate", update_rate_, 1.0); // default 1.0
+
+    srv_ = boost::make_shared<dynamic_reconfigure::Server<Config> >(pnh_);
+    dynamic_reconfigure::Server<Config>::CallbackType f =
+      boost::bind(&LightweightThrottle::configCallback, this, _1, _2);
+    srv_->setCallback(f);
+
     // Subscribe input topic at first in order to decide
     // message type of publisher.
     // nodelet will unsubscribe input topic after it receives the first topic.
@@ -52,6 +56,12 @@ namespace jsk_topic_tools
                                                            &LightweightThrottle::inCallback,
                                                            this,
                                                            th_)));
+  }
+
+  void LightweightThrottle::configCallback(Config& config, uint32_t level)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    update_rate_ = config.update_rate;
   }
 
   void LightweightThrottle::connectionCallback(
@@ -79,6 +89,7 @@ namespace jsk_topic_tools
   void LightweightThrottle::inCallback(
     const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
   {
+    boost::mutex::scoped_lock lock(mutex_);
     // advertise if not
     if (!advertised_) {
       // This section should be called once
@@ -94,13 +105,21 @@ namespace jsk_topic_tools
       advertised_ = true;
       pub_ = pnh_.advertise(opts);
     }
+
     ros::Time now = ros::Time::now();
-    if ((now - latest_stamp_).toSec() > 1 / update_rate_) {
+
+    if (latest_stamp_ > now) {
+      ROS_WARN("Detected jump back in time. latest_stamp_ is overwritten.");
+      latest_stamp_ = now;
+    }
+
+    if (update_rate_ > 0.0 && (now - latest_stamp_).toSec() > 1.0 / update_rate_) {
       pub_.publish(msg);
       latest_stamp_ = now;
     }
   }
 }
 
+#include <pluginlib/class_list_macros.h>
 typedef jsk_topic_tools::LightweightThrottle LightweightThrottle;
 PLUGINLIB_EXPORT_CLASS(LightweightThrottle, nodelet::Nodelet)
