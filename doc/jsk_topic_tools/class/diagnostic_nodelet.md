@@ -1,8 +1,8 @@
-# diagnostic_nodelet
+# DiagnosticNodelet (C++)
 
 ## Description
 
-This class is a subclass of `connection_based_nodelet`.
+This class is a subclass of [`ConnectionBasedNodelet`](connection_based_nodelet.html).
 Instances of this class can publish diagnostics messages.
 This is abstruct class.
 
