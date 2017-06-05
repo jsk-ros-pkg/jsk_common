@@ -1,4 +1,9 @@
-# connection_based_nodelet
+# ConnectionBasedNodelet (C++)
+
+**WARNING**
+
+This base-class is being deprecated and replaced by `nodelet_topic_tools::NodeletLazy` in
+[nodelet_topic_tools](http://wiki.ros.org/nodelet_topic_tools).
 
 ## Description
 
