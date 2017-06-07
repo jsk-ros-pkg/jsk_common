@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from jsk_topic_tools import jsk_logwarn
 from roslib.message import get_message_class
 import rosgraph
 import rospy
@@ -12,8 +11,8 @@ class DelayTimestamp(object):
 
     def __init__(self):
         rospy.init_node('delay_timestamp')
-        jsk_logwarn('This node is mainly designed for TEST. '
-                    'Take care if you use this in your actual system.')
+        rospy.logwarn('This node is mainly designed for TEST. '
+                      'Take care if you use this in your actual system.')
         self._master = rosgraph.Master(rospy.get_name())
         self._delay = rospy.get_param('~delay')
         self._sub = rospy.Subscriber('~input', AnyMsg, self._cb)

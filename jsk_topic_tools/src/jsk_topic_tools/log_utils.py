@@ -24,23 +24,35 @@ def _log_msg_with_called_location(msg):
             msg=msg)
 
 
+def _deprecation_warning_jsk_logxxx():
+    rospy.logwarn(
+        'DEPRECATION WARNING: jsk_logxxx log functions are deprecated, and '
+        'please use rospy.logxxx instead. '
+        '(See https://github.com/jsk-ros-pkg/jsk_common/issues/1461)')
+
+
 def jsk_logdebug(msg):
+    _deprecation_warning_jsk_logxxx()
     rospy.logdebug(_log_msg_with_called_location(msg))
 
 
 def jsk_loginfo(msg):
+    _deprecation_warning_jsk_logxxx()
     rospy.loginfo(_log_msg_with_called_location(msg))
 
 
 def jsk_logwarn(msg):
+    _deprecation_warning_jsk_logxxx()
     rospy.logwarn(_log_msg_with_called_location(msg))
 
 
 def jsk_logerr(msg):
+    _deprecation_warning_jsk_logxxx()
     rospy.logerr(_log_msg_with_called_location(msg))
 
 
 def jsk_logfatal(msg):
+    _deprecation_warning_jsk_logxxx()
     rospy.logfatal(_log_msg_with_called_location(msg))
 
 
