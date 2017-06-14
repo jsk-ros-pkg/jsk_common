@@ -7,7 +7,7 @@
   <arg name="rosbag_option" default="--clock"/>
   <arg name="use_xterm" default="false" />
 
-  <arg name="relay_camera_ns" default="true" doc="for pr2 indigo, this must be disabled" />
+  <arg name="relay_camera_ns" default="true"/> <!-- for pr2 indigo, this must be disabled -->
   <arg name="camera" default="kinect_head"    unless="$(arg relay_camera_ns)"/>
   <arg name="camera" default="kinect_head_c2"     if="$(arg relay_camera_ns)"/>
   <arg name="manager" value="$(arg camera)/$(arg camera)_nodelet_manager" />
