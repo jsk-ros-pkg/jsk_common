@@ -27,6 +27,7 @@
   <run_depend>rosbag</run_depend>
   <run_depend>rqt_bag</run_depend>
   <run_depend>rviz</run_depend>
+  <run_depend>tf2_ros</run_depend>
   <run_depend>xacro</run_depend>
   <test_depend>python-freezegun-pip</test_depend>
   <test_depend>python-nose</test_depend>

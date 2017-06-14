@@ -6,35 +6,40 @@
   <arg name="use_gui" default="false"/>
   <arg name="rosbag_option" default="--clock"/>
   <arg name="use_xterm" default="false" />
-  <arg name="camera" default="kinect_head_c2"/>
-  
+
+  <arg name="relay_camera_ns" default="true"/> <!-- for pr2 indigo, this must be disabled -->
+  <arg name="camera" default="kinect_head"    unless="$(arg relay_camera_ns)"/>
+  <arg name="camera" default="kinect_head_c2"     if="$(arg relay_camera_ns)"/>
+  <arg name="manager" value="$(arg camera)/$(arg camera)_nodelet_manager" />
+
   <!-- c1 on real robot publishes topics with /kinect_head namespace
        so we remap them to /kinect_head_c2 here -->
-  <arg name="manager" value="$(arg camera)/$(arg camera)_nodelet_manager" />
-  <node name="relay_kinect_head_rgb_camera_info"
-        pkg="nodelet" type="nodelet"
-        args="load jsk_topic_tools/Relay $(arg manager)">
-    <remap from="~input" to="/kinect_head/rgb/camera_info" />
-    <remap from="~output" to="/$(arg camera)/rgb/camera_info" />
-  </node>
-  <node name="relay_kinect_head_rgb_image_raw"
-        pkg="nodelet" type="nodelet"
-        args="load jsk_topic_tools/Relay $(arg manager)">
-    <remap from="~input" to="/kinect_head/rgb/image_raw" />
-    <remap from="~output" to="/$(arg camera)/rgb/image_raw" />
-  </node>
-  <node name="relay_kinect_head_depth_camera_info"
-        pkg="nodelet" type="nodelet"
-        args="load jsk_topic_tools/Relay $(arg manager)">
-    <remap from="~input" to="/kinect_head/depth_registered/camera_info" />
-    <remap from="~output" to="/$(arg camera)/depth_registered/camera_info" />
-  </node>
-  <node name="relay_kinect_head_depth_image_raw"
-        pkg="nodelet" type="nodelet"
-        args="load jsk_topic_tools/Relay $(arg manager)">
-    <remap from="~input" to="/kinect_head/depth_registered/image_raw" />
-    <remap from="~output" to="/$(arg camera)/depth_registered/image_raw" />
-  </node>
+  <group if="$(arg relay_camera_ns)">
+    <node name="relay_kinect_head_rgb_camera_info"
+          pkg="nodelet" type="nodelet"
+          args="load jsk_topic_tools/Relay $(arg manager)">
+      <remap from="~input" to="/kinect_head/rgb/camera_info" />
+      <remap from="~output" to="/$(arg camera)/rgb/camera_info" />
+    </node>
+    <node name="relay_kinect_head_rgb_image_raw"
+          pkg="nodelet" type="nodelet"
+          args="load jsk_topic_tools/Relay $(arg manager)">
+      <remap from="~input" to="/kinect_head/rgb/image_raw" />
+      <remap from="~output" to="/$(arg camera)/rgb/image_raw" />
+    </node>
+    <node name="relay_kinect_head_depth_camera_info"
+          pkg="nodelet" type="nodelet"
+          args="load jsk_topic_tools/Relay $(arg manager)">
+      <remap from="~input" to="/kinect_head/depth_registered/camera_info" />
+      <remap from="~output" to="/$(arg camera)/depth_registered/camera_info" />
+    </node>
+    <node name="relay_kinect_head_depth_image_raw"
+          pkg="nodelet" type="nodelet"
+          args="load jsk_topic_tools/Relay $(arg manager)">
+      <remap from="~input" to="/kinect_head/depth_registered/image_raw" />
+      <remap from="~output" to="/$(arg camera)/depth_registered/image_raw" />
+    </node>
+  </group>
 
   <!-- set params for rviz -->
   <param name="use_sim_time" value="true" />
@@ -54,7 +59,7 @@
   </group>
   <group unless="$(arg use_xterm)">
     <node unless="$(arg use_gui)" pkg="rosbag" type="play" name="rosbag_play"
-          args="$(arg rosbag_option) $(arg bagfile_names)" />
+          args="$(arg rosbag_option) $(arg bagfile_names)" output="screen" />
   </group>
   <node if="$(arg use_gui)" pkg="rqt_bag" type="rqt_bag" name="rqt_bag" />
 
