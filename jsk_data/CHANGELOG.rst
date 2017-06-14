@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.4 (2017-06-14)
+------------------
 * [jsk_data][pr2_play.launch] replace doc to comment (`#1526 <https://github.com/jsk-ros-pkg/jsk_common/issues/1526>`_)
   * [jsk_data][pr2_play.launch] remove relay to c2 ns
   * [jsk_data][pr2_play.sh] support other rosbag arguments

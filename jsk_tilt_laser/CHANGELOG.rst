@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.4 (2017-06-14)
+------------------
 * [multisense_laser_pipeline] fix from inside the JAXON (`#1528 <https://github.com/jsk-ros-pkg/jsk_common/pull/1528>`_)
 * Contributors: Yohei Kakiuchi
 

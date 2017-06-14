@@ -2,8 +2,8 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.4 (2017-06-14)
+------------------
 * add ROSIntrupptException, not to show strage message on shutting down (`#1522 <https://github.com/jsk-ros-pkg/jsk_common/pull/1522>`_)
 * Contributors: Kei Okada
 
