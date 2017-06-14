@@ -2,6 +2,18 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools][LightweightThrottle] dynamic change update_rate (`#1514 <https://github.com/jsk-ros-pkg/jsk_common/pull/1514>`_)
+  *  [jsk_topic_tools][lightweight_throttle] support jump back in time
+
+* [jsk_topic_tools][connection_based_nodelet] add isSubscribed method (`#1523 <https://github.com/jsk-ros-pkg/jsk_common/pull/1523>`_)
+* Test disconnection in test_connection.py (`#1520 <https://github.com/jsk-ros-pkg/jsk_common/pull/1520>`_)
+  - modified:   test/test_connection.py
+  - https://github.com/jsk-ros-pkg/jsk_common/pull/1520#issuecomment-298151270
+* [jsk_topic_tools][connection_based_nodelet] warn if onInitPostProcess is not called (`#1513 <https://github.com/jsk-ros-pkg/jsk_common/pull/1513>`_)
+* Contributors: Kentaro Wada, Yuki Furuta
+
 2.2.3 (2017-03-23)
 ------------------
 * jsk_topic_tools/scripts/tf_to_transform.py: Use different value for duration and rate in tf_to_transform.py (`#1509 <https://github.com/jsk-ros-pkg/jsk_common/issues/1509>`_)

@@ -2,6 +2,12 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* CMakeLists.txt : fix install process, bin is already installed to /opt/ros/indigo/lib/jsk_tools/ directory (`#1518 <https://github.com/jsk-ros-pkg/jsk_common/issues/1518>`_)
+* Remove import error message in ros_console.py, Because python-colorama is installed via apt (`#1517 <https://github.com/jsk-ros-pkg/jsk_common/issues/1517>`_)
+* Contributors: Kei Okada, Kentaro Wada
+
 2.2.3 (2017-03-23)
 ------------------
 * jsk_tools/src/jsk_tools/migration.py: Fix migration of from XXX.[srv|msg] import YYY (`#1506 <https://github.com/jsk-ros-pkg/jsk_common/issues/1506>`_)
