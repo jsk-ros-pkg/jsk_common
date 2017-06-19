@@ -51,13 +51,15 @@ def decompress_rosbag(path, quiet=False):
     print('...done')
 
 
-def download(client, url, output, quiet=False):
+def download(client, url, output, quiet=False, chmod=True):
     print("Downloading file from '{url}'...".format(url=url))
     cmd = '{client} {url} -O {output}'.format(client=client, url=url,
                                               output=output)
     if quiet:
         cmd += ' --quiet'
     subprocess.call(shlex.split(cmd))
+    if chmod:
+        os.chmod(output, 0766)
     print('...done')
 
 
@@ -78,8 +80,10 @@ def is_google_drive_url(url):
 
 
 def download_data(pkg_name, path, url, md5, download_client=None,
-                  extract=False, compressed_bags=None, quiet=True):
-    """Install test data checking md5 and rosbag decompress if needed."""
+                  extract=False, compressed_bags=None, quiet=True, chmod=True):
+    """Install test data checking md5 and rosbag decompress if needed.
+       The downloaded data are located in cache_dir, and then linked to specified path.
+       cache_dir is set by environment variable `JSK_DATA_CACHE_DIR` if defined, set by ROS_HOME/data otherwise."""
     if download_client is None:
         if is_google_drive_url(url):
             download_client = 'gdown'
@@ -106,16 +110,21 @@ def download_data(pkg_name, path, url, md5, download_client=None,
                       .format(dir=osp.dirname(path), err=e))
                 return
     # prepare cache dir
-    ros_home = os.getenv('ROS_HOME', osp.expanduser('~/.ros'))
-    cache_dir = osp.join(ros_home, 'data', pkg_name)
+    if "JSK_DATA_CACHE_DIR" in os.environ:
+        cache_root_dir = os.getenv("JSK_DATA_CACHE_DIR")
+    else:
+        cache_root_dir = osp.join(os.getenv('ROS_HOME', osp.expanduser('~/.ros')), "data")
+    cache_dir = osp.join(cache_root_dir, pkg_name)
     if not osp.exists(cache_dir):
         os.makedirs(cache_dir)
+        if chmod:
+            os.chmod(cache_dir, 0777)
     cache_file = osp.join(cache_dir, osp.basename(path))
     # check if cache exists, and update if necessary
     if not (osp.exists(cache_file) and check_md5sum(cache_file, md5)):
         if osp.exists(cache_file):
             os.remove(cache_file)
-        download(download_client, url, cache_file, quiet=quiet)
+        download(download_client, url, cache_file, quiet=quiet, chmod=chmod)
     if osp.islink(path):
         # overwrite the link
         os.remove(path)
