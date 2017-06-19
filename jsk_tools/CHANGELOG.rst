@@ -2,6 +2,9 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.2.4 (2017-06-14)
 ------------------
 * CMakeLists.txt : fix install process, bin is already installed to /opt/ros/indigo/lib/jsk_tools/ directory (`#1518 <https://github.com/jsk-ros-pkg/jsk_common/issues/1518>`_)

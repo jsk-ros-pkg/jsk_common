@@ -2,6 +2,11 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_data][download_data] support custom download dir / chmod  (`#1530 <https://github.com/jsk-ros-pkg/jsk_common/issues/1530>`_)
+* Contributors: Yuki Furuta
+
 2.2.4 (2017-06-14)
 ------------------
 * [jsk_data][pr2_play.launch] replace doc to comment (`#1526 <https://github.com/jsk-ros-pkg/jsk_common/issues/1526>`_)
