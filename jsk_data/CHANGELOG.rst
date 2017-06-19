@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.5 (2017-06-19)
+------------------
 * [jsk_data][download_data] support custom download dir / chmod  (`#1530 <https://github.com/jsk-ros-pkg/jsk_common/issues/1530>`_)
 * Contributors: Yuki Furuta
 
