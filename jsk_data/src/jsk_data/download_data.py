@@ -13,14 +13,14 @@ import rosbag.rosbag_main
 import rospkg
 
 
-def extract_file(path, to_directory='.'):
+def extract_file(path, to_directory='.', chmod=True):
     print("Extracting '{path}'...".format(path=path))
     if path.endswith('.zip'):
-        opener, mode = zipfile.ZipFile, 'r'
+        opener, mode, getnames = zipfile.ZipFile, 'r', lambda f: f.namelist()
     elif path.endswith('.tar.gz') or path.endswith('.tgz'):
-        opener, mode = tarfile.open, 'r:gz'
+        opener, mode, getnames = tarfile.open, 'r:gz', lambda f: f.getnames()
     elif path.endswith('.tar.bz2') or path.endswith('.tbz'):
-        opener, mode = tarfile.open, 'r:bz2'
+        opener, mode, getnames = tarfile.open, 'r:bz2', lambda f: f.getnames()
     else:
         raise ValueError("Could not extract '%s' as no appropriate "
                          "extractor is found" % path)
@@ -32,8 +32,11 @@ def extract_file(path, to_directory='.'):
         file = opener(path, mode)
         try:
             file.extractall()
+            if chmod:
+                for fname in getnames(file):
+                    os.chmod(fname, 0777)
             root_files = list(set(name.split('/')[0]
-                                  for name in file.getnames()))
+                                  for name in getnames(file)))
         finally:
             file.close()
     finally:
@@ -42,12 +45,16 @@ def extract_file(path, to_directory='.'):
     return root_files
 
 
-def decompress_rosbag(path, quiet=False):
+def decompress_rosbag(path, quiet=False, chmod=True):
     print("Decompressing '{path}'...".format(path=path))
     argv = [path]
     if quiet:
         argv.append('--quiet')
     rosbag.rosbag_main.decompress_cmd(argv)
+    if chmod:
+        orig_path = osp.splitext(path)[0] + '.orig.bag'
+        os.chmod(orig_path, 0777)
+        os.chmod(path, 0777)
     print('...done')
 
 
@@ -137,7 +144,7 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         return
     if extract:
         # extract files in cache dir and create symlink for them
-        extracted_files = extract_file(cache_file, to_directory=cache_dir)
+        extracted_files = extract_file(cache_file, to_directory=cache_dir, chmod=True)
         for file_ in extracted_files:
             file_ = osp.join(cache_dir, file_)
             dst_path = osp.join(osp.split(path)[0], osp.basename(file_))
@@ -153,4 +160,4 @@ def download_data(pkg_name, path, url, md5, download_client=None,
             rp = rospkg.RosPack()
             pkg_path = rp.get_path(pkg_name)
             compressed_bag = osp.join(pkg_path, compressed_bag)
-        decompress_rosbag(compressed_bag, quiet=quiet)
+        decompress_rosbag(compressed_bag, quiet=quiet, chmod=chmod)
