@@ -36,7 +36,7 @@ This "unreliable bond mechanism" issue occurs a lot and
 ``standalone_complexed_nodelet`` is a nodelet manager but it does not
 require client to send request. ``standalone_complexed_nodelet`` knows
 nodelet classes via ros parameter instead of server-client model.
-Limitation of ``standalone_complexed_nodelet`` is that it does support
+Limitation of ``standalone_complexed_nodelet`` is that it does not support
 dynamic loading/unloading of nodelet classes but we know we do not need
 the feature from our experiences.
 
