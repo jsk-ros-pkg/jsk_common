@@ -1,0 +1,19 @@
+<launch>
+  <param name="test_param_0" value="true" />
+  <param name="test_param_1" value="hello" />
+
+  <test test-name="test_rosparam_set"
+        name="test_rosparam_set"
+        pkg="jsk_tools" type="test_rosparam_set.py">
+    <rosparam>
+      params:
+        - name: /test_param_0
+          expected: true
+          timeout: 10
+        - name: /test_param_1
+          expected: hello
+          timeout: 10
+    </rosparam>
+  </test>
+
+</launch>

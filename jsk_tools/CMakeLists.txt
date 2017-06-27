@@ -45,6 +45,9 @@ if (CATKIN_ENABLE_TESTING)
     # FIXME: jsk_tools/sanity_lib.py does not work on hydro travis/jenkins
     # https://github.com/jsk-ros-pkg/jsk_common/pull/1405#issuecomment-225218625
     jsk_tools_add_rostest(test/python/sanity_lib.test)
+    # FIXME: jsk_tools/test_topic_published.py does not work on hydro travis/jenkins
+    # https://github.com/jsk-ros-pkg/jsk_common/pull/1293#issuecomment-164158260
+    jsk_tools_add_rostest(test/test_rosparam_set.test)
   endif()
   jsk_tools_add_rostest(test/test_stdout.test)
   find_package(jsk_tools REQUIRED)
