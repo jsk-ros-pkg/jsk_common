@@ -38,6 +38,22 @@
 
 namespace jsk_topic_tools
 {
+  int getXMLIntValue(XmlRpc::XmlRpcValue val)
+  {
+    switch(val.getType())
+    {
+    case XmlRpc::XmlRpcValue::TypeInt:
+    {
+      return (int)val;
+    }
+    default:
+    {
+      ROS_ERROR_STREAM("the value cannot be converted into double: " << val);
+      throw std::runtime_error("the value cannot be converted into double");
+    }
+    }
+  }
+
   double getXMLDoubleValue(XmlRpc::XmlRpcValue val)
   {
     switch(val.getType())
@@ -55,6 +71,29 @@ namespace jsk_topic_tools
       ROS_ERROR_STREAM("the value cannot be converted into double: " << val);
       throw std::runtime_error("the value cannot be converted into double");
     }
+    }
+  }
+
+  bool readVectorParameter(ros::NodeHandle& nh,
+                           const std::string& param_name,
+                           std::vector<int>& result)
+  {
+    if (nh.hasParam(param_name)) {
+      XmlRpc::XmlRpcValue v;
+      nh.param(param_name, v, v);
+      if (v.getType() == XmlRpc::XmlRpcValue::TypeArray) {
+        result.resize(v.size());
+        for (size_t i = 0; i < v.size(); i++) {
+          result[i] = getXMLIntValue(v[i]);
+        }
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      return false;
     }
   }
   

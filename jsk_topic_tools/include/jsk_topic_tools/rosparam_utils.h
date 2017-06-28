@@ -42,6 +42,15 @@
 namespace jsk_topic_tools
 {
   ////////////////////////////////////////////////////////
+  // a function to read vector of int parameters
+  // from ros parameter servers.
+  ////////////////////////////////////////////////////////
+  bool readVectorParameter(
+    ros::NodeHandle& nh,
+    const std::string& param_name,
+    std::vector<int>& result);
+
+  ////////////////////////////////////////////////////////
   // a function to read vector of double parameters
   // from ros parameter servers.
   ////////////////////////////////////////////////////////
@@ -83,6 +92,11 @@ namespace jsk_topic_tools
   // a function to convert from XmlRpc type to double
   ////////////////////////////////////////////////////////
   double getXMLDoubleValue(XmlRpc::XmlRpcValue val);
+
+  ////////////////////////////////////////////////////////
+  // a function to convert from XmlRpc type to int
+  ////////////////////////////////////////////////////////
+  int getXMLIntValue(XmlRpc::XmlRpcValue val);
 }
 
 #endif
