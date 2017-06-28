@@ -69,7 +69,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('package')
     parser.add_argument('-f', '--rosdistro-from', default='i')
-    parser.add_argument('-t', '--rosdistro-to', default='k')
+    parser.add_argument('-t', '--rosdistro-to', default='l')
     args = parser.parse_args()
 
     package = args.package
