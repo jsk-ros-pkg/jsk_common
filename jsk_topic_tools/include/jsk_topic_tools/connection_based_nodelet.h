@@ -150,6 +150,13 @@ namespace jsk_topic_tools
      */
     virtual bool isSubscribed();
 
+    /** @brief warn if there are expected remappings.
+    *
+    * @param[in] names Names which are expected to remapped.
+    * @return false if there is at least a topic which is not remapped, else true;
+    */
+    virtual bool warnNoRemap(const std::vector<std::string> names);
+
     /** @brief
      * Advertise a topic and watch the publisher. Publishers which are
      * created by this method.
