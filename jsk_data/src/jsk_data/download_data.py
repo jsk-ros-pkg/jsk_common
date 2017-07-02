@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import hashlib
 import os
 import os.path as osp
@@ -14,7 +16,7 @@ import rospkg
 
 
 def extract_file(path, to_directory='.', chmod=True):
-    print("Extracting '{path}'...".format(path=path))
+    print('[%s] Extracting to %s' % (path, to_directory))
     if path.endswith('.zip'):
         opener, mode, getnames = zipfile.ZipFile, 'r', lambda f: f.namelist()
     elif path.endswith('.tar.gz') or path.endswith('.tgz'):
@@ -41,12 +43,12 @@ def extract_file(path, to_directory='.', chmod=True):
             file.close()
     finally:
         os.chdir(cwd)
-    print('...done')
+    print('[%s] Finished extracting to %s' % (path, to_directory))
     return root_files
 
 
 def decompress_rosbag(path, quiet=False, chmod=True):
-    print("Decompressing '{path}'...".format(path=path))
+    print('[%s] Decompressing the rosbag' % path)
     argv = [path]
     if quiet:
         argv.append('--quiet')
@@ -55,11 +57,11 @@ def decompress_rosbag(path, quiet=False, chmod=True):
         orig_path = osp.splitext(path)[0] + '.orig.bag'
         os.chmod(orig_path, 0777)
         os.chmod(path, 0777)
-    print('...done')
+    print('[%s] Finished decompressing the rosbag' % path)
 
 
 def download(client, url, output, quiet=False, chmod=True):
-    print("Downloading file from '{url}'...".format(url=url))
+    print('[%s] Downloading from %s' % (output, url))
     cmd = '{client} {url} -O {output}'.format(client=client, url=url,
                                               output=output)
     if quiet:
@@ -67,7 +69,7 @@ def download(client, url, output, quiet=False, chmod=True):
     subprocess.call(shlex.split(cmd))
     if chmod:
         os.chmod(output, 0766)
-    print('...done')
+    print('[%s] Finished downloading' % output)
 
 
 def check_md5sum(path, md5):
@@ -75,9 +77,9 @@ def check_md5sum(path, md5):
     if md5 and len(md5) != 32:
         raise ValueError('md5 must be 32 charactors\n'
                          'actual: {} ({} charactors)'.format(md5, len(md5)))
-    print("Checking md5sum of '{path}'...".format(path=path))
+    print('[%s] Checking md5sum (%s)' % (path, md5))
     is_same = hashlib.md5(open(path, 'rb').read()).hexdigest() == md5
-    print('...done')
+    print('[%s] Finished checking md5sum' % path)
     return is_same
 
 
@@ -140,7 +142,8 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         os.symlink(cache_file, path)  # create link
     else:
         # not link and exists so skipping
-        sys.stderr.write("WARNING: '{0}' exists\n".format(path))
+        print('[%s] File exists, so skipping creating symlink.' % path,
+              file=sys.stderr)
         return
     if extract:
         # extract files in cache dir and create symlink for them
