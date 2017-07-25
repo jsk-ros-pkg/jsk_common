@@ -183,7 +183,7 @@ class DataCollectionServer(object):
                         topic['name'])
                     rospy.logerr(msg)
                     return TriggerResponse(success=False, message=msg)
-            rospy.sleep(self.slop)
+            rospy.sleep(0.01)
         save_dir = osp.join(self.save_dir, str(now.to_nsec()))
         if not osp.exists(save_dir):
             os.makedirs(save_dir)
