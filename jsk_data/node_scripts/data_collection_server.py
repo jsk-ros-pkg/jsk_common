@@ -179,8 +179,10 @@ class DataCollectionServer(object):
                         abs(now - stamp) < rospy.Duration(self.slop)):
                     saving_msgs[topic['name']] = self.msg[topic['name']]['msg']
                 if now < stamp:
-                    rospy.logwarn(
-                        'timestamp exceeds starting time, try bigger slop')
+                    msg = 'timeout for topic [{}]. try bigger slop'.format(
+                        topic['name'])
+                    rospy.logerr(msg)
+                    return TriggerResponse(success=False, message=msg)
             rospy.sleep(self.slop)
         save_dir = osp.join(self.save_dir, str(now.to_nsec()))
         if not osp.exists(save_dir):
