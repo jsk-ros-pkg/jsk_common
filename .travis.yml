@@ -21,7 +21,4 @@ env:
     - ROS_DISTRO=indigo USE_DEB=true BEFORE_SCRIPT='$CI_SOURCE_PATH/.travis_before_script_opencv3.bash'
     - ROS_DISTRO=jade USE_DEB=true
     - ROS_DISTRO=kinetic USE_DEB=true
-script:
-    - pip freeze | xargs sudo pip uninstall -y
-    - export PATH=/usr/bin/:$PATH
-    - source .travis/travis.sh
+script: source .travis/travis.sh
