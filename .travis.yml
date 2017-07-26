@@ -1,6 +1,9 @@
+sudo: false
 language: c++
-sudo: required
-dist: trusty
+python:
+  - "2.7"
+compiler:
+  - gcc
 notifications:
   email:
     on_success: always
