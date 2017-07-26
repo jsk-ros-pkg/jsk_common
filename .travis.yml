@@ -19,5 +19,6 @@ env:
     - ROS_DISTRO=jade USE_DEB=true
     - ROS_DISTRO=kinetic USE_DEB=true
 script:
+    - pip freeze | xargs sudo pip uninstall -y
     - export PATH=/usr/bin/:$PATH
     - source .travis/travis.sh
