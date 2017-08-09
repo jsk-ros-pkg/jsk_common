@@ -78,6 +78,8 @@ jsk_topic_tools_nodelet(src/relay_nodelet.cpp
   "jsk_topic_tools/Relay" "relay")
 jsk_topic_tools_nodelet(src/deprecated_relay_nodelet.cpp
   "jsk_topic_tools/DeprecatedRelay" "deprecated_relay")
+jsk_topic_tools_nodelet(src/stealth_relay_nodelet.cpp
+  "jsk_topic_tools/StealthRelay" "stealth_relay")
 jsk_topic_tools_nodelet(src/passthrough_nodelet.cpp
   "jsk_topic_tools/Passthrough" "passthrough")
 jsk_topic_tools_nodelet(src/block_nodelet.cpp
@@ -128,6 +130,7 @@ if (CATKIN_ENABLE_TESTING)
   jsk_topic_tools_add_rostest(test/test_block.test)
   jsk_topic_tools_add_rostest(test/test_connection_based_nodelet.test)
   jsk_topic_tools_add_rostest(test/test_connection_based_transport.test)
+  jsk_topic_tools_add_rostest(test/test_stealth_relay.test)
   catkin_add_nosetests(src/jsk_topic_tools/tests)
   catkin_add_gtest(test_rosparam_utils src/tests/test_rosparam_utils.cpp)
   target_link_libraries(test_rosparam_utils ${PROJECT_NAME})
