@@ -1,14 +1,12 @@
-language:
-  - cpp
-  - python
+language: c++
 cache:
+  apt: true
+  pip: true
   directories:
     - $HOME/.ccache
     - $HOME/.cache/pip
-python:
-  - "2.7"
-compiler:
-  - gcc
+sudo: required
+dist: trusty
 notifications:
   email:
     on_success: always
