@@ -23,3 +23,7 @@ env:
     - ROS_DISTRO=jade USE_DEB=true
     - ROS_DISTRO=kinetic USE_DEB=true
 script: source .travis/travis.sh
+# to weaken the load on the Jenkins server
+branches:
+  only:
+    - master
