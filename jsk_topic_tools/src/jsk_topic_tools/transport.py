@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import abc
 import argparse
 import sys
 
@@ -18,7 +19,7 @@ NOT_SUBSCRIBED = 1
 
 # define a new metaclass which overrides the '__call__' function
 # See: http://martyalchin.com/2008/jan/10/simple-plugin-framework/
-class MetaConnectionBasedTransport(type):
+class MetaConnectionBasedTransport(abc.ABCMeta):
     def __call__(cls, *args, **kwargs):
         """Called when you call ConnectionBasedTransport()"""
         obj = type.__call__(cls, *args, **kwargs)
@@ -73,11 +74,13 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
                 " child subscribers. Set '~always_subscribe' as True"
                 ' to have it subscribe always.'.format(name=rospy.get_name()))
 
+    @abc.abstractmethod
     def subscribe(self):
-        raise NotImplementedError('Please overwrite this method')
+        raise NotImplementedError
 
+    @abc.abstractmethod
     def unsubscribe(self):
-        raise NotImplementedError('Please overwrite this method')
+        raise NotImplementedError
 
     def is_subscribed(self):
         return self._connection_status == SUBSCRIBED
