@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import abc
 import argparse
@@ -62,6 +61,10 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
 
     def _post_init(self):
         self.is_initialized = True
+        if not self._publishers:
+            raise RuntimeError(
+                'No publishers registered.'
+                ' Have you called ConnectionBasedTransport.advertise?')
         if rospy.get_param('~always_subscribe', False):
             self.subscribe()
             self._connection_status = SUBSCRIBED
