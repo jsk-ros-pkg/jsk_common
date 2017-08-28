@@ -115,9 +115,9 @@ def download_data(pkg_name, path, url, md5, download_client=None,
             try:
                 os.makedirs(osp.dirname(path))
             except OSError as e:
-                print('\033[31mCould not make direcotry {dir} {err}\033[0m'
-                      .format(dir=osp.dirname(path), err=e))
-                return
+                # can fail on running with multiprocess
+                if not osp.isdir(path):
+                    raise
     # prepare cache dir
     if "JSK_DATA_CACHE_DIR" in os.environ:
         cache_root_dir = os.getenv("JSK_DATA_CACHE_DIR")
@@ -125,7 +125,12 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         cache_root_dir = osp.join(os.getenv('ROS_HOME', osp.expanduser('~/.ros')), "data")
     cache_dir = osp.join(cache_root_dir, pkg_name)
     if not osp.exists(cache_dir):
-        os.makedirs(cache_dir)
+        try:
+            os.makedirs(cache_dir)
+        except OSError as e:
+            # can fail on running with multiprocess
+            if not osp.isdir(path):
+                raise
         if chmod:
             os.chmod(cache_dir, 0777)
     cache_file = osp.join(cache_dir, osp.basename(path))

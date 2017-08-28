@@ -1,6 +1,6 @@
 # StealthRelay
 
-`jsk_topic_tools/StealthRelay` is a node/nodelet that subscribes to `~input` topic and republishes all incoming data to `~output` topic like `topic_tools/Relay` but only if `~monitor` topic is subscribed by any other nodes.
+`jsk_topic_tools/StealthRelay` is a node/nodelet that subscribes to `~input` topic and republishes all incoming data to `~output` topic like `topic_tools/Relay` but only if `~monitoring_topic` topic is subscribed by any other nodes.
 
 When `~input` and `~monitoring_topic` topic name point to the same topic, it looks that this node subscribes `~input` topic only when other nodes also subscribes it, which is equivalent to subscribing without incrementing subscription counter.
 `~monitoring_topic` can be set by rosparam and is set to `~input` by default.
