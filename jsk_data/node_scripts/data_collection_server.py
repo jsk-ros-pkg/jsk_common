@@ -83,19 +83,41 @@ class DataCollectionServer(object):
                     jsk_logfatal("Required field '{}' for param is missing"
                                  .format(field))
                     sys.exit(1)
-        if rospy.get_param('~with_request', True):
+        method = rospy.get_param('~method', 'request')
+        if rospy.has_param('~with_request'):
+            rospy.logwarn('Deprecated param: ~with_request, Use ~method')
+            if not rospy.get_param('~with_request'):
+                method = 'message_filters'
+        if method == 'request':
             self.subs = []
             for topic in self.topics:
-                msg_class = roslib.message.get_message_class(topic['msg_class'])
+                msg_class = roslib.message.get_message_class(
+                    topic['msg_class'])
                 sub = rospy.Subscriber(topic['name'], msg_class, self.sub_cb,
                                        callback_args=topic['name'])
                 self.subs.append(sub)
             self.server = rospy.Service('~save_request', Trigger,
                                         self.service_cb)
+        elif method == 'timer':
+            self.subs = []
+            for topic in self.topics:
+                msg_class = roslib.message.get_message_class(
+                    topic['msg_class'])
+                sub = rospy.Subscriber(topic['name'], msg_class, self.sub_cb,
+                                       callback_args=topic['name'])
+                self.subs.append(sub)
+            duration = rospy.Duration(1.0 / rospy.get_param('~hz', 1.0))
+            self.start = False
+            self.start_server = rospy.Service(
+                '~start_request', Trigger, self.start_service_cb)
+            self.end_server = rospy.Service(
+                '~end_request', Trigger, self.end_service_cb)
+            self.timer = rospy.Timer(duration, self.timer_cb)
         else:
             self.subs = []
             for topic in self.topics:
-                msg_class = roslib.message.get_message_class(topic['msg_class'])
+                msg_class = roslib.message.get_message_class(
+                    topic['msg_class'])
                 sub = message_filters.Subscriber(topic['name'], msg_class)
                 self.subs.append(sub)
             self.sync = message_filters.TimeSynchronizer(
@@ -120,7 +142,7 @@ class DataCollectionServer(object):
         for param in self.params:
             filename = osp.join(save_dir, param['fname'])
             self.save_param(param['key'], param['savetype'], filename)
-        rospy.loginfo('Saved data to %s'% save_dir)
+        rospy.loginfo('Saved data to %s' % save_dir)
 
     def __del__(self):
         for sub in self.subs:
@@ -130,7 +152,7 @@ class DataCollectionServer(object):
         self.msg[topic_name] = {
             'stamp': msg.header.stamp if msg._has_header else rospy.Time.now(),
             'msg': msg
-            }
+        }
 
     def save_topic(self, topic, msg, savetype, filename):
         if savetype == 'ColorImage':
@@ -167,22 +189,23 @@ class DataCollectionServer(object):
             rospy.logerr('Unexpected savetype for param: {}'.format(savetype))
             raise ValueError
 
-    def service_cb(self, req):
+    def _save(self):
         now = rospy.Time.now()
         saving_msgs = {}
         while len(saving_msgs) < len(self.topics):
             for topic in self.topics:
                 if topic['name'] in saving_msgs:
                     continue
+                if topic['name'] not in self.msg:
+                    continue
                 stamp = self.msg[topic['name']]['stamp']
-                if ((topic['name'] in self.msg) and
-                        abs(now - stamp) < rospy.Duration(self.slop)):
+                if abs(now - stamp) < rospy.Duration(self.slop):
                     saving_msgs[topic['name']] = self.msg[topic['name']]['msg']
                 if now < stamp:
                     msg = 'timeout for topic [{}]. try bigger slop'.format(
                         topic['name'])
                     rospy.logerr(msg)
-                    return TriggerResponse(success=False, message=msg)
+                    return False, msg
             rospy.sleep(0.01)
         save_dir = osp.join(self.save_dir, str(now.to_nsec()))
         if not osp.exists(save_dir):
@@ -194,9 +217,28 @@ class DataCollectionServer(object):
         for param in self.params:
             filename = osp.join(save_dir, param['fname'])
             self.save_param(param['key'], param['savetype'], filename)
-        message = 'Saved data to {}'.format(save_dir)
-        rospy.loginfo(message)
-        return TriggerResponse(success=True, message=message)
+        msg = 'Saved data to {}'.format(save_dir)
+        rospy.loginfo(msg)
+        return True, msg
+
+    def start_service_cb(self, req):
+        self.start = True
+        return TriggerResponse(success=True)
+
+    def end_service_cb(self, req):
+        self.start = False
+        return TriggerResponse(success=True)
+
+    def service_cb(self, req):
+        result, msg = self._save()
+        if result:
+            return TriggerResponse(success=True, message=msg)
+        else:
+            return TriggerResponse(success=False, message=msg)
+
+    def timer_cb(self, event):
+        if self.start:
+            result, msg = self._save()
 
 
 if __name__ == '__main__':
