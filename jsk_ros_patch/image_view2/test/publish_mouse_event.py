@@ -3,7 +3,6 @@
 
 import cv2
 import numpy as np
-from scipy.misc import lena
 
 import rospy
 from sensor_msgs.msg import Image
@@ -14,8 +13,6 @@ from image_view2.msg import MouseEvent
 def main():
     pub_plus = rospy.Publisher('~plus_rect_event', MouseEvent, queue_size=1)
     pub_minus = rospy.Publisher('~minus_rect_event', MouseEvent, queue_size=1)
-
-    rospy.loginfo('Waiting for image_view2 launch..')
 
     width = rospy.get_param('~image_width')
     height = rospy.get_param('~image_height')
@@ -42,5 +39,5 @@ def main():
 
 
 if __name__ == '__main__':
-    rospy.init_node('publish_lena')
+    rospy.init_node('publish_mouse_event')
     main()
