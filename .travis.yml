@@ -34,5 +34,9 @@ install:
   - conda create -q -y --name=jsk_common python=$TRAVIS_PYTHON_VERSION
   - source ~/miniconda/bin/activate jsk_common
 script:
+  - which python
+  - python --version
+  - which pip
+  - pip --version
   - pip install -q python-jenkins
   - source .travis/travis.sh
