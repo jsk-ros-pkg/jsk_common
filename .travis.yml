@@ -1,6 +1,8 @@
 language: c++
-sudo: false
+sudo: true
 dist: trusty
+services:
+  - docker
 cache:
   directories:
     - $HOME/.ccache
