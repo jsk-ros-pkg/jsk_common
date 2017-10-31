@@ -32,6 +32,7 @@ add_service_files(
 )
 generate_dynamic_reconfigure_options(
   cfg/LightweightThrottle.cfg
+  cfg/StealthRelay.cfg
 )
 generate_messages()
 catkin_package(

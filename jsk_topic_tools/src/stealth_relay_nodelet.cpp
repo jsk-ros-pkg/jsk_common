@@ -59,16 +59,17 @@ namespace jsk_topic_tools
     subscribed_ = false;
     advertised_ = false;
 
-    pnh_->param<int>("queue_size", queue_size_, 1);
-    pnh_->param<std::string>("monitoring_topic", monitoring_topic_,
-                             pnh_->resolveName("input"));
+    poll_timer_ = pnh_->createTimer(ros::Duration(1.0),
+                                    &StealthRelay::timerCallback, this,
+                                    /* oneshot= */false, /* autostart= */ false);
 
-    double monitor_rate;
-    pnh_->param<double>("monitor_rate", monitor_rate, 1.0);
-    poll_timer_ = pnh_->createTimer(ros::Duration(monitor_rate),
-                                    &StealthRelay::timerCallback, this);
+    srv_ = boost::make_shared<dynamic_reconfigure::Server<Config> >(*pnh_);
+    dynamic_reconfigure::Server<Config>::CallbackType f =
+      boost::bind(&StealthRelay::configCallback, this, _1, _2);
+    srv_->setCallback(f);
 
-    NODELET_DEBUG("Started monitoring %s at %.2f Hz", monitoring_topic_.c_str(), monitor_rate);
+    /* To advertise output topic as the same type of input topic,
+       first this node subscribes input topic until one message is received. */
     subscribe();
   }
 
@@ -92,15 +93,49 @@ namespace jsk_topic_tools
     return subscribed_;
   }
 
+  void StealthRelay::configCallback(Config& config, uint32_t level)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    NODELET_DEBUG("configCallback");
+    bool need_resubscribe = (config.queue_size != queue_size_);
+    queue_size_ = config.queue_size;
+
+    if (config.monitor_topic.empty()) {
+      config.monitor_topic = pnh_->resolveName("input");
+    }
+    monitor_topic_ = config.monitor_topic;
+
+    if (monitor_rate_ != config.monitor_rate) {
+      monitor_rate_ = config.monitor_rate;
+      poll_timer_.setPeriod(ros::Duration(monitor_rate_), true);
+    }
+
+    if (enable_monitor_ != config.enable_monitor) {
+      enable_monitor_ = config.enable_monitor;
+      if (enable_monitor_) {
+        poll_timer_.start();
+      } else {
+        poll_timer_.stop();
+        subscribe();
+      }
+    }
+
+    if (isSubscribed() && need_resubscribe) {
+      unsubscribe();
+      subscribe();
+    }
+  }
+
   void StealthRelay::inputCallback(const AnyMsgConstPtr& msg)
   {
     boost::mutex::scoped_lock lock(mutex_);
+    NODELET_DEBUG("inputCallback");
 
     if (!advertised_)
     {
       pub_ = msg->advertise(*pnh_, "output", 1);
       advertised_ = true;
-      unsubscribe();
+      if (enable_monitor_) unsubscribe();
       return;
     }
 
@@ -110,26 +145,24 @@ namespace jsk_topic_tools
   void StealthRelay::timerCallback(const ros::TimerEvent& event)
   {
     boost::mutex::scoped_lock lock(mutex_);
+    NODELET_DEBUG("timerCallback");
 
-    if (pub_.getNumSubscribers() == 0 && subscribed_)
+    if (pub_.getNumSubscribers() == 0 && isSubscribed())
     {
       unsubscribe();
       return;
     }
 
-    int subscribing_num = 0;
-    if (!getNumOtherSubscribers(monitoring_topic_, subscribing_num))
-    {
-      if (subscribed_) unsubscribe();
-    }
-    else if (subscribed_ && subscribing_num == 0)
+    int subscribing_num = getNumOtherSubscribers(monitor_topic_);
+    if (subscribed_ && subscribing_num == 0)
       unsubscribe();
     else if (!subscribed_ && subscribing_num > 0)
       subscribe();
   }
 
-  bool StealthRelay::getNumOtherSubscribers(const std::string& name, int& num)
+  int StealthRelay::getNumOtherSubscribers(const std::string& name)
   {
+    int num = 0;
     XmlRpc::XmlRpcValue req(ros::this_node::getName()), res, data;
     bool ok = ros::master::execute("getSystemState", req, res, data, false);
 
@@ -147,10 +180,10 @@ namespace jsk_topic_tools
           if (subscriber != ros::this_node::getName()) ++cnt;
         }
         num = cnt;
-        return true;
+        break;
       }
     }
-    return false;
+    return num;
   }
 }
 
