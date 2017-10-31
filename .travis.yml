@@ -1,6 +1,6 @@
-language: c++
-sudo: required
+sudo: false
 dist: trusty
+language: python
 cache:
   directories:
     - $HOME/.ccache
@@ -22,4 +22,21 @@ env:
     - ROS_DISTRO=indigo USE_DEB=true BEFORE_SCRIPT='$CI_SOURCE_PATH/.travis_before_script_opencv3.bash'
     - ROS_DISTRO=jade USE_DEB=true
     - ROS_DISTRO=kinetic USE_DEB=true
-script: source .travis/travis.sh
+before_install:
+  # install miniconda
+  - wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
+install:
+  - conda create -q -y --name=jsk_common python=$TRAVIS_PYTHON_VERSION
+  - source ~/miniconda/bin/activate jsk_common
+script:
+  - which python
+  - python --version
+  - which pip
+  - pip --version
+  - pip install -q python-jenkins
+  - source .travis/travis.sh
