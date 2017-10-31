@@ -43,6 +43,10 @@ catkin_package(
     CFG_EXTRAS nodelet.cmake
 )
 
+if(topic_tools_VERSION VERSION_GREATER "1.13.2")
+  add_definitions("-Dtopic_tools_relay_stealth_EXISTS")
+endif()
+
 include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 if(NOT APPLE)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs")

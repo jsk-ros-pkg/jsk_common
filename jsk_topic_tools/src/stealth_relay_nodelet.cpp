@@ -59,6 +59,10 @@ namespace jsk_topic_tools
     subscribed_ = false;
     advertised_ = false;
 
+#ifdef topic_tools_relay_stealth_EXISTS
+    NODELET_WARN("This nodelet is deprecated. Use `topic_tools/Relay` with `stealth_mode`");
+#endif
+
     poll_timer_ = pnh_->createTimer(ros::Duration(1.0),
                                     &StealthRelay::timerCallback, this,
                                     /* oneshot= */false, /* autostart= */ false);
