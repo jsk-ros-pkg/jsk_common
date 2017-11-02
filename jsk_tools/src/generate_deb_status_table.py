@@ -10,12 +10,19 @@ except ImportError:
     sys.stderr.write('Please install tabulate: pip install tabulate\n')
     sys.exit(1)
 
+from rosdistro import get_index_url, get_index, get_distribution_files
 
 def generate_deb_status_table(package, rosdistro_from, rosdistro_to):
     DISTROS = collections.OrderedDict()
-    DISTROS['indigo'] = ['saucy', 'trusty']
-    DISTROS['jade'] = ['trusty', 'vivid']
-    DISTROS['kinetic'] = ['wily', 'xenial']
+    rosdistro_index = get_index(get_index_url())
+    for distro in sorted(rosdistro_index.distributions.keys()):
+        distribution_files = get_distribution_files(rosdistro_index, distro)
+        if len(distribution_files) > 1:
+            sys.stderr.write('distribution_files has multiple entories {}\n'.format(distribution_files))
+            sys.exit(1)
+        platform = distribution_files[0].release_platforms['ubuntu']
+        DISTROS[distro] = platform
+        #print('DISTROS[{}] = {}'.format(distro, platform))
 
     table = []
     for bit, arch in zip(['v8', 'hf', '32', '64'],
@@ -62,7 +69,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('package')
     parser.add_argument('-f', '--rosdistro-from', default='i')
-    parser.add_argument('-t', '--rosdistro-to', default='k')
+    parser.add_argument('-t', '--rosdistro-to', default='l')
     args = parser.parse_args()
 
     package = args.package

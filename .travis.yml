@@ -22,4 +22,11 @@ env:
     - ROS_DISTRO=indigo USE_DEB=true BEFORE_SCRIPT='$CI_SOURCE_PATH/.travis_before_script_opencv3.bash'
     - ROS_DISTRO=jade USE_DEB=true
     - ROS_DISTRO=kinetic USE_DEB=true
+matrix:
+  fast_finish: true
+  allow_failures:
+    - env: ROS_DISTRO=hydro USE_DEB=false CATKIN_TOOLS_BUILD_OPTIONS='-iv --summarize --no-status --no-color'
 script: source .travis/travis.sh
+after_success:
+  # trigger build of jsk-docs.readthedocs.org
+  - curl -X POST -d "branches=master" -d "token=da477cb4ef53d533aeb51c2b43e8baca6202baca" https://readthedocs.org/api/v2/webhook/jsk-docs/9094/
