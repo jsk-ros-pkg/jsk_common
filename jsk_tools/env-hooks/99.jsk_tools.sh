@@ -79,7 +79,7 @@ rossetlocal() {
 }
 
 rossetip_dev() {
-    local device=${1-'(eth|wlan|en|lo)[0-9]*'}
+    local device=${1-'(eth|wl|en|lo)[0-9]*'}
     export ROS_IP=`LANG=C ip -o -4 a | grep -E "^[0-9]+: $device" | tail -n1 | sed -e 's@^.*inet *\([0-9\.]*\).*$@\1@g'`
     export ROS_HOSTNAME=$ROS_IP
 }
@@ -101,7 +101,7 @@ rossetip_addr() {
 }
 
 rossetip() {
-    local device=${1-'(eth|wlan|en|lo)[0-9]*'}
+    local device=${1-'(eth|wl|en|lo)[0-9]*'}
     if [[ $device =~ [0-9]+.[0-9]+.[0-9]+.[0-9]+ ]]; then
         export ROS_IP="$device"
     else
