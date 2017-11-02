@@ -7,12 +7,22 @@ import re
 import shlex
 import subprocess
 import shutil
+import stat
 import sys
 import tarfile
 import zipfile
 
 import rosbag.rosbag_main
 import rospkg
+
+
+def is_file_writable(path):
+    if not os.path.exists(path):
+        return True  # if file does not exist, any file is writable there
+    st = os.stat(path)
+    return (bool(st.st_mode & stat.S_IWUSR) and
+            bool(st.st_mode & stat.S_IWGRP) and
+            bool(st.st_mode & stat.S_IWOTH))
 
 
 def extract_file(path, to_directory='.', chmod=True):
@@ -34,14 +44,15 @@ def extract_file(path, to_directory='.', chmod=True):
         file = opener(path, mode)
         try:
             file.extractall()
-            if chmod:
-                for fname in getnames(file):
-                    os.chmod(fname, 0777)
             root_files = list(set(name.split('/')[0]
                                   for name in getnames(file)))
         finally:
             file.close()
     finally:
+        if chmod:
+            for fname in root_files:
+                if not is_file_writable(fname):
+                    os.chmod(os.path.abspath(fname), 0777)
         os.chdir(cwd)
     print('[%s] Finished extracting to %s' % (path, to_directory))
     return root_files
@@ -52,11 +63,15 @@ def decompress_rosbag(path, quiet=False, chmod=True):
     argv = [path]
     if quiet:
         argv.append('--quiet')
-    rosbag.rosbag_main.decompress_cmd(argv)
-    if chmod:
-        orig_path = osp.splitext(path)[0] + '.orig.bag'
-        os.chmod(orig_path, 0777)
-        os.chmod(path, 0777)
+    try:
+        rosbag.rosbag_main.decompress_cmd(argv)
+    finally:
+        if chmod:
+            if not is_file_writable(path):
+                os.chmod(path, 0777)
+            orig_path = osp.splitext(path)[0] + '.orig.bag'
+            if not is_file_writable(orig_path):
+                os.chmod(orig_path, 0777)
     print('[%s] Finished decompressing the rosbag' % path)
 
 
@@ -66,9 +81,12 @@ def download(client, url, output, quiet=False, chmod=True):
                                               output=output)
     if quiet:
         cmd += ' --quiet'
-    subprocess.call(shlex.split(cmd))
-    if chmod:
-        os.chmod(output, 0766)
+    try:
+        subprocess.call(shlex.split(cmd))
+    finally:
+        if chmod:
+            if not is_file_writable(output):
+                os.chmod(output, 0766)
     print('[%s] Finished downloading' % output)
 
 
@@ -131,8 +149,10 @@ def download_data(pkg_name, path, url, md5, download_client=None,
             # can fail on running with multiprocess
             if not osp.isdir(path):
                 raise
-        if chmod:
-            os.chmod(cache_dir, 0777)
+        finally:
+            if chmod:
+                if not is_file_writable(cache_dir):
+                    os.chmod(cache_dir, 0777)
     cache_file = osp.join(cache_dir, osp.basename(path))
     # check if cache exists, and update if necessary
     if not (osp.exists(cache_file) and check_md5sum(cache_file, md5)):
