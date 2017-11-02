@@ -22,6 +22,10 @@ env:
     - ROS_DISTRO=indigo USE_DEB=true BEFORE_SCRIPT='$CI_SOURCE_PATH/.travis_before_script_opencv3.bash'
     - ROS_DISTRO=jade USE_DEB=true
     - ROS_DISTRO=kinetic USE_DEB=true
+matrix:
+  fast_finish: true
+  allow_failures:
+    - env: ROS_DISTRO=hydro USE_DEB=false CATKIN_TOOLS_BUILD_OPTIONS='-iv --summarize --no-status --no-color'
 script: source .travis/travis.sh
 after_success:
   # trigger build of jsk-docs.readthedocs.org
