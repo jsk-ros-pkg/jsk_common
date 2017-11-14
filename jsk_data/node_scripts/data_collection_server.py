@@ -149,6 +149,10 @@ class DataCollectionServer(object):
             msg_yaml = genpy.message.strify_message(msg)
             with open(filename, 'w') as f:
                 f.write(msg_yaml)
+        elif topic['savetype'] == 'CameraInfoYAML':
+            msg_yaml = self.generate_camera_info_yaml(msg)
+            with open(filename, 'w') as f:
+                f.write(msg_yaml)
         else:
             rospy.logerr('Unexpected savetype for topic: {}'.format(savetype))
             raise ValueError
@@ -197,6 +201,36 @@ class DataCollectionServer(object):
         message = 'Saved data to {}'.format(save_dir)
         rospy.loginfo(message)
         return TriggerResponse(success=True, message=message)
+
+    def generate_camera_info_yaml(self, msg):
+        camera_info = {}
+        camera_info['image_width'] = msg.width
+        camera_info['image_height'] = msg.height
+        camera_info['camera_name'] = ''
+        camera_info['camera_matrix'] = {
+            'rows': 3,
+            'cols': 3,
+            'data': msg.K
+        }
+        camera_info['distortion_model'] = msg.distortion_model
+        camera_info['distortion_coefficients'] = {
+            'rows': 1,
+            'cols': 5,
+            'data': msg.D
+        }
+        camera_info['rectification_matrix'] = {
+            'rows': 3,
+            'cols': 3,
+            'data': msg.R
+        }
+        camera_info['projection_matrix'] = {
+            'rows': 3,
+            'cols': 4,
+            'data': msg.P
+        }
+        info_yaml = yaml.safe_dump(
+            camera_info, allow_unicode=True, default_flow_style=False)
+        return info_yaml
 
 
 if __name__ == '__main__':
