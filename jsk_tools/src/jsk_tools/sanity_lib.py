@@ -70,7 +70,8 @@ class TopicPublishedChecker(object):
             print(colored('--- Echo %s' % self.topic_name, 'purple'))
             field_filter = rostopic.create_field_filter(echo_nostr=False, echo_noarr=self.echo_noarr)
             print(colored(genpy.message.strify_message(msg, field_filter=field_filter), 'cyan'))
-        self.msg = msg
+        if rospy.Time.now() < self.deadline:
+            self.msg = msg
 
     def check(self):
         while not rospy.is_shutdown():

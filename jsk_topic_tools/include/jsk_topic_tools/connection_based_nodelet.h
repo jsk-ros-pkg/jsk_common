@@ -237,7 +237,7 @@ namespace jsk_topic_tools
                     int queue_size)
     {
       NODELET_WARN("advertiseCamera with ImageTransport is deprecated");
-      return advertiseCamera(nh, it, topic, queue_size);
+      return advertiseCamera(nh, topic, queue_size);
     }
     
     image_transport::CameraPublisher

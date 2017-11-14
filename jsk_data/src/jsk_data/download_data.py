@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import hashlib
 import os
 import os.path as osp
@@ -5,6 +7,7 @@ import re
 import shlex
 import subprocess
 import shutil
+import stat
 import sys
 import tarfile
 import zipfile
@@ -13,8 +16,17 @@ import rosbag.rosbag_main
 import rospkg
 
 
+def is_file_writable(path):
+    if not os.path.exists(path):
+        return True  # if file does not exist, any file is writable there
+    st = os.stat(path)
+    return (bool(st.st_mode & stat.S_IWUSR) and
+            bool(st.st_mode & stat.S_IWGRP) and
+            bool(st.st_mode & stat.S_IWOTH))
+
+
 def extract_file(path, to_directory='.', chmod=True):
-    print("Extracting '{path}'...".format(path=path))
+    print('[%s] Extracting to %s' % (path, to_directory))
     if path.endswith('.zip'):
         opener, mode, getnames = zipfile.ZipFile, 'r', lambda f: f.namelist()
     elif path.endswith('.tar.gz') or path.endswith('.tgz'):
@@ -32,42 +44,50 @@ def extract_file(path, to_directory='.', chmod=True):
         file = opener(path, mode)
         try:
             file.extractall()
-            if chmod:
-                for fname in getnames(file):
-                    os.chmod(fname, 0777)
             root_files = list(set(name.split('/')[0]
                                   for name in getnames(file)))
         finally:
             file.close()
     finally:
+        if chmod:
+            for fname in root_files:
+                if not is_file_writable(fname):
+                    os.chmod(os.path.abspath(fname), 0777)
         os.chdir(cwd)
-    print('...done')
+    print('[%s] Finished extracting to %s' % (path, to_directory))
     return root_files
 
 
 def decompress_rosbag(path, quiet=False, chmod=True):
-    print("Decompressing '{path}'...".format(path=path))
+    print('[%s] Decompressing the rosbag' % path)
     argv = [path]
     if quiet:
         argv.append('--quiet')
-    rosbag.rosbag_main.decompress_cmd(argv)
-    if chmod:
-        orig_path = osp.splitext(path)[0] + '.orig.bag'
-        os.chmod(orig_path, 0777)
-        os.chmod(path, 0777)
-    print('...done')
+    try:
+        rosbag.rosbag_main.decompress_cmd(argv)
+    finally:
+        if chmod:
+            if not is_file_writable(path):
+                os.chmod(path, 0777)
+            orig_path = osp.splitext(path)[0] + '.orig.bag'
+            if not is_file_writable(orig_path):
+                os.chmod(orig_path, 0777)
+    print('[%s] Finished decompressing the rosbag' % path)
 
 
 def download(client, url, output, quiet=False, chmod=True):
-    print("Downloading file from '{url}'...".format(url=url))
+    print('[%s] Downloading from %s' % (output, url))
     cmd = '{client} {url} -O {output}'.format(client=client, url=url,
                                               output=output)
     if quiet:
         cmd += ' --quiet'
-    subprocess.call(shlex.split(cmd))
-    if chmod:
-        os.chmod(output, 0766)
-    print('...done')
+    try:
+        subprocess.call(shlex.split(cmd))
+    finally:
+        if chmod:
+            if not is_file_writable(output):
+                os.chmod(output, 0766)
+    print('[%s] Finished downloading' % output)
 
 
 def check_md5sum(path, md5):
@@ -75,9 +95,9 @@ def check_md5sum(path, md5):
     if md5 and len(md5) != 32:
         raise ValueError('md5 must be 32 charactors\n'
                          'actual: {} ({} charactors)'.format(md5, len(md5)))
-    print("Checking md5sum of '{path}'...".format(path=path))
+    print('[%s] Checking md5sum (%s)' % (path, md5))
     is_same = hashlib.md5(open(path, 'rb').read()).hexdigest() == md5
-    print('...done')
+    print('[%s] Finished checking md5sum' % path)
     return is_same
 
 
@@ -113,9 +133,9 @@ def download_data(pkg_name, path, url, md5, download_client=None,
             try:
                 os.makedirs(osp.dirname(path))
             except OSError as e:
-                print('\033[31mCould not make direcotry {dir} {err}\033[0m'
-                      .format(dir=osp.dirname(path), err=e))
-                return
+                # can fail on running with multiprocess
+                if not osp.isdir(path):
+                    raise
     # prepare cache dir
     if "JSK_DATA_CACHE_DIR" in os.environ:
         cache_root_dir = os.getenv("JSK_DATA_CACHE_DIR")
@@ -123,9 +143,16 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         cache_root_dir = osp.join(os.getenv('ROS_HOME', osp.expanduser('~/.ros')), "data")
     cache_dir = osp.join(cache_root_dir, pkg_name)
     if not osp.exists(cache_dir):
-        os.makedirs(cache_dir)
-        if chmod:
-            os.chmod(cache_dir, 0777)
+        try:
+            os.makedirs(cache_dir)
+        except OSError as e:
+            # can fail on running with multiprocess
+            if not osp.isdir(path):
+                raise
+        finally:
+            if chmod:
+                if not is_file_writable(cache_dir):
+                    os.chmod(cache_dir, 0777)
     cache_file = osp.join(cache_dir, osp.basename(path))
     # check if cache exists, and update if necessary
     if not (osp.exists(cache_file) and check_md5sum(cache_file, md5)):
@@ -140,7 +167,8 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         os.symlink(cache_file, path)  # create link
     else:
         # not link and exists so skipping
-        sys.stderr.write("WARNING: '{0}' exists\n".format(path))
+        print('[%s] File exists, so skipping creating symlink.' % path,
+              file=sys.stderr)
         return
     if extract:
         # extract files in cache dir and create symlink for them

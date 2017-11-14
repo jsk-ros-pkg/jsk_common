@@ -11,12 +11,10 @@ function rosview {
        echo -e "usage: rosview [package] [file]\n\nView a file within a package with pager."
        return 0
     fi
-    if [[ -n ${arg} ]]; then
-        if [[ -z $PAGER ]]; then
-            roscat "$@" | less
-        else
-            roscat "$@" | $PAGER
-        fi
+    if [[ -z $PAGER ]]; then
+        roscat "$@" | less
+    else
+        roscat "$@" | $PAGER
     fi
 }
 complete -F "_roscomplete_file" "rosview"

@@ -47,6 +47,12 @@
       relay a topic message from ~input to ~output with deprecated message.
     </description>
   </class>
+  <class name="jsk_topic_tools/StealthRelay" type="StealthRelay"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      relay a topic message from ~input to ~output without incrementing subscription count.
+    </description>
+  </class>
   <class name="jsk_topic_tools/Passthrough" type="Passthrough"
          base_class_type="nodelet::Nodelet">
     <description>
