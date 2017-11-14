@@ -32,6 +32,7 @@ add_service_files(
 )
 generate_dynamic_reconfigure_options(
   cfg/LightweightThrottle.cfg
+  cfg/StealthRelay.cfg
 )
 generate_messages()
 catkin_package(
@@ -41,6 +42,10 @@ catkin_package(
     LIBRARIES jsk_topic_tools
     CFG_EXTRAS nodelet.cmake
 )
+
+if(topic_tools_VERSION VERSION_GREATER "1.13.2")
+  add_definitions("-Dtopic_tools_relay_stealth_EXISTS")
+endif()
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 if(NOT APPLE)

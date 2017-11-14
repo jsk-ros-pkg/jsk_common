@@ -45,28 +45,37 @@
 #include <nodelet/nodelet.h>
 #include <topic_tools/shape_shifter.h>
 
+#include <dynamic_reconfigure/server.h>
+#include <jsk_topic_tools/StealthRelayConfig.h>
+
 
 namespace jsk_topic_tools
 {
   class StealthRelay : public nodelet::Nodelet
   {
     typedef boost::shared_ptr<topic_tools::ShapeShifter const> AnyMsgConstPtr;
+    typedef StealthRelayConfig Config;
   protected:
     virtual void onInit();
     virtual void subscribe();
     virtual void unsubscribe();
     virtual bool isSubscribed();
+    virtual void configCallback(Config& config, uint32_t level);
+    virtual void inputCallback(const ros::MessageEvent<topic_tools::ShapeShifter>& event);
     virtual void inputCallback(const AnyMsgConstPtr& msg);
     virtual void timerCallback(const ros::TimerEvent& event);
-    virtual bool getNumOtherSubscribers(const std::string& name, int& num);
+    virtual int getNumOtherSubscribers(const std::string& name);
 
     boost::mutex mutex_;
     boost::shared_ptr<ros::NodeHandle> nh_, pnh_;
+    boost::shared_ptr<dynamic_reconfigure::Server<Config> > srv_;
     ros::Publisher pub_;
     ros::Subscriber sub_;
     ros::Timer poll_timer_;
-    std::string monitoring_topic_;
+    std::string monitor_topic_;
+    double monitor_rate_;
     int queue_size_;
+    bool enable_monitor_;
     bool subscribed_;
     bool advertised_;
   };

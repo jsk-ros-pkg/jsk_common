@@ -25,7 +25,7 @@ class TestSanityLib(unittest.TestCase):
         output = f.getvalue()
         sys.stdout = sys.__stdout__
         self.assertIn('/input', output)
-        self.assertIn('data: input', output)
+        self.assertTrue('data: input' in output or 'data: "input"' in output)
 
     def test_TopicPublishedChecker_2(self):
         checker = sanity_lib.TopicPublishedChecker('/input', data_class=std_msgs.msg.String)

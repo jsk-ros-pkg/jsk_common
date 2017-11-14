@@ -8,7 +8,8 @@
     </rosparam>
   </node>
   <test test-name="test_stealth_relay"
-        pkg="jsk_topic_tools" type="test_stealth_relay.py" />
+        pkg="jsk_topic_tools" type="test_stealth_relay.py"
+        time-limit="40"/>
 
   <node name="stealth_relay" pkg="jsk_topic_tools" type="stealth_relay"
         output="screen">
