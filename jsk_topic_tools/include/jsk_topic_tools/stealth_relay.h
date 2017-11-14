@@ -61,6 +61,7 @@ namespace jsk_topic_tools
     virtual void unsubscribe();
     virtual bool isSubscribed();
     virtual void configCallback(Config& config, uint32_t level);
+    virtual void inputCallback(const ros::MessageEvent<topic_tools::ShapeShifter>& event);
     virtual void inputCallback(const AnyMsgConstPtr& msg);
     virtual void timerCallback(const ros::TimerEvent& event);
     virtual int getNumOtherSubscribers(const std::string& name);

@@ -80,8 +80,8 @@ namespace jsk_topic_tools
   void StealthRelay::subscribe()
   {
     NODELET_DEBUG("subscribe");
-    sub_ = pnh_->subscribe("input", queue_size_,
-                           &StealthRelay::inputCallback, this);
+    sub_ = pnh_->subscribe<const ros::MessageEvent<topic_tools::ShapeShifter>&>
+      ("input", queue_size_, &StealthRelay::inputCallback, this);
     subscribed_ = true;
   }
 
@@ -128,6 +128,12 @@ namespace jsk_topic_tools
       unsubscribe();
       subscribe();
     }
+  }
+
+  void StealthRelay::inputCallback(const ros::MessageEvent<topic_tools::ShapeShifter>& event)
+  {
+    const AnyMsgConstPtr& msg = event.getConstMessage();
+    inputCallback(msg);
   }
 
   void StealthRelay::inputCallback(const AnyMsgConstPtr& msg)
