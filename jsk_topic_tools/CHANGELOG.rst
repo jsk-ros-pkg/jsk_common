@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.6 (2018-01-05)
+------------------
 * jsk_topic_tools: stealth_relay_nodelet: support MessageEvent (`#1572 <https://github.com/jsk-ros-pkg/jsk_common/issues/1572>`_)
 * jsk_topic_tools: stealth_relay add options as dynamic_reconfigure (`#1568 <https://github.com/jsk-ros-pkg/jsk_common/issues/1568>`_)
   * jsk_topic_tools: test_stealth_relay: disable updating dynamic reconfigure

@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.6 (2018-01-05)
+------------------
 * [jsk_tools] add ROS param set test (`#1535 <https://github.com/jsk-ros-pkg/jsk_common/issues/1535>`_)
 * jsk_tools: fix sanity lib test (`#1573 <https://github.com/jsk-ros-pkg/jsk_common/issues/1573>`_)
 * update generate_deb_status_table.py (`#1539 <https://github.com/jsk-ros-pkg/jsk_common/issues/1539>`_)

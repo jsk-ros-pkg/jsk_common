@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.6 (2018-01-05)
+------------------
 * image_view2: support kinetic (`#1573 <https://github.com/jsk-ros-pkg/jsk_common/issues/1573>`_)
 * image_view2: fix publish_mouse_event (`#1564 <https://github.com/jsk-ros-pkg/jsk_common/issues/1564>`_)
 * need to find pcl_ros for image_view2 (`#1541 <https://github.com/jsk-ros-pkg/jsk_common/issues/1541>`_)

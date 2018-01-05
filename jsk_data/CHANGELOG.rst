@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.6 (2018-01-05)
+------------------
 * jsk_data: download_data.py: ensure chmod downloaded data if possible (`#1571 <https://github.com/jsk-ros-pkg/jsk_common/issues/1571>`_)
 * jsk_data: download_data.py: Skip mkdir failures that can be caused by multiprocessing (`#1553 <https://github.com/jsk-ros-pkg/jsk_common/issues/1553>`_)
 * Fix data_collection_server (`#1549 <https://github.com/jsk-ros-pkg/jsk_common/issues/1549>`_)
