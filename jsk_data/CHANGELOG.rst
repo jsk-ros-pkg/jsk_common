@@ -2,6 +2,17 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* jsk_data: download_data.py: ensure chmod downloaded data if possible (`#1571 <https://github.com/jsk-ros-pkg/jsk_common/issues/1571>`_)
+* jsk_data: download_data.py: Skip mkdir failures that can be caused by multiprocessing (`#1553 <https://github.com/jsk-ros-pkg/jsk_common/issues/1553>`_)
+* Fix data_collection_server (`#1549 <https://github.com/jsk-ros-pkg/jsk_common/issues/1549>`_)
+  * Sleep less time in data_collection_server.py
+  * Return false response in data_collection_server
+* Improve print information while download_data (`#1536 <https://github.com/jsk-ros-pkg/jsk_common/issues/1536>`_)
+* [jsk_data][download_data.py] chmod decompressed data (`#1532 <https://github.com/jsk-ros-pkg/jsk_common/issues/1532>`_)
+* Contributors: Kei Okada, Kentaro Wada, Yuki Furuta
+
 2.2.5 (2017-06-19)
 ------------------
 * [jsk_data][download_data] support custom download dir / chmod  (`#1530 <https://github.com/jsk-ros-pkg/jsk_common/issues/1530>`_)

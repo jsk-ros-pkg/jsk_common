@@ -2,6 +2,24 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* jsk_topic_tools: stealth_relay_nodelet: support MessageEvent (`#1572 <https://github.com/jsk-ros-pkg/jsk_common/issues/1572>`_)
+* jsk_topic_tools: stealth_relay add options as dynamic_reconfigure (`#1568 <https://github.com/jsk-ros-pkg/jsk_common/issues/1568>`_)
+  * jsk_topic_tools: test_stealth_relay: disable updating dynamic reconfigure
+  * jsk_topic_tools: test_stealth_relay: update timeout
+  * jsk_topic_tools: stealth_relay: add deprecation warning
+  * jsk_topic_tools: add options as dynamic_reconfigure
+
+* jsk_topic_tools: connection_based_nodelet: fix typo in advertiseCamera (`#1558 <https://github.com/jsk-ros-pkg/jsk_common/issues/1558>`_)
+* jsk_topic_tools: add stealth_relay for silently subscribing topic (`#1544 <https://github.com/jsk-ros-pkg/jsk_common/issues/1544>`_)
+* Validate implementation of child class of ConnectionBasedTransport (`#1556 <https://github.com/jsk-ros-pkg/jsk_common/issues/1556>`_)
+  * Check if publishers exist to avoid implementation failures
+  * Use ABCMeta to avoid unexpected usage of ConnectionBasedTransport
+    Someone use this class without any subscriptions,
+    and in that case this class should not be used in general.
+* Contributors: Kei Okada, Kentaro Wada, Yuki Furuta
+
 2.2.5 (2017-06-19)
 ------------------
 

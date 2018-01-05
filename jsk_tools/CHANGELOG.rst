@@ -2,6 +2,21 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_tools] add ROS param set test (`#1535 <https://github.com/jsk-ros-pkg/jsk_common/issues/1535>`_)
+* jsk_tools: fix sanity lib test (`#1573 <https://github.com/jsk-ros-pkg/jsk_common/issues/1573>`_)
+* update generate_deb_status_table.py (`#1539 <https://github.com/jsk-ros-pkg/jsk_common/issues/1539>`_)
+  * default rosdistro-to is lunar
+  * use python-rosdistro to create DISTRS Dict
+* Support network interface name convention from ubuntu 15.10 (`#1561 <https://github.com/jsk-ros-pkg/jsk_common/issues/1561>`_)
+  * Fixes https://github.com/jsk-ros-pkg/jsk_common/issues/1559
+    c.f.: https://askubuntu.com/questions/702161/why-is-my-interface-now-wlp2s0-instead-of-wlan0
+* Make TopicPublishedChecker run in parallel (`#1546 <https://github.com/jsk-ros-pkg/jsk_common/issues/1546>`_)
+  * Make TopicPublishedChecker multi-processable
+* Fix undefined variable arg in rosview on bash (`#1545 <https://github.com/jsk-ros-pkg/jsk_common/issues/1545>`_)
+* Contributors: Kentaro Wada, Shingo Kitagawa, Yuki Furuta
+
 2.2.5 (2017-06-19)
 ------------------
 
