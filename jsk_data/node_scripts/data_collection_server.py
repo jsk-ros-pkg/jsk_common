@@ -83,46 +83,76 @@ class DataCollectionServer(object):
                     jsk_logfatal("Required field '{}' for param is missing"
                                  .format(field))
                     sys.exit(1)
+
         method = rospy.get_param('~method', 'request')
+        use_message_filters = rospy.get_param('~message_filters', False)
+
         if rospy.has_param('~with_request'):
             rospy.logwarn('Deprecated param: ~with_request, Use ~method')
             if not rospy.get_param('~with_request'):
-                method = 'message_filters'
+                use_message_filters = True
+                method = None
+        if method == 'message_filters':
+            rospy.logwarn(
+                'Deprecated param: ~method: message_filters,'
+                'Use ~message_filters: true')
+            use_message_filters = True
+            method = None
+
+        # set subscribers
+        self.subs = []
+        for topic in self.topics:
+            msg_class = roslib.message.get_message_class(
+                topic['msg_class'])
+            if use_message_filters:
+                sub = message_filters.Subscriber(
+                    topic['name'], msg_class)
+            else:
+                sub = rospy.Subscriber(
+                    topic['name'], msg_class, self.sub_cb,
+                    callback_args=topic['name'])
+            self.subs.append(sub)
+
+        # add synchoronizer if use_message_filters
+        if use_message_filters:
+            queue_size = rospy.get_param('~queue_size', 10)
+            approximate_sync = rospy.get_param('~approximate_sync', False)
+            if approximate_sync:
+                slop = rospy.get_param('~slop', 0.1)
+                self.sync = message_filters.ApproximateTimeSynchronizer(
+                    self.subs, queue_size=queue_size, slop=slop)
+            else:
+                self.sync = message_filters.TimeSynchronizer(
+                    self.subs, queue_size=queue_size)
+
+        # set collecting method
         if method == 'request':
-            self.subs = []
-            for topic in self.topics:
-                msg_class = roslib.message.get_message_class(
-                    topic['msg_class'])
-                sub = rospy.Subscriber(topic['name'], msg_class, self.sub_cb,
-                                       callback_args=topic['name'])
-                self.subs.append(sub)
-            self.server = rospy.Service('~save_request', Trigger,
-                                        self.service_cb)
+            if use_message_filters:
+                self.sync.registerCallback(self.sync_sub_cb)
+                self.server = rospy.Service(
+                    '~save_request', Trigger, self.sync_service_cb)
+            else:
+                self.server = rospy.Service(
+                    '~save_request', Trigger, self.service_cb)
         elif method == 'timer':
-            self.subs = []
-            for topic in self.topics:
-                msg_class = roslib.message.get_message_class(
-                    topic['msg_class'])
-                sub = rospy.Subscriber(topic['name'], msg_class, self.sub_cb,
-                                       callback_args=topic['name'])
-                self.subs.append(sub)
             duration = rospy.Duration(1.0 / rospy.get_param('~hz', 1.0))
             self.start = False
             self.start_server = rospy.Service(
                 '~start_request', Trigger, self.start_service_cb)
             self.end_server = rospy.Service(
                 '~end_request', Trigger, self.end_service_cb)
-            self.timer = rospy.Timer(duration, self.timer_cb)
+            if use_message_filters:
+                self.sync.registerCallback(self.sync_sub_cb)
+                self.timer = rospy.Timer(duration, self.sync_timer_cb)
+            else:
+                self.timer = rospy.Timer(duration, self.timer_cb)
         else:
-            self.subs = []
-            for topic in self.topics:
-                msg_class = roslib.message.get_message_class(
-                    topic['msg_class'])
-                sub = message_filters.Subscriber(topic['name'], msg_class)
-                self.subs.append(sub)
-            self.sync = message_filters.TimeSynchronizer(
-                self.subs, queue_size=rospy.get_param('~queue_size', 10))
-            self.sync.registerCallback(self.sync_sub_cb)
+            if use_message_filters:
+                self.sync.registerCallback(self.sync_sub_and_save_cb)
+            else:
+                rospy.logerr(
+                    '~use_filters: False, ~method: None is not supported')
+                sys.exit(1)
 
     def reconfig_cb(self, config, level):
         self.save_dir = osp.expanduser(config['save_dir'])
@@ -130,23 +160,20 @@ class DataCollectionServer(object):
             os.makedirs(self.save_dir)
         return config
 
-    def sync_sub_cb(self, *msgs):
-        stamp = msgs[0].header.stamp
-        save_dir = osp.join(self.save_dir, str(stamp.to_nsec()))
-        if not osp.exists(save_dir):
-            os.makedirs(save_dir)
-        for i, topic in enumerate(self.topics):
-            filename = osp.join(save_dir, topic['fname'])
-            self.save_topic(
-                topic['name'], msgs[i], topic['savetype'], filename)
-        for param in self.params:
-            filename = osp.join(save_dir, param['fname'])
-            self.save_param(param['key'], param['savetype'], filename)
-        rospy.loginfo('Saved data to %s' % save_dir)
-
     def __del__(self):
         for sub in self.subs:
             sub.unregister()
+
+    def sync_sub_cb(self, *msgs):
+        for topic, msg in zip(self.topics, msgs):
+            self.msg[topic['name']] = {
+                'stamp': msg.header.stamp,
+                'msg': msg
+            }
+
+    def sync_sub_and_save_cb(self, *msgs):
+        self.sync_sub_cb(*msgs)
+        self._sync_save()
 
     def sub_cb(self, msg, topic_name):
         self.msg[topic_name] = {
@@ -188,6 +215,22 @@ class DataCollectionServer(object):
         else:
             rospy.logerr('Unexpected savetype for param: {}'.format(savetype))
             raise ValueError
+
+    def _sync_save(self):
+        stamp = self.msg[self.topics[0]['name']]['stamp']
+        save_dir = osp.join(self.save_dir, str(stamp.to_nsec()))
+        if not osp.exists(save_dir):
+            os.makedirs(save_dir)
+        for topic in self.topics:
+            msg = self.msg[topic['name']]['msg']
+            filename = osp.join(save_dir, topic['fname'])
+            self.save_topic(topic['name'], msg, topic['savetype'], filename)
+        for param in self.params:
+            filename = osp.join(save_dir, param['fname'])
+            self.save_param(param['key'], param['savetype'], filename)
+        msg = 'Saved data to {}'.format(save_dir)
+        rospy.loginfo(msg)
+        return True, msg
 
     def _save(self):
         now = rospy.Time.now()
@@ -236,10 +279,20 @@ class DataCollectionServer(object):
         else:
             return TriggerResponse(success=False, message=msg)
 
+    def sync_service_cb(self, req):
+        result, msg = self._sync_save()
+        if result:
+            return TriggerResponse(success=True, message=msg)
+        else:
+            return TriggerResponse(success=False, message=msg)
+
     def timer_cb(self, event):
         if self.start:
             result, msg = self._save()
 
+    def sync_timer_cb(self, event):
+        if self.start:
+            result, msg = self._sync_save()
 
 if __name__ == '__main__':
     rospy.init_node('data_collection_server')
