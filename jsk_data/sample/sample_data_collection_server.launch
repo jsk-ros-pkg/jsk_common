@@ -1,16 +1,64 @@
 <launch>
 
+  <node name="publish_string"
+        pkg="rostopic" type="rostopic"
+        args="pub /sample_topic std_msgs/String 'sample' -r 10" />
+
   <rosparam>
-    string: spam
+    sample_string: spam
   </rosparam>
 
-  <node name="data_collection_server"
+  <node name="image_publisher0"
+        pkg="jsk_perception" type="image_publisher.py">
+    <rosparam subst_value="true">
+      file_name: $(find jsk_perception)/sample/image/leopard.jpg
+      publish_info: false
+      encoding: bgr8
+      rate: 10
+    </rosparam>
+  </node>
+
+  <node name="image_publisher1"
+        pkg="jsk_perception" type="image_publisher.py">
+    <rosparam subst_value="true">
+      file_name: $(find jsk_perception)/sample/image/leopard.jpg
+      publish_info: false
+      encoding: bgr8
+      rate: 100
+    </rosparam>
+  </node>
+
+  <node name="data_collection_server_request"
         pkg="jsk_data" type="data_collection_server.py">
     <rosparam>
-      save_dir: ~/.ros/jsk_data/sample
+      message_filters: false
+      save_dir: ~/.ros/jsk_data/sample/no_filters/request
+      topics:
+        - name: /sample_topic
+          fname: sample_topic.yaml
+          savetype: YAML
+          msg_class: std_msgs/String
       params:
-        - key: /string
-          fname: string.txt
+        - key: /sample_string
+          fname: sample_string.txt
+          savetype: Text
+    </rosparam>
+  </node>
+
+  <node name="data_collection_server_timer"
+        pkg="jsk_data" type="data_collection_server.py">
+    <rosparam>
+      message_filters: false
+      method: timer
+      save_dir: ~/.ros/jsk_data/sample/no_filters/timer
+      topics:
+        - name: /sample_topic
+          fname: sample_topic.yaml
+          savetype: YAML
+          msg_class: std_msgs/String
+      params:
+        - key: /sample_string
+          fname: sample_string.txt
           savetype: Text
     </rosparam>
   </node>
@@ -18,6 +66,63 @@
   <node name="rqt_service_caller"
         pkg="rqt_gui" type="rqt_gui"
         args="--perspective-file $(find jsk_data)/sample/config/sample_data_collection_server.perspective">
+  </node>
+
+  <node name="data_collection_server_filters"
+        pkg="jsk_data" type="data_collection_server.py">
+    <rosparam>
+      message_filters: true
+      approximate_sync: true
+      method: None
+      save_dir: ~/.ros/jsk_data/sample/filters/filters
+      topics:
+        - name: /image_publisher0/output
+          fname: image0.png
+          savetype: ColorImage
+          msg_class: sensor_msgs/Image
+        - name: /image_publisher1/output
+          fname: image1.png
+          savetype: ColorImage
+          msg_class: sensor_msgs/Image
+    </rosparam>
+  </node>
+
+  <node name="data_collection_server_filters_and_request"
+        pkg="jsk_data" type="data_collection_server.py">
+    <rosparam>
+      message_filters: true
+      approximate_sync: true
+      method: request
+      save_dir: ~/.ros/jsk_data/sample/filters/request
+      topics:
+        - name: /image_publisher0/output
+          fname: image0.png
+          savetype: ColorImage
+          msg_class: sensor_msgs/Image
+        - name: /image_publisher1/output
+          fname: image1.png
+          savetype: ColorImage
+          msg_class: sensor_msgs/Image
+    </rosparam>
+  </node>
+
+  <node name="data_collection_server_request_filters_and_timer"
+        pkg="jsk_data" type="data_collection_server.py">
+    <rosparam>
+      message_filters: true
+      approximate_sync: true
+      method: timer
+      save_dir: ~/.ros/jsk_data/sample/filters/timer
+      topics:
+        - name: /image_publisher0/output
+          fname: image0.png
+          savetype: ColorImage
+          msg_class: sensor_msgs/Image
+        - name: /image_publisher1/output
+          fname: image1.png
+          savetype: ColorImage
+          msg_class: sensor_msgs/Image
+    </rosparam>
   </node>
 
 </launch>
