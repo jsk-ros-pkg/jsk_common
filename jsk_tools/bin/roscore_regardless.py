@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import argparse
 import os
 import rospy
 import signal
@@ -116,7 +117,17 @@ def signalHandler(signum, stack):
         printLog("Sent signal %d to running process" % signum)
 
 
-def main(cmds):
+def parse_args(args):
+    p = argparse.ArgumentParser()
+    p.add_argument("commands", nargs=argparse.REMAINDER)
+    p.add_argument("--respawn", "-r", action="store_true",
+                   help="respawn if child process stops")
+    args = p.parse_args()
+    return args.commands, args.respawn
+
+
+def main(args):
+    cmds, respawn = parse_args(args)
     exit_code = 0
     previous_master_state = None
     try:
@@ -127,7 +138,12 @@ def main(cmds):
                 pid = g_process_object.pid
                 exit_code = g_process_object.poll()
                 printLog("Child process exited [%d] (code: %d)" % (pid, exit_code))
-                break
+                if respawn:
+                    printLog("Restarting process")
+                    runProcess(cmds)
+                    printLog("Process restarted [%d]" % g_process_object.pid)
+                else:
+                    break
             if not master_state and previous_master_state:
                 # Master is gone dead
                 pid = g_process_object.pid
