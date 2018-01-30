@@ -80,6 +80,8 @@ by following [instruction](https://github.com/raelgc/scudcloud#ubuntukubuntu-min
 
 You can restart travis and jenkins from slack's `#travis` channel.
 
+You can browse all channels by clicking `Channels` in a left menu bar.
+
 Restart travis from slack
 -------------------------
 ![](images/restart_travis.png)
