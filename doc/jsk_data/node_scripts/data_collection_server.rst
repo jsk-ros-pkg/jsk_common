@@ -80,6 +80,13 @@ Parameters
 
   Slop of ApproximateTimeSynchronizer in message_filters.
 
+* ``timestamp_save_dir``: (Bool, Default: ``True``)
+
+  Save data in timestamped dir.
+
+  If you set this as ``False``, data will be saved as ``{SAVE_DIR}/{FILENAME}``.
+
+
 
 Services
 --------
