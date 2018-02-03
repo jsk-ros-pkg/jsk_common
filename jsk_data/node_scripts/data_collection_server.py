@@ -86,6 +86,7 @@ class DataCollectionServer(object):
 
         method = rospy.get_param('~method', 'request')
         use_message_filters = rospy.get_param('~message_filters', False)
+        self.timestamp_save_dir = rospy.get_param('~timestamp_save_dir', True)
 
         if rospy.has_param('~with_request'):
             rospy.logwarn('Deprecated param: ~with_request, Use ~method')
@@ -250,7 +251,12 @@ class DataCollectionServer(object):
                     rospy.logerr(msg)
                     return False, msg
             rospy.sleep(0.01)
-        save_dir = osp.join(self.save_dir, str(now.to_nsec()))
+
+        if self.timestamp_save_dir:
+            save_dir = osp.join(self.save_dir, str(now.to_nsec()))
+        else:
+            save_dir = self.save_dir
+
         if not osp.exists(save_dir):
             os.makedirs(save_dir)
         for topic in self.topics:
@@ -293,6 +299,7 @@ class DataCollectionServer(object):
     def sync_timer_cb(self, event):
         if self.start:
             result, msg = self._sync_save()
+
 
 if __name__ == '__main__':
     rospy.init_node('data_collection_server')
