@@ -33,6 +33,7 @@ add_service_files(
 generate_dynamic_reconfigure_options(
   cfg/LightweightThrottle.cfg
   cfg/StealthRelay.cfg
+  cfg/SynchronizedThrottle.cfg
 )
 generate_messages()
 catkin_package(
@@ -97,6 +98,8 @@ jsk_topic_tools_nodelet(src/vital_checker_nodelet.cpp
   "jsk_topic_tools/VitalCheckerNodelet" "vital_checker")
 jsk_topic_tools_nodelet(src/string_relay_nodelet.cpp
   "jsk_topic_tools/StringRelay" "string_relay")
+jsk_topic_tools_nodelet(src/synchronized_throttle_nodelet.cpp
+  "jsk_topic_tools/SynchronizedThrottle" "synchronized_throttle")
 
 add_library(jsk_topic_tools SHARED
   ${jsk_topic_tools_nodelet_sources}
@@ -136,6 +139,7 @@ if (CATKIN_ENABLE_TESTING)
   jsk_topic_tools_add_rostest(test/test_connection_based_nodelet.test)
   jsk_topic_tools_add_rostest(test/test_connection_based_transport.test)
   jsk_topic_tools_add_rostest(test/test_stealth_relay.test)
+  jsk_topic_tools_add_rostest(test/test_synchronized_throttle.test)
   catkin_add_nosetests(src/jsk_topic_tools/tests)
   catkin_add_gtest(test_rosparam_utils src/tests/test_rosparam_utils.cpp)
   target_link_libraries(test_rosparam_utils ${PROJECT_NAME})
