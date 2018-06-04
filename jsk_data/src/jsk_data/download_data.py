@@ -39,18 +39,20 @@ def extract_file(path, to_directory='.', chmod=True):
 
     cwd = os.getcwd()
     os.chdir(to_directory)
+    extracted_files = []
     root_files = []
     try:
         file = opener(path, mode)
         try:
             file.extractall()
+            extracted_files = getnames(file)
             root_files = list(set(name.split('/')[0]
                                   for name in getnames(file)))
         finally:
             file.close()
     finally:
         if chmod:
-            for fname in root_files:
+            for fname in extracted_files:
                 if not is_file_writable(fname):
                     os.chmod(os.path.abspath(fname), 0777)
         os.chdir(cwd)
