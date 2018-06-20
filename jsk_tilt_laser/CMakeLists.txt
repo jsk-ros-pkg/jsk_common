@@ -51,6 +51,11 @@ if(NOT APPLE)
     )
 endif(NOT APPLE)
 
-install(DIRECTORY launch config cfg scripts
+install(DIRECTORY scripts
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  USE_SOURCE_PERMISSIONS
+)
+
+install(DIRECTORY launch config cfg
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   )
