@@ -37,6 +37,7 @@
 #include "jsk_topic_tools/rosparam_utils.h"
 #include "jsk_topic_tools/log_utils.h"
 #include <boost/algorithm/string.hpp>
+#include <boost/format.hpp>
 #include <list>
 // Parameter structure is
 // nodelets:
