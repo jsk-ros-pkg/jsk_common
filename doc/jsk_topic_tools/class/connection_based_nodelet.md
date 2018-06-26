@@ -10,6 +10,10 @@ This base-class is being deprecated and replaced by `nodelet_topic_tools::Nodele
 This class is a base-class which can start subscribing topics if published topics are subscribed by the other node.
 This is abstruct class.
 
+## Note
+
+Each subclass of this class must call `onInitPostProcess` in the last line `onInit`.
+
 ## Parameter
 - `~use_multithread_callback` (Bool, default: `true`):
 

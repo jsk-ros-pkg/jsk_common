@@ -55,10 +55,11 @@ namespace jsk_topic_tools
   void addDiagnosticErrorSummary(
     const std::string& string_prefix,
     jsk_topic_tools::VitalChecker::Ptr vital_checker,
-    diagnostic_updater::DiagnosticStatusWrapper& stat)
+    diagnostic_updater::DiagnosticStatusWrapper& stat,
+    const uint8_t error_level)
   {
     stat.summary(
-      diagnostic_msgs::DiagnosticStatus::ERROR,
+      error_level,
       (boost::format("%s not running for %f sec")
        % string_prefix % vital_checker->deadSec()).str());
   }

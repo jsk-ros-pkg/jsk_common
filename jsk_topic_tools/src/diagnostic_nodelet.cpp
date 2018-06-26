@@ -55,6 +55,19 @@ namespace jsk_topic_tools
         &DiagnosticNodelet::updateDiagnostic,
         this,
         _1));
+
+    bool use_warn;
+    nh_->param("/diagnostic_nodelet/use_warn", use_warn, false);
+    if (pnh_->hasParam("use_warn")) {
+      pnh_->getParam("use_warn", use_warn);
+    }
+    if (use_warn)
+    {
+      diagnostic_error_level_ = diagnostic_msgs::DiagnosticStatus::ERROR;
+    } else {
+      diagnostic_error_level_ = diagnostic_msgs::DiagnosticStatus::WARN;
+    }
+
     double vital_rate;
     pnh_->param("vital_rate", vital_rate, 1.0);
     vital_checker_.reset(
@@ -72,7 +85,7 @@ namespace jsk_topic_tools
       }
       else {
         jsk_topic_tools::addDiagnosticErrorSummary(
-          name_, vital_checker_, stat);
+          name_, vital_checker_, stat, diagnostic_error_level_);
       }
     }
     else {

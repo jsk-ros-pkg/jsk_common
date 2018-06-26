@@ -110,6 +110,12 @@ namespace jsk_topic_tools
      */
     jsk_topic_tools::VitalChecker::Ptr vital_checker_;
 
+    /** @brief
+     * True if summary is displayed as 'Warnings', otherwise it is displayed as 'Errors'
+     */
+    uint8_t diagnostic_error_level_;
+    
+
   private:
     
   };
