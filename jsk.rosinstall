@@ -211,6 +211,7 @@
 - hg:
     local-name: multisense
     uri: 'https://bitbucket.org/crl/multisense_ros'
+    version: 3.4.9
 # - git:
 #     local-name: ar_tools
 #     uri: 'https://github.com/ar-tools/ar_tools.git'
