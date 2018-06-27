@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.7 (2018-06-27)
+------------------
 * jsk_data: chmod extraced files (`#1582 <https://github.com/jsk-ros-pkg/jsk_common/issues/1582>`_)
 * [jsk_data] add option not to save in timestamp dir in data_collection_server.py (`#1578 <https://github.com/jsk-ros-pkg/jsk_common/issues/1578>`_)
 * add timer save request in data_collection_server (`#1557 <https://github.com/jsk-ros-pkg/jsk_common/issues/1557>`_)

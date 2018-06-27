@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.7 (2018-06-27)
+------------------
 * Add warnNoRemap to ConnectionBasedNodelet (`#1538 <https://github.com/jsk-ros-pkg/jsk_common/issues/1538>`_)
   * add version_gte 1.9.11 for nodelet
 * jsk_topic_tools: add option to display diagnostic messages on warning level (`#1585 <https://github.com/jsk-ros-pkg/jsk_common/issues/1585>`_)
