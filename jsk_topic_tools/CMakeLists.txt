@@ -9,22 +9,32 @@ if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
-find_package(catkin REQUIRED COMPONENTS topic_tools message_generation roscpp std_msgs std_srvs
-  rostime
-  nodelet tf
-  geometry_msgs
+find_package(catkin REQUIRED COMPONENTS
+  dynamic_reconfigure
   eigen_conversions
+  geometry_msgs
+  image_transport
+  message_generation
+  nodelet
+  roscpp
+  rostime
+  std_msgs
+  std_srvs
+  tf
   topic_tools
-  image_transport)
+)
 catkin_python_setup()
 add_message_files(
   FILES TopicInfo.msg
 )
-
 add_service_files(
   FILES List.srv Update.srv ChangeTopic.srv PassthroughDuration.srv
 )
-
+generate_dynamic_reconfigure_options(
+  cfg/LightweightThrottle.cfg
+  cfg/StealthRelay.cfg
+  cfg/SynchronizedThrottle.cfg
+)
 generate_messages()
 catkin_package(
     DEPENDS
@@ -33,6 +43,10 @@ catkin_package(
     LIBRARIES jsk_topic_tools
     CFG_EXTRAS nodelet.cmake
 )
+
+if(topic_tools_VERSION VERSION_GREATER "1.13.2")
+  add_definitions("-Dtopic_tools_relay_stealth_EXISTS")
+endif()
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 if(NOT APPLE)
@@ -70,6 +84,8 @@ jsk_topic_tools_nodelet(src/relay_nodelet.cpp
   "jsk_topic_tools/Relay" "relay")
 jsk_topic_tools_nodelet(src/deprecated_relay_nodelet.cpp
   "jsk_topic_tools/DeprecatedRelay" "deprecated_relay")
+jsk_topic_tools_nodelet(src/stealth_relay_nodelet.cpp
+  "jsk_topic_tools/StealthRelay" "stealth_relay")
 jsk_topic_tools_nodelet(src/passthrough_nodelet.cpp
   "jsk_topic_tools/Passthrough" "passthrough")
 jsk_topic_tools_nodelet(src/block_nodelet.cpp
@@ -82,6 +98,8 @@ jsk_topic_tools_nodelet(src/vital_checker_nodelet.cpp
   "jsk_topic_tools/VitalCheckerNodelet" "vital_checker")
 jsk_topic_tools_nodelet(src/string_relay_nodelet.cpp
   "jsk_topic_tools/StringRelay" "string_relay")
+jsk_topic_tools_nodelet(src/synchronized_throttle_nodelet.cpp
+  "jsk_topic_tools/SynchronizedThrottle" "synchronized_throttle")
 
 add_library(jsk_topic_tools SHARED
   ${jsk_topic_tools_nodelet_sources}
@@ -96,7 +114,7 @@ add_library(jsk_topic_tools SHARED
   src/diagnostic_nodelet.cpp
   src/series_boolean.cpp
   src/counter.cpp)
-add_dependencies(jsk_topic_tools ${PROJECT_NAME}_gencpp)
+add_dependencies(jsk_topic_tools ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_gencfg)
 target_link_libraries(jsk_topic_tools ${catkin_LIBRARIES})
 
 if (CATKIN_ENABLE_TESTING)
@@ -120,6 +138,8 @@ if (CATKIN_ENABLE_TESTING)
   jsk_topic_tools_add_rostest(test/test_block.test)
   jsk_topic_tools_add_rostest(test/test_connection_based_nodelet.test)
   jsk_topic_tools_add_rostest(test/test_connection_based_transport.test)
+  jsk_topic_tools_add_rostest(test/test_stealth_relay.test)
+  jsk_topic_tools_add_rostest(test/test_synchronized_throttle.test)
   catkin_add_nosetests(src/jsk_topic_tools/tests)
   catkin_add_gtest(test_rosparam_utils src/tests/test_rosparam_utils.cpp)
   target_link_libraries(test_rosparam_utils ${PROJECT_NAME})

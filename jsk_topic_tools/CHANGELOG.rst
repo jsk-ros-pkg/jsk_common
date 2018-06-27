@@ -2,6 +2,48 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.6 (2018-01-05)
+------------------
+* jsk_topic_tools: stealth_relay_nodelet: support MessageEvent (`#1572 <https://github.com/jsk-ros-pkg/jsk_common/issues/1572>`_)
+* jsk_topic_tools: stealth_relay add options as dynamic_reconfigure (`#1568 <https://github.com/jsk-ros-pkg/jsk_common/issues/1568>`_)
+  * jsk_topic_tools: test_stealth_relay: disable updating dynamic reconfigure
+  * jsk_topic_tools: test_stealth_relay: update timeout
+  * jsk_topic_tools: stealth_relay: add deprecation warning
+  * jsk_topic_tools: add options as dynamic_reconfigure
+
+* jsk_topic_tools: connection_based_nodelet: fix typo in advertiseCamera (`#1558 <https://github.com/jsk-ros-pkg/jsk_common/issues/1558>`_)
+* jsk_topic_tools: add stealth_relay for silently subscribing topic (`#1544 <https://github.com/jsk-ros-pkg/jsk_common/issues/1544>`_)
+* Validate implementation of child class of ConnectionBasedTransport (`#1556 <https://github.com/jsk-ros-pkg/jsk_common/issues/1556>`_)
+  * Check if publishers exist to avoid implementation failures
+  * Use ABCMeta to avoid unexpected usage of ConnectionBasedTransport
+    Someone use this class without any subscriptions,
+    and in that case this class should not be used in general.
+* Contributors: Kei Okada, Kentaro Wada, Yuki Furuta
+
+2.2.5 (2017-06-19)
+------------------
+
+2.2.4 (2017-06-14)
+------------------
+* [jsk_topic_tools][LightweightThrottle] dynamic change update_rate (`#1514 <https://github.com/jsk-ros-pkg/jsk_common/pull/1514>`_)
+  *  [jsk_topic_tools][lightweight_throttle] support jump back in time
+
+* [jsk_topic_tools][connection_based_nodelet] add isSubscribed method (`#1523 <https://github.com/jsk-ros-pkg/jsk_common/pull/1523>`_)
+* Test disconnection in test_connection.py (`#1520 <https://github.com/jsk-ros-pkg/jsk_common/pull/1520>`_)
+  - modified:   test/test_connection.py
+  - https://github.com/jsk-ros-pkg/jsk_common/pull/1520#issuecomment-298151270
+* [jsk_topic_tools][connection_based_nodelet] warn if onInitPostProcess is not called (`#1513 <https://github.com/jsk-ros-pkg/jsk_common/pull/1513>`_)
+* Contributors: Kentaro Wada, Yuki Furuta
+
+2.2.3 (2017-03-23)
+------------------
+* jsk_topic_tools/scripts/tf_to_transform.py: Use different value for duration and rate in tf_to_transform.py (`#1509 <https://github.com/jsk-ros-pkg/jsk_common/issues/1509>`_)
+  * Rate can be 50 - 100 for example, but duration should be ~1 [s] even
+    so. In previous implementation, the duration will be 1/100 - 1/50 [s]
+    and it is too small to resolve tf.
+  * Fix for flake8
+* Contributors: Kentaro Wada
+
 2.2.2 (2016-12-30)
 ------------------
 

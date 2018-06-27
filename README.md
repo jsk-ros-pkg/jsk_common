@@ -23,29 +23,44 @@ Deb Build Status
 
 Install
 ---
-You can use `jsk.rosbuild` to setup your environment.
 
 
-```sh
-wget -q -O /tmp/jsk.rosbuild https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosbuild
-bash /tmp/jsk.rosbuild hydro
+
+#### If you use Kinetic on Debian or Ubuntu, you can run
+
+
+```
+apt-get install ros-kinetic-jsk-common
 ```
 
-For hacker
+##### Or, if you are willing to install from source, you instead can run
+
+
+```
+mkdir -p catkin_ws/src
+cd catkin_ws/src
+git clone http://github.com/jsk-ros-pkg/jsk_common
+cd jsk_common
+rosdep install -y -r --from-path . --ignore-src
+cd ../../
+catkin build
+```
+
+##### For hacker
 
 ```sh
 wget -q -O /tmp/jsk.rosbuild https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosbuild
 bash /tmp/jsk.rosbuild --from-source hydro
 ```
 
-For hrpsys user
+##### For hrpsys user
 
 ```sh
 wget -q -O /tmp/jsk.rosbuild https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosbuild
 bash /tmp/jsk.rosbuild --rtm hydro
 ```
 
-For hrpsys hacker
+##### For hrpsys hacker
 
 ```sh
 wget -q -O /tmp/jsk.rosbuild https://raw.github.com/jsk-ros-pkg/jsk_common/master/jsk.rosbuild
@@ -79,6 +94,8 @@ You can create account using imi address.
 by following [instruction](https://github.com/raelgc/scudcloud#ubuntukubuntu-mint-and-debian).
 
 You can restart travis and jenkins from slack's `#travis` channel.
+
+You can browse all channels by clicking `Channels` in a left menu bar.
 
 Restart travis from slack
 -------------------------

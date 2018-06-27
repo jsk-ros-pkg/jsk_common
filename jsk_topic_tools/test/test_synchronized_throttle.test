@@ -1,0 +1,40 @@
+<launch>
+  <node name="topic_pub" pkg="rostopic" type="rostopic"
+        args="pub -s -r 10 /foo geometry_msgs/PoseStamped '{header: {stamp: now}, pose: {orientation: {w: 1.0}}}'" />
+
+  <node name="throttle" pkg="topic_tools" type="throttle"
+        args="messages /foo 5.0 /bar"/>
+
+  <node name="sync_throttle"
+        pkg="jsk_topic_tools" type="synchronized_throttle"
+        output="screen">
+    <rosparam>
+      approximate_sync: false
+      update_rate: 1.0
+      suffix: sync
+      topics:
+      - /foo
+      - /bar
+      - /baz
+    </rosparam>
+  </node>
+
+  <node name="async_throttle"
+        pkg="jsk_topic_tools" type="synchronized_throttle"
+
+        output="screen">
+    <rosparam>
+      approximate_sync: true
+      update_rate: 1.0
+      suffix: async
+      topics:
+      - /foo
+      - /bar
+      - /baz
+    </rosparam>
+  </node>
+
+  <test test-name="test_synchronized_throttle"
+        pkg="jsk_topic_tools" type="test_synchronized_throttle.py"/>
+
+</launch>

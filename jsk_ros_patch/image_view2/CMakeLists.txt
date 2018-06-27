@@ -9,7 +9,11 @@ if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
-find_package(catkin REQUIRED COMPONENTS roscpp dynamic_reconfigure  cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_generation std_srvs)
+if(NOT $ENV{ROS_DISTRO} STRLESS kinetic)
+  add_compile_options(-std=c++11)
+endif()
+
+find_package(catkin REQUIRED COMPONENTS roscpp dynamic_reconfigure  cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_generation std_srvs pcl_ros)
 
 generate_dynamic_reconfigure_options(
   cfg/ImageView2.cfg

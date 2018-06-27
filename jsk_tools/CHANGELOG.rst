@@ -2,6 +2,41 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.6 (2018-01-05)
+------------------
+* [jsk_tools] add ROS param set test (`#1535 <https://github.com/jsk-ros-pkg/jsk_common/issues/1535>`_)
+* jsk_tools: fix sanity lib test (`#1573 <https://github.com/jsk-ros-pkg/jsk_common/issues/1573>`_)
+* update generate_deb_status_table.py (`#1539 <https://github.com/jsk-ros-pkg/jsk_common/issues/1539>`_)
+  * default rosdistro-to is lunar
+  * use python-rosdistro to create DISTRS Dict
+* Support network interface name convention from ubuntu 15.10 (`#1561 <https://github.com/jsk-ros-pkg/jsk_common/issues/1561>`_)
+  * Fixes https://github.com/jsk-ros-pkg/jsk_common/issues/1559
+    c.f.: https://askubuntu.com/questions/702161/why-is-my-interface-now-wlp2s0-instead-of-wlan0
+* Make TopicPublishedChecker run in parallel (`#1546 <https://github.com/jsk-ros-pkg/jsk_common/issues/1546>`_)
+  * Make TopicPublishedChecker multi-processable
+* Fix undefined variable arg in rosview on bash (`#1545 <https://github.com/jsk-ros-pkg/jsk_common/issues/1545>`_)
+* Contributors: Kentaro Wada, Shingo Kitagawa, Yuki Furuta
+
+2.2.5 (2017-06-19)
+------------------
+
+2.2.4 (2017-06-14)
+------------------
+* CMakeLists.txt : fix install process, bin is already installed to /opt/ros/indigo/lib/jsk_tools/ directory (`#1518 <https://github.com/jsk-ros-pkg/jsk_common/issues/1518>`_)
+* Remove import error message in ros_console.py, Because python-colorama is installed via apt (`#1517 <https://github.com/jsk-ros-pkg/jsk_common/issues/1517>`_)
+* Contributors: Kei Okada, Kentaro Wada
+
+2.2.3 (2017-03-23)
+------------------
+* jsk_tools/src/jsk_tools/migration.py: Fix migration of from XXX.[srv|msg] import YYY (`#1506 <https://github.com/jsk-ros-pkg/jsk_common/issues/1506>`_)
+* jsk_tools/src/generate_deb_status_table.py: Add python-tabulate-pip as a dependency (`#1505 <https://github.com/jsk-ros-pkg/jsk_common/issues/1505>`_)
+* [jsk_tools] Improve test_topic_published.py (check /use_sim_time neatly) (`#1504 <https://github.com/jsk-ros-pkg/jsk_common/issues/1504>`_)
+  * jsk_tools/src/test_topic_published.py: Simplify negative check in test_topic_published.py
+  * Check /clock publication neatly and fails if timed out
+  * Use PublishChecker merge in ros/ros_comm
+* jsk_tools/src/generate_deb_status_table.py: Cope with arm64 for deb status table (`#1503 <https://github.com/jsk-ros-pkg/jsk_common/issues/1503>`_)
+* Contributors: Kentaro Wada
+
 2.2.2 (2016-12-30)
 ------------------
 * package.xml : rosemacs-el is only available until precise, from indigo, we uses rosemacs (`#1497 <https://github.com/jsk-ros-pkg/jsk_common/issues/1497>`_)

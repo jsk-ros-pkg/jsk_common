@@ -57,9 +57,20 @@ namespace jsk_topic_tools
     if (!verbose_connection_) {
       nh_->param("verbose_connection", verbose_connection_, false);
     }
+
+    // timer to warn when onInitProcess is not called
+    pnh_->param("no_warn_on_init_post_process", on_init_post_process_called_, false);
+    if (!on_init_post_process_called_) {
+      timer_warn_on_init_post_process_called_ = nh_->createWallTimer(
+        ros::WallDuration(5),
+        &ConnectionBasedNodelet::warnOnInitPostProcessCalledCallback,
+        this,
+        /*oneshot=*/true);
+    }
+
     // timer to warn when no connection in a few seconds
     ever_subscribed_ = false;
-    timer_ = nh_->createWallTimer(
+    timer_warn_never_subscribed_ = nh_->createWallTimer(
       ros::WallDuration(5),
       &ConnectionBasedNodelet::warnNeverSubscribedCallback,
       this,
@@ -68,10 +79,24 @@ namespace jsk_topic_tools
 
   void ConnectionBasedNodelet::onInitPostProcess()
   {
+    on_init_post_process_called_ = true;
     if (always_subscribe_) {
       boost::mutex::scoped_lock lock(connection_mutex_);
       ever_subscribed_ = true;
       subscribe();
+    }
+  }
+
+  inline bool ConnectionBasedNodelet::isSubscribed()
+  {
+    return connection_status_ == SUBSCRIBED;
+  }
+
+
+  void ConnectionBasedNodelet::warnOnInitPostProcessCalledCallback(const ros::WallTimerEvent& event)
+  {
+    if (!on_init_post_process_called_) {
+      NODELET_WARN("[%s] onInitPostProcess is not yet called.", nodelet::Nodelet::getName().c_str());
     }
   }
 

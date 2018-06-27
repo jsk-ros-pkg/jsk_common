@@ -7,7 +7,7 @@
   <arg name="local" default="false" />
   <node name="tilt_scan_to_cloud"
         pkg="laser_filters" type="scan_to_cloud_filter_chain"
-        output="screen">
+        clear_params="true" output="screen">
     <remap from="scan" to="/multisense/lidar_scan" />
     <rosparam subst_value="true">
       scan_filter_chain:
@@ -29,8 +29,9 @@
         type: laser_filters/LaserScanRangeFilter
         params:
           lower_threshold: 0.2 # 0.5
-          upper_threshold: 10
-      high_fidelity: true
+          upper_threshold: 30.0
+      high_fidelity: false # range_max is ignored when high_fidelity
+      laser_max_range: 30
       target_frame: $(arg fixed_frame_id)
     </rosparam>
     <remap from="cloud_filtered" to="/multisense/lidar_scan_filtered" />

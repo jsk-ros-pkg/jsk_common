@@ -149,8 +149,11 @@ class dynamic_tf_publisher:
 
 
 if __name__ == "__main__":
-    rospy.init_node('tf_publish_server')
-    pub = dynamic_tf_publisher()
-    while not rospy.is_shutdown():
-        pub.publish_and_sleep()
+    try:
+        rospy.init_node('tf_publish_server')
+        pub = dynamic_tf_publisher()
+        while not rospy.is_shutdown():
+            pub.publish_and_sleep()
+    except rospy.ROSInterruptException:
+        pass
 

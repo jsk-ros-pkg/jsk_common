@@ -37,6 +37,8 @@ Parameters
 
   - ``ColorImage``
   - ``DepthImage``
+  - ``LabelImage``
+  - ``YAML``
 
 
 * ``params`` (Optional)
@@ -55,3 +57,48 @@ Parameters
 
   - ``Text``
   - ``YAML``
+
+* ``method`` (String, Default: ``request``)
+
+  - ``request``: Save data when service is called.
+  - ``timer``: Save data when ``start`` service is called. Finish collecting when ``end`` service is called.
+  - ``None``: Always save data.
+
+* ``message_filters``: (Bool, Default: ``False``)
+
+  Subscribe topics with message_filters.
+
+* ``approximate_sync``: (Bool, Default: ``False``)
+
+  Subscribe topic with ApproximateTimeSynchronizer in message_filters.
+
+* ``queue_size``: (Int, Default: ``10``)
+
+  Queue size of message_filters.
+
+* ``slop``: (Float, Default ``0.1``)
+
+  Slop of ApproximateTimeSynchronizer in message_filters.
+
+* ``timestamp_save_dir``: (Bool, Default: ``True``)
+
+  Save data in timestamped dir.
+
+  If you set this as ``False``, data will be saved as ``{SAVE_DIR}/{FILENAME}``.
+
+
+
+Services
+--------
+
+* ``~save_request`` (``std_srvs/Trigger``)
+
+  Save data when ``method`` is ``request``.
+
+* ``~start_request`` (``std_srvs/Trigger``)
+
+  Start saving data when ``method`` is ``timer``.
+
+* ``~end_request`` (``std_srvs/Trigger``)
+
+  Finish saving data when ``method`` is ``timer``.

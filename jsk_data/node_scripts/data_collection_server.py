@@ -9,19 +9,33 @@ import os.path as osp
 import pickle as pkl
 import sys
 
-import cv2
+import numpy as np
+import PIL.Image
 import yaml
 
 import cv_bridge
 import dynamic_reconfigure.server
+import genpy
 from jsk_topic_tools.log_utils import jsk_logfatal
+import message_filters
 import roslib.message
 import rospy
-import genpy
 from std_srvs.srv import Trigger
 from std_srvs.srv import TriggerResponse
 
 from jsk_data.cfg import DataCollectionServerConfig
+
+
+def dump_ndarray(filename, arr):
+    ext = osp.splitext(filename)[1]
+    if ext == '.pkl':
+        pkl.dump(arr, open(filename, 'wb'))
+    elif ext == '.npz':
+        np.savez_compressed(filename, arr)
+    elif ext in ['.png', '.jpg']:
+        PIL.Image.fromarray(arr).save(filename)
+    else:
+        raise ValueError
 
 
 class DataCollectionServer(object):
@@ -69,13 +83,77 @@ class DataCollectionServer(object):
                     jsk_logfatal("Required field '{}' for param is missing"
                                  .format(field))
                     sys.exit(1)
-        self.server = rospy.Service('~save_request', Trigger, self.service_cb)
+
+        method = rospy.get_param('~method', 'request')
+        use_message_filters = rospy.get_param('~message_filters', False)
+        self.timestamp_save_dir = rospy.get_param('~timestamp_save_dir', True)
+
+        if rospy.has_param('~with_request'):
+            rospy.logwarn('Deprecated param: ~with_request, Use ~method')
+            if not rospy.get_param('~with_request'):
+                use_message_filters = True
+                method = None
+        if method == 'message_filters':
+            rospy.logwarn(
+                'Deprecated param: ~method: message_filters,'
+                'Use ~message_filters: true')
+            use_message_filters = True
+            method = None
+
+        # set subscribers
         self.subs = []
         for topic in self.topics:
-            msg_class = roslib.message.get_message_class(topic['msg_class'])
-            sub = rospy.Subscriber(topic['name'], msg_class, self.sub_cb,
-                                   callback_args=topic['name'])
+            msg_class = roslib.message.get_message_class(
+                topic['msg_class'])
+            if use_message_filters:
+                sub = message_filters.Subscriber(
+                    topic['name'], msg_class)
+            else:
+                sub = rospy.Subscriber(
+                    topic['name'], msg_class, self.sub_cb,
+                    callback_args=topic['name'])
             self.subs.append(sub)
+
+        # add synchoronizer if use_message_filters
+        if use_message_filters:
+            queue_size = rospy.get_param('~queue_size', 10)
+            approximate_sync = rospy.get_param('~approximate_sync', False)
+            if approximate_sync:
+                slop = rospy.get_param('~slop', 0.1)
+                self.sync = message_filters.ApproximateTimeSynchronizer(
+                    self.subs, queue_size=queue_size, slop=slop)
+            else:
+                self.sync = message_filters.TimeSynchronizer(
+                    self.subs, queue_size=queue_size)
+
+        # set collecting method
+        if method == 'request':
+            if use_message_filters:
+                self.sync.registerCallback(self.sync_sub_cb)
+                self.server = rospy.Service(
+                    '~save_request', Trigger, self.sync_service_cb)
+            else:
+                self.server = rospy.Service(
+                    '~save_request', Trigger, self.service_cb)
+        elif method == 'timer':
+            duration = rospy.Duration(1.0 / rospy.get_param('~hz', 1.0))
+            self.start = False
+            self.start_server = rospy.Service(
+                '~start_request', Trigger, self.start_service_cb)
+            self.end_server = rospy.Service(
+                '~end_request', Trigger, self.end_service_cb)
+            if use_message_filters:
+                self.sync.registerCallback(self.sync_sub_cb)
+                self.timer = rospy.Timer(duration, self.sync_timer_cb)
+            else:
+                self.timer = rospy.Timer(duration, self.timer_cb)
+        else:
+            if use_message_filters:
+                self.sync.registerCallback(self.sync_sub_and_save_cb)
+            else:
+                rospy.logerr(
+                    '~use_filters: False, ~method: None is not supported')
+                sys.exit(1)
 
     def reconfig_cb(self, config, level):
         self.save_dir = osp.expanduser(config['save_dir'])
@@ -87,69 +165,140 @@ class DataCollectionServer(object):
         for sub in self.subs:
             sub.unregister()
 
+    def sync_sub_cb(self, *msgs):
+        for topic, msg in zip(self.topics, msgs):
+            self.msg[topic['name']] = {
+                'stamp': msg.header.stamp,
+                'msg': msg
+            }
+
+    def sync_sub_and_save_cb(self, *msgs):
+        self.sync_sub_cb(*msgs)
+        self._sync_save()
+
     def sub_cb(self, msg, topic_name):
         self.msg[topic_name] = {
             'stamp': msg.header.stamp if msg._has_header else rospy.Time.now(),
             'msg': msg
-            }
+        }
 
-    def service_cb(self, req):
+    def save_topic(self, topic, msg, savetype, filename):
+        if savetype == 'ColorImage':
+            bridge = cv_bridge.CvBridge()
+            img = bridge.imgmsg_to_cv2(msg, 'rgb8')
+            dump_ndarray(filename, img)
+        elif savetype == 'DepthImage':
+            bridge = cv_bridge.CvBridge()
+            depth = bridge.imgmsg_to_cv2(msg)
+            dump_ndarray(filename, depth)
+        elif savetype == 'LabelImage':
+            bridge = cv_bridge.CvBridge()
+            label = bridge.imgmsg_to_cv2(msg)
+            dump_ndarray(filename, label)
+        elif savetype == 'YAML':
+            msg_yaml = genpy.message.strify_message(msg)
+            with open(filename, 'w') as f:
+                f.write(msg_yaml)
+        else:
+            rospy.logerr('Unexpected savetype for topic: {}'.format(savetype))
+            raise ValueError
+
+    def save_param(self, param, savetype, filename):
+        value = rospy.get_param(param)
+        if savetype == 'Text':
+            with open(filename, 'w') as f:
+                f.write(str(value))
+        elif savetype == 'YAML':
+            content = yaml.safe_dump(value, allow_unicode=True,
+                                     default_flow_style=False)
+            with open(filename, 'w') as f:
+                f.write(content)
+        else:
+            rospy.logerr('Unexpected savetype for param: {}'.format(savetype))
+            raise ValueError
+
+    def _sync_save(self):
+        stamp = self.msg[self.topics[0]['name']]['stamp']
+        save_dir = osp.join(self.save_dir, str(stamp.to_nsec()))
+        if not osp.exists(save_dir):
+            os.makedirs(save_dir)
+        for topic in self.topics:
+            msg = self.msg[topic['name']]['msg']
+            filename = osp.join(save_dir, topic['fname'])
+            self.save_topic(topic['name'], msg, topic['savetype'], filename)
+        for param in self.params:
+            filename = osp.join(save_dir, param['fname'])
+            self.save_param(param['key'], param['savetype'], filename)
+        msg = 'Saved data to {}'.format(save_dir)
+        rospy.loginfo(msg)
+        return True, msg
+
+    def _save(self):
         now = rospy.Time.now()
         saving_msgs = {}
         while len(saving_msgs) < len(self.topics):
             for topic in self.topics:
                 if topic['name'] in saving_msgs:
                     continue
+                if topic['name'] not in self.msg:
+                    continue
                 stamp = self.msg[topic['name']]['stamp']
-                if ((topic['name'] in self.msg) and
-                        abs(now - stamp) < rospy.Duration(self.slop)):
+                if abs(now - stamp) < rospy.Duration(self.slop):
                     saving_msgs[topic['name']] = self.msg[topic['name']]['msg']
                 if now < stamp:
-                    rospy.logwarn('timestamp exceeds starting time, try bigger slop')
-            rospy.sleep(self.slop)
-        save_dir = osp.join(self.save_dir, str(now.to_nsec()))
+                    msg = 'timeout for topic [{}]. try bigger slop'.format(
+                        topic['name'])
+                    rospy.logerr(msg)
+                    return False, msg
+            rospy.sleep(0.01)
+
+        if self.timestamp_save_dir:
+            save_dir = osp.join(self.save_dir, str(now.to_nsec()))
+        else:
+            save_dir = self.save_dir
+
         if not osp.exists(save_dir):
             os.makedirs(save_dir)
         for topic in self.topics:
             msg = saving_msgs[topic['name']]
-            if topic['savetype'] == 'ColorImage':
-                bridge = cv_bridge.CvBridge()
-                img = bridge.imgmsg_to_cv2(msg, 'bgr8')
-                cv2.imwrite(osp.join(save_dir, topic['fname']), img)
-            elif topic['savetype'] == 'DepthImage':
-                bridge = cv_bridge.CvBridge()
-                depth = bridge.imgmsg_to_cv2(msg)
-                with open(osp.join(save_dir, topic['fname']), 'wb') as f:
-                    pkl.dump(depth, f)
-            elif topic['savetype'] == 'LabelImage':
-                bridge = cv_bridge.CvBridge()
-                label = bridge.imgmsg_to_cv2(msg)
-                cv2.imwrite(osp.join(save_dir, topic['fname']), label)
-            elif topic['savetype'] == 'YAML':
-                msg_yaml = genpy.message.strify_message(msg)
-                with open(osp.join(save_dir, topic['fname']), 'w') as f:
-                    f.write(msg_yaml)
-            else:
-                rospy.logerr('Unexpected savetype for topic: {}'
-                             .format(topic['savetype']))
-                raise ValueError
+            filename = osp.join(save_dir, topic['fname'])
+            self.save_topic(topic['name'], msg, topic['savetype'], filename)
         for param in self.params:
-            value = rospy.get_param(param['key'])
-            if param['savetype'] == 'Text':
-                with open(osp.join(save_dir, param['fname']), 'w') as f:
-                    f.write(str(value))
-            elif param['savetype'] == 'YAML':
-                content = yaml.safe_dump(value, allow_unicode=True,
-                                         default_flow_style=False)
-                with open(osp.join(save_dir, param['fname']), 'w') as f:
-                    f.write(content)
-            else:
-                rospy.logerr('Unexpected savetype for param: {}'
-                             .format(param['savetype']))
-                raise ValueError
-        message = 'Saved data to {}'.format(save_dir)
-        rospy.loginfo(message)
-        return TriggerResponse(success=True, message=message)
+            filename = osp.join(save_dir, param['fname'])
+            self.save_param(param['key'], param['savetype'], filename)
+        msg = 'Saved data to {}'.format(save_dir)
+        rospy.loginfo(msg)
+        return True, msg
+
+    def start_service_cb(self, req):
+        self.start = True
+        return TriggerResponse(success=True)
+
+    def end_service_cb(self, req):
+        self.start = False
+        return TriggerResponse(success=True)
+
+    def service_cb(self, req):
+        result, msg = self._save()
+        if result:
+            return TriggerResponse(success=True, message=msg)
+        else:
+            return TriggerResponse(success=False, message=msg)
+
+    def sync_service_cb(self, req):
+        result, msg = self._sync_save()
+        if result:
+            return TriggerResponse(success=True, message=msg)
+        else:
+            return TriggerResponse(success=False, message=msg)
+
+    def timer_cb(self, event):
+        if self.start:
+            result, msg = self._save()
+
+    def sync_timer_cb(self, event):
+        if self.start:
+            result, msg = self._sync_save()
 
 
 if __name__ == '__main__':

@@ -129,7 +129,7 @@ namespace jsk_network_tools
           last_received_seq_id = seq_id;
         }
         else if (last_received_seq_id != seq_id) {
-          ROS_INFO("seq_id := %lu, packet_array.size() := %lu, packet_num := %lu",
+          ROS_INFO("seq_id := %d, packet_array.size() := %lu, packet_num := %lu",
                    last_received_seq_id, packet_array.size(), packet_array[0].packet_num);
           size_t before_size = packet_array.size();
           if (packet_array.size() == packet_array[0].packet_num || !pesimistic_) {

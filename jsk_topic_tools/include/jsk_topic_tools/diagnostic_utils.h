@@ -58,7 +58,8 @@ namespace jsk_topic_tools
   void addDiagnosticErrorSummary(
     const std::string& string_prefix,
     jsk_topic_tools::VitalChecker::Ptr vital_checker,
-    diagnostic_updater::DiagnosticStatusWrapper& stat);
+    diagnostic_updater::DiagnosticStatusWrapper& stat,
+    const uint8_t error_level = diagnostic_msgs::DiagnosticStatus::ERROR);
 
   ////////////////////////////////////////////////////////
   // add Boolean string to stat

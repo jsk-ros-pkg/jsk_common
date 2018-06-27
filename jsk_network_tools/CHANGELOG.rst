@@ -2,6 +2,20 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.6 (2018-01-05)
+------------------
+* Fix warning about %d vs %lu in silverhammer_highspeed_internal_receiver (`#1537 <https://github.com/jsk-ros-pkg/jsk_common/issues/1537>`_)
+* Contributors: Kentaro Wada
+
+2.2.5 (2017-06-19)
+------------------
+
+2.2.4 (2017-06-14)
+------------------
+
+2.2.3 (2017-03-23)
+------------------
+
 2.2.2 (2016-12-30)
 ------------------
 

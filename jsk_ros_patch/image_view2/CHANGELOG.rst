@@ -2,6 +2,22 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.6 (2018-01-05)
+------------------
+* image_view2: support kinetic (`#1573 <https://github.com/jsk-ros-pkg/jsk_common/issues/1573>`_)
+* image_view2: fix publish_mouse_event (`#1564 <https://github.com/jsk-ros-pkg/jsk_common/issues/1564>`_)
+* need to find pcl_ros for image_view2 (`#1541 <https://github.com/jsk-ros-pkg/jsk_common/issues/1541>`_)
+* Contributors: Eisoku Kuroiwa, Kei Okada, Yuki Furuta
+
+2.2.5 (2017-06-19)
+------------------
+
+2.2.4 (2017-06-14)
+------------------
+
+2.2.3 (2017-03-23)
+------------------
+
 2.2.2 (2016-12-30)
 ------------------
 * test/publish_lena.py: lena() is not included in scipy from 0.17

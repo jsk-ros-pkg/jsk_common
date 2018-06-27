@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+
+import urlparse
 import rospy
-import re
 import os
 
 previous_run_id = None
@@ -13,14 +15,12 @@ def isMasterAlive():
     global previous_run_id
     try:
         # first check the host is available
-        master = rospy.get_master()
-        master_host = re.search('http://([a-zA-Z0-9\-_]*):',
-                                master.getUri()[2]).groups(1)[0]
+        master_host = urlparse.urlsplit(rospy.core.rosgraph.get_master_uri()).hostname
         response = os.system("ping -W 10 -c 1 " + master_host + " > /dev/null")
         if response != 0:
             print "master machine looks down"
             return False
-        master.getSystemState()
+        assert 1 == rospy.get_master().getSystemState()[0]
         run_id = rospy.get_param("/run_id")
 
         if not previous_run_id:

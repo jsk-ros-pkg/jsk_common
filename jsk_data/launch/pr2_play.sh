@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
-filenames="";
-for filename in ${@:1:$#}
-do
-    filenames=$filenames" "`pwd`/$filename;
-done 
-echo $filenames
-##for check args
-##roslaunch --args rosbag_play pr2_play.launch bagfile_names:="$filenames";
-roslaunch jsk_data pr2_play.launch bagfile_names:="$filenames";
+
+OPTIONS="--clock"
+FILENAMES=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -*)
+      OPTIONS="$OPTIONS $1"
+      shift
+      ;;
+    *)
+      FILENAMES="$FILENAMES $(readlink -f $1)"
+      shift
+      ;;
+  esac
+done
+
+roslaunch jsk_data pr2_play.launch bagfile_names:="$FILENAMES" rosbag_option:="$OPTIONS"

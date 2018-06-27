@@ -34,7 +34,12 @@
 
 #ifndef LIGHTWEIGHT_THROTTLE_NODELET_H_
 #define LIGHTWEIGHT_THROTTLE_NODELET_H_
+
+#include <boost/shared_ptr.hpp>
 #include <nodelet/nodelet.h>
+
+#include <dynamic_reconfigure/server.h>
+#include <jsk_topic_tools/LightweightThrottleConfig.h>
 #include <topic_tools/shape_shifter.h>
 
 namespace jsk_topic_tools
@@ -42,12 +47,16 @@ namespace jsk_topic_tools
   class LightweightThrottle : public nodelet::Nodelet
   {
   public:
+    typedef LightweightThrottleConfig Config;
     virtual void onInit();
     virtual void inCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
     virtual void connectionCallback(
       const ros::SingleSubscriberPublisher& pub);
+    virtual void configCallback(Config& config, uint32_t level);
   protected:
     typedef boost::shared_ptr<ros::Subscriber> SubscriberPtr;
+    boost::mutex mutex_;
+    boost::shared_ptr<dynamic_reconfigure::Server<Config> > srv_;
     SubscriberPtr sub_;
     ros::Publisher pub_;
     ros::TransportHints th_;

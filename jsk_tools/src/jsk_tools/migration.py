@@ -47,14 +47,14 @@ class ROSMsgMigration(object):
         f = open(fname, 'r')
         for line in f.readlines():
             for msg in self.msg_files:
-                m = re.match(r'from {}.{} import (.*) {}'
+                m = re.match(r'from {}.{} import(.*){}'
                              .format(self.from_pkg, self.msg_type, msg),
                              line)
                 if m:
                     line = re.sub(
                         line[m.start():m.end()],
-                        r'from {}.{} import {} {}'
-                        .format(self.from_pkg, self.msg_type,
+                        r'from {}.{} import{}{}'
+                        .format(self.to_pkg, self.msg_type,
                                 m.groups()[0], msg),
                         line)
                 line = re.sub(
