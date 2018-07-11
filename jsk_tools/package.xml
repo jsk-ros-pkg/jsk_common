@@ -21,6 +21,7 @@
   <run_depend>python-percol</run_depend>
   <run_depend>python-colorama</run_depend>
   <run_depend>python-pygithub3</run_depend>
+  <run_depend>python-progressbar</run_depend>
   <run_depend>python-rosdep</run_depend>
   <run_depend>python-slacker-cli</run_depend>
   <run_depend>python-tabulate-pip</run_depend>
