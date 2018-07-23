@@ -161,6 +161,13 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         if osp.exists(cache_file):
             os.remove(cache_file)
         download(download_client, url, cache_file, quiet=quiet, chmod=chmod)
+    if check_md5sum(cache_file, md5) is False:
+        # Try one more time, re-download.
+        # https://github.com/jsk-ros-pkg/jsk_common/issues/1574
+        download(download_client, url, cache_file, quiet=quiet, chmod=chmod)
+        if check_md5sum(cache_file, md5) is False:
+            print('[ERROR] md5sum mismatch. aborting')
+            return
     if osp.islink(path):
         # overwrite the link
         os.remove(path)
