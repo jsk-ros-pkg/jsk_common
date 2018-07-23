@@ -109,7 +109,8 @@ def is_google_drive_url(url):
 
 
 def download_data(pkg_name, path, url, md5, download_client=None,
-                  extract=False, compressed_bags=None, quiet=True, chmod=True):
+                  extract=False, compressed_bags=None, quiet=True, chmod=True,
+                  n_times=2):
     """Install test data checking md5 and rosbag decompress if needed.
        The downloaded data are located in cache_dir, and then linked to specified path.
        cache_dir is set by environment variable `JSK_DATA_CACHE_DIR` if defined, set by ROS_HOME/data otherwise.
@@ -159,17 +160,17 @@ def download_data(pkg_name, path, url, md5, download_client=None,
                     os.chmod(cache_dir, 0777)
     cache_file = osp.join(cache_dir, osp.basename(path))
     # check if cache exists, and update if necessary
-    if not (osp.exists(cache_file) and check_md5sum(cache_file, md5)):
-        if osp.exists(cache_file):
-            os.remove(cache_file)
-        download(download_client, url, cache_file, quiet=quiet, chmod=chmod)
-    if check_md5sum(cache_file, md5) is False:
-        # Try one more time, re-download.
+    try_download_count = 0
+    while not (osp.exists(cache_file) and check_md5sum(cache_file, md5)):
+        # Try n_times download.
         # https://github.com/jsk-ros-pkg/jsk_common/issues/1574
-        download(download_client, url, cache_file, quiet=quiet, chmod=chmod)
-        if check_md5sum(cache_file, md5) is False:
+        if try_download_count >= n_times:
             print('[ERROR] md5sum mismatch. aborting')
             return False
+        if osp.exists(cache_file):
+            os.remove(cache_file)
+        try_download_count += 1
+        download(download_client, url, cache_file, quiet=quiet, chmod=chmod)
     if osp.islink(path):
         # overwrite the link
         os.remove(path)
