@@ -112,7 +112,9 @@ def download_data(pkg_name, path, url, md5, download_client=None,
                   extract=False, compressed_bags=None, quiet=True, chmod=True):
     """Install test data checking md5 and rosbag decompress if needed.
        The downloaded data are located in cache_dir, and then linked to specified path.
-       cache_dir is set by environment variable `JSK_DATA_CACHE_DIR` if defined, set by ROS_HOME/data otherwise."""
+       cache_dir is set by environment variable `JSK_DATA_CACHE_DIR` if defined, set by ROS_HOME/data otherwise.
+       If download succeeded, return True, otherwise return False.
+    """
     if download_client is None:
         if is_google_drive_url(url):
             download_client = 'gdown'
@@ -167,7 +169,7 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         download(download_client, url, cache_file, quiet=quiet, chmod=chmod)
         if check_md5sum(cache_file, md5) is False:
             print('[ERROR] md5sum mismatch. aborting')
-            return
+            return False
     if osp.islink(path):
         # overwrite the link
         os.remove(path)
@@ -178,7 +180,7 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         # not link and exists so skipping
         print('[%s] File exists, so skipping creating symlink.' % path,
               file=sys.stderr)
-        return
+        return True
     if extract:
         # extract files in cache dir and create symlink for them
         extracted_files = extract_file(cache_file, to_directory=cache_dir, chmod=True)
@@ -198,3 +200,4 @@ def download_data(pkg_name, path, url, md5, download_client=None,
             pkg_path = rp.get_path(pkg_name)
             compressed_bag = osp.join(pkg_path, compressed_bag)
         decompress_rosbag(compressed_bag, quiet=quiet, chmod=chmod)
+    return True
