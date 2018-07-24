@@ -2,6 +2,15 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.7 (2018-06-27)
+------------------
+* add missing dirs into install command (`#1583 <https://github.com/jsk-ros-pkg/jsk_common/issues/1583>`_)
+  * add missing dirs into install command
+* Fix roscore regardless (`#1576 <https://github.com/jsk-ros-pkg/jsk_common/issues/1576>`_)
+  * respawn child process if -r is given
+  * jsk_tools: roscore_regardless.py: fix to work at more cases
+* Contributors: Yuki Furuta, Yasuhiro Ishiguro
+
 2.2.6 (2018-01-05)
 ------------------
 * [jsk_tools] add ROS param set test (`#1535 <https://github.com/jsk-ros-pkg/jsk_common/issues/1535>`_)

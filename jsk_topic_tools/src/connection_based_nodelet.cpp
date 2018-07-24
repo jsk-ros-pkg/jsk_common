@@ -107,6 +107,31 @@ namespace jsk_topic_tools
     }
   }
 
+  bool ConnectionBasedNodelet::warnNoRemap(const std::vector<std::string> names)
+  {
+    bool no_warning = true;
+    // standalone
+    ros::M_string remappings = ros::names::getRemappings();
+    // load
+    ros::M_string remappings_loaded = getRemappingArgs();
+    for (ros::M_string::iterator it = remappings_loaded.begin();
+        it != remappings_loaded.end(); it++)
+    {
+      remappings[it->first] = it->second;
+    }
+    for (size_t i = 0; i < names.size(); i++)
+    {
+      std::string resolved_name = ros::names::resolve(/*name=*/names[i],
+                                                      /*_remap=*/false);
+      if (remappings.find(resolved_name) == remappings.end())
+      {
+        NODELET_WARN("[%s] '%s' has not been remapped.", getName().c_str(), names[i].c_str());
+        no_warning = false;
+      }
+    }
+    return no_warning;
+  }
+
   void ConnectionBasedNodelet::connectionCallback(const ros::SingleSubscriberPublisher& pub)
   {
     if (verbose_connection_) {

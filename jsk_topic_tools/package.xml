@@ -1,6 +1,6 @@
 <package>
   <name>jsk_topic_tools</name>
-  <version>2.2.6</version>
+  <version>2.2.7</version>
   <description>jsk_topic_tools</description>
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
   <maintainer email="ueda@jsk.t.u-tokyo.ac.jp">Ryohei Ueda</maintainer>
@@ -24,7 +24,7 @@
   <build_depend>geometry_msgs</build_depend>
   <build_depend>image_transport</build_depend>
   <build_depend>message_generation</build_depend>
-  <build_depend>nodelet</build_depend>
+  <build_depend version_gte="1.9.11">nodelet</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>roslaunch</build_depend>
   <build_depend>rosnode</build_depend>
@@ -45,7 +45,7 @@
   <run_depend>geometry_msgs</run_depend>
   <run_depend>image_transport</run_depend>
   <run_depend>message_runtime</run_depend>
-  <run_depend>nodelet</run_depend>
+  <run_depend version_gte="1.9.11">nodelet</run_depend>
   <run_depend>python-opencv</run_depend>
   <run_depend>python-scipy</run_depend>
   <run_depend>python-numpy</run_depend>

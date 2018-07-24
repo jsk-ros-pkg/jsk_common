@@ -2,6 +2,9 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.7 (2018-06-27)
+------------------
+
 2.2.6 (2018-01-05)
 ------------------
 * image_view2: support kinetic (`#1573 <https://github.com/jsk-ros-pkg/jsk_common/issues/1573>`_)

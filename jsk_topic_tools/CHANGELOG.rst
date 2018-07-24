@@ -2,6 +2,21 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.7 (2018-06-27)
+------------------
+* Add warnNoRemap to ConnectionBasedNodelet (`#1538 <https://github.com/jsk-ros-pkg/jsk_common/issues/1538>`_)
+  * add version_gte 1.9.11 for nodelet
+* jsk_topic_tools: add option to display diagnostic messages on warning level (`#1585 <https://github.com/jsk-ros-pkg/jsk_common/issues/1585>`_)
+  * jsk_topic_tools: add option to set diangostic level
+    jsk_topic_tools: update doc for jsk_topic_tools nodelet classes
+* Add #include <boost/format.hpp> (`#1584 <https://github.com/jsk-ros-pkg/jsk_common/issues/1584>`_)
+* jsk_topic_tools: add synchronized_throttle (`#1579 <https://github.com/jsk-ros-pkg/jsk_common/issues/1579>`_)
+  * jsk_topic_tools: add synchronized_throttle
+  * Add warnNoRemap to ConnectionBasedNodelet
+* Fix roscore regardless (`#1576 <https://github.com/jsk-ros-pkg/jsk_common/issues/1576>`_)
+  * jsk_topic_tools: fix isMasterAlive to work
+* Contributors: Yuki Furuta, Kentaro Wada, Laurenz
+
 2.2.6 (2018-01-05)
 ------------------
 * jsk_topic_tools: stealth_relay_nodelet: support MessageEvent (`#1572 <https://github.com/jsk-ros-pkg/jsk_common/issues/1572>`_)
