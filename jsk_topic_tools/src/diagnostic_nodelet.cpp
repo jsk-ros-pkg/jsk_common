@@ -61,7 +61,7 @@ namespace jsk_topic_tools
     if (pnh_->hasParam("use_warn")) {
       pnh_->getParam("use_warn", use_warn);
     }
-    if (use_warn)
+    if (use_warn == false)
     {
       diagnostic_error_level_ = diagnostic_msgs::DiagnosticStatus::ERROR;
     } else {
