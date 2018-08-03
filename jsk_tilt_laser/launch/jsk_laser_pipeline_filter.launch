@@ -1,0 +1,60 @@
+<launch>
+  <!-- topics -->
+  <arg name="INPUT"   default="/lidar_scan" />
+  <arg name="OUTPUT"  default="/lidar_self_filtered_cloud" />
+
+  <!-- parameters -->
+  <arg name="fixed_frame_id"  default="lider_scan_base" />
+  <arg name="SELF_FILTER_PARAM" default="" />
+
+  <!-- control selection -->
+  <arg name="use_self_filter" default="true" />
+
+  <arg     if="$(arg use_self_filter)" name="output_name" value="$(arg OUTPUT)" />
+  <arg unless="$(arg use_self_filter)" name="output_name" value="not_used" />
+
+  <arg     if="$(arg use_self_filter)" name="local_topic_name" value="$(arg INPUT)_filtered_cloud" />
+  <arg unless="$(arg use_self_filter)" name="local_topic_name" value="$(arg OUTPUT)" />
+
+  <!-- scan filter -->
+  <node name="tilt_scan_to_cloud"
+        pkg="laser_filters" type="scan_to_cloud_filter_chain"
+        clear_params="true" output="screen">
+    <remap from="scan" to="$(arg INPUT)" />
+    <rosparam subst_value="true">
+      scan_filter_chain:
+      - name: shadows
+        type: laser_filters/ScanShadowsFilter
+        params:
+          min_angle: 0
+#          max_angle: 175
+          max_angle: 165
+          neighbors: 5
+          window: 5
+      - name: dark_shadows
+        type: laser_filters/LaserScanIntensityFilter
+        params:
+          lower_threshold: 200
+          upper_threshold: 10000
+          disp_histogram: 0
+      - name: range
+        type: laser_filters/LaserScanRangeFilter
+        params:
+          lower_threshold: 0.2 # 0.5
+          upper_threshold: 30.0
+      high_fidelity: false # range_max is ignored when high_fidelity
+      laser_max_range: 30 ## deprecated ?
+      target_frame: $(arg fixed_frame_id)
+    </rosparam>
+    <remap from="cloud_filtered" to="$(arg local_topic_name)" />
+  </node>
+
+  <node if="$(arg use_self_filter)"
+        pkg="pr2_navigation_self_filter" type="self_filter"
+        name="laser_self_filter" output="screen" >
+    <remap from="cloud_in"  to="$(arg local_topic_name)" />
+    <remap from="cloud_out" to="$(arg output_name)" />
+    <rosparam command="load" file="$(arg SELF_FILTER_PARAM)" />
+  </node>
+
+</launch>

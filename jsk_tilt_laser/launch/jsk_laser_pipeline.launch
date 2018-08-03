@@ -1,0 +1,59 @@
+<launch>
+  <!-- topics -->
+  <arg name="INPUT" default="/lider_scan" />
+  <arg name="joint_states" default="/joint_states" />
+
+  <!-- parameters -->
+  <arg name="fixed_frame_id"    default="base_link" />
+  <arg name="SELF_FILTER_PARAM" default="$(find jsk_tilt_laser)/config/laser_self_filter.yaml" />
+  <arg name="local_filtered_name" default="/self_filtered_scan_cloud" />
+  <arg name="tilt_model_file"   default="" />
+
+  <!-- control selection -->
+  <arg name="use_self_filter"        default="true"  />
+  <arg name="use_joint_states_relay" default="false" />
+  <arg name="use_tilt_robot_model"   default="false" />
+  <arg name="use_rotate"             default="true"  />
+
+  <!-- divided robot model -->
+  <group if="$(arg use_tilt_robot_model)" >
+    <param name="tilt_robot_description" textfile="$(arg tilt_model_file)" />
+
+    <remap from="robot_description" to="tilt_robot_description" />
+    <remap from="joint_states" to="$(arg joint_states)" />
+    <node pkg="robot_state_publisher" type="state_publisher" name="tilt_laser_state_publisher" />
+    <!-- should connect robot and root of tilt_model by TF -->
+  </group>
+
+  <!-- relay pattern -->
+  <node if="$(arg use_joint_states_relay)"
+        pkg="jsk_topic_tools" type="relay" name="multisense_joint_states_relay">
+    <remap from="~input"  to="$(arg joint_states)" />
+    <remap from="~output" to="/joint_states" />
+  </node>
+  <!-- roslaunch jsk_tilt_laser jsk_laser_pipeline.launch INPUT:=/multisense/lidar_scan fixed_frame_id:=BODY use_relay_joint_states:=true joint_states:=/multisense_local/joint_states -->
+
+  <!-- scan filter -->
+  <include file="$(find jsk_tilt_laser)/launch/jsk_laser_pipeline_filter.launch" >
+    <arg name="INPUT"   value="$(arg INPUT)" />
+    <arg name="OUTPUT"  value="$(arg local_filtered_name)" />
+    <arg name="SELF_FILTER_PARAM" value="$(arg SELF_FILTER_PARAM)" />
+
+    <arg name="fixed_frame_id"  value="$(arg fixed_frame_id)" />
+    <arg name="use_self_filter" value="$(arg use_self_filter)" />
+  </include>
+
+  <arg     if="$(arg use_rotate)" name="joint_name" value="motor_joint" />
+  <arg unless="$(arg use_rotate)" name="joint_name" value="tilt_laser_joint" />
+  <!-- listener -->
+  <include file="$(find jsk_tilt_laser)/launch/jsk_laser_pipeline_listener.launch" >
+    <arg name="INPUT"   value="$(arg local_filtered_name)" />
+    <arg name="joint_states"   value="$(arg joint_states)" />
+
+    <arg name="fixed_frame" value="$(arg fixed_frame_id)" />
+    <arg name="joint_name"  value="$(arg joint_name)" />
+
+    <arg name="USE_ROTATE" value="$(arg use_rotate)" />
+  </include>
+
+</launch>
