@@ -108,6 +108,18 @@ def is_google_drive_url(url):
     return m is not None
 
 
+def _get_package_source_path(pkg_name):
+    rp = rospkg.RosPack()
+    try:
+        pkg_path = rp.get_path(pkg_name)
+    except rospkg.ResourceNotFound:
+        print('\033[31m{name} is not found in {path}\033[0m'
+              .format(name=pkg_name, path=rp.list()))
+        return
+    pkg_path = rp.get_path(pkg_name)
+    return pkg_path
+
+
 def download_data(pkg_name, path, url, md5, download_client=None,
                   extract=False, compressed_bags=None, quiet=True, chmod=True):
     """Install test data checking md5 and rosbag decompress if needed.
@@ -121,23 +133,15 @@ def download_data(pkg_name, path, url, md5, download_client=None,
     if compressed_bags is None:
         compressed_bags = []
     if not osp.isabs(path):
-        # get package path
-        rp = rospkg.RosPack()
-        try:
-            pkg_path = rp.get_path(pkg_name)
-        except rospkg.ResourceNotFound:
-            print('\033[31m{name} is not found in {path}\033[0m'
-                  .format(name=pkg_name, path=rp.list()))
-            return
-        pkg_path = rp.get_path(pkg_name)
+        pkg_path = _get_package_source_path(pkg_name)
         path = osp.join(pkg_path, path)
-        if not osp.exists(osp.dirname(path)):
-            try:
-                os.makedirs(osp.dirname(path))
-            except OSError as e:
-                # can fail on running with multiprocess
-                if not osp.isdir(path):
-                    raise
+    if not osp.exists(osp.dirname(path)):
+        try:
+            os.makedirs(osp.dirname(path))
+        except OSError as e:
+            # can fail on running with multiprocess
+            if not osp.isdir(path):
+                raise
     # prepare cache dir
     if "JSK_DATA_CACHE_DIR" in os.environ:
         cache_root_dir = os.getenv("JSK_DATA_CACHE_DIR")
@@ -187,7 +191,6 @@ def download_data(pkg_name, path, url, md5, download_client=None,
             os.symlink(file_, dst_path)
     for compressed_bag in compressed_bags:
         if not osp.isabs(compressed_bag):
-            rp = rospkg.RosPack()
-            pkg_path = rp.get_path(pkg_name)
+            pkg_path = _get_package_source_path(pkg_name)
             compressed_bag = osp.join(pkg_path, compressed_bag)
         decompress_rosbag(compressed_bag, quiet=quiet, chmod=chmod)
