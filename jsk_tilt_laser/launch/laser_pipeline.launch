@@ -4,7 +4,7 @@
   <arg name="laser_scan" default="scan" />
   <arg name="pointcloud" default="/cloud_filtered" />
   <arg name="max_scans" default="1000" />
-  <arg name="tilt_name" default="tilt_joint" />
+  <arg name="tilt_name" default="tilt_laser_joint" />
 
   <!-- laser assembler for recognizing environment -->
   <node pkg="laser_assembler" type="laser_scan_assembler"

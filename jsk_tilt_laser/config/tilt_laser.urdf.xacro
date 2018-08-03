@@ -59,7 +59,7 @@
       <!-- <child link="mount_origin" /> -->
     </joint>
 
-    <joint name="tilt_joint" type="revolute">
+    <joint name="tilt_laser_joint" type="revolute">
       <origin xyz="0 0 0" />
       <axis xyz="0 -1 0"/>
       <parent link="mount_link" />

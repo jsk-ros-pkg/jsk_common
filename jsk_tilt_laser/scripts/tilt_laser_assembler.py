@@ -20,7 +20,7 @@ class AssembleCaller:
 
     def init(self):
         rospy.init_node('tilt_laser_assembler')
-        self.joint_name = rospy.get_param("~tilt_joint_name", "tilt_joint")
+        self.joint_name = rospy.get_param("~tilt_joint_name", "tilt_laser_joint")
         self.cloud_pub = rospy.Publisher('assemble_cloud', sensor_msgs.msg.PointCloud2)
         self.command_pub = rospy.Publisher('/tilt_controller/command', std_msgs.msg.Float64)
         self.joint_sub = rospy.Subscriber('joint_states', sensor_msgs.msg.JointState, self.joint_callback)
