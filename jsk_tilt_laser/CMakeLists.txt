@@ -6,9 +6,12 @@ project(jsk_tilt_laser)
 if(NOT $ENV{ROS_DISTRO} STREQUAL "groovy")
   set(laser_assembler "laser_assembler")
 endif(NOT $ENV{ROS_DISTRO} STREQUAL "groovy")
-if(NOT APPLE)
+
+find_package(multisense_lib QUIET)
+if(multisense_lib_FOUND)
+  message(STATUS "Found multisense_lib")
   set(multisense_lib multisense_lib)
-endif(NOT APPLE)
+endif(multisense_lib_FOUND)
 
 find_package(catkin REQUIRED
   dynamic_reconfigure sensor_msgs ${laser_assembler}
@@ -41,7 +44,7 @@ if(NOT $ENV{ROS_DISTRO} STREQUAL "groovy")
     )
 endif(NOT $ENV{ROS_DISTRO} STREQUAL "groovy")
 
-if(NOT APPLE)
+if(multisense_lib_FOUND)
   add_executable(multisense_killer src/multisense_killer.cpp)
   target_link_libraries(multisense_killer ${catkin_LIBRARIES})
   install(TARGETS multisense_killer
@@ -49,7 +52,9 @@ if(NOT APPLE)
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
     )
-endif(NOT APPLE)
+else(multisense_lib_FOUND)
+  message(STATUS "multisense_killer is not build, because of multisense_lib is not found")
+endif(multisense_lib_FOUND)
 
 install(DIRECTORY launch config cfg scripts
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
