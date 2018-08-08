@@ -54,7 +54,10 @@ if (CATKIN_ENABLE_TESTING)
     roslaunch_add_file_check(launch/baxter_play.launch)
     roslaunch_add_file_check(launch/baxter_record.launch)
   endif()
-  roslaunch_add_file_check(launch/pr2_play.launch)
+  find_package(pr2_description QUIET)
+  if(pr2_description_FOUND)
+    roslaunch_add_file_check(launch/pr2_play.launch)
+  endif()
   if(0)
     # pr2_record could not run on travis
     # 1. environment variable 'ROS_ENV_LOADER' is not set.
