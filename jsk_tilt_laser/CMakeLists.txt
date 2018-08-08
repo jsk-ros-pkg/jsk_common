@@ -20,8 +20,8 @@ find_package(catkin REQUIRED
   )
 
 
-find_package(Eigen REQUIRED)
-include_directories(${Eigen_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 generate_dynamic_reconfigure_options(
   cfg/DynamixelTiltController.cfg
