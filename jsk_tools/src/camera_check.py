@@ -16,7 +16,7 @@ from jsk_tools.sanity_lib import checkUSBExist
 
 class CameraCheck(object):
 
-    def __init__(self, device_path=None):
+    def __init__(self):
         self.topic_names = rospy.get_param('~topic_names', [])
         self.device_type = rospy.get_param("~device_type", 'usb')
         self.device_path = rospy.get_param('~device_path', None)
