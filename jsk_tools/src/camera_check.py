@@ -29,7 +29,7 @@ class CameraCheck(object):
         self.diagnostic_updater.add('connection', self.check_connection)
         self.diagnostic_updater.add('image', self.check_topic)
 
-        self.subscribe()
+        self._is_subscribing = False
 
     def subscribe(self):
         self.subs = []
@@ -41,10 +41,14 @@ class CameraCheck(object):
                                    callback=lambda msg : self.callback(topic_name, msg),
                                    queue_size=1)
             self.subs.append(sub)
+        self._is_subscribing = True
 
     def unsubscribe(self):
+        if self._is_subscribing is False:
+            return
         for sub in self.subs:
             sub.unregister()
+        self._is_subscribing = False
 
     def callback(self, topic_name, msg):
         self.topic_msg_dict[topic_name].append(msg)
