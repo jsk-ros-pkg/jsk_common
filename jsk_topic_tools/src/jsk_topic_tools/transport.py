@@ -56,8 +56,12 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
         self._publishers = []
         self._ever_subscribed = False
         self._connection_status = NOT_SUBSCRIBED
-        rospy.Timer(rospy.Duration(5),
-                    self._warn_never_subscribed_cb, oneshot=True)
+        rospy.Timer(
+            rospy.Duration(5),
+            self._warn_never_subscribed_cb,
+            oneshot=True,
+            reset=True,
+        )
 
     def _post_init(self):
         self.is_initialized = True
