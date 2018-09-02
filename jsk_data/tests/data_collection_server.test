@@ -4,11 +4,6 @@
         pkg="rostopic" type="rostopic"
         args="pub /sample_topic std_msgs/String 'sample' -r 10" />
 
-  <node name="static_image_publisher"
-        pkg="jsk_topic_tools" type="static_image_publisher.py"
-        clear_params="true">
-  </node>
-
   <rosparam>
     sample_string: spam
   </rosparam>
@@ -51,6 +46,12 @@
     </rosparam>
   </node>
 
+  <!-- FIXME: https://github.com/jsk-ros-pkg/jsk_common/pull/1599#issuecomment-417914822 -->
+  <!--
+  <node name="static_image_publisher"
+        pkg="jsk_topic_tools" type="static_image_publisher.py"
+        clear_params="true">
+  </node>
   <param name="save_dir_all" command="mktemp -d" />
   <node name="data_collection_server_all"
         pkg="jsk_data" type="data_collection_server.py">
@@ -69,6 +70,7 @@
           savetype: Text
     </rosparam>
   </node>
+  -->
 
   <test test-name="test_data_collection_server"
         pkg="jsk_data" type="test_data_collection_server.py" />
