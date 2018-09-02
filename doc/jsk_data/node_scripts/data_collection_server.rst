@@ -62,7 +62,7 @@ Parameters
 
   - ``request``: Save data when service is called.
   - ``timer``: Save data when ``start`` service is called. Finish collecting when ``end`` service is called.
-  - ``None``: Always save data.
+  - ``all``: Always save data.
 
 * ``message_filters``: (Bool, Default: ``False``)
 
