@@ -85,6 +85,8 @@ class DataCollectionServer(object):
                     sys.exit(1)
 
         method = rospy.get_param('~method', 'request')
+        if method not in ['request', 'timer', 'all', 'message_filters']:
+            raise ValueError('Unexpected method: {}'.format(method))
         use_message_filters = rospy.get_param('~message_filters', False)
         self.timestamp_save_dir = rospy.get_param('~timestamp_save_dir', True)
 
@@ -92,13 +94,13 @@ class DataCollectionServer(object):
             rospy.logwarn('Deprecated param: ~with_request, Use ~method')
             if not rospy.get_param('~with_request'):
                 use_message_filters = True
-                method = None
+                method = 'all'
         if method == 'message_filters':
             rospy.logwarn(
                 'Deprecated param: ~method: message_filters,'
                 'Use ~message_filters: true')
             use_message_filters = True
-            method = None
+            method = 'all'
 
         # set subscribers
         self.subs = []
@@ -148,11 +150,12 @@ class DataCollectionServer(object):
             else:
                 self.timer = rospy.Timer(duration, self.timer_cb)
         else:
+            assert method == 'all'
             if use_message_filters:
                 self.sync.registerCallback(self.sync_sub_and_save_cb)
             else:
                 rospy.logerr(
-                    '~use_filters: False, ~method: None is not supported')
+                    '~use_filters: False, ~method: all is not supported')
                 sys.exit(1)
 
     def reconfig_cb(self, config, level):
