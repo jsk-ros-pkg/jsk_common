@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 
-import cv2
 try:
     from scipy.misc import face
     img = face()[:, :, ::-1]
 except ImportError:
-    import numpy as np
     from scipy.misc import lena
-    img = cv2.cvtColor(lena().astype(np.uint8), cv2.COLOR_GRAY2BGR)
+    img = lena()[:, :, None].repeat(3, axis=2)
 
 import cv_bridge
 import rospy
