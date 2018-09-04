@@ -2,6 +2,8 @@
 
 import abc
 import argparse
+from distutils.version import LooseVersion
+import pkg_resources
 import sys
 
 import rospy
@@ -56,8 +58,17 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
         self._publishers = []
         self._ever_subscribed = False
         self._connection_status = NOT_SUBSCRIBED
-        rospy.Timer(rospy.Duration(5),
-                    self._warn_never_subscribed_cb, oneshot=True)
+        kwargs = dict(
+            period=rospy.Duration(5),
+            callback=self._warn_never_subscribed_cb,
+            oneshot=True,
+        )
+        if (LooseVersion(pkg_resources.get_distribution('rospy').version) >=
+                LooseVersion('1.12.0')):
+            # on >=kinetic, it raises ROSTimeMovedBackwardsException
+            # when we use rosbag play --loop.
+            kwargs['reset'] = True
+        rospy.Timer(**kwargs)
 
     def _post_init(self):
         self.is_initialized = True
