@@ -36,7 +36,7 @@ if(${CMAKE_SYSTEM_PROCESSOR} MATCHES amd64* OR
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 endif()
-install(DIRECTORY launch rvizconfig sample tests
+install(DIRECTORY launch node_scripts rvizconfig sample tests
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
 )
