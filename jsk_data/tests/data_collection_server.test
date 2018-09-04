@@ -46,8 +46,6 @@
     </rosparam>
   </node>
 
-  <!-- FIXME: https://github.com/jsk-ros-pkg/jsk_common/pull/1599#issuecomment-417914822 -->
-  <!--
   <node name="static_image_publisher"
         pkg="jsk_topic_tools" type="static_image_publisher.py"
         clear_params="true">
@@ -70,7 +68,6 @@
           savetype: Text
     </rosparam>
   </node>
-  -->
 
   <test test-name="test_data_collection_server"
         name="test_data_collection_server"
