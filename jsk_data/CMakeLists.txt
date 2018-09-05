@@ -36,7 +36,7 @@ if(${CMAKE_SYSTEM_PROCESSOR} MATCHES amd64* OR
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 endif()
-install(DIRECTORY launch rvizconfig
+install(DIRECTORY launch node_scripts rvizconfig sample tests
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
 )
@@ -66,4 +66,7 @@ if (CATKIN_ENABLE_TESTING)
   endif()
   roslaunch_add_file_check(launch/hrp2_record.launch)
   roslaunch_add_file_check(launch/urata_record.launch)
+
+  find_package(rostest REQUIRED)
+  add_rostest(tests/data_collection_server.test)
 endif()
