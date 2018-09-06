@@ -172,22 +172,21 @@ class BagPlotter():
         conf file format is:
         global:
           layout: "vertical" or "horizontal"
+          legend_font_size: font size for the legend
+          label_font_size: font size for the axis label
+          title_font_size: font size for each plot
         plots:
-          - title: "title"
+          - title: "title 1"
             type: "line" or "hist"
-            topics:
-              - topic: "topic name"
-                field: "field name"
-              - topic: "topic name"
-                field: "field name"
+            topic: [topic1, topic2, ...]
+            field: [field1, field2, ...]
+            color: [color1, color2, ...]
             legend: true
-          - title: "title"
+          - title: "title 2"
             type: "line" or "hist"
-            topics:
-              - topic: "topic name"
-                field: "field name"
-              - topic: "topic name"
-                field: "field name"
+            topic: [topic1, topic2, ...]
+            field: [field1, field2, ...]
+            color: [color1, color2, ...]
             legend: true
         """
         with open(self.conf_file) as f:
