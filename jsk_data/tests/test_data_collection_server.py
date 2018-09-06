@@ -74,14 +74,13 @@ class TestDataCollectionServer(unittest.TestCase):
         save_dir = osp.expanduser(save_dir)
         self.check(save_dir, target='string')
 
-    # FIXME: See test_data_collection_server.test
-    # def test_all(self):
-    #     rospy.wait_for_message('/static_image_publisher/output', Image)
-    #     rospy.sleep(2)
-    #
-    #     save_dir = rospy.get_param('/save_dir_all')
-    #     save_dir = osp.expanduser(save_dir)
-    #     self.check(save_dir, target='image')
+    def test_all(self):
+        rospy.wait_for_message('/static_image_publisher/output', Image)
+        rospy.sleep(2)
+
+        save_dir = rospy.get_param('/save_dir_all')
+        save_dir = osp.expanduser(save_dir)
+        self.check(save_dir, target='image')
 
 
 if __name__ == '__main__':
