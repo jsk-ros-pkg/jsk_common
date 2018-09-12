@@ -8,12 +8,15 @@
   <test test-name="test_node_alive"
         name="test_node_alive"
         pkg="jsk_tools" type="test_node_alive.py"
-        time-limit="10" retry="1">
+        time-limit="20" retry="1">
     <rosparam>
       node_0: /test_node_alive
       timeout_0: 10
       node_1: /publish_string
       timeout_1: 10
+      node_2: /non_existent_node
+      timeout_2: 2
+      negative_2: true
     </rosparam>
   </test>
 
