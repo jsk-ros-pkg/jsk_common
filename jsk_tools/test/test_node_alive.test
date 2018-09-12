@@ -1,0 +1,20 @@
+<launch>
+
+  <node name="publish_string"
+        pkg="rostopic" type="rostopic"
+        args="pub /string std_msgs/String 'data: spam' -r 1">
+  </node>
+
+  <test test-name="test_node_alive"
+        name="test_node_alive"
+        pkg="jsk_tools" type="test_node_alive.py"
+        time-limit="5" retry="0">
+    <rosparam>
+      node_0: /test_node_alive
+      timeout_0: 10
+      node_1: /publish_string
+      timeout_1: 10
+    </rosparam>
+  </test>
+
+</launch>
