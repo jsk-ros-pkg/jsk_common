@@ -9,6 +9,7 @@ import unittest
 from nose.tools import assert_false
 from nose.tools import assert_true
 
+import rosgraph
 import rosnode
 import rospy
 import rostest
@@ -22,10 +23,15 @@ class AliveChecker(object):
     def __init__(self, node_name, timeout):
         self.node_name = node_name
         self.deadline = rospy.Time.now() + rospy.Duration(timeout)
-        self.alive_nodes = rosnode.get_node_names()
+        self.master = rosgraph.Master(NAME)
 
     def assert_alive(self):
-        if self.node_name in self.alive_nodes:
+        # Try to unregister zombie nodes from ROS master.
+        _, unpinged = rosnode.rosnode_ping_all()
+        rosnode.cleanup_master_blacklist(self.master, unpinged)
+
+        alive_nodes = rosnode.get_node_names()
+        if self.node_name in alive_nodes:
             return True
         if rospy.Time.now() > self.deadline:
             return False
@@ -54,7 +60,7 @@ class TestNodeAlive(unittest.TestCase):
             sys.exit(1)
 
     def test_node_alive(self):
-        """Test nodes are alive"""
+        """Test if nodes are alive"""
         use_sim_time = rospy.get_param('/use_sim_time', False)
         t_start = time.time()
         while not rospy.is_shutdown() and \
