@@ -1,0 +1,76 @@
+<launch>
+
+  <node name="publish_string"
+        pkg="rostopic" type="rostopic"
+        args="pub /sample_topic std_msgs/String 'sample' -r 10" />
+
+  <rosparam>
+    sample_string: spam
+  </rosparam>
+
+  <param name="save_dir_request" command="mktemp -d" />
+  <node name="data_collection_server_request"
+        pkg="jsk_data" type="data_collection_server.py">
+    <remap from="~save_dir" to="save_dir_request" />
+    <rosparam>
+      message_filters: false
+      method: request
+      topics:
+        - name: /sample_topic
+          fname: sample_topic.yaml
+          savetype: YAML
+          msg_class: std_msgs/String
+      params:
+        - key: /sample_string
+          fname: sample_string.txt
+          savetype: Text
+    </rosparam>
+  </node>
+
+  <param name="save_dir_timer" command="mktemp -d" />
+  <node name="data_collection_server_timer"
+        pkg="jsk_data" type="data_collection_server.py">
+    <remap from="~save_dir" to="save_dir_timer" />
+    <rosparam>
+      message_filters: false
+      method: timer
+      topics:
+        - name: /sample_topic
+          fname: sample_topic.yaml
+          savetype: YAML
+          msg_class: std_msgs/String
+      params:
+        - key: /sample_string
+          fname: sample_string.txt
+          savetype: Text
+    </rosparam>
+  </node>
+
+  <node name="static_image_publisher"
+        pkg="jsk_topic_tools" type="static_image_publisher.py"
+        clear_params="true">
+  </node>
+  <param name="save_dir_all" command="mktemp -d" />
+  <node name="data_collection_server_all"
+        pkg="jsk_data" type="data_collection_server.py">
+    <remap from="~save_dir" to="save_dir_all" />
+    <rosparam>
+      message_filters: true
+      method: all
+      topics:
+        - name: static_image_publisher/output
+          fname: sample_image.png
+          savetype: ColorImage
+          msg_class: sensor_msgs/Image
+      params:
+        - key: /sample_string
+          fname: sample_string.txt
+          savetype: Text
+    </rosparam>
+  </node>
+
+  <test test-name="test_data_collection_server"
+        name="test_data_collection_server"
+        pkg="jsk_data" type="test_data_collection_server.py" />
+
+</launch>

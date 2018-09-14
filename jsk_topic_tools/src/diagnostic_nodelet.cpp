@@ -63,9 +63,9 @@ namespace jsk_topic_tools
     }
     if (use_warn)
     {
-      diagnostic_error_level_ = diagnostic_msgs::DiagnosticStatus::ERROR;
-    } else {
       diagnostic_error_level_ = diagnostic_msgs::DiagnosticStatus::WARN;
+    } else {
+      diagnostic_error_level_ = diagnostic_msgs::DiagnosticStatus::ERROR;
     }
 
     double vital_rate;

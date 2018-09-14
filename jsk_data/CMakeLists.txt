@@ -36,7 +36,7 @@ if(${CMAKE_SYSTEM_PROCESSOR} MATCHES amd64* OR
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 endif()
-install(DIRECTORY launch rvizconfig
+install(DIRECTORY launch node_scripts rvizconfig sample tests
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
 )
@@ -54,7 +54,10 @@ if (CATKIN_ENABLE_TESTING)
     roslaunch_add_file_check(launch/baxter_play.launch)
     roslaunch_add_file_check(launch/baxter_record.launch)
   endif()
-  roslaunch_add_file_check(launch/pr2_play.launch)
+  find_package(pr2_description QUIET)
+  if(pr2_description_FOUND)
+    roslaunch_add_file_check(launch/pr2_play.launch)
+  endif()
   if(0)
     # pr2_record could not run on travis
     # 1. environment variable 'ROS_ENV_LOADER' is not set.
@@ -63,4 +66,7 @@ if (CATKIN_ENABLE_TESTING)
   endif()
   roslaunch_add_file_check(launch/hrp2_record.launch)
   roslaunch_add_file_check(launch/urata_record.launch)
+
+  find_package(rostest REQUIRED)
+  add_rostest(tests/data_collection_server.test)
 endif()
