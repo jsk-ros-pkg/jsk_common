@@ -71,7 +71,7 @@ def expandArrayFields(fields, topics, colors):
             for i in fList:
                 ret_fields.append(re.sub("\[.*\]", "[" + str(i) + "]", f))
                 ret_topics.append(t)
-                ret_topics.append(c)
+                ret_colors.append(c)
         else:
             ret_fields.append(f)
             ret_topics.append(t)
