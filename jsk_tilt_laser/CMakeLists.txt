@@ -56,7 +56,10 @@ else(multisense_lib_FOUND)
   message(STATUS "multisense_killer is not build, because of multisense_lib is not found")
 endif(multisense_lib_FOUND)
 
-install(DIRECTORY launch config cfg scripts
+install(DIRECTORY scripts/
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(DIRECTORY launch config cfg
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
-  )
+)

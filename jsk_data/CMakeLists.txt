@@ -21,6 +21,9 @@ catkin_install_python(PROGRAMS
   scripts/rosbag_always.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+install(DIRECTORY node_scripts/
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 install(PROGRAMS
   scripts/copy-pr2-bagfiles
   scripts/decompress
@@ -36,7 +39,7 @@ if(${CMAKE_SYSTEM_PROCESSOR} MATCHES amd64* OR
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 endif()
-install(DIRECTORY launch node_scripts rvizconfig sample tests
+install(DIRECTORY launch rvizconfig sample tests
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
 )

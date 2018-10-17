@@ -15,7 +15,8 @@ include_directories(${catkin_INCLUDE_DIRS})
 add_executable(virtual_force_publisher src/virtual_force_publisher.cpp)
 target_link_libraries(virtual_force_publisher ${catkin_LIBRARIES})
 
-
 install(TARGETS virtual_force_publisher DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-
+install(DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

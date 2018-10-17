@@ -53,11 +53,13 @@ add_dependencies(silverhammer_highspeed_internal_receiver
 #   add_rostest(test/test_all_type_low_speed.test)
 # endif(CATKIN_ENABLE_TESTING)
 
-install(DIRECTORY scripts
-  DESTINATION
-  ${CATKIN_PACKAGE_SHARE_DESTINATION}
+install(DIRECTORY scripts/
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   USE_SOURCE_PERMISSIONS
-  )
+)
+install(DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 install(TARGETS silverhammer_highspeed_internal_receiver
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
