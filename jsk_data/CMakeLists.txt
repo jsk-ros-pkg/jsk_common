@@ -23,6 +23,7 @@ catkin_install_python(PROGRAMS
 )
 install(DIRECTORY node_scripts/
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  USE_SOURCE_PERMISSIONS
 )
 install(PROGRAMS
   scripts/copy-pr2-bagfiles

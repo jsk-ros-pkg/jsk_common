@@ -182,6 +182,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 install(DIRECTORY scripts/
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  USE_SOURCE_PERMISSIONS
 )
 
 install(FILES ${jsk_topic_tools_test_files}
