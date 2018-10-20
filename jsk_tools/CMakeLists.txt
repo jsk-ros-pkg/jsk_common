@@ -55,7 +55,7 @@ if (CATKIN_ENABLE_TESTING)
 endif()
 
 # install test files that really works
-install(FILES ${jsk_topic_tools_test_files}
+install(FILES ${jsk_tools_test_files}
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/test)
 install(DIRECTORY test
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
