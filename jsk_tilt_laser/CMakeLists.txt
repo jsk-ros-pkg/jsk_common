@@ -56,6 +56,12 @@ else(multisense_lib_FOUND)
   message(STATUS "multisense_killer is not build, because of multisense_lib is not found")
 endif(multisense_lib_FOUND)
 
+# Install header files directly into ${CATKIN_PACKAGE_INCLUDE_DESTINATION}, and
+# executable programs directly into ${CATKIN_PACKAGE_BIN_DESTINATION}.
+# However, other directories like 'launch' or 'sample' must be installed
+# recursively into ${CATKIN_PACKAGE_SHARE_DESTINATION}.
+# Be careful that 'launch' and 'launch/' are different: the former is directory
+# and the latter is each content.
 install(DIRECTORY scripts/
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   USE_SOURCE_PERMISSIONS

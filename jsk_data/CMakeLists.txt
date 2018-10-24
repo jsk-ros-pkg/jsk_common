@@ -14,6 +14,12 @@ catkin_package(
   CATKIN_DEPENDS message_runtime
 )
 
+# Install header files directly into ${CATKIN_PACKAGE_INCLUDE_DESTINATION}, and
+# executable programs directly into ${CATKIN_PACKAGE_BIN_DESTINATION}.
+# However, other directories like 'launch' or 'sample' must be installed
+# recursively into ${CATKIN_PACKAGE_SHARE_DESTINATION}.
+# Be careful that 'launch' and 'launch/' are different: the former is directory
+# and the latter is each content.
 catkin_install_python(PROGRAMS
   scripts/jsk_data
   scripts/robot_description_loader.py
