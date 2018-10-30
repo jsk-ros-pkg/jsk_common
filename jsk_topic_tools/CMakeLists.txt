@@ -199,7 +199,7 @@ install(DIRECTORY test
   USE_SOURCE_PERMISSIONS
   PATTERN "*.test" EXCLUDE
 )
-install(DIRECTORY launch cmake config sample
+install(DIRECTORY cmake config launch sample
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
 )

@@ -62,11 +62,7 @@ endif(multisense_lib_FOUND)
 # recursively into ${CATKIN_PACKAGE_SHARE_DESTINATION}.
 # Be careful that 'launch' and 'launch/' are different: the former is directory
 # and the latter is each content.
-install(DIRECTORY scripts/
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  USE_SOURCE_PERMISSIONS
-)
-install(DIRECTORY launch config cfg
+install(DIRECTORY cfg config launch scripts
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
 )
