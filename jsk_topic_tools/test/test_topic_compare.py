@@ -4,9 +4,12 @@ import sys
 
 import unittest
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", 
-                                                "scripts")))
-from topic_compare import ROSTopicCompare
+try:
+    from jsk_topic_tools.compare import ROSTopicCompare
+except ImportError:
+    import roslib
+    roslib.load_manifest('jsk_topic_tools')
+    from jsk_topic_tools.compare import ROSTopicCompare
 
 import rospy
 import time

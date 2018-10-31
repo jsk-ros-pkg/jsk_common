@@ -14,12 +14,26 @@ catkin_package(
   CATKIN_DEPENDS message_runtime
 )
 
+# From https://github.com/jsk-ros-pkg/jsk_recognition/pull/2345
+# Install header files directly into ${CATKIN_PACKAGE_INCLUDE_DESTINATION}.
+# If the package has setup.py and modules under src/${PROJECT_NAME}/,
+# install python executables directly into ${CATKIN_PACKAGE_BIN_DESTINATION}.
+# However, if it doesn't have setup.py, directories including python executables
+# should be installed recursively into ${CATKIN_PACKAGE_SHARE_DESTINATION}.
+# Also, other directories like 'launch' or 'sample' must be installed
+# recursively into ${CATKIN_PACKAGE_SHARE_DESTINATION}.
+# Be careful that 'launch' and 'launch/' are different: the former is directory
+# and the latter is each content.
 catkin_install_python(PROGRAMS
   scripts/jsk_data
   scripts/robot_description_loader.py
   scripts/robot_description_saver.py
   scripts/rosbag_always.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(DIRECTORY node_scripts/
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  USE_SOURCE_PERMISSIONS
 )
 install(PROGRAMS
   scripts/copy-pr2-bagfiles
@@ -36,7 +50,7 @@ if(${CMAKE_SYSTEM_PROCESSOR} MATCHES amd64* OR
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 endif()
-install(DIRECTORY launch node_scripts rvizconfig sample tests
+install(DIRECTORY launch rvizconfig sample tests
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
 )
