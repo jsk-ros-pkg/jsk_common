@@ -40,7 +40,7 @@
 
   <link name="laser_origin" />
 
-  <joint name="tilt_joint" type="revolute">
+  <joint name="tilt_laser_joint" type="revolute">
     <origin xyz="0 0 0" />
     <axis xyz="0 -1 0"/>
     <parent link="base_link" />

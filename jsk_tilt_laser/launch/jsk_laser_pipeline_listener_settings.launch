@@ -1,0 +1,168 @@
+<launch>
+  <!-- topics -->
+  <arg name="INPUT"   default="/input_scan_cloud" />
+  <arg name="OUTPUT"  default="/output_cloud" />
+  <arg name="OUTPUT_SNAPSHOT"  default="/output_cloud_snapshot" />
+  <arg name="joint_states" default="/joint_states" />
+
+  <!-- parameters -->
+  <arg name="NODELET_INDEX" default="1" />
+  <arg name="namespace"     default="tilt_laser_listener" />
+  <arg name="listener_target_frame" default="odom" />
+
+  <arg name="camera_frame_id"      default="camera_optiocal_frame" />
+  <arg name="filter_target_frame"  default="ground" />
+  <arg name="filter_z"             default="2" />
+
+  <!-- control selection -->
+  <arg name="run_ground_filter"    default="true" />
+  <arg name="run_distance_filters" default="false" />
+  <arg name="run_camera_cloud"     default="false" />
+
+  <arg     if="$(arg run_ground_filter)" name="initial_input" value="$(arg namespace)_ground_z_filter/output" />
+  <arg unless="$(arg run_ground_filter)" name="initial_input" value="$(arg INPUT)" />
+
+  <arg     if="$(arg run_distance_filters)" name="listener_output" value="$(arg namespace)/output_cloud" />
+  <arg unless="$(arg run_distance_filters)" name="listener_output" value="$(arg OUTPUT)" />
+
+  <group ns="laser_pipeline_nodelet" >
+    <rosparam subst_value="true">
+    nodelets_$(arg NODELET_INDEX):
+      - name: $(arg namespace)_input_transform
+        type: jsk_pcl/TfTransformCloud
+        remappings:
+           - from: ~input
+             to: $(arg initial_input)
+## tilt_laser_listener(full)
+      - name: $(arg namespace)
+        type: jsk_pcl/TiltLaserListener
+        remappings:
+          - from: ~input
+            to: $(arg joint_states)
+          - from: ~input/cloud
+            to: $(arg namespace)_input_transform/output
+          - from: ~output_cloud
+            to: $(arg listener_output)
+      - name: $(arg namespace)_snapshot
+        type: jsk_pcl/TiltLaserListener
+        remappings:
+          - from: ~input
+            to: $(arg joint_states)
+          - from: ~input/cloud
+            to: $(arg namespace)_input_transform/output
+          - from: ~output_cloud
+            to: $(arg OUTPUT_SNAPSHOT)
+## ground_filter
+      - name: $(arg namespace)_ground_non_filtered
+        type: jsk_pcl/TfTransformCloud
+        if: $(arg run_ground_filter)
+        remappings:
+           - from: ~input
+             to: $(arg INPUT)
+      - name: $(arg namespace)_ground_z_filter
+        type: pcl/PassThrough
+        if: $(arg run_ground_filter)
+        remappings:
+           - from: ~input
+             to: $(arg namespace)_ground_non_filtered/output
+## distance filter
+      - name: $(arg namespace)_laser_x_filter
+        type: pcl/PassThrough
+        if: $(arg run_distance_filters)
+        remappings:
+          - from: ~input
+            to: $(arg namespace)/output_cloud
+          - from: /tf
+            to: /tf_null
+      - name: $(arg namespace)_laser_y_filter
+        type: pcl/PassThrough
+        if: $(arg run_distance_filters)
+        remappings:
+          - from: ~input
+            to: $(arg namespace)_laser_x_filter/output
+          - from: /tf
+            to: /tf_null
+      - name: $(arg namespace)_laser_z_filter
+        type: pcl/PassThrough
+        if: $(arg run_distance_filters)
+        remappings:
+          - from: ~input
+            to: $(arg namespace)_laser_y_filter/output
+          - from: /tf
+            to: /tf_null
+## downsampler
+      - name: $(arg namespace)_laser_downsampler
+        type: pcl/VoxelGrid
+        if: $(arg run_distance_filters)
+        remappings:
+          - from: ~input
+            to: $(arg namespace)_laser_z_filter/output
+          - from: ~output
+            to: $(arg OUTPUT)
+          - from: /tf
+            to: /tf_null
+## camera cloud
+      - name: $(arg namespace)_camera_cloud
+        type: jsk_pcl/TfTransformCloud
+        if: $(arg run_camera_cloud)
+        remappings:
+          - from: ~input
+            to: $(arg OUTPUT)
+    </rosparam>
+  </group>
+
+  <group ns="$(arg namespace)_input_transform">
+    <rosparam subst_value="true">
+      target_frame_id: $(arg listener_target_frame)
+    </rosparam>
+  </group>
+
+  <group ns="$(arg namespace)_laser_x_filter">
+    <rosparam>
+      filter_field_name: x
+      filter_limit_min: -5.0
+      filter_limit_max: 1000.0
+    </rosparam>
+  </group>
+  <group ns="$(arg namespace)_laser_y_filter">
+    <rosparam>
+      filter_field_name: y
+      filter_limit_min: -5.0
+      filter_limit_max: 5.0
+    </rosparam>
+  </group>
+  <group ns="$(arg namespace)_laser_z_filter">
+    <rosparam>
+      filter_field_name: z
+      filter_limit_min: -5.0
+      filter_limit_max: 5.0
+    </rosparam>
+  </group>
+  <group ns="$(arg namespace)_laser_downsampler">
+    <rosparam>
+      leaf_size: 0.01
+      filter_limit_min: -100
+      filter_limit_max: 100
+    </rosparam>
+  </group>
+
+  <group ns="$(arg namespace)_camera_cloud">
+    <rosparam subst_value="true">
+      target_frame_id: $(arg camera_frame_id)
+    </rosparam>
+  </group>
+
+  <group ns="$(arg namespace)_ground_non_filtered">
+    <rosparam subst_value="true">
+      target_frame_id: $(arg filter_target_frame)
+    </rosparam>
+  </group>
+  <group ns="$(arg namespace)_ground_z_filter">
+    <rosparam subst_value="true">
+      filter_field_name: z
+      filter_limit_min: -5.0
+      filter_limit_max: $(arg filter_z) # set for reset-pose
+    </rosparam>
+  </group>
+
+</launch>

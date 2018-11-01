@@ -1,0 +1,119 @@
+<launch>
+  <!-- topics -->
+  <arg name="INPUT"           default="/input_scan_cloud" />
+  <arg name="joint_states"    default="/joint_states"  />
+
+  <arg name="fixed_frame"     default="BODY" />
+  <arg name="camera_frame"        default="camera_optiocal_frame" />
+  <arg name="filter_target_frame" default="ground" />
+  <arg name="filter_z"            default="2" />
+  <arg name="joint_name" default="motor_joint" />
+
+  <arg name="USE_ROTATE" default="true" />
+
+  <arg     if="$(arg USE_ROTATE)" name="full_cloud"          value="infinite_spindle" />
+  <arg     if="$(arg USE_ROTATE)" name="full_cloud_snapshot" value="infinite_spindle_half" />
+  <arg     if="$(arg USE_ROTATE)" name="odom_cloud"          value="infinite_spindle_half" />
+  <arg     if="$(arg USE_ROTATE)" name="odom_cloud_snapshot" value="infinite_spindle_half" />
+
+  <arg unless="$(arg USE_ROTATE)" name="full_cloud"          value="tilt" />
+  <arg unless="$(arg USE_ROTATE)" name="full_cloud_snapshot" value="tilt_half_down" />
+  <arg unless="$(arg USE_ROTATE)" name="odom_cloud"          value="tilt_half_down" />
+  <arg unless="$(arg USE_ROTATE)" name="odom_cloud_snapshot" value="tilt_half_down" />
+
+  <node pkg="jsk_topic_tools"
+        type="standalone_complexed_nodelet"
+        name="laser_pipeline_nodelet"
+        output="screen" />
+
+  <!-- assembled based on body -->
+  <include file="$(find jsk_tilt_laser)/launch/jsk_laser_pipeline_listener_settings.launch" >
+    <arg name="INPUT"           value="$(arg INPUT)" />
+    <arg name="OUTPUT"          value="/tilt_laser_assembled" />
+    <arg name="OUTPUT_SNAPSHOT" value="/tilt_laser_assembled_snapshot" />
+    <arg name="joint_states"    value="$(arg joint_states)" />
+
+    <arg name="namespace"     value="tilt_laser_listener" />
+    <arg name="NODELET_INDEX" value="1" />
+    <arg name="listener_target_frame" value="$(arg fixed_frame)" />
+    <arg name="camera_frame_id"       value="$(arg camera_frame)" />
+    <arg name="filter_target_frame"   value="$(arg filter_target_frame)" />
+    <arg name="filter_z"              value="$(arg filter_z)" />
+
+    <arg name="run_ground_filter"    value="false" />
+    <arg name="run_distance_filters" value="true" />
+    <arg name="run_camera_cloud"     value="true" />
+  </include>
+  <group ns="tilt_laser_listener">
+    <rosparam subst_value="true">
+      laser_type: $(arg full_cloud)
+      joint_name: $(arg joint_name)
+      use_laser_assembler: true
+      not_use_laser_assembler_service: true
+      ##
+      twist_frame_id: head_hokuyo_frame
+      overwrap_angle: 0.0
+      skip_number: 10
+      clear_assembled_scans: false
+    </rosparam>
+  </group>
+  <group ns="tilt_laser_listener_snapshot">
+    <rosparam subst_value="true">
+      laser_type: $(arg full_cloud_snapshot)
+      joint_name: $(arg joint_name)
+      use_laser_assembler: true
+      not_use_laser_assembler_service: true
+      ##
+      twist_frame_id: head_hokuyo_frame
+      overwrap_angle: 0.0
+      skip_number: 1
+      clear_assembled_scans: true
+    </rosparam>
+  </group>
+
+  <!-- assembled based on odom -->
+  <include file="$(find jsk_tilt_laser)/launch/jsk_laser_pipeline_listener_settings.launch" >
+    <arg name="INPUT"           value="$(arg INPUT)" />
+    <arg name="OUTPUT"          value="/odom_filtered_laser_assembled" />
+    <arg name="OUTPUT_SNAPSHOT" value="/odom_filtered_assembled_snapshot" />
+    <arg name="joint_states"    value="$(arg joint_states)" />
+
+    <arg name="namespace"     value="odom_filtered_laser_listener" />
+    <arg name="NODELET_INDEX" value="2" />
+    <arg name="listener_target_frame" value="odom" />
+    <arg name="camera_frame_id"       value="$(arg camera_frame)" />
+    <arg name="filter_target_frame"   value="$(arg filter_target_frame)" />
+    <arg name="filter_z"              value="$(arg filter_z)" />
+
+    <arg name="run_ground_filter"    value="true" />
+    <arg name="run_distance_filters" value="false" />
+    <arg name="run_camera_cloud"     value="false" />
+  </include>
+  <group ns="odom_filtered_laser_listener">
+    <rosparam subst_value="true">
+      laser_type: $(arg odom_cloud)
+      joint_name: $(arg joint_name)
+      use_laser_assembler: true
+      not_use_laser_assembler_service: true
+      ##
+      twist_frame_id: head_hokuyo_frame
+      overwrap_angle: 0.15
+      skip_number: 1
+      clear_assembled_scans: false
+    </rosparam>
+  </group>
+  <group ns="odom_filtered_laser_listener_snapshot">
+    <rosparam subst_value="true">
+      laser_type: $(arg odom_cloud_snapshot)
+      joint_name: $(arg joint_name)
+      use_laser_assembler: true
+      not_use_laser_assembler_service: true
+      ##
+      twist_frame_id: head_hokuyo_frame
+      overwrap_angle: 0.15
+      skip_number: 1
+      clear_assembled_scans: true
+    </rosparam>
+  </group>
+
+</launch>

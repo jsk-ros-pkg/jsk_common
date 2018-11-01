@@ -1,0 +1,8 @@
+min_sensor_dist: 0.15
+self_see_default_padding: 0.01
+self_see_default_scale: 1.0
+self_see_links:
+  - name: base_link
+    padding: .02
+  - name: laser_body
+    padding: .02
