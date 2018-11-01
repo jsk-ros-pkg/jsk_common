@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.8 (2018-11-01)
+------------------
 * add tilt laser pipeline for jsk_tilt_laser (`#1605 <https://github.com/jsk-ros-pkg/jsk_common/issues/1605>`_)
   * [jsk_tilt_laser] add new version of launch script for tilt laser
   * [jsk_tilt_laser] change joint name of tilt_laser

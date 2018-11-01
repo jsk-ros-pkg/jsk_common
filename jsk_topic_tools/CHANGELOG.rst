@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.8 (2018-11-01)
+------------------
 * Fix to install 'scripts' directory (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
 * Add reset to Timer in ConnectionBasedTransport (`#1597 <https://github.com/jsk-ros-pkg/jsk_common/issues/1597>`_)
   * Check if >=kinetic to pass reset arg to Timer

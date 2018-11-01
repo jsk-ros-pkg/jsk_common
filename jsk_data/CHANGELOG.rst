@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.8 (2018-11-01)
+------------------
 * Fix installation destination (install node_scripts to CATKIN_PACKAGE_BIN_DESTINATION) (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
 * Enable method: all in test_data_collection_server.py (`#1600 <https://github.com/jsk-ros-pkg/jsk_common/issues/1600>`_)
   * Enable method: all in test_data_collection_server.py

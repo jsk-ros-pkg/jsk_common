@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.8 (2018-11-01)
+------------------
 * Add comment about installation (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
 * [image_view2/image_view2.cpp] Correct grammer. 'could not found' -> could not find' (`#1606 <https://github.com/jsk-ros-pkg/jsk_common/issues/1606>`_)
 * Contributors: Yuto Uchimi, Iori Yanokura

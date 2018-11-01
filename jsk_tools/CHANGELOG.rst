@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.8 (2018-11-01)
+------------------
 * Add comment for install destination (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
 * jsk_tools/src/jsk_tools/bag_plotter.py: Correct a line mistaken, easy but critical (`#1602 <https://github.com/jsk-ros-pkg/jsk_common/issues/1602>`_)
 * jsk_tools/src/jsk_tools/bag_plotter.py: Add style option for line color and font size (`#1601 <https://github.com/jsk-ros-pkg/jsk_common/issues/1601>`_)

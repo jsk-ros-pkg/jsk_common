@@ -2,8 +2,8 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.8 (2018-11-01)
+------------------
 * Install missing launch/ and test/ as well (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
 * Contributors: Yuto Uchimi
 
