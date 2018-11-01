@@ -2,6 +2,62 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix to install 'scripts' directory (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
+* Add reset to Timer in ConnectionBasedTransport (`#1597 <https://github.com/jsk-ros-pkg/jsk_common/issues/1597>`_)
+  * Check if >=kinetic to pass reset arg to Timer
+
+* Add test for data_collection_server (`#1599 <https://github.com/jsk-ros-pkg/jsk_common/issues/1599>`_)
+  * Stop using cv2 in static_image_publisher.py
+    To fix
+    https://github.com/jsk-ros-pkg/jsk_common/pull/1599#issuecomment-417908500
+  * Add reset to Timer in ConnectionBasedTransport
+    To fix below:
+    ```
+  [ERROR] [1535796247.786932, 1535792085.063646]: [/get_heightmap] [sleep] ROS time moved backwards: 1.407559397s
+  Exception in thread Thread-4:
+  Traceback (most recent call last):
+  File "/usr/lib/python2.7/threading.py", line 801, in __bootstrap_inner
+  self.run()
+  File "/opt/ros/kinetic/lib/python2.7/dist-packages/rospy/timer.py", line 226, in run
+  r.sleep()
+  File "/opt/ros/kinetic/lib/python2.7/dist-packages/rospy/timer.py", line 103, in sleep
+  sleep(self._remaining(curr_time))
+  File "/opt/ros/kinetic/lib/python2.7/dist-packages/rospy/timer.py", line 164, in sleep
+  raise rospy.exceptions.ROSTimeMovedBackwardsException(time_jump)
+  ROSTimeMovedBackwardsException: ROS time moved backwards
+  Exception in thread Thread-4:
+  Traceback (most recent call last):
+  File "/usr/lib/python2.7/threading.py", line 801, in __bootstrap_inner
+  self.run()
+  File "/opt/ros/kinetic/lib/python2.7/dist-packages/rospy/timer.py", line 226, in run
+  r.sleep()
+  File "/opt/ros/kinetic/lib/python2.7/dist-packages/rospy/timer.py", line 103, in sleep
+  sleep(self._remaining(curr_time))
+  File "/opt/ros/kinetic/lib/python2.7/dist-packages/rospy/timer.py", line 164, in sleep
+  raise rospy.exceptions.ROSTimeMovedBackwardsException(time_jump)
+  ROSTimeMovedBackwardsException: ROS time moved backwards
+  ^C[image_view-9] killing on exit
+  [tile_image-8] killing on exit
+  [get_heightmap/output/depth_view-7] killing on exit
+  [get_heightmap-6] killing on exit
+  [heightmap_frame_publisher-5] killing on exit
+  [bbox_to_tf-4] killing on exit
+  [bbox_array_to_bbox-3] killing on exit
+  [rosbag_play-2] killing on exit
+  [rosout-1] killing on exit
+  [master] killing on exit
+  shutting down processing monitor...
+  ... shutting down processing monitor complete
+  done
+    ```
+* [jsk_topic_tools] Fixed use_warn option (`#1592 <https://github.com/jsk-ros-pkg/jsk_common/issues/1592>`_)
+* use PROJECT_NAME instad of __NODENAME_PREFIX (RANDOM) (`#1591 <https://github.com/jsk-ros-pkg/jsk_common/issues/1591>`_)
+  * https://github.com/jsk-ros-pkg/jsk_common/pull/1586/files#r207146300
+* jsk_topic_tools/cmake/nodelet.cmake: add random prefix before _single  (``#1586 <https://github.com/jsk-ros-pkg/jsk_common/issues/1586>`_)
+* Contributors: Kei Okada, Kentaro Wada, Yohei Kakiuchi, Yuto Uchimi, Iori Yanokura
+
 2.2.7 (2018-06-27)
 ------------------
 * Add warnNoRemap to ConnectionBasedNodelet (`#1538 <https://github.com/jsk-ros-pkg/jsk_common/issues/1538>`_)

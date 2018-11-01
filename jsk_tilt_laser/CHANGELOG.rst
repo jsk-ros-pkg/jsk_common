@@ -2,6 +2,19 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add tilt laser pipeline for jsk_tilt_laser (`#1605 <https://github.com/jsk-ros-pkg/jsk_common/issues/1605>`_)
+  * [jsk_tilt_laser] add new version of launch script for tilt laser
+  * [jsk_tilt_laser] change joint name of tilt_laser
+
+* Add comment about installation (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
+* update jsk_travis to 0.4.38 add lunar and melodic (`#1594 <https://github.com/jsk-ros-pkg/jsk_common/issues/1594>`_)
+  * use find_package(Eigen3) instead of find_package(Eigen)
+  * use find_package(multisense_lib QUIET) to check multisense_lib
+
+* Contributors: Kei Okada, Yohei Kakiuchi, Yuto Uchimi
+
 2.2.7 (2018-06-27)
 ------------------
 * add missing dirs into install command (`#1583 <https://github.com/jsk-ros-pkg/jsk_common/issues/1583>`_)

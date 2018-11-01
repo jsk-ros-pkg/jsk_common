@@ -2,6 +2,14 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add comment for install destination (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
+* jsk_tools/src/jsk_tools/bag_plotter.py: Correct a line mistaken, easy but critical (`#1602 <https://github.com/jsk-ros-pkg/jsk_common/issues/1602>`_)
+* jsk_tools/src/jsk_tools/bag_plotter.py: Add style option for line color and font size (`#1601 <https://github.com/jsk-ros-pkg/jsk_common/issues/1601>`_)
+* [jsk_tools] add python-progressbar to run_depend (`#1588 <https://github.com/jsk-ros-pkg/jsk_common/issues/1588>`_)
+* Contributors: Kei Okada, Ryosuke Tajima, Yuto Uchimi
+
 2.2.7 (2018-06-27)
 ------------------
 * add missing dirs into install command (`#1583 <https://github.com/jsk-ros-pkg/jsk_common/issues/1583>`_)

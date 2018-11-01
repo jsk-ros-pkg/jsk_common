@@ -2,6 +2,11 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add comment about installation (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
+* Contributors: Yuto Uchimi
+
 2.2.7 (2018-06-27)
 ------------------
 

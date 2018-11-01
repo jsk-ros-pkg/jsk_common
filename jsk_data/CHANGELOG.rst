@@ -2,6 +2,74 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix installation destination (install node_scripts to CATKIN_PACKAGE_BIN_DESTINATION) (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
+* Enable method: all in test_data_collection_server.py (`#1600 <https://github.com/jsk-ros-pkg/jsk_common/issues/1600>`_)
+  * Enable method: all in test_data_collection_server.py
+    I missed this in https://github.com/jsk-ros-pkg/jsk_common/pull/1599#issuecomment-418374578.
+* Add test for data_collection_server (`#1599 <https://github.com/jsk-ros-pkg/jsk_common/issues/1599>`_)
+  * Re-enable test of data_collection_server with method=all
+  * Add name to <test>
+  * Disable test with static_image_publisher.py
+  * Add test for data_collection_server
+  * Rename to method: all from None since null is not supported in roslaunch
+    ```
+  ... logging to /home/wkentaro/.ros/log/rostest-hoop-18427.log
+  [ROSUNIT] Outputting test results to /home/wkentaro/.ros/test_results/jsk_data/rostest-tests_data_collection_server.xml
+  [Testcase: testtest_data_collection_server] ... ERROR!
+  ERROR: cannot marshal None unless allow_none is enabled
+  File "/usr/lib/python2.7/unittest/case.py", line 329, in run
+  testMethod()
+  File "/opt/ros/kinetic/lib/python2.7/dist-packages/rostest/runner.py", line 120, in fn
+  succeeded, failed = self.test_parent.launch()
+  File "/opt/ros/kinetic/lib/python2.7/dist-packages/rostest/rostest_parent.py", line 122, in launch
+  return self.runner.launch()
+  File "/opt/ros/kinetic/lib/python2.7/dist-packages/roslaunch/launch.py", line 657, in launch
+  self._setup()
+  File "/opt/ros/kinetic/lib/python2.7/dist-packages/roslaunch/launch.py", line 644, in _setup
+  self._load_parameters()
+  File "/opt/ros/kinetic/lib/python2.7/dist-packages/roslaunch/launch.py", line 338, in _load_parameters
+  r  = param_server_multi()
+  File "/usr/lib/python2.7/xmlrpclib.py", line 1006, in __call\_\_
+  return MultiCallIterator(self.__server.system.multicall(marshalled_list))
+  File "/usr/lib/python2.7/xmlrpclib.py", line 1243, in __call\_\_
+  return self.__send(self.__name, args)
+  File "/usr/lib/python2.7/xmlrpclib.py", line 1596, in __request
+  allow_none=self.__allow_none)
+  File "/usr/lib/python2.7/xmlrpclib.py", line 1094, in dumps
+  data = m.dumps(params)
+  File "/usr/lib/python2.7/xmlrpclib.py", line 638, in dumps
+  dump(v, write)
+  File "/usr/lib/python2.7/xmlrpclib.py", line 660, in __dump
+  f(self, value, write)
+  File "/usr/lib/python2.7/xmlrpclib.py", line 719, in dump_array
+  dump(v, write)
+  File "/usr/lib/python2.7/xmlrpclib.py", line 660, in __dump
+  f(self, value, write)
+  File "/usr/lib/python2.7/xmlrpclib.py", line 741, in dump_struct
+  dump(v, write)
+  File "/usr/lib/python2.7/xmlrpclib.py", line 660, in __dump
+  f(self, value, write)
+  File "/usr/lib/python2.7/xmlrpclib.py", line 719, in dump_array
+  dump(v, write)
+  File "/usr/lib/python2.7/xmlrpclib.py", line 660, in __dump
+  f(self, value, write)
+  File "/usr/lib/python2.7/xmlrpclib.py", line 664, in dump_nil
+  raise TypeError, "cannot marshal None unless allow_none is enabled"
+    ```
+  * add test for data_collection_server.test
+* [jsk_data] Add re-download code. Fix `#1574 <https://github.com/jsk-ros-pkg/jsk_common/issues/1574>`_ (`#1589 <https://github.com/jsk-ros-pkg/jsk_common/issues/1589>`_)
+  * [jsk_data] Add n_times option to try download
+  * [jsk_data] Add download_data.py's test
+  * [jsk_data] Add return value
+  * [jsk_data] Add re-download code. Fix `#1574 <https://github.com/jsk-ros-pkg/jsk_common/issues/1574>`_
+
+* update jsk_travis to 0.4.38 add lunar and melodic (`#1594 <https://github.com/jsk-ros-pkg/jsk_common/issues/1594>`_)
+  * run pr2_play.launch test only when pr2_description_FOUND
+* Fix mkdir in if isabs block in download_data (`#1593 <https://github.com/jsk-ros-pkg/jsk_common/issues/1593>`_)
+* Contributors: Kei Okada, Kentaro Wada, Yohei Kakiuchi, Yuto Uchimi, Iori Yanokura
+
 2.2.7 (2018-06-27)
 ------------------
 * jsk_data: chmod extraced files (`#1582 <https://github.com/jsk-ros-pkg/jsk_common/issues/1582>`_)
