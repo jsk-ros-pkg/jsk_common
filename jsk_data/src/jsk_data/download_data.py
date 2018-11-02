@@ -133,12 +133,18 @@ def download_data(pkg_name, path, url, md5, download_client=None,
             download_client = 'gdown'
         else:
             download_client = 'wget'
+    # cmd_exists
+    if not any(os.access(os.path.join(path, download_client), os.X_OK)
+               for path in os.environ["PATH"].split(os.pathsep)):
+        print('\033[31mDownload client [%s] is not found. Skipping download\033[0m' % download_client,
+              file=sys.stderr)
+        return True
     if compressed_bags is None:
         compressed_bags = []
     if not osp.isabs(path):
         pkg_path = _get_package_source_path(pkg_name)
         if not pkg_path:
-            print('Package [%s] is not found in current workspace. Skipping download' % pkg_name,
+            print('\033[31mPackage [%s] is not found in current workspace. Skipping download\033[0m' % pkg_name,
                   file=sys.stderr)
             return True
         path = osp.join(pkg_path, path)
@@ -187,7 +193,7 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         os.symlink(cache_file, path)  # create link
     else:
         # not link and exists so skipping
-        print('[%s] File exists, so skipping creating symlink.' % path,
+        print('\033[33m[%s] File exists or not writable, so skipping creating symlink.\033[0m' % path,
               file=sys.stderr)
         return True
     if extract:
