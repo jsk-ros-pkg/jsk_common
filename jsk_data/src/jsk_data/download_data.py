@@ -137,6 +137,10 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         compressed_bags = []
     if not osp.isabs(path):
         pkg_path = _get_package_source_path(pkg_name)
+        if not pkg_path:
+            print('Package [%s] is not found in current workspace. Skipping download' % pkg_name,
+                  file=sys.stderr)
+            return True
         path = osp.join(pkg_path, path)
     if not osp.exists(osp.dirname(path)):
         try:
@@ -175,11 +179,11 @@ def download_data(pkg_name, path, url, md5, download_client=None,
             os.remove(cache_file)
         try_download_count += 1
         download(download_client, url, cache_file, quiet=quiet, chmod=chmod)
-    if osp.islink(path):
+    if osp.islink(path) and os.access(os.path.dirname(path), os.W_OK):
         # overwrite the link
         os.remove(path)
         os.symlink(cache_file, path)
-    elif not osp.exists(path):
+    elif not osp.exists(path) and os.access(os.path.dirname(path), os.W_OK):
         os.symlink(cache_file, path)  # create link
     else:
         # not link and exists so skipping
