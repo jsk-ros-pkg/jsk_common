@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.2.8 (2018-11-01)
 ------------------
 * Fix to install 'scripts' directory (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)

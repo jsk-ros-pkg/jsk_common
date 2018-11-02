@@ -2,6 +2,9 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.2.8 (2018-11-01)
 ------------------
 * Add comment for install destination (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
