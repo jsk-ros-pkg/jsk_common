@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.9 (2018-11-02)
+------------------
 * check if the pkg exists and path is writable (`#1608 <https://github.com/jsk-ros-pkg/jsk_common/issues/1608>`_)
   * fix http://build.ros.org/view/Kbin_uX64/job/Kbin_uX64__jsk_pcl_ros_utils__ubuntu_xenial_amd64__binary/132/console
 * Contributors: Kei Okada
