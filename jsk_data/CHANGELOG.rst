@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.10 (2018-11-03)
+-------------------
 * check if wget/gdown command exists, gdown is pip distributed so that we can not use this within de build farm (`#1609 <https://github.com/jsk-ros-pkg/jsk_common/issues/1609>`_)
 * Contributors: Kei Okada
 
