@@ -13,6 +13,7 @@ from sensor_msgs.msg import Image
 import cv2
 from cv_bridge import CvBridge
 from cv_bridge import CvBridgeError
+from sound_play.msg import SoundRequest
 
 from jsk_tools.sanity_lib import checkUSBExist
 
@@ -28,6 +29,20 @@ class CameraCheck(object):
         self.product_id = rospy.get_param('~pid', None)
         self.duration = rospy.get_param('~duration', 1)
         self.frequency = rospy.get_param('~frequency', None)
+        self.speak_enabled = rospy.get_param("~speak", True)
+        self.speak_pub = rospy.Publisher(
+            "/robotsound", SoundRequest, queue_size=1)
+
+        # nodelet manager name for restarting
+        self.camera_nodelet_manager_name = rospy.get_name(
+            "~camera_nodelet_manager_name", None)
+        if self.camera_nodelet_manager_name is not None:
+            self.camera_nodelet_manager_name = rospy.get_name(
+                "~child_camera_nodelet_manager_name",
+                os.path.basename(self.camera_nodelet_manager_name))
+        self.restart_camera_command = rospy.get_param(
+            '~restart_camera_command', None)
+
         self.diagnostic_updater = diagnostic_updater.Updater()
         self.diagnostic_updater.setHardwareID(rospy.get_param("~hardware_id", 'none'))
         self.diagnostic_updater.add('connection', self.check_connection)
@@ -53,6 +68,16 @@ class CameraCheck(object):
         for sub in self.subs:
             sub.unregister()
         self._is_subscribing = False
+
+    def speak(self, speak_str):
+        rospy.logerr(
+            "[%s] %s", self.__class__.__name__, speak_str)
+        if self.speak_enabled:
+            msg = SoundRequest()
+            msg.sound = SoundRequest.SAY
+            msg.command = SoundRequest.PLAY_ONCE
+            msg.arg = speak_str
+            self.speak_pub.publish(msg)
 
     def callback(self, topic_name, msg):
         self.topic_msg_dict[topic_name].append(msg)
