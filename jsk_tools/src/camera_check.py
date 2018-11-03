@@ -4,6 +4,7 @@ from __future__ import division
 
 import os
 import collections
+import fcntl
 
 import rostopic
 import rospy
@@ -104,6 +105,23 @@ class CameraCheck(object):
             raise NotImplementedError("device_type {} is not yet supported".
                                       format(self.device_type))
         return stat
+
+    def reset_usb(self):
+        if self.device_path is None:
+            rospy.logwarn('device_path is not exists. '
+                          'Please set device_path')
+            return False
+        fd = os.open(self.device_path, os.O_WROMLY)
+        if fd < 0:
+            rospy.logerr("Could not open {}".format(self.device_path))
+            return False
+        rospy.loginfo("Resetting USB device")
+        # Equivalent of the _IO('U', 20) constant in the linux kernel.
+        USBDEVFS_RESET = ord('U') << (4*2) | 20
+        try:
+            rc = fcntl.ioctl(fd, USBDEVFS_RESET, 0)
+        finally:
+            os.cloose(fd)
 
     def check_topic(self, stat):
         for topic_name in self.topic_msg_dict.keys():
