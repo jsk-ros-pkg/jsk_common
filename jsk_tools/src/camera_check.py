@@ -3,8 +3,11 @@
 from __future__ import division
 
 import os
+import time
 import collections
 import fcntl
+import subprocess
+import traceback
 
 import rostopic
 import rospy
@@ -160,6 +163,38 @@ class CameraCheck(object):
         if sum_of_pixels == 0:
             return False
         return True
+
+    def restart_camera_node(self):
+        rospy.logerr("Restart camera node")
+        try:
+            # 1. usbreset...
+            self.speak("resetting u s b")
+            self.reset_usb()
+            time.sleep(10)
+            # 2. kill nodelet manager
+            if self.camera_nodelet_manager_name is not None:
+                self.speak("something wrong with camera node, "
+                           "I'll restart it, killing nodelet manager")
+                retcode = subprocess.call(
+                    'rosnode kill %s' %
+                    (self.camera_nodelet_manager_name), shell=True)
+                time.sleep(10)
+
+                # 3. pkill
+                self.speak("killing child processes")
+                retcode = subprocess.call(
+                    'pkill -f %s' %
+                    self.child_camera_nodelet_manager_name,
+                    shell=True)
+                time.sleep(10)
+
+            # 4 restarting
+            self.speak("restarting processes")
+            retcode = subprocess.call(
+                self.restart_camera_command, shell=True)
+        except Exception as e:
+            rospy.logerr('[%s] Unable to kill kinect node, caught exception:\n%s',
+                         self.__class__.__name__, traceback.format_exc())
 
     def run(self):
         while not rospy.is_shutdown():
