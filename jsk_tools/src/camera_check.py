@@ -10,13 +10,17 @@ import rospy
 import diagnostic_updater
 import diagnostic_msgs
 from sensor_msgs.msg import Image
+import cv2
+from cv_bridge import CvBridge
+from cv_bridge import CvBridgeError
 
 from jsk_tools.sanity_lib import checkUSBExist
 
 
 class CameraCheck(object):
 
-    def __init__(self):
+    def __init__(self, device_path=None):
+        self.bridge = CvBridge()
         self.topic_names = rospy.get_param('~topic_names', [])
         self.device_type = rospy.get_param("~device_type", 'usb')
         self.device_path = rospy.get_param('~device_path', None)
@@ -96,6 +100,23 @@ class CameraCheck(object):
                                      'topic {} available'.format(topic_name))
                     stat.add('topic {} {} Hz'.format(topic_name, topic_hz))
         return stat
+
+    def is_image_valid(self, msg):
+        try:
+            cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+            sum_of_pixels = max(cv2.sumElems(cv_image))
+        except CvBridgeError as e:
+            rospy.logerr(
+                "[%s] failed to convert image to cv",
+                self.__class__.__name__)
+            return False
+        rospy.loginfo(
+            "[%s] sum of pixels is %d at %s",
+            self.__class__.__name__,
+            sum_of_pixels, msg.header.stamp.secs)
+        if sum_of_pixels == 0:
+            return False
+        return True
 
     def run(self):
         while not rospy.is_shutdown():
