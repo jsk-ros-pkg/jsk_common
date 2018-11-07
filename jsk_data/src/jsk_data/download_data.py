@@ -97,8 +97,9 @@ def check_md5sum(path, md5):
     if md5 and len(md5) != 32:
         raise ValueError('md5 must be 32 charactors\n'
                          'actual: {} ({} charactors)'.format(md5, len(md5)))
-    print('[%s] Checking md5sum (%s)' % (path, md5))
-    is_same = hashlib.md5(open(path, 'rb').read()).hexdigest() == md5
+    path_md5 = hashlib.md5(open(path, 'rb').read()).hexdigest()
+    print('[%s] Checking md5sum (%s ... %s)' % (path, path_md5, md5))
+    is_same = path_md5 == md5
     print('[%s] Finished checking md5sum' % path)
     return is_same
 
@@ -179,7 +180,7 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         # Try n_times download.
         # https://github.com/jsk-ros-pkg/jsk_common/issues/1574
         if try_download_count >= n_times:
-            print('[ERROR] md5sum mismatch. aborting')
+            print('\033[31m[ERROR] md5sum mismatch for [%s and %s]. Aborting\033[0m' % (path, md5))
             return False
         if osp.exists(cache_file):
             os.remove(cache_file)
