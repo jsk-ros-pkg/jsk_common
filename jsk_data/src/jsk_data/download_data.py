@@ -98,8 +98,9 @@ def check_md5sum(path, md5):
         raise ValueError('md5 must be 32 charactors\n'
                          'actual: {} ({} charactors)'.format(md5, len(md5)))
     path_md5 = hashlib.md5(open(path, 'rb').read()).hexdigest()
-    print('[%s] Checking md5sum (%s ... %s)' % (path, path_md5, md5))
+    print('[%s] checking md5sum)' % path)
     is_same = path_md5 == md5
+
     print('[%s] Finished checking md5sum' % path)
     return is_same
 
@@ -174,18 +175,38 @@ def download_data(pkg_name, path, url, md5, download_client=None,
                 if not is_file_writable(cache_dir):
                     os.chmod(cache_dir, 0777)
     cache_file = osp.join(cache_dir, osp.basename(path))
+
     # check if cache exists, and update if necessary
+    # Try n_times download.
+    # https://github.com/jsk-ros-pkg/jsk_common/issues/1574
     try_download_count = 0
-    while not (osp.exists(cache_file) and check_md5sum(cache_file, md5)):
-        # Try n_times download.
-        # https://github.com/jsk-ros-pkg/jsk_common/issues/1574
-        if try_download_count >= n_times:
-            print('\033[31m[ERROR] md5sum mismatch for [%s and %s]. Aborting\033[0m' % (path, md5))
-            return False
+    while True:
         if osp.exists(cache_file):
-            os.remove(cache_file)
-        try_download_count += 1
-        download(download_client, url, cache_file, quiet=quiet, chmod=chmod)
+            if check_md5sum(cache_file, md5):
+                break
+            else:
+                os.remove(cache_file)
+                download(download_client, url, cache_file, quiet=quiet,
+                         chmod=chmod)
+                try_download_count += 1
+                if try_download_count >= n_times:
+                    path_md5 = hashlib.md5(
+                        open(cache_file, 'rb').read()).hexdigest()
+                    print('\033[31m[%s] md5sum mismatched! '
+                          'expected: %s vs actual: %s\033[0m' %
+                          (cache_file, md5, path_md5), file=sys.stderr)
+                    return False
+        else:
+            if try_download_count >= n_times:
+                print('\033[31m[%s] could not download file. '
+                      'maximum download trial exceeded.\033[0m' %
+                      cache_file, file=sys.stderr)
+                return False
+            else:
+                download(download_client, url, cache_file, quiet=quiet,
+                         chmod=chmod)
+                try_download_count += 1
+
     if osp.islink(path) and os.access(os.path.dirname(path), os.W_OK):
         # overwrite the link
         os.remove(path)
