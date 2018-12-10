@@ -16,4 +16,5 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+export ROS_MASTER_URI=http://localhost:11311
 roslaunch jsk_data pr2_play.launch bagfile_names:="$FILENAMES" rosbag_option:="$OPTIONS"

@@ -7,4 +7,5 @@ do
 done
 echo $filenames
 
+export ROS_MASTER_URI=http://localhost:11311
 roslaunch jsk_data fetch_play.launch bagfile_names:="$filenames";
