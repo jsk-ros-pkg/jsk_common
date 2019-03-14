@@ -41,8 +41,11 @@ namespace jsk_topic_tools
   void DeprecatedRelay::inputCallback(
     const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
   {
-    NODELET_WARN(
-      "%s is deprecated", pub_.getTopic().c_str());
+    if (connection_status_ != NOT_INITIALIZED)
+    {
+      NODELET_WARN(
+        "%s is deprecated", pub_.getTopic().c_str());
+    }
     Relay::inputCallback(msg);
   }
 }
