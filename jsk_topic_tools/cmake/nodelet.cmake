@@ -24,7 +24,6 @@ macro(jsk_nodelet _nodelet_cpp _nodelet_class
     rosbuild_add_executable(${DEFAULT_NODE_NAME} build/${DEFAULT_NODE_NAME}.cpp)
   else(${USE_ROSBUILD})
     add_executable(${DEFAULT_NODE_NAME} ${DEFAULT_NODE_NAME}.cpp)
-    find_package(Boost QUIET REQUIRED COMPONENTS program_options)
     target_link_libraries(${DEFAULT_NODE_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
   endif(${USE_ROSBUILD})
   set_target_properties(${DEFAULT_NODE_NAME} PROPERTIES OUTPUT_NAME ${_single_nodelet_exec_name})
@@ -39,3 +38,8 @@ macro(jsk_nodelet _nodelet_cpp _nodelet_class
   endif(NOT ${USE_ROSBUILD})
 endmacro(jsk_nodelet _nodelet_cpp _nodelet_class
   _single_nodelet_exec_name CODE_PARAM_NAME)
+
+find_package(Boost QUIET COMPONENTS program_options)
+if(NOT Boost_FOUND)
+  message(WARNING "Boost.program_options is not found. Using jsk_nodelet macro may fail.")
+endif()
