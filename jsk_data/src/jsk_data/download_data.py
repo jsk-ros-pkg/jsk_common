@@ -60,11 +60,13 @@ def extract_file(path, to_directory='.', chmod=True):
     return root_files
 
 
-def decompress_rosbag(path, quiet=False, chmod=True):
+def decompress_rosbag(path, quiet=False, chmod=True, force=False):
     print('[%s] Decompressing the rosbag' % path)
     argv = [path]
     if quiet:
         argv.append('--quiet')
+    if force:
+        argv.append('--force')
     try:
         rosbag.rosbag_main.decompress_cmd(argv)
     finally:
@@ -124,7 +126,7 @@ def _get_package_source_path(pkg_name):
 
 def download_data(pkg_name, path, url, md5, download_client=None,
                   extract=False, compressed_bags=None, quiet=True, chmod=True,
-                  n_times=2):
+                  force=False, n_times=2):
     """Install test data checking md5 and rosbag decompress if needed.
        The downloaded data are located in cache_dir, and then linked to specified path.
        cache_dir is set by environment variable `JSK_DATA_CACHE_DIR` if defined, set by ROS_HOME/data otherwise.
@@ -235,5 +237,6 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         if not osp.isabs(compressed_bag):
             pkg_path = _get_package_source_path(pkg_name)
             compressed_bag = osp.join(pkg_path, compressed_bag)
-        decompress_rosbag(compressed_bag, quiet=quiet, chmod=chmod)
+        decompress_rosbag(compressed_bag, quiet=quiet, chmod=chmod,
+                          force=force)
     return True
