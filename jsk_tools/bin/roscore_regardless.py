@@ -122,17 +122,19 @@ def parse_args(args):
     p.add_argument("commands", nargs=argparse.REMAINDER)
     p.add_argument("--respawn", "-r", action="store_true",
                    help="respawn if child process stops")
+    p.add_argument("--timeout", type=int, default=10,
+                   help="Timeout to verify if rosmaster is alive by ping command in seconds")
     args = p.parse_args()
-    return args.commands, args.respawn
+    return args.commands, args.respawn, args.timeout
 
 
 def main(args):
-    cmds, respawn = parse_args(args)
+    cmds, respawn, timeout = parse_args(args)
     exit_code = 0
     previous_master_state = None
     try:
         while True:
-            master_state = isMasterAlive()
+            master_state = isMasterAlive(timeout_sec=timeout)
             if g_process_object and g_process_object.poll() is not None:
                 # Child process exited
                 pid = g_process_object.pid

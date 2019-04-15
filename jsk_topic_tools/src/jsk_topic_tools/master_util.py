@@ -7,7 +7,7 @@ import os
 previous_run_id = None
 
 
-def isMasterAlive():
+def isMasterAlive(timeout_sec):
     """
     return True if master alive and return False if
     master is not alive
@@ -16,7 +16,7 @@ def isMasterAlive():
     try:
         # first check the host is available
         master_host = urlparse.urlsplit(rospy.core.rosgraph.get_master_uri()).hostname
-        response = os.system("ping -W 10 -c 1 " + master_host + " > /dev/null")
+        response = os.system("ping -W {} -c 1 {} > /dev/null".format(timeout_sec, master_host))
         if response != 0:
             print "master machine looks down"
             return False
