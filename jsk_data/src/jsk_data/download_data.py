@@ -44,7 +44,17 @@ def extract_file(path, to_directory='.', chmod=True):
     try:
         file = opener(path, mode)
         try:
-            file.extractall()
+            # Skip extracting files which already exist.
+            extract_members = []
+            if hasattr(file, 'namelist'):  # zip file
+                for member in file.namelist():
+                    if not osp.exists(member):
+                        extract_members.append(member)
+            elif hasattr(file, 'getmembers'):  # tar file
+                for member in file.getmembers():
+                    if not osp.exists(member.path):
+                        extract_members.append(member)
+            file.extractall(members=extract_members)
             extracted_files = getnames(file)
             root_files = list(set(name.split('/')[0]
                                   for name in getnames(file)))
