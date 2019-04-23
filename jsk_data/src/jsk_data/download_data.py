@@ -50,10 +50,16 @@ def extract_file(path, to_directory='.', chmod=True):
                 for member in file.namelist():
                     if not osp.exists(member):
                         extract_members.append(member)
+                    else:
+                        print('[%s] Skip extracting %s since it already exists'
+                              % (path, member))
             elif isinstance(file, tarfile.TarFile):
                 for member in file.getmembers():
                     if not osp.exists(member.path):
                         extract_members.append(member)
+                    else:
+                        print('[%s] Skip extracting %s since it already exists'
+                              % (path, member.path))
             file.extractall(members=extract_members)
             extracted_files = getnames(file)
             root_files = list(set(name.split('/')[0]
