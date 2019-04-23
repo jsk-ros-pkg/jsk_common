@@ -46,11 +46,11 @@ def extract_file(path, to_directory='.', chmod=True):
         try:
             # Skip extracting files which already exist.
             extract_members = []
-            if hasattr(file, 'namelist'):  # zip file
+            if isinstance(file, zipfile.ZipFile):
                 for member in file.namelist():
                     if not osp.exists(member):
                         extract_members.append(member)
-            elif hasattr(file, 'getmembers'):  # tar file
+            elif isinstance(file, tarfile.TarFile):
                 for member in file.getmembers():
                     if not osp.exists(member.path):
                         extract_members.append(member)
