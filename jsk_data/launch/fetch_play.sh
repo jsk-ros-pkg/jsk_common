@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
 
-filenames="";
-for filename in ${@:1:$#}
-do
-    filenames=$filenames" "$filename;
-done
-echo $filenames
+OPTIONS="--clock"
+FILENAMES=""
 
-roslaunch jsk_data fetch_play.launch bagfile_names:="$filenames";
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -*)
+      OPTIONS="$OPTIONS $1"
+      shift
+      ;;
+    *)
+      FILENAMES="$FILENAMES $(readlink -f $1)"
+      shift
+      ;;
+  esac
+done
+
+roslaunch jsk_data fetch_play.launch bagfile_names:="$FILENAMES" rosbag_option:="$OPTIONS"
