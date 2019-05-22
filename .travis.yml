@@ -21,8 +21,6 @@ env:
     - USE_TRAVIS=true
     - USE_DOCKER=true
   matrix:
-    - ROS_DISTRO=indigo USE_DEB=true
-    - ROS_DISTRO=indigo USE_DEB=true BEFORE_SCRIPT='$CI_SOURCE_PATH/.travis_before_script_opencv3.bash'
     - ROS_DISTRO=kinetic USE_DEB=true
     - ROS_DISTRO=lunar   USE_DEB=true
     - ROS_DISTRO=melodic USE_DEB=true
