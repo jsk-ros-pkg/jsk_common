@@ -19,6 +19,7 @@ data_column["Serial"] = "Serial Number"
 data_column["ManufactureDate"] = "Manufacture Date"
 data_column["FullCapacity(mAh)"] = "Full Charge Capacity (mAh)"
 data_column["RemainingCapacity(mAh)"] = "Remaining Capacity (mAh)"
+data_column["Voltage(mV)"] = "Voltage (mV)"
 data_column["CycleCount"] = "Cycle Count"
 data_column["Status"] = "Battery Status"
 
