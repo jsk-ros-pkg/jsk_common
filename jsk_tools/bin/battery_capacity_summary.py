@@ -17,8 +17,8 @@ results = {}
 data_column = OrderedDict()
 data_column["Serial"] = "Serial Number"
 data_column["ManufactureDate"] = "Manufacture Date"
-data_column["FullCapacity"] = "Full Charge Capacity"
-data_column["RemainingCapacity"] = "Remaining Capacity"
+data_column["FullCapacity(mAh)"] = "Full Charge Capacity (mAh)"
+data_column["RemainingCapacity(mAh)"] = "Remaining Capacity (mAh)"
 data_column["CycleCount"] = "Cycle Count"
 data_column["Status"] = "Battery Status"
 
@@ -40,7 +40,7 @@ def callback(data):
 
 def getColor(result):
     try:
-        cap = result["FullCapacity"]
+        cap = result["FullCapacity(mAh)"]
         if cap > 5500:
             return Fore.GREEN
         elif cap > 4000:
