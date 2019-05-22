@@ -55,7 +55,9 @@ def output():
     global results
     sorted_keys = ["HardwareID"] + sorted(data_column.keys())
     sorted_names = sorted(results)
-    fmt = "{:>31}" + ("|{:>15}" * len(data_column.keys()))
+    fmt = "{:>31}"
+    for i in range(len(data_column.keys())):
+        fmt += "| {:>" + "{w}".format(w=len(data_column.keys()[i])) + "}"
     print fmt.format("Battery Name", *data_column.keys())
     for name in sorted_names:
         color = getColor(results[name])
