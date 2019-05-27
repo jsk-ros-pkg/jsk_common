@@ -17,8 +17,9 @@ results = {}
 data_column = OrderedDict()
 data_column["Serial"] = "Serial Number"
 data_column["ManufactureDate"] = "Manufacture Date"
-data_column["FullCapacity"] = "Full Charge Capacity"
-data_column["RemainingCapacity"] = "Remaining Capacity"
+data_column["FullCapacity(mAh)"] = "Full Charge Capacity (mAh)"
+data_column["RemainingCapacity(mAh)"] = "Remaining Capacity (mAh)"
+data_column["Voltage(mV)"] = "Voltage (mV)"
 data_column["CycleCount"] = "Cycle Count"
 data_column["Status"] = "Battery Status"
 
@@ -40,7 +41,7 @@ def callback(data):
 
 def getColor(result):
     try:
-        cap = result["FullCapacity"]
+        cap = result["FullCapacity(mAh)"]
         if cap > 5500:
             return Fore.GREEN
         elif cap > 4000:
@@ -54,7 +55,9 @@ def output():
     global results
     sorted_keys = ["HardwareID"] + sorted(data_column.keys())
     sorted_names = sorted(results)
-    fmt = "{:>31}" + ("|{:>15}" * len(data_column.keys()))
+    fmt = "{:>31}"
+    for i in range(len(data_column.keys())):
+        fmt += "| {:>" + "{w}".format(w=len(data_column.keys()[i])) + "}"
     print fmt.format("Battery Name", *data_column.keys())
     for name in sorted_names:
         color = getColor(results[name])
