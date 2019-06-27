@@ -122,21 +122,24 @@ def parse_args(args):
                    help="respawn if child process stops")
     p.add_argument("--timeout", type=int, default=10,
                    help="Timeout to verify if rosmaster is alive by ping command in seconds")
+    p.add_argument("--ping-trials", type=int, default=1,
+                   help="If ping fails PING_TRIALS times, master is regarded as dead")
     p.add_argument("--sigint-timeout", type=int, default=20,
                    help="Timeout to escalete from sigint to sigterm to kill child processes")
     p.add_argument("--sigterm-timeout", type=int, default=10,
                    help="Timeout to escalete from sigterm to sigkill to kill child processes")
     args = p.parse_args()
-    return args.commands, args.respawn, args.timeout, args.sigint_timeout, args.sigterm_timeout
+    return (args.commands, args.respawn, args.timeout, args.sigint_timeout, args.sigterm_timeout,
+            args.ping_trials)
 
 
 def main(args):
-    cmds, respawn, timeout, sigint_timeout, sigterm_timeout = parse_args(args)
+    cmds, respawn, timeout, sigint_timeout, sigterm_timeout, trials = parse_args(args)
     exit_code = 0
     previous_master_state = None
     try:
         while True:
-            master_state = isMasterAlive(timeout_sec=timeout)
+            master_state = isMasterAlive(timeout_sec=timeout, trials=trials)
             if g_process_object and g_process_object.poll() is not None:
                 # Child process exited
                 pid = g_process_object.pid
