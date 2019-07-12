@@ -29,7 +29,10 @@ def generate_deb_status_table(package):
         if len(distribution_files) > 1:
             sys.stderr.write('distribution_files has multiple entories {}\n'.format(distribution_files))
             sys.exit(1)
-        platform = distribution_files[0].release_platforms['ubuntu']
+        platform = {}
+        for platform_os in ['ubuntu', 'debian']:
+            if platform_os in distribution_files[0].release_platforms:
+                platform[platform_os] = distribution_files[0].release_platforms[platform_os]
         DISTROS[distro] = platform
         #print('DISTROS[{}] = {}'.format(distro, platform))
 
@@ -39,34 +42,45 @@ def generate_deb_status_table(package):
         if not table:  # first row
             headers = ['Package']
         row = ['{} ({})'.format(package, arch)]
-        for distro, os_list in DISTROS.items():
-
-            for os in os_list:
-                if arch.startswith('arm'):
-                    if 'precise' < os and os < 'xenial':
-                        os_arch = 'arm_u'
-                    else:
-                        os_arch = 'u{prefix_os}{bit}_u'.format(prefix_os=os[0],bit=bit)
-                else:
-                    os_arch = 'u'
-
-                if not table:  # first row
-                    headers.append(
-                        '{} ({})'.format(distro.capitalize(), os.capitalize()))
-
-                url = 'http://build.ros.org/job/{prefix_ros}bin_{os_arch}{prefix_os}{bit}__{package}__ubuntu_{os}_{arch}__binary'  # NOQA
-                url = url.format(
-                    bit=bit,
-                    arch=arch,
-                    os_arch=os_arch,
-                    prefix_os=os[0].upper(),
-                    prefix_ros=distro[0].upper(),
-                    package=package,
-                    os=os,
-                )
-                if distro >= 'melodic' and arch == 'i386':
+        for distro, platform_list in DISTROS.items():
+            for platform_os in ['ubuntu', 'debian']:
+                if platform_os not in platform_list:
+                    continue
+                os_list = platform_list[platform_os]
+                if ((distro >= 'melodic' and arch == 'i386')
+                        or (platform_os == 'debian' and arch == 'armhf')):
                     template_md = '---'
                 else:
+                    for os in os_list:
+                        if arch.startswith('arm'):
+                            if platform_os == 'ubuntu' and 'precise' < os and os < 'xenial':
+                                os_arch = 'arm_u'
+                            else:
+                                os_arch = '{platform_prefix}{prefix_os}{bit}_{platform_prefix}'
+                                os_arch = os_arch.format(
+                                    platform_prefix=platform_os[0], prefix_os=os[0], bit=bit)
+                        elif platform_os == 'ubuntu':
+                            os_arch = 'u'
+                        else:
+                            os_arch = '{platform_prefix}{prefix_os}_{platform_prefix}'
+                            os_arch = os_arch.format(
+                                platform_prefix=platform_os[0], prefix_os=os[0])
+
+                        if not table:  # first row
+                            headers.append(
+                                '{} ({})'.format(distro.capitalize(), os.capitalize()))
+
+                        url = 'http://build.ros.org/job/{prefix_ros}bin_{os_arch}{prefix_os}{bit}__{package}__{platform_os}_{os}_{arch}__binary'  # NOQA
+                    url = url.format(
+                        bit=bit,
+                        arch=arch,
+                        os_arch=os_arch,
+                        prefix_os=os[0].upper(),
+                        prefix_ros=distro[0].upper(),
+                        package=package,
+                        platform_os=platform_os,
+                        os=os,
+                    )
                     template_md = '[![Build Status]({url}/badge/icon)]({url})'
                 row.append(template_md.format(url=url))
         table.append(row)
