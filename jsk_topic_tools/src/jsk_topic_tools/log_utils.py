@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import _pickle as pickle
 import inspect
 
 import rosgraph
