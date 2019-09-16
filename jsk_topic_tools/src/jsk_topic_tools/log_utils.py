@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# cPickle is moved to _pickle in Python3
+# See https://docs.python.org/3.1/whatsnew/3.0.html#library-changes
 try:
     import cPickle as pickle
 except ImportError:
