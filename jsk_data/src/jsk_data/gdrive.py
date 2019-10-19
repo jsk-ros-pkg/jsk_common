@@ -3,7 +3,9 @@
 
 """Wrapper module for gdrive command"""
 
+from distutils.version import LooseVersion
 import os
+import platform
 import subprocess
 import sys
 
@@ -14,7 +16,10 @@ DIR_ID = '0B9P1L--7Wd2vUGplQkVLTFBWcFE'
 
 def open_gdrive():
     url = 'https://drive.google.com/drive/u/1/folders/{}'.format(DIR_ID)
-    cmd = "gnome-open '{url}'".format(url=url)
+    if LooseVersion(platform.linux_distribution()[1]) > LooseVersion('14.04'):
+        cmd = "xdg-open '{url}'".format(url=url)
+    else:
+        cmd = "gnome-open '{url}'".format(url=url)
     subprocess.call(cmd, shell=True)
 
 
