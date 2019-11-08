@@ -23,17 +23,17 @@
   <arg unless="$(arg save_openni)"
        name="openni_topics" value="" />
   <arg if    ="$(arg save_openni)"
-       name="openni_topics" value="/$(arg camera_namespace)/depth_registered/image_raw /$(arg camera_namespace)/depth_registered/camera_info /$(arg camera_namespace)/rgb/image_raw /$(arg camera_namespace)/rgb/camera_info /tf" />
+       name="openni_topics" value="/$(arg camera_namespace)/depth_registered/image_raw /$(arg camera_namespace)/depth_registered/camera_info /$(arg camera_namespace)/rgb/image_raw /$(arg camera_namespace)/rgb/camera_info /tf /tf_static" />
 
   <arg unless="$(arg save_openni2)"
        name="openni2_topics" value="" />
   <arg if    ="$(arg save_openni2)"
-       name="openni2_topics" value="/$(arg camera_namespace)/depth_registered/image_raw /$(arg camera_namespace)/depth_registered/hw_registered/image_rect_raw /$(arg camera_namespace)/depth_registered/camera_info /$(arg camera_namespace)/rgb/image_raw /$(arg camera_namespace)/rgb/camera_info /tf" />
+       name="openni2_topics" value="/$(arg camera_namespace)/depth_registered/image_raw /$(arg camera_namespace)/depth_registered/hw_registered/image_rect_raw /$(arg camera_namespace)/depth_registered/camera_info /$(arg camera_namespace)/rgb/image_raw /$(arg camera_namespace)/rgb/camera_info /tf /tf_static" />
 
   <arg unless="$(arg save_robot_model)"
        name="robot_model_topics" value="" />
   <arg if    ="$(arg save_robot_model)"
-       name="robot_model_topics" value="/tf /joint_states" />
+       name="robot_model_topics" value="/tf /tf_static /joint_states" />
 
   <arg unless="$(arg save_all_image)"
        name="all_image_topics" value="" />
