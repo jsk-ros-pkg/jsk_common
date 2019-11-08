@@ -101,6 +101,19 @@ void SynchronizedThrottle::onInit()
   }
 }
 
+SynchronizedThrottle::~SynchronizedThrottle() {
+  // This fixes the following error on shutdown of the nodelet:
+  // terminate called after throwing an instance of
+  // 'boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<boost::lock_error> >'
+  //     what():  boost: mutex lock failed in pthread_mutex_lock: Invalid argument
+  // Also see ros/ros_comm#720 .
+  if (approximate_sync_) {
+    async_.reset();
+  } else {
+    sync_.reset();
+  }
+}
+
 void SynchronizedThrottle::configCallback(Config &config, uint32_t level)
 {
   boost::mutex::scoped_lock lock(mutex_);
