@@ -153,7 +153,10 @@ if (CATKIN_ENABLE_TESTING)
   add_rostest_gtest(test_nodelet_log_utils test/test_nodelet_log_utils.test test/test_nodelet_log_utils.cpp)
   target_link_libraries(test_nodelet_log_utils ${PROJECT_NAME})
   add_dependencies(test_nodelet_log_utils jsk_topic_tools_test)
-  if("$ENV{ROS_DISTRO}" STRGREATER "hydro")
+  if("$ENV{ROS_DISTRO}" STRGREATER "indigo")
+    # rostest/publishtest is available on kinetic and later
+    jsk_topic_tools_add_rostest(test/test_standalone_complexed_nodelet.test)
+  elseif("$ENV{ROS_DISTRO}" STRGREATER "hydro")
     # FIXME: jsk_tools/test_topic_published.py does not work on hydro travis/jenkins
     # https://github.com/jsk-ros-pkg/jsk_common/pull/1293#issuecomment-164158260
     jsk_topic_tools_add_rostest(test/test_tf_to_pose.test)
