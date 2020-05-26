@@ -18,19 +18,23 @@
   <exec_depend>message_runtime</exec_depend>
   <exec_depend>nodelet</exec_depend>
   <exec_depend>openni_launch</exec_depend>
-  <exec_depend>paramiko</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-paramiko</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-paramiko</exec_depend>
   <exec_depend>pr2_description</exec_depend>
   <exec_depend>pr2_machine</exec_depend>
-  <exec_depend>python-click</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-click</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-click</exec_depend>
   <exec_depend>python-gdown-pip</exec_depend>
-  <exec_depend>python-yaml</exec_depend>  <!-- apt -->
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-yaml</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-yaml</exec_depend>
   <exec_depend>rosbag</exec_depend>
   <exec_depend>rqt_bag</exec_depend>
   <exec_depend>rviz</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
   <exec_depend>xacro</exec_depend>
   <test_depend>python-freezegun-pip</test_depend>
-  <test_depend>python-nose</test_depend>
+  <test_depend condition="$ROS_PYTHON_VERSION == 2">python-nose</test_depend>
+  <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-nose</test_depend>
   <test_depend>roslaunch</test_depend>
   <test_depend>roslint</test_depend>
   <test_depend>rostest</test_depend>
