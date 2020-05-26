@@ -26,6 +26,7 @@ env:
     - ROS_DISTRO=kinetic USE_DEB=true
     - ROS_DISTRO=lunar   USE_DEB=true
     - ROS_DISTRO=melodic USE_DEB=true
+    - ROS_DISTRO=noetic  USE_DEB=true
 script: source .travis/travis.sh
 after_success:
   # trigger build of jsk-docs.readthedocs.org
