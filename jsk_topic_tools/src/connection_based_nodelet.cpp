@@ -107,6 +107,7 @@ namespace jsk_topic_tools
     }
   }
 
+#if nodelet_VERSION_MINOR > 9 || (nodelet_VERSION_MINOR == 9 && nodelet_VERSION_PATCH >= 11)
   bool ConnectionBasedNodelet::warnNoRemap(const std::vector<std::string> names)
   {
     bool no_warning = true;
@@ -131,6 +132,7 @@ namespace jsk_topic_tools
     }
     return no_warning;
   }
+#endif
 
   void ConnectionBasedNodelet::connectionCallback(const ros::SingleSubscriberPublisher& pub)
   {

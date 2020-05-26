@@ -150,12 +150,14 @@ namespace jsk_topic_tools
      */
     virtual bool isSubscribed();
 
+#if nodelet_VERSION_MINOR > 9 || (nodelet_VERSION_MINOR == 9 && nodelet_VERSION_PATCH >= 11)
     /** @brief warn if there are expected remappings.
     *
     * @param[in] names Names which are expected to remapped.
     * @return false if there is at least a topic which is not remapped, else true;
     */
     virtual bool warnNoRemap(const std::vector<std::string> names);
+#endif
 
     /** @brief
      * Advertise a topic and watch the publisher. Publishers which are
