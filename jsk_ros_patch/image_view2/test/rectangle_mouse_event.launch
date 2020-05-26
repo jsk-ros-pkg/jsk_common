@@ -1,30 +1,8 @@
 <launch>
 
-  <node name="camera_0"
-        pkg="image_view2" type="publish_lena.py">
-    <remap from="image" to="~image" />
-  </node>
-  <node name="camera_1"
-        pkg="image_view2" type="publish_lena.py">
-    <remap from="image" to="~image" />
-  </node>
-
-  <node name="image_view2_0"
-        pkg="image_view2" type="image_view2">
-    <remap from="image" to="camera_0/image" />
-    <rosparam>
-      interaction_mode: rectangle
-      use_window: false
-    </rosparam>
-  </node>
-  <node name="image_view2_1"
-        pkg="image_view2" type="image_view2">
-    <remap from="image" to="camera_1/image" />
-    <rosparam>
-      interaction_mode: rectangle
-      use_window: false
-    </rosparam>
-  </node>
+  <include file="$(find image_view2)/sample/sample_rectangle_mouse_event.launch" >
+    <arg name="gui" value="false" />
+  </include>
 
   <node name="publish_mouse_event"
         pkg="image_view2" type="publish_mouse_event.py">

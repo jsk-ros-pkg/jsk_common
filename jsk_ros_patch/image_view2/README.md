@@ -207,3 +207,15 @@ string text
 bool left_up_origin
 bool ratio_scale
 ```
+
+Sample
+------
+
+You can run the sample code of `image_view2`
+
+```bash
+# Launch image_view2 with interactive mode
+roslaunch image_view2 sample_rectangle_mouse_event.launch
+# Add markers
+rosrun image_view2 test-imageview2.l
+```
