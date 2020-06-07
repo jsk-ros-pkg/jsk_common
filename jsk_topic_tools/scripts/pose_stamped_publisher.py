@@ -37,7 +37,7 @@ if __name__ == "__main__":
     q = eulerToQuaternion(roll, pitch, yaw)
     pose.pose.orientation.x = q[0]
     pose.pose.orientation.y = q[1]
-    pose.pose.orientation.x = q[2]
+    pose.pose.orientation.z = q[2]
     pose.pose.orientation.w = q[3]
     r = rospy.Rate(rate)
     pub = rospy.Publisher("~output", PoseStamped)
