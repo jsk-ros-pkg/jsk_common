@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <!--
+  Rotation represented by (roll, pitch, yaw) = (-pi/2, pi/2, pi/2) [rad] in static xyz
+  is equivalent to the pi[rad] rotation around the axis (-1/sqrt(2), 0, 1/sqrt(2)).
+  Rotation represented by the angle theta[rad] around the axis r=(rx, ry, rz) is represented by
+  Quaternion q = (rx*sin(thta/2), ry*sin(theta/2), rz*sin(theta/2), cos(theta/2)).
+  see http://docs.ros.org/melodic/api/tf/html/python/transformations.html
+  -->
+  <node name="pose" pkg="jsk_topic_tools" type="pose_stamped_publisher.py"
+    args="1 2 3 -1.5707963267948966 1.5707963267948966 1.5707963267948966 world 10"
+    respawn="false">
+    <remap from="~output" to="pose"/>
+  </node>
+  <test test-name="test_pose_stamped_publisher"
+        pkg="jsk_topic_tools" type="test_pose_stamped_publisher.py"
+        name="pose_stamped_publisher"/>
+</launch>
