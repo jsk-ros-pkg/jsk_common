@@ -9,7 +9,9 @@ if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
-if(NOT $ENV{ROS_DISTRO} STRLESS kinetic)
+if(NOT $ENV{ROS_DISTRO} STRLESS noetic)
+  add_compile_options(-std=c++14)
+elseif(NOT $ENV{ROS_DISTRO} STRLESS kinetic)
   add_compile_options(-std=c++11)
 endif()
 
