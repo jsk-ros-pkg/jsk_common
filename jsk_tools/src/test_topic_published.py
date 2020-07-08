@@ -47,7 +47,7 @@ class TestTopicPublished(unittest.TestCase):
         self.negatives = []
         params = rospy.get_param(rospy.get_name(), [])
         for name, value in params.items():
-            if not re.match('^topic_\d$', name):
+            if not re.match(r'^topic_\d$', name):
                 continue
             self.topics.append(value)
             id = name.replace('topic_', '')
