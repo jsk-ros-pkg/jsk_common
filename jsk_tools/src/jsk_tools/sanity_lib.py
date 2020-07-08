@@ -42,7 +42,7 @@ def colored(string, color):
         'cyan': '\033[36m',
         'white': '\033[37m'
         }
-    if colors.has_key(color):
+    if color in colors:
         return colors[color] + string + colors['clear']
     else:
         return string
@@ -412,7 +412,7 @@ def colored(string, color):
         'cyan': '\033[36m',
         'white': '\033[37m'
         }
-    if colors.has_key(color):
+    if color in colors:
         return colors[color] + string + colors['clear']
     else:
         return string
@@ -420,7 +420,7 @@ def colored(string, color):
 from operator import add
 
 def isROSWS():
-    if os.environ.has_key("ROS_WORKSPACE"):
+    if "ROS_WORKSPACE" in os.environ:
         ROS_WORKSPACE = os.environ["ROS_WORKSPACE"]
         return (ROS_WORKSPACE and 
                 os.path.exists(os.path.join(ROS_WORKSPACE, ".rosinstall")))
