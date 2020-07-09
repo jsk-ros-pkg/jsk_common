@@ -83,8 +83,8 @@ class JointStatePublisher():
         try:
             set_speed = rospy.ServiceProxy('tilt_controller/set_speed', SetSpeed)
             set_speed(config.tilt_speed)
-        except rospy.ServiceException, e:
-            print "Service call failed: %s"%e
+        except rospy.ServiceException as e:
+            print("Service call failed: %s"%e)
         return config
     def controller_state_handler(self, msg):
         js = JointStateMessage(msg.name, msg.current_pos, msg.velocity, msg.load)

@@ -38,5 +38,5 @@ def isMasterAlive(timeout_sec, trials):
             previous_run_id = run_id
             return False
         return True
-    except Exception, e:
+    except Exception as e:
         return False

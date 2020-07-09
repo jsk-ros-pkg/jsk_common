@@ -25,7 +25,7 @@ class dynamic_tf_publisher:
             rospy.wait_for_service(name, 1.0)
             rospy.logfatal("%s is already exists" % (name))
             sys.exit(1)
-        except rospy.ROSException, e:
+        except rospy.ROSException as e:
             rospy.Service(name, srv, callback)
     def __init__(self):
         self.pub_tf = rospy.Publisher("/tf", tf.msg.tfMessage, queue_size=1)

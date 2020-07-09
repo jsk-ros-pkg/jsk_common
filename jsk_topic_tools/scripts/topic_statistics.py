@@ -23,14 +23,14 @@ class TopicStatistics(object):
             self.stop()
 
     def start(self):
-        print "start subscribing", self.topic_name
+        print("start subscribing", self.topic_name)
         self.start_time = rospy.Time.now()
         self.sub = rospy.Subscriber(self.topic_name, rospy.AnyMsg, self.cb)
         if self.use_timer:
-            print "waiting for", self.duration, "[sec]..."
+            print("waiting for", self.duration, "[sec]...")
             self.timer = rospy.Timer(rospy.Duration(self.duration), self.stop, True)
         else:
-            print "waiting for", self.window_size, "msgs..."
+            print("waiting for", self.window_size, "msgs...")
         rospy.spin()
 
     def stop(self, _=None):
@@ -42,11 +42,11 @@ class TopicStatistics(object):
     def show_result(self):
         d = self.end_time - self.start_time
         msg_size = reduce(lambda a,b: a+b, map(lambda x: len(x._buff), self.msgs))
-        print "received", len(self.msgs), "messages for", d.to_sec(), "[sec]"
-        print "size amount:\t", msg_size / 1000.0, "[kB]"
-        print "size avg:\t", msg_size / 1000.0 / len(self.msgs), "[kB/msg]"
+        print("received", len(self.msgs), "messages for", d.to_sec(), "[sec]")
+        print("size amount:\t", msg_size / 1000.0, "[kB]")
+        print("size avg:\t", msg_size / 1000.0 / len(self.msgs), "[kB/msg]")
         if self.use_timer:
-            print "rate:\t\t", msg_size / 1000.0 / d.to_sec(), "[kB/sec]"
+            print("rate:\t\t", msg_size / 1000.0 / d.to_sec(), "[kB/sec]")
 
 if __name__ == '__main__':
     p = optparse.OptionParser(usage="%prog [options] topic_name")

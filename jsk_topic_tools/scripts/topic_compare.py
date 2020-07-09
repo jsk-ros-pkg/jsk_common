@@ -20,22 +20,22 @@ except ImportError:
 
 def onShutdown():
     i = 0
-    print "subscribed topic:"
+    print("subscribed topic:")
     for sub in tc.subscriberArray:
-        print "%d: %s" % (i, sub.name)
+        print("%d: %s" % (i, sub.name))
         i += 1
 
 def fullUsage():
-    print "[Usage] rosrun jsk_topic_tools topic_compare.py [Option] <topic_name_1>..<topic_name_n>"
-    print "[Option]"
-    print "-h: full usage"
-    print "-b: show value as bytes"
-    print "-m: show value as megabytes"
+    print("[Usage] rosrun jsk_topic_tools topic_compare.py [Option] <topic_name_1>..<topic_name_n>")
+    print("[Option]")
+    print("-h: full usage")
+    print("-b: show value as bytes")
+    print("-m: show value as megabytes")
 
 if __name__ == '__main__':
     # check if valid argument
     if len(sys.argv) < 2:
-        print "[Usage] rosrun jsk_topic_tools topic_compare.py <topic_name_1>..<topic_name_n>"
+        print("[Usage] rosrun jsk_topic_tools topic_compare.py <topic_name_1>..<topic_name_n>")
         quit()
 
     rospy.init_node("topic_compare")

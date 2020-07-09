@@ -39,7 +39,7 @@ if __name__=='__main__':
                       help='The group of computers to specify when launching')
     parser.add_option('--log_level', action='store', type='string', dest='log_level',default='info',
                       help='The ros loglevel to set rospy at: debug, info, warn, error, fatal')
-    #print 'python path: ',os.environ['PYTHONPATH']
+    #print('python path: ',os.environ['PYTHONPATH'])
     (options, args) = parser.parse_args()
     log_level = rospy.INFO
     if options.log_level == 'debug':
@@ -70,7 +70,7 @@ if __name__=='__main__':
             module.server_end()
     else:
         assert(masterapi.is_online())
-        print 'split args: ',split(options.args)
+        print('split args: ',split(options.args))
         options.args += ' ' + module.launcher_start(split(options.args))
         serviceaddrs = []
         if options.csshgroup is not None:

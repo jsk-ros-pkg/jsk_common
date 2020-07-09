@@ -7,7 +7,7 @@ import os
 from time import sleep
 sleep_time = int(sys.argv[1])
 commands = sys.argv[2:]
-print commands
+print(commands)
 
 p = Popen(commands)
 sleep(sleep_time)

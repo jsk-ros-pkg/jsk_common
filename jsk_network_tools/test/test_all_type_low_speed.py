@@ -45,8 +45,8 @@ class TestLowSpeed(unittest.TestCase):
         for i in range(len(relayed_message.bool_array)):
             self.assertTrue(relayed_message.bool_array[i] == reference.bool_array[i])
         self.assertTrue(relayed_message.uint8_atom == reference.uint8_atom)
-        print relayed_message.uint8_array
-        print reference.uint8_array
+        print(relayed_message.uint8_array)
+        print(reference.uint8_array)
         self.assertTrue(relayed_message.uint8_array == reference.uint8_array)
         self.assertTrue(relayed_message.int8_atom == reference.int8_atom)
         for i in range(len(relayed_message.int8_array)):

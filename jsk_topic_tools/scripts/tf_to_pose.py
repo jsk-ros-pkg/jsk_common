@@ -10,7 +10,7 @@ def cb(event):
     try:
         listener.waitForTransform(src_frame, dst_frame, stamp,
                                 timeout=rospy.Duration(1))
-    except Exception, e:
+    except Exception as e:
         rospy.logerr(e)
         return
 

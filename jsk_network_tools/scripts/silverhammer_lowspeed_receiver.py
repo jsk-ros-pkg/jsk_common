@@ -26,7 +26,7 @@ class SilverHammerUDPListener():
         recv_data, addr = self.server.recvfrom(self.buffer_size)
         msg = unpackMessage(recv_data, self.format, self.message)
         self.pub.publish(msg)
-        print "received:", msg
+        print("received:", msg)
 
 class SilverHammerLowspeedReceiver():
     def __init__(self):
