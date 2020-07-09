@@ -77,7 +77,7 @@ class TestLowSpeed(unittest.TestCase):
 if __name__ == "__main__":
     import rostest
     rospy.init_node("test_all_type_low_speed")
-    pub = rospy.Publisher("original", AllTypeTest)
+    pub = rospy.Publisher("original", AllTypeTest, queue_size=1)
     sub = rospy.Subscriber("relayed", AllTypeTest, messageCallback)
     rospy.Timer(rospy.Duration(0.5), timerCallback)
     rospy.loginfo("wait 10sec to acuumulate topics...")
