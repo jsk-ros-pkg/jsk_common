@@ -8,7 +8,7 @@ def defaultMessage():
     msg = AllTypeTest()
     msg.bool_array[0] = True
     msg.uint8_atom = 12
-    msg.uint8_array = "abcd"
+    msg.uint8_array = [ord(x) for x in 'abcd']
     msg.int8_atom = 12
     msg.int8_array[0] = 12
     msg.uint16_atom = 12
@@ -47,7 +47,7 @@ class TestLowSpeed(unittest.TestCase):
         self.assertTrue(relayed_message.uint8_atom == reference.uint8_atom)
         print(relayed_message.uint8_array)
         print(reference.uint8_array)
-        self.assertTrue(relayed_message.uint8_array == reference.uint8_array)
+        self.assertTrue([ord(x) if isinstance(x, str) else x for x in relayed_message.uint8_array] == reference.uint8_array)
         self.assertTrue(relayed_message.int8_atom == reference.int8_atom)
         for i in range(len(relayed_message.int8_array)):
             self.assertTrue(relayed_message.int8_array[i] == reference.int8_array[i])
