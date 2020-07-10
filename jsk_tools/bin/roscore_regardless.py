@@ -16,7 +16,7 @@ g_is_posix = 'posix' in sys.builtin_module_names
 
 
 def printLog(fmt, **args):
-    print "\x1b[32m" + fmt % args + '\x1b[39m'
+    print("\x1b[32m" + fmt % args + '\x1b[39m')
 
 
 def runProcess(cmds):

@@ -1,9 +1,9 @@
 @[if DEVELSPACE]@
 # set path to shell-test script in develspace
-set(shell_test_script @(CMAKE_CURRENT_SOURCE_DIR)/cmake/run_shell_test.py)
+set(shell_test_script "python$ENV{ROS_PYTHON_VERSION} @(CMAKE_CURRENT_SOURCE_DIR)/cmake/run_shell_test.py")
 @[else]@
 # set path to shell-test script installspace
-set(shell_test_script ${jsk_tools_DIR}/run_shell_test.py)
+set(shell_test_script "python$ENV{ROS_PYTHON_VERSION} ${jsk_tools_DIR}/run_shell_test.py")
 @[end if]@
 
 function(jsk_tools_add_shell_test)

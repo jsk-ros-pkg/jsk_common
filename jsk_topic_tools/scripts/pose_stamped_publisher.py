@@ -7,7 +7,7 @@ from tf.transformations import quaternion_from_euler
 
 def usage():
     "print usage"
-    print "Usage: pose_stamped_publisher.py x y z roll pitch yaw from_frame rate"
+    print("Usage: pose_stamped_publisher.py x y z roll pitch yaw from_frame rate")
 
 def eulerToQuaternion(roll, pitch, yaw):
     "convert roll-pitch-yaw to quaternion"

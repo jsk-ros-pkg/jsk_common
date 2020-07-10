@@ -53,7 +53,11 @@ endif()
 install(DIRECTORY launch rvizconfig sample tests
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
+  PATTERN tests/test_data_collection_server.py EXCLUDE
 )
+catkin_install_python(PROGRAMS
+  tests/test_data_collection_server.py
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/tests/)
 
 if (CATKIN_ENABLE_TESTING)
   find_package(roslint REQUIRED)

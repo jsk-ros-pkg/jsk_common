@@ -54,7 +54,7 @@ def cmd_get(public, query):
     if not query:
         if public:
             lines = list_gdrive().splitlines()
-            candidates = [l.split()[1] for l in lines]
+            candidates = [line.split()[1] for line in lines]
         else:
             candidates = _list_aries_files()
         selected = percol_select(candidates)
