@@ -3,6 +3,7 @@
 
 """Wrapper module for gdrive command"""
 
+import distutils.spawn
 import os
 import subprocess
 import sys
@@ -14,7 +15,10 @@ DIR_ID = '0B9P1L--7Wd2vUGplQkVLTFBWcFE'
 
 def open_gdrive():
     url = 'https://drive.google.com/drive/u/1/folders/{}'.format(DIR_ID)
-    cmd = "gnome-open '{url}'".format(url=url)
+    if distutils.spawn.find_executable('xdg-open'):
+        cmd = "xdg-open '{url}'".format(url=url)
+    else:
+        cmd = "gnome-open '{url}'".format(url=url)
     subprocess.call(cmd, shell=True)
 
 
