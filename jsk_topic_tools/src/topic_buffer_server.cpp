@@ -42,7 +42,11 @@ public:
             this->pub.publish(this->msg);
           }
           //ROS_DEBUG_STREAM("sleep " << this->periodic_rate.toNSec() * 1e-6 << " msec.");
+#if BOOST_VERSION < 106700  // for < 20.4
           boost::this_thread::sleep(boost::posix_time::milliseconds(sleep_sec * 1e-6));
+#else
+	  boost::this_thread::sleep_for(boost::chrono::milliseconds((int)(sleep_sec * 1e-6)));
+#endif
         }
         ROS_INFO_STREAM("topic " << this->topic_name << " is now NOT published.");
     }

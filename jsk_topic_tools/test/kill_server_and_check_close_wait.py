@@ -32,9 +32,9 @@ class CloseWaitCheck(unittest.TestCase):
 if __name__ == '__main__':
     try:
         rostest.run('rostest', "CloseWaitCheck", CloseWaitCheck, sys.argv)
-    except KeyboardInterrupt, e:
+    except KeyboardInterrupt as e:
         pass
-    print "exiting"
+    print("exiting")
 
 # while [ t ]; do
 #     NUM_OF_PROCESS=`lsof -nl | grep rosmaster | grep CLOSE_WAIT | wc -l`

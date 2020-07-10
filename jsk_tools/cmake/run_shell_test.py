@@ -36,7 +36,7 @@ if __name__ == '__main__':
     if passed:
         print('passed')
         with open(result_file, 'w') as f:
-            f.write(test_success_junit_xml(test_name))
+            f.write(test_success_junit_xml(test_name).decode())
     else:
         print('FAILURE:\n{0}'.format(stdout), file=sys.stderr)
         with open(result_file, 'w') as f:

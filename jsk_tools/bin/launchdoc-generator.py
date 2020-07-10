@@ -118,8 +118,8 @@ if __name__ == '__main__':
         path, filename = os.path.split(fullfilename)
         try:
             parser = ElementTree.parse(fullfilename)
-        except (SyntaxError, ExpatError), e:
-            print "%s has errors!"%fullfilename,e
+        except (SyntaxError, ExpatError) as e:
+            print("%s has errors!"%fullfilename,e)
             continue
 
         sphinxdoc += '%s\n%s\n\n'%(filename,'-'*len(filename))

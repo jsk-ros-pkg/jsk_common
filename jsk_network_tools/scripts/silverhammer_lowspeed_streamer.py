@@ -33,9 +33,9 @@ class SilverHammerLowspeedStreamer():
         self.send_num = 0
         self.last_send_time = rospy.Time(0)
         self.last_input_received_time = rospy.Time(0)
-        self.last_send_time_pub = rospy.Publisher("~last_send_time", Time)
+        self.last_send_time_pub = rospy.Publisher("~last_send_time", Time, queue_size=1)
         self.last_input_received_time_pub = rospy.Publisher(
-            "~last_input_received_time", Time)
+            "~last_input_received_time", Time, queue_size=1)
         self.to_port = rospy.get_param("~to_port", 1024)
         self.to_ip = rospy.get_param("~to_ip", "127.0.0.1")
         self.send_rate = rospy.get_param("~send_rate", 1.0)

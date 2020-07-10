@@ -27,7 +27,7 @@ if __name__=='__main__':
     res=queryservice()
     threadinfo = pickle.loads(res.output)
     for name, num, duration, req in threadinfo:
-        print '%s: num=%d, duration=%f, requests:'%(name,num,duration)
+        print('%s: num=%d, duration=%f, requests:'%(name,num,duration))
         if req is not None:
-            print pickle.loads(req.input)
-        print '--------'
+            print(pickle.loads(req.input))
+        print('--------')

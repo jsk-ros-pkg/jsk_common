@@ -12,7 +12,7 @@ import shutil
 try:
     import colorama
 except:
-    print "Please install colorama by pip install colorama"
+    print("Please install colorama by pip install colorama")
     sys.exit(1)
 from colorama import Fore, Style
 from jsk_topic_tools.master_util import isMasterAlive
@@ -25,7 +25,7 @@ def runROSBag(topics, size, save_dir):
     cmd = 'roslaunch jsk_data rosbag_always_run_rosbag.launch'
     formatted_topics = [t for t in topics.split(' ') if t]
     args = cmd.split(' ') + ["TOPICS:=" + topics + ""] + ["SIZE:=" + size] + ["OUTPUT:=" + save_dir + '/rosbag']
-    print args
+    print(args)
     return subprocess.Popen(args)
 
 def parseBagFile(bag):
@@ -55,7 +55,7 @@ def moveBagFiles(save_dir, bags):
         move_dir = mkdirForBag(save_dir, bag)
         from_file = os.path.join(save_dir, bag)
         to_file = os.path.join(move_dir, bag)
-        print 'moving file %s -> %s' % (from_file, to_file)
+        print('moving file %s -> %s' % (from_file, to_file))
         shutil.move(from_file, to_file)
                     
 def watchFileSystem(save_dir, max_size):
@@ -98,7 +98,7 @@ def removeOldFiles(save_dir, max_size, current_size):
     remove_size = current_size - max_size
     for f in files:
         the_size = os.path.getsize(f)
-        print Fore.GREEN + 'removing %s (%d)' % (f, the_size / 1000 / 1000) + Fore.RESET
+        print(Fore.GREEN + 'removing %s (%d)' % (f, the_size / 1000 / 1000) + Fore.RESET)
         os.remove(f)
         # Send desktop notification
         subprocess.check_output(['notify-send', "Removed %s (%d)" % (f, the_size / 1000 / 1000)])
@@ -108,7 +108,7 @@ def removeOldFiles(save_dir, max_size, current_size):
     
 def checkDirectorySize(save_dir, max_size):
     size = getDirectorySize(save_dir)
-    # print 'current directory size is %fM (max is %dM)' % (size, int(max_size))
+    # print('current directory size is %fM (max is %dM)' % (size, int(max_size)))
     if size > max_size:
         removeOldFiles(save_dir, max_size, size)
     
@@ -116,7 +116,7 @@ g_rosbag_process = False
 
 def restartROSBag(topics, size, save_dir):
     global g_rosbag_process
-    print 'Running rosbag...'
+    print('Running rosbag...')
     g_rosbag_process = runROSBag(topics, size, save_dir)
 
 def killChildProcesses(ppid):
@@ -126,13 +126,13 @@ def killChildProcesses(ppid):
         if strip_process_line:
             pid = strip_process_line.split(' ')[0]
             name = strip_process_line.split(' ')[-1]
-            print 'killing %s' % (name)
+            print('killing %s' % (name))
             os.kill(int(pid), signal.SIGINT)
 
 def killROSBag():
     global g_rosbag_process
     if g_rosbag_process:
-        print 'Killing rosbag ...'
+        print('Killing rosbag ...')
         rosbag_pid = g_rosbag_process.pid
         try:
             killChildProcesses(rosbag_pid)
@@ -148,15 +148,15 @@ def main(topics, size, save_dir, max_size, rate = 1):
         while True:
             master_state = isMasterAlive()
             if not master_state and previous_master_state:
-                print "kill rosbag"
+                print("kill rosbag")
                 killROSBag()
             elif master_state and not previous_master_state:
-                print "restart rosbag"
+                print("restart rosbag")
                 restartROSBag(topics, size, save_dir)
             watchFileSystem(save_dir, max_size)
             previous_master_state = master_state
             time.sleep(1.0 / rate)
-    except Exception, e:
+    except Exception as e:
         time.sleep(1)
         watchFileSystem(save_dir, max_size)
     finally:
