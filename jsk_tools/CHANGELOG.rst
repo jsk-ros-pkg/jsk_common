@@ -2,6 +2,47 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix for noetic build (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
+
+  * fix for python3, except, print ....
+  * jsk_tools: fix for python3
+  * pytho3 dislike \d in regrex, src/test_topic_published.py:50:37: W605 invalid escape sequence '\d'
+  * python3 need to use a in dict, instead of dict.has_key(a)
+  * fix print(), Exception as e for python3
+  * migrate to noetic with ROS_PYTHON_VERSION=2/3, use multiple ROS distro strategy http://wiki.ros.org/noetic/Migration
+  * upgrade package.xml to format=3
+
+* fix failure on finally clause (`#1645 <https://github.com/jsk-ros-pkg/jsk_common/issues/1645>`_)
+* Add debian in generate_deb_status_table.pyf( `#1633 <https://github.com/jsk-ros-pkg/jsk_common/issues/1633>`_)
+* write comment on how to generate deb status section. (`#1631 <https://github.com/jsk-ros-pkg/jsk_common/issues/1631>`_)
+
+  * remove --rosdistro-from and --rosdistro-to, get current active rosdistro list from index file
+  * write comment on how to generate deb status section.  https://stackoverflow.com/questions/4823468/comments-in-markdown
+
+* [jsk_tools] Add --ping-trials option to roscore_regardless.py (`#1632 <https://github.com/jsk-ros-pkg/jsk_common/issues/1632>`_)
+
+  * Sometimes ping is not stable. `--ping-trials` option enables roscore_regardless.py to verify host computer of rosmaster is alive by multi-times ping commands.
+
+* [jsk_tools] Show voltage in battery_capacity_summary.py (`#1628 <https://github.com/jsk-ros-pkg/jsk_common/issues/1628>`_)
+
+  * Fix output format in battery_capacity_summary.py
+  * Show voltage as well in battery_capacity_summary.py
+  * Show unit of full/remaining capacity in battery_capacity_summary.py
+
+* [jsk_tools/roscore_regardless.py] Do not send SIGTERM before roslaunch sends SIGTERMf( `#1627 <https://github.com/jsk-ros-pkg/jsk_common/issues/1627>`_)
+
+  * Add option to change timeout duration to escalate signals
+
+* [jsk_tools] Add --timeout option to roscore_regardless.py ( `#1622 <https://github.com/jsk-ros-pkg/jsk_common/issues/1622>`_)
+
+  * Add --timeout option to change timeout duration of ping command towards rosmaster computer.
+  * --timeout option defaults to 10 seconds.
+
+* battery_capacity_summary.py: fix order of columns (`#1619 <https://github.com/jsk-ros-pkg/jsk_common/issues/1619>`_)
+* Contributors: Yuki Furuta, Kei Okada, Ryohei Ueda, Shingo Kitagawa, Yuto Uchimi
+
 2.2.10 (2018-11-03)
 -------------------
 

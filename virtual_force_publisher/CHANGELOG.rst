@@ -2,6 +2,11 @@
 Changelog for package virtual_force_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* upgrade package.xml to format=3 (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
+* Contributors: Kei Okada
+
 2.2.10 (2018-11-03)
 -------------------
 

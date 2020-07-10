@@ -2,6 +2,49 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_data] Add common rosbag_record and play file for fetch (`#1611 <https://github.com/jsk-ros-pkg/jsk_common/issues/1611>`_)
+
+  * enable to give rosbag option to fetch_play.sh like pr2_play.sh
+  * add option to launch rqt_bag and rviz in fetch_play.launch
+  * [jsk_data/CMakeLists.txt] Add roslaunch_add_file_check for fetch's launch files
+  * [jsk_data] Add fetch_play.sh
+  * [jsk_data] Add fetch_play and fetch_record.launch
+
+* use xdg-open for ubuntu16.04 and above (`#1638 <https://github.com/jsk-ros-pkg/jsk_common/issues/1638>`_)
+* [jsk_data/common_record.launch] Add tf_static recordf( `#1641 <https://github.com/jsk-ros-pkg/jsk_common/issues/1641>`_)
+* Fix for noetic build (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
+
+  * fix for python3, except, print ....
+  * pytho3 dislike \d in regrex, src/test_topic_published.py:50:37: W605 invalid escape sequence '\d'
+  * jsk_data/tests/test_data_collection_server.py use python3 as interpreter
+     python code under scripts/ installed with catkin_python_install as http://wiki.ros.org/UsingPython3/SourceCodeChanges, to dynamically change shebangs on install time
+    This installs tests/test_data_collection_server.py under CATKIN_PACKAGE_SHARE/tests, which outputs
+    ```
+    $ rosrun jsk_data test_data_collection_server.py
+    [rosrun] You have chosen a non-unique executable, please pick one of the following:
+    1) /home/user/devel/share/jsk_data/tests/test_data_collection_server.py
+    2) /home/user/src/jsk_common/jsk_data/tests/test_data_collection_server.py
+    ```
+    we can ignore this message
+  * fix jsk_data/src/jsk_data/cli.py:57:44: E741 ambiguous variable name 'l'
+  * migrate to noetic with ROS_PYTHON_VERSION=2/3, use multiple ROS distro strategy http://wiki.ros.org/noetic/Migration
+  * upgrade package.xml to format=3
+  * use distutils.spawn
+
+* Fix download_data.py for Python3f( `#1637 <https://github.com/jsk-ros-pkg/jsk_common/issues/1637>`_)
+
+* [jsk_data] Skip extracting files which already existf( `#1626 <https://github.com/jsk-ros-pkg/jsk_common/issues/1626>`_)
+
+  * Print message when skip extracting
+  * Use isinstance() for checking file type
+  * Skip extracting files which already exist
+
+* pr2_play.launch: support indigo ( `#1620 <https://github.com/jsk-ros-pkg/jsk_common/issues/1620>`_)
+* [download_data.py] generate error log when downloaded fils's md5 is incorrect (`#1610 <https://github.com/jsk-ros-pkg/jsk_common/issues/1610>`_)
+* Contributors: Yuki Furuta, Kei Okada, Kentaro Wada, Naoya Yamaguchi, Shingo Kitagawa, Yuto Uchimi, Iori Yanokura
+
 2.2.10 (2018-11-03)
 -------------------
 * check if wget/gdown command exists, gdown is pip distributed so that we can not use this within de build farm (`#1609 <https://github.com/jsk-ros-pkg/jsk_common/issues/1609>`_)

@@ -2,6 +2,11 @@
 Changelog for package jsk_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* upgrade package.xml to format=3 for noetic (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
+* Contributors: Kei Okada
+
 2.2.10 (2018-11-03)
 -------------------
 

@@ -2,6 +2,60 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_topic_tools] check nodelet version>=1.9.10 (`#1647 <https://github.com/jsk-ros-pkg/jsk_common/issues/1647>`_)
+* [jsk_topic_tools/scripts/pose_stamped_publisher.py] fix orientation bug (`#1649 <https://github.com/jsk-ros-pkg/jsk_common/issues/1649>`_)
+* Fix for noetic build (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
+
+  * fix for python3, except, print ....
+  * fix print(), Exception as e for python3
+  * fox for boost 1.67 (20.04)
+  * migrate to noetic with ROS_PYTHON_VERSION=2/3, use multiple ROS distro strategy http://wiki.ros.org/noetic/Migration
+  * upgrade package.xml to format=3
+
+* call ros::param::get before set not to overwrite (`#1643 <https://github.com/jsk-ros-pkg/jsk_common/issues/1643>`_)
+
+  * run test_standalone_complexed_nodelet.test
+  * add test code for standalone_complexed_nodelet
+  * call ros::param::get before set not to overwrite
+
+* [jsk_topic_tools/SynchronizedThrottle] Reset sync policy in destructor (`#1640 <https://github.com/jsk-ros-pkg/jsk_common/issues/1640>`_)
+
+* [jsk_topic_tools] import _pickle as pickle for python3 (`#1636 <https://github.com/jsk-ros-pkg/jsk_common/issues/1636>`_)
+
+  * add comment in log_utils
+  * import _pickle as pickle for python3, cpickle is no more used in python3
+
+* add SoundRequest.volume for kinetic (`#1635 <https://github.com/jsk-ros-pkg/jsk_common/issues/1635>`_)
+* Create tf.TransformListener before run timerf( `#1634 <https://github.com/jsk-ros-pkg/jsk_common/issues/1634>`_)
+
+  * Assign listener varaible before run timer and the callback in order, not to lookup listener variable before it is assigned.
+
+* [jsk_tools] Add --ping-trials option to roscore_regardless.pyf( `#1632 <https://github.com/jsk-ros-pkg/jsk_common/issues/1632>`_)
+
+  * Sometimes ping is not stable. `--ping-trials` option enables roscore_regardless.py to verify host computer of rosmaster is alive by multi-times ping commands.
+
+* [deprecated_relay] print warning message only when relayed topic is subscribed (`#1624 <https://github.com/jsk-ros-pkg/jsk_common/issues/1624>`_)
+
+  * print warn only when the msg is subscribed
+  * print warn only once in starting
+
+* [jsk_tools] Add --timeout option to roscore_regardless.py (`#1622 <https://github.com/jsk-ros-pkg/jsk_common/issues/1622>`_)
+* standalone_complexed_nodelet: add `params` key for each nodelet (`#1614 <https://github.com/jsk-ros-pkg/jsk_common/issues/1614>`_)
+
+  * Add --timeout option to change timeout duration of ping command towards rosmaster computer.
+  * --timeout option defaults to 10 seconds.
+
+* jsk_nodelet: fix overwritting find_package(boost) (`#1618 <https://github.com/jsk-ros-pkg/jsk_common/issues/1618>`_)
+* synchronized_throttle: add some more infos (`#1615 <https://github.com/jsk-ros-pkg/jsk_common/issues/1615>`_)
+* stealth_relay_nodelet: fix error double free or corruption (fasttop) (`#1613 <https://github.com/jsk-ros-pkg/jsk_common/issues/1613>`_)
+
+  * update standalone_complexed_nodelet sample launch
+  * standalone_complexed_ndoelet: support params tag
+
+* Contributors: Furushchev, Kei Okada, Ryo Koyama, Ryohei Ueda, Shingo Kitagawa, Yuki Furuta, Iory Yanokura
+
 2.2.10 (2018-11-03)
 -------------------
 

@@ -2,6 +2,15 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix for noetic build (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
+
+  * fix for python3, except, print ....
+  * upgrade package.xml to format=3
+
+* Contributors: Kei Okada
+
 2.2.10 (2018-11-03)
 -------------------
 

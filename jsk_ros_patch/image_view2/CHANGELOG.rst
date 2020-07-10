@@ -2,6 +2,19 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix for noetic build (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
+
+  * fox for opencv4
+  * remove signals from find_package(Boost COMPONENTS ...)
+  * migrate to noetic with ROS_PYTHON_VERSION=2/3, use multiple ROS distro strategy http://wiki.ros.org/noetic/Migration
+  * upgrade package.xml to format=3
+
+* Add sample code for image_view2f( `#1646 <https://github.com/jsk-ros-pkg/jsk_common/issues/1646>`_)
+
+* Contributors: Kei Okada, Naoya Yamaguchi, Shingo Kitagawa
+
 2.2.10 (2018-11-03)
 -------------------
 

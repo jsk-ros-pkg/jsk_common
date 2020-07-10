@@ -2,6 +2,17 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix for noetic build (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
+
+  * fix for python3, except, print ....
+  * upgrade package.xml to format=3
+
+* Update package name so it does not produce extra lines in rospack list (`#1625 <https://github.com/jsk-ros-pkg/jsk_common/issues/1625>`_)
+
+* Contributors: J-Rojas, Kei Okada
+
 2.2.10 (2018-11-03)
 -------------------
 

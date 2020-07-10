@@ -2,6 +2,18 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix for noetic buid (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
+
+  * fix jsk_network_tools for python3
+  * jsk_network_tools: set queue_size=1
+  * fix for python3, except, print ....
+  * upgrade package.xml to format=3
+
+* [network_status.py] add queue_size (`#1642 <https://github.com/jsk-ros-pkg/jsk_common/issues/1642>`_)
+* Contributors: Kei Okada, Naoki Hiraoka, Shingo Kitagawa
+
 2.2.10 (2018-11-03)
 -------------------
 
