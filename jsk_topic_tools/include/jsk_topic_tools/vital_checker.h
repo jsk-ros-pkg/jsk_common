@@ -44,7 +44,11 @@
 #include <boost/accumulators/statistics/max.hpp>
 #include <boost/accumulators/statistics/variance.hpp>
 
+#if BOOST_VERSION < 106700  // for < 20.4
 #include <boost/timer.hpp>
+#else
+#include <boost/timer/timer.hpp>
+#endif
 
 #include <boost/thread.hpp>
 #include <boost/format.hpp>

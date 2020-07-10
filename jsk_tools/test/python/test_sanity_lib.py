@@ -3,7 +3,10 @@
 try:
     import cStringIO as StringIO
 except ImportError:
-    import StringIO
+    try:
+        import StringIO ## for Python 2
+    except ImportError:
+        import io as StringIO ## for Python 3
 import sys
 import unittest
 

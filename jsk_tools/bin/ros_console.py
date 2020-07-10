@@ -104,7 +104,7 @@ class ROSConsole():
                      if self.filterMessage(msg)]
             if len(table) == 0:
                 return
-            #print tabulate(table, tablefmt="pipe")
+            #print(tabulate(table, tablefmt="pipe"))
             self.prettyPrint(table)
             self.buffer_ = []
     def prettyPrint(self, table):
@@ -120,7 +120,7 @@ class ROSConsole():
                         for i in range(int(math.ceil(len(message) / float(message_width))))]
             messages_str = ("\n" + " " * (1 + header_length)).join(messages)
             padding = header_length - len(headers)
-            print "%s %s%s" % (headers, " " * padding, messages_str) + Style.RESET_ALL
+            print("%s %s%s" % (headers, " " * padding, messages_str) + Style.RESET_ALL)
     def filterMessage(self, msg):
         # node name
         show = True

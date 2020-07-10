@@ -9,6 +9,10 @@ import unittest
 
 import numpy as np
 import scipy.misc
+from distutils.version import StrictVersion
+import scipy.version
+if (StrictVersion(scipy.version.version) > StrictVersion('1.2.0')):
+    import imageio
 import yaml
 
 import rospy
@@ -41,7 +45,10 @@ class TestDataCollectionServer(unittest.TestCase):
                     data = yaml.load(f)
                     self.assertEqual(data['data'], 'sample')
             elif target == 'image':
-                img = scipy.misc.imread(osp.join(sub_dir, 'sample_image.png'))
+                if (StrictVersion(scipy.version.version) > StrictVersion('1.2.0')):
+                    img = imageio.imread(osp.join(sub_dir, 'sample_image.png'))
+                else:
+                    img = scipy.misc.imread(osp.join(sub_dir, 'sample_image.png'))
                 self.assertTrue(np.allclose(img, scipy.misc.face()))
             else:
                 raise ValueError('Unexpected target: {}'.format(target))

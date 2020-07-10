@@ -29,15 +29,15 @@ class TestTopicCompare(unittest.TestCase):
     def test_same_topic(self):
         while not tc.isAllTopicAvailable(20):
             rospy.sleep(1)
-        print tc.getTotalBytes(0) / (tc.getEndTime(0) - tc.getStartTime(0))
-        print tc.getTotalBytes(1) / (tc.getEndTime(1) - tc.getStartTime(1))
+        print(tc.getTotalBytes(0) / (tc.getEndTime(0) - tc.getStartTime(0)))
+        print(tc.getTotalBytes(1) / (tc.getEndTime(1) - tc.getStartTime(1)))
         self.assertTrue(eps_equal(tc.getBandwidth(0), tc.getBandwidth(1), 20))
 
     def test_half_topic(self):
         while not tc.isAllTopicAvailable(20):
             rospy.sleep(1)
-        print tc.getTotalBytes(0) / (tc.getEndTime(0) - tc.getStartTime(0))
-        print tc.getTotalBytes(2) / (tc.getEndTime(2) - tc.getStartTime(2))
+        print(tc.getTotalBytes(0) / (tc.getEndTime(0) - tc.getStartTime(0)))
+        print(tc.getTotalBytes(2) / (tc.getEndTime(2) - tc.getStartTime(2)))
         self.assertTrue(eps_equal(tc.getBandwidth(0), 2 * tc.getBandwidth(2), 20))
 
 

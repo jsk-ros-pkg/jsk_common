@@ -1,6 +1,6 @@
 <launch>
   <node pkg="jsk_topic_tools" type="standalone_complexed_nodelet"
-        name="manager">
+        name="manager" output="screen">
     <rosparam>
       nodelets:
         - name: relay
@@ -14,11 +14,14 @@
             - from: ~input
               to: relay/output
         - name: relay3
-          type: jsk_topic_tools/Relay
+          type: jsk_topic_tools/LightweightThrottle
           remappings:
             - from: ~input
               to: relay2/output
+          params:
+          - name: update_rate
+            value: 2.0
     </rosparam>
   </node>
-  <node pkg="rostopic" type="rostopic" name="foo_pub" args="pub foo std_msgs/String '{data: foooo}' -r 1" />
+  <node pkg="rostopic" type="rostopic" name="foo_pub" args="pub foo std_msgs/String '{data: foooo}' -r 10" />
 </launch>

@@ -139,23 +139,23 @@ def collect_cpuinfo(host, ros_port, user_test_commands, verbose, timeout,
         chan = client.get_transport().open_session()
         chan.exec_command(ROS_CHECK_COMMAND % (os.environ["SHELL"]))
         # (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ROS_CHECK_COMMAND)
-        # print ssh_stderr.readlines()
+        # print(ssh_stderr.readlines())
         ros_p = chan.recv_exit_status() == 0
         if ros_p or not ros_filter:
             chan = client.get_transport().open_session()
             chan.exec_command(ROSPORT_COMMAND % (os.environ["SHELL"], ros_port))
             # (ssh_stdin, ssh_stdout, ssh_stderr) = client.exec_command(ROSPORT_COMMAND % (os.environ["SHELL"], ros_port))
-            # print ssh_stderr.readlines()
+            # print(ssh_stderr.readlines())
             # if online, it returns True=1
             port_available_p = chan.recv_exit_status() == 0
             return (host, cpu_num, mem_num, arch, port_available_p)
         else:
             raise ROSNotInstalled("ros is not installed")
-    except ROSNotInstalled, e:
+    except ROSNotInstalled as e:
         if verbose:
             sys.stderr.write("[%s] ROS is not installed\n" % (host))
         return (host, False)
-    except Exception, e:
+    except Exception as e:
         if verbose:
             sys.stderr.write("[%s] connection missed: %s\n" % (host, e))
         return (host, False)

@@ -80,7 +80,7 @@ namespace jsk_topic_tools
   void StealthRelay::subscribe()
   {
     NODELET_DEBUG("subscribe");
-    sub_ = pnh_->subscribe<const ros::MessageEvent<topic_tools::ShapeShifter>&>
+    sub_ = pnh_->subscribe<const ros::MessageEvent<topic_tools::ShapeShifter const>&>
       ("input", queue_size_, &StealthRelay::inputCallback, this);
     subscribed_ = true;
   }
@@ -130,13 +130,13 @@ namespace jsk_topic_tools
     }
   }
 
-  void StealthRelay::inputCallback(const ros::MessageEvent<topic_tools::ShapeShifter>& event)
+  void StealthRelay::inputCallback(const ros::MessageEvent<topic_tools::ShapeShifter const>& event)
   {
-    const AnyMsgConstPtr& msg = event.getConstMessage();
+    const boost::shared_ptr<topic_tools::ShapeShifter const>& msg = event.getConstMessage();
     inputCallback(msg);
   }
 
-  void StealthRelay::inputCallback(const AnyMsgConstPtr& msg)
+  void StealthRelay::inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
   {
     boost::mutex::scoped_lock lock(mutex_);
     NODELET_DEBUG("inputCallback");

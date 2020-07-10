@@ -1,4 +1,7 @@
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO ## for Python 3
 from struct import Struct, pack, unpack
 import re
 import rospy
@@ -57,7 +60,10 @@ def msgToStructFormat(msg):
 
 def packableValue(value, value_type):
     if value_type == "uint8":
-        return ord(value)
+        if isinstance(value, int): # for python3
+            return value
+        else:
+            return ord(value)
     else:
         return value
 
@@ -70,6 +76,7 @@ def packMessage(msg, fmt):
         if hasattr(slot_value, "__len__"):   #array
             for i in range(len(slot_value)):
                 data.append(packableValue(slot_value[i], field_type))
+                #data.append(slot_value[i])
         else:
             #data.append(packableValue(slot_value, field_type))
             data.append(slot_value)

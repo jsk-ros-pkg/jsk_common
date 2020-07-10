@@ -39,15 +39,30 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 #include <list>
-// Parameter structure is
-// nodelets:
-//   -  name: node_name
-//      type: nodelet_type
-//      remappings:
-//        - from: from_topic
-//        - to: to_topic
-//        - from: from_topic
-//        - to: to_topic
+
+/*
+   Parameter structure is
+   nodelets:
+     -  name: node_name
+        type: nodelet_type
+        remappings:
+          - from: from_topic
+            to: to_topic
+          - from: from_topic
+            to: to_topic
+        params:
+          - name: approximate_sync
+            value: true
+          - name: queue_size
+            value: 100
+     -  name: node_name2
+        type: nodelet_type2
+        if: false
+     -  name: node_name3
+        type: nodelet_type3
+        unless: false
+*/
+
 
 std::string parentName(const std::string& name)
 {
@@ -151,6 +166,26 @@ int main(int argc, char** argv)
                 ROS_FATAL("remappings should be an array");
                 return 1;
               }
+            }
+            if (onenodelet_param.hasMember("params")) {
+              if (onenodelet_param["params"].getType() != XmlRpc::XmlRpcValue::TypeArray) {
+                ROS_FATAL("params parameter must be an array");
+                return 1;
+              }
+              XmlRpc::XmlRpcValue values;
+              ros::param::get(name, values);
+              for (int params_i = 0; params_i < onenodelet_param["params"].size(); ++params_i) {
+                XmlRpc::XmlRpcValue oneparam = onenodelet_param["params"][params_i];
+                if (!(oneparam.getType() == XmlRpc::XmlRpcValue::TypeStruct &&
+                      oneparam.hasMember("name") && oneparam.hasMember("value"))) {
+                  ROS_FATAL("each 'params' element must be a struct which contains 'name' and 'value' fields.");
+                  return 1;
+                }
+                std::string key = oneparam["name"];
+                values[key] = oneparam["value"];
+                ROS_INFO_STREAM("setparam: " << name << "/" << key << " => " << values[key]);
+              }
+              ros::param::set(name, values);
             }
             // Done reading parmaeter for one nodelet
           

@@ -184,7 +184,7 @@ def generate_dhcp(db,
             logger.info("restarting dhcp")
             check_call(["sudo", "/etc/init.d/dhcp3-server", "restart"])
     else:
-        print prefix_str + dhcp_subnet_str
+        print(prefix_str + dhcp_subnet_str)
 
 def print_machine_list(db):
     logger = logging.getLogger("pxe")
@@ -194,11 +194,11 @@ def print_machine_list(db):
         ip = ip_mac["ip"]
         mac = ip_mac["macaddress"]
         root = ip_mac["root"]
-        print """%s:
+        print("""%s:
   ip: %s
   mac: %s
   root: %s
-""" % (hostname, ip, mac, root)
+""" % (hostname, ip, mac, root))
 
 def wake_on_lan(hostname, port, broadcast, db):
     logger = logging.getLogger("pxe")
@@ -483,7 +483,7 @@ class WebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             else:
                 html = generate_top_html(db_name, global_options.log)
             s.wfile.write(html)
-        except Exception, e:
+        except Exception as e:
             logger = logging.getLogger("pxe")
             logger.info("error has occurred: %s" % (e))
             html = generate_error_html(e,
@@ -583,12 +583,12 @@ def generate_virtualbox_image(db,
                                    "macaddress": macaddress.replace(":", "")})
     f.write(content)
     f.close()
-    #print "please register %s on your virtualbox" % (vm_path)
+    #print("please register %s on your virtualbox" % (vm_path))
     if register_vm:
         check_call(["VBoxManage", "registervm", vmname + ".vbox"])
     
 def print_virtualbox_macaddress():
-    print generate_virtualbox_macaddress()
+    print(generate_virtualbox_macaddress())
     
 def generate_virtualbox_macaddress():
     # TODO: check duplication of macaddress
@@ -600,7 +600,7 @@ def nslookup(ip):
 
 def print_lookup_free_host(options):
     string = lookup_free_host(options)
-    print string
+    print(string)
 
 def lookup_free_host(db, dhcp_range_start, dhcp_range_stop):
     con = open_db(db)
@@ -618,7 +618,7 @@ def lookup_free_host(db, dhcp_range_start, dhcp_range_stop):
         if not not_available:
             # TODO: check ping!
             return "%s %s" % (nslookup(full_ip), full_ip)
-    print "none"
+    print("none")
 
 def auto_add_vm(options):
     logger = logging.getLogger("pxe")
@@ -649,7 +649,7 @@ def auto_add_vm(options):
     generate_pxe_config_files(options.db,
                               options.generate_pxe_config_files,
                               options.tftp_dir)
-    print free_host
+    print(free_host)
 
 def boot_vm(vmdir, vmname, physical_machine):
     logger = logging.getLogger("pxe")

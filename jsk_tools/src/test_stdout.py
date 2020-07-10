@@ -23,7 +23,7 @@ class TestStdout(unittest.TestCase):
         shell = rospy.get_param("~shell", False)
         if not shell:
             command = shlex.split(command)
-        stdout = subprocess.check_output(command, shell=shell)
+        stdout = subprocess.check_output(command, shell=shell).decode()  # for python3 check_output returns b'spam'
         expected = rospy.get_param("~stdout", None)
         if expected:
             self.assertEqual(stdout.strip(), expected)

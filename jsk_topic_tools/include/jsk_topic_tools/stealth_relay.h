@@ -53,7 +53,6 @@ namespace jsk_topic_tools
 {
   class StealthRelay : public nodelet::Nodelet
   {
-    typedef boost::shared_ptr<topic_tools::ShapeShifter const> AnyMsgConstPtr;
     typedef StealthRelayConfig Config;
   protected:
     virtual void onInit();
@@ -61,8 +60,8 @@ namespace jsk_topic_tools
     virtual void unsubscribe();
     virtual bool isSubscribed();
     virtual void configCallback(Config& config, uint32_t level);
-    virtual void inputCallback(const ros::MessageEvent<topic_tools::ShapeShifter>& event);
-    virtual void inputCallback(const AnyMsgConstPtr& msg);
+    virtual void inputCallback(const ros::MessageEvent<topic_tools::ShapeShifter const>& event);
+    virtual void inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
     virtual void timerCallback(const ros::TimerEvent& event);
     virtual int getNumOtherSubscribers(const std::string& name);
 

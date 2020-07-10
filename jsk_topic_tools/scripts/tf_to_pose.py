@@ -10,7 +10,7 @@ def cb(event):
     try:
         listener.waitForTransform(src_frame, dst_frame, stamp,
                                 timeout=rospy.Duration(1))
-    except Exception, e:
+    except Exception as e:
         rospy.logerr(e)
         return
 
@@ -36,6 +36,6 @@ if __name__ == '__main__':
     src_frame = rospy.get_param('~src_frame')
     dst_frame = rospy.get_param('~dst_frame')
     rate = rospy.get_param('~rate', 1.)
-    timer = rospy.Timer(rospy.Duration(1.0 / rate), cb)
     listener = tf.TransformListener()
+    timer = rospy.Timer(rospy.Duration(1.0 / rate), cb)
     rospy.spin()

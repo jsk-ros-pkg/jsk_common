@@ -16,17 +16,17 @@ def set_tf(pos, q, parent, child, freq):
         pose.child_frame_id = ch
         pose.transform.translation = Vector3(*pos)
         pose.transform.rotation = Quaternion(*q)
-        print pose
+        print(pose)
         res = client(freq, pose)
         return
-    except rospy.ServiceException, e:
-        print "Service call failed: %s"%e
+    except rospy.ServiceException as e:
+        print("Service call failed: %s"%e)
 
 def isfloat(str):
     try:
         float(str)
         return True
-    except Exception, e:
+    except Exception as e:
         return False
 
 if __name__ == "__main__":
@@ -39,13 +39,13 @@ if __name__ == "__main__":
             rpy = map(float,sys.argv[4:7])
             # rpy angle is in "zyx" axis
             q = tf.transformations.quaternion_from_euler(*rpy, axes="rzyx")
-            print q
+            print(q)
             rest = sys.argv[7:]
         pa = rest[0]
         ch = rest[1]
         hz = 1000.0 / float(rest[2])
         set_tf(pos, q, pa, ch, hz)
-    except Exception, e:
-        print sys.argv
-        print "args: x y z (r p y)|(x y z w) parent child msec"
+    except Exception as e:
+        print(sys.argv)
+        print("args: x y z (r p y)|(x y z w) parent child msec")
     sys.exit(0)

@@ -44,7 +44,23 @@ def extract_file(path, to_directory='.', chmod=True):
     try:
         file = opener(path, mode)
         try:
-            file.extractall()
+            # Skip extracting files which already exist.
+            extract_members = []
+            if isinstance(file, zipfile.ZipFile):
+                for member in file.namelist():
+                    if not osp.exists(member):
+                        extract_members.append(member)
+                    else:
+                        print('[%s] Skip extracting %s since it already exists'
+                              % (path, member))
+            elif isinstance(file, tarfile.TarFile):
+                for member in file.getmembers():
+                    if not osp.exists(member.path):
+                        extract_members.append(member)
+                    else:
+                        print('[%s] Skip extracting %s since it already exists'
+                              % (path, member.path))
+            file.extractall(members=extract_members)
             extracted_files = getnames(file)
             root_files = list(set(name.split('/')[0]
                                   for name in getnames(file)))
@@ -54,7 +70,7 @@ def extract_file(path, to_directory='.', chmod=True):
         if chmod:
             for fname in extracted_files:
                 if not is_file_writable(fname):
-                    os.chmod(os.path.abspath(fname), 0777)
+                    os.chmod(os.path.abspath(fname), 0o777)
         os.chdir(cwd)
     print('[%s] Finished extracting to %s' % (path, to_directory))
     return root_files
@@ -70,10 +86,10 @@ def decompress_rosbag(path, quiet=False, chmod=True):
     finally:
         if chmod:
             if not is_file_writable(path):
-                os.chmod(path, 0777)
+                os.chmod(path, 0o777)
             orig_path = osp.splitext(path)[0] + '.orig.bag'
             if not is_file_writable(orig_path):
-                os.chmod(orig_path, 0777)
+                os.chmod(orig_path, 0o777)
     print('[%s] Finished decompressing the rosbag' % path)
 
 
@@ -88,7 +104,7 @@ def download(client, url, output, quiet=False, chmod=True):
     finally:
         if chmod:
             if not is_file_writable(output):
-                os.chmod(output, 0766)
+                os.chmod(output, 0o766)
     print('[%s] Finished downloading' % output)
 
 
@@ -106,7 +122,7 @@ def check_md5sum(path, md5):
 
 
 def is_google_drive_url(url):
-    m = re.match('^https?://drive.google.com/uc\?id=.*$', url)
+    m = re.match(r'^https?://drive.google.com/uc\?id=.*$', url)
     return m is not None
 
 
@@ -173,7 +189,7 @@ def download_data(pkg_name, path, url, md5, download_client=None,
         finally:
             if chmod:
                 if not is_file_writable(cache_dir):
-                    os.chmod(cache_dir, 0777)
+                    os.chmod(cache_dir, 0o777)
     cache_file = osp.join(cache_dir, osp.basename(path))
 
     # check if cache exists, and update if necessary

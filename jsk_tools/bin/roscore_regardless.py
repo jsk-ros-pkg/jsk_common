@@ -13,12 +13,10 @@ from jsk_topic_tools.master_util import isMasterAlive
 # Global variables
 g_process_object = None
 g_is_posix = 'posix' in sys.builtin_module_names
-g_timeout_sigint = 10.0
-g_timeout_sigterm = 2.0
 
 
 def printLog(fmt, **args):
-    print "\x1b[32m" + fmt % args + '\x1b[39m'
+    print("\x1b[32m" + fmt % args + '\x1b[39m')
 
 
 def runProcess(cmds):
@@ -49,7 +47,7 @@ def killDescendentProcesses(ppid):
             os.kill(pid, signal.SIGINT)
 
 
-def killChildProcess(p, signum=None):
+def killChildProcess(p, sigint_timeout, sigterm_timeout, signum=None):
     # Return exit code if the process is already exited.
     if p is None:
         return 0
@@ -60,7 +58,7 @@ def killChildProcess(p, signum=None):
     try:
         # 1. SIGINT
         p.send_signal(signal.SIGINT)
-        timeout = time.time() + g_timeout_sigint
+        timeout = time.time() + sigint_timeout
         while time.time() < timeout:
             if p.poll() is not None:
                 return p.poll()
@@ -69,7 +67,7 @@ def killChildProcess(p, signum=None):
         # 2. SIGTERM
         printLog("Escalated to SIGTERM")
         p.send_signal(signal.SIGTERM)
-        timeout = time.time() + g_timeout_sigterm
+        timeout = time.time() + sigterm_timeout
         while time.time() < timeout:
             if p.poll() is not None:
                 return p.poll()
@@ -89,7 +87,7 @@ def killChildProcess(p, signum=None):
     return 0
 
 
-def killProcess():
+def killProcess(sigint_timeout, sigterm_timeout):
     """Kill the running child process by sending signals.
        First send SIGINT as normal exit, and then is escalated to SIGKILL if the process is still alive.
        Return value is the exit code of the process.
@@ -99,7 +97,7 @@ def killProcess():
     p = g_process_object
     g_process_object = None
 
-    exit_code = killChildProcess(p)
+    exit_code = killChildProcess(p, sigint_timeout, sigterm_timeout)
 
     if p is not None:
         try:
@@ -122,17 +120,26 @@ def parse_args(args):
     p.add_argument("commands", nargs=argparse.REMAINDER)
     p.add_argument("--respawn", "-r", action="store_true",
                    help="respawn if child process stops")
+    p.add_argument("--timeout", type=int, default=10,
+                   help="Timeout to verify if rosmaster is alive by ping command in seconds")
+    p.add_argument("--ping-trials", type=int, default=1,
+                   help="If ping fails PING_TRIALS times, master is regarded as dead")
+    p.add_argument("--sigint-timeout", type=int, default=20,
+                   help="Timeout to escalete from sigint to sigterm to kill child processes")
+    p.add_argument("--sigterm-timeout", type=int, default=10,
+                   help="Timeout to escalete from sigterm to sigkill to kill child processes")
     args = p.parse_args()
-    return args.commands, args.respawn
+    return (args.commands, args.respawn, args.timeout, args.sigint_timeout, args.sigterm_timeout,
+            args.ping_trials)
 
 
 def main(args):
-    cmds, respawn = parse_args(args)
+    cmds, respawn, timeout, sigint_timeout, sigterm_timeout, trials = parse_args(args)
     exit_code = 0
     previous_master_state = None
     try:
         while True:
-            master_state = isMasterAlive()
+            master_state = isMasterAlive(timeout_sec=timeout, trials=trials)
             if g_process_object and g_process_object.poll() is not None:
                 # Child process exited
                 pid = g_process_object.pid
@@ -148,7 +155,7 @@ def main(args):
                 # Master is gone dead
                 pid = g_process_object.pid
                 printLog("Killing running process")
-                exit_code = killProcess()
+                exit_code = killProcess(sigint_timeout, sigterm_timeout)
                 printLog("Killed running process [%d] (code: %d)" % (pid, exit_code))
             elif master_state and not previous_master_state:
                 # Master is now alive
@@ -161,7 +168,7 @@ def main(args):
         pass
     finally:
         printLog("Cleaning up processes")
-        exit_code = killProcess()
+        exit_code = killProcess(sigint_timeout, sigterm_timeout)
 
     return exit_code
 

@@ -97,7 +97,20 @@ void SynchronizedThrottle::onInit()
   {
     check_timer_ = pnh_->createWallTimer(
         ros::WallDuration(5), &SynchronizedThrottle::checkAdvertisedTimerCallback,
-        this, false);
+        this, /* oneshot= */false);
+  }
+}
+
+SynchronizedThrottle::~SynchronizedThrottle() {
+  // This fixes the following error on shutdown of the nodelet:
+  // terminate called after throwing an instance of
+  // 'boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<boost::lock_error> >'
+  //     what():  boost: mutex lock failed in pthread_mutex_lock: Invalid argument
+  // Also see ros/ros_comm#720 .
+  if (approximate_sync_) {
+    async_.reset();
+  } else {
+    sync_.reset();
   }
 }
 
@@ -142,11 +155,12 @@ void SynchronizedThrottle::checkAdvertisedTimerCallback(const ros::WallTimerEven
   {
     if (!pub_[i])
     {
-      ROS_WARN_STREAM(input_topics_[i] << " is not yet published");
+      NODELET_WARN_STREAM(input_topics_[i] << " is not yet published");
     }
   }
   if (advertised_)
   {
+    NODELET_INFO("All topics are now published and synchronized");
     check_timer_.stop();
   }
 }

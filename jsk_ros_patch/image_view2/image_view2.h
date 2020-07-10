@@ -36,9 +36,6 @@
 #ifndef IMAGE_VIEW2_H_
 #define IMAGE_VIEW2_H_
 
-#include <opencv/cv.h>
-#include <opencv2/highgui/highgui.hpp>
-
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
@@ -64,6 +61,17 @@
 #include <image_view2/ImageView2Config.h>
 
 #include <image_view2/MouseEvent.h>
+
+
+#if ( CV_MAJOR_VERSION >= 4)
+#include <opencv2/highgui.hpp>
+#include <opencv2/highgui/highgui_c.h>
+#undef CV_RGB
+#define CV_RGB( r, g, b )  cvScalar( (b), (g), (r), 0 )
+#else
+#include <opencv/cv.h>
+#include <opencv2/highgui/highgui.hpp>
+#endif
 
 #define DEFAULT_COLOR  CV_RGB(255,0,0)
 #define USER_ROI_COLOR CV_RGB(255,0,0)
