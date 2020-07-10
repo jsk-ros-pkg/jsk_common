@@ -1,0 +1,44 @@
+<launch>
+
+  <!-- for fetch -->
+  <arg name="save_dir" default="/tmp/fetch_rosbag"/>
+  <arg name="bagfile_prefix" default="data" />
+  <arg name="other_topics" default=""/>
+  <arg name="other_options" default=""/>
+  <arg name="save_openni2" default="true" />
+  <arg name="save_base_scan" default="true" />
+  <arg name="save_robot_model" default="true" />
+  <arg name="save_all_image" default="false" />
+  <arg name="camera_namespace" default="head_camera"/>
+  <arg name="machine" default="localhost" />
+
+  <!--                          -->
+  <!--       Conditions         -->
+  <!--                          -->
+
+  <arg unless="$(arg save_base_scan)"
+       name="base_scan_topics" value="" />
+  <arg if    ="$(arg save_base_scan)"
+       name="base_scan_topics" value="/base_scan" />
+
+  <arg unless="$(arg save_all_image)"
+       name="all_image_topics" value="" />
+  <arg if    ="$(arg save_all_image)"
+       name="all_image_topics" value="-e .*/(image_raw|camera_info)" />
+
+  <!-- execute -->
+  <include file="$(find jsk_data)/launch/common_record.launch">
+    <arg name="save_openni" value="false" />
+    <arg name="save_openni2" value="$(arg save_openni2)" />
+    <arg name="save_robot_model" value="$(arg save_robot_model)" />
+    <arg name="save_all_image" value="$(arg save_all_image)" />
+    <arg name="camera_namespace" value="$(arg camera_namespace)" />
+    <arg name="save_dir" value="$(arg save_dir)" />
+    <arg name="bagfile_prefix" value="$(arg bagfile_prefix)" />
+    <arg name="other_options" value="$(arg other_options)" />
+    <arg name="other_topics" value="$(arg other_topics)
+                                    $(arg base_scan_topics)" />
+    <arg name="machine" value="$(arg machine)" />
+  </include>
+
+</launch>

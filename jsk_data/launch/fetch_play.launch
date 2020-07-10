@@ -1,0 +1,39 @@
+<launch>
+  <!-- other file args -->
+  <arg name="bagfile_names" />
+  <arg name="launch_openni2" default="true"/>
+  <arg name="launch_robot_model" default="true"/>
+  <arg name="use_gui" default="false"/>
+  <arg name="rosbag_option" default="--clock --loop"/>
+  <arg name="use_xterm" default="false" />
+
+  <!-- set params for rviz -->
+  <param name="use_sim_time" value="true" />
+  <param if="$(arg launch_robot_model)"
+         name="robot_description" textfile="$(find fetch_description)/robots/fetch.urdf"/>
+
+  <!-- setup openni_launch -->
+  <include if="$(arg launch_openni2)"
+           file="$(find openni2_launch)/launch/openni2.launch">
+    <arg name="camera" value="head_camera"/>
+    <arg name="load_driver" value="false"/>
+    <arg name="depth_registration" value="true"/>
+  </include>
+
+  <group if="$(arg use_xterm)">
+    <node name="rosbag_play"
+          pkg="rosbag" type="play"
+          launch-prefix="xterm -e"
+          args="$(arg rosbag_option) $(arg bagfile_names)" />
+  </group>
+  <group unless="$(arg use_xterm)">
+    <node name="rosbag_play"
+          pkg="rosbag" type="play"
+          args="$(arg rosbag_option) $(arg bagfile_names)" />
+  </group>
+
+  <node if="$(arg use_gui)" pkg="rqt_bag" type="rqt_bag" name="rqt_bag" />
+
+  <node if="$(arg use_gui)" pkg="rviz" type="rviz" name="rviz" />
+
+</launch>
