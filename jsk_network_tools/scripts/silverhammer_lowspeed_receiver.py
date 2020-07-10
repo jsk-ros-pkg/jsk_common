@@ -26,7 +26,7 @@ class SilverHammerUDPListener():
         recv_data, addr = self.server.recvfrom(self.buffer_size)
         msg = unpackMessage(recv_data, self.format, self.message)
         self.pub.publish(msg)
-        print "received:", msg
+        print("received:", msg)
 
 class SilverHammerLowspeedReceiver():
     def __init__(self):
@@ -49,13 +49,13 @@ class SilverHammerLowspeedReceiver():
         self.socket_server.settimeout(None)
         self.socket_server.bind((self.receive_ip, self.receive_port))
         self.receive_format = msgToStructFormat(self.receive_message())
-        self.pub = rospy.Publisher("~output", self.receive_message)
+        self.pub = rospy.Publisher("~output", self.receive_message, queue_size=1)
         self.last_received_time = rospy.Time(0)
         self.last_received_time_pub = rospy.Publisher(
-            "~last_received_time", Time)
+            "~last_received_time", Time, queue_size=1)
         self.last_publish_output_time = rospy.Time(0)
         self.last_publish_output_time_pub = rospy.Publisher(
-            "~last_publish_output_time", Time)
+            "~last_publish_output_time", Time, queue_size=1)
         self.diagnostic_timer = rospy.Timer(rospy.Duration(1.0 / 10),
                                             self.diagnosticTimerCallback)
     def diagnosticTimerCallback(self, event):

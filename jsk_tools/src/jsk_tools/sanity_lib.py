@@ -12,20 +12,20 @@ import math
 try:
     import colorama
 except:
-    print """Please install colorama by
-pip install colorama"""
+    print("""Please install colorama by
+pip install colorama""")
     sys.exit(1)
 from colorama import Fore, Style
 
 def okMessage(msg):
-    print Fore.GREEN + "[OK]    %s" % (msg) + Fore.RESET
+    print(Fore.GREEN + "[OK]    %s" % (msg) + Fore.RESET)
 def errorMessage(msg):
-    print Fore.RED + "[ERROR] %s" % (msg) + Fore.RESET
+    print(Fore.RED + "[ERROR] %s" % (msg) + Fore.RESET)
 def warnMessage(msg):
-    print Fore.YELLOW + "[WARN]  %s" % (msg) + Fore.RESET
+    print(Fore.YELLOW + "[WARN]  %s" % (msg) + Fore.RESET)
 def indexMessage(msg):
-    print
-    print Fore.LIGHTCYAN_EX + "  == %s ==" % (msg) + Fore.RESET
+    print("")
+    print(Fore.LIGHTCYAN_EX + "  == %s ==" % (msg) + Fore.RESET)
 
 import genpy.message
 from sensor_msgs.msg import Image, JointState, Imu
@@ -42,7 +42,7 @@ def colored(string, color):
         'cyan': '\033[36m',
         'white': '\033[37m'
         }
-    if colors.has_key(color):
+    if color in colors:
         return colors[color] + string + colors['clear']
     else:
         return string
@@ -198,20 +198,20 @@ def checkNodeState(target_node_name, needed, sub_success="", sub_fail=""):
         if needed:
             okMessage("Node " + target_node_name + " exists")
             if sub_success:
-                print Fore.GREEN+"    "+sub_success+ Fore.RESET
+                print(Fore.GREEN+"    "+sub_success+ Fore.RESET)
         else:
             errorMessage("Node " + target_node_name + " exists unexpecetedly. This should be killed with rosnode kill")
             if sub_fail:
-                print Fore.RED+"    "+sub_fail+ Fore.RESET            
+                print(Fore.RED+"    "+sub_fail+ Fore.RESET)
     else:
         if needed:
             errorMessage("Node " + target_node_name + " doesn't exists. This node is NEEDED")
             if sub_fail:
-                print Fore.RED+"    "+sub_fail+ Fore.RESET
+                print(Fore.RED+"    "+sub_fail+ Fore.RESET)
         else:
             okMessage("Node " + target_node_name + " doesn't exists")
             if sub_success:
-                print Fore.GREEN+"    "+sub_success+ Fore.RESET
+                print(Fore.GREEN+"    "+sub_success+ Fore.RESET)
 
 def checkUSBExist(vendor_id, product_id, expect_usb_nums = 1, host="", success_msg = "", error_msg = ""):
     """check USB Exists
@@ -221,7 +221,7 @@ def checkUSBExist(vendor_id, product_id, expect_usb_nums = 1, host="", success_m
     expect_usb_nums -- number of usbs (default is 1)
     """
     vendor_product = str(vendor_id) + ":" + str(product_id)
-    print Fore.LIGHTCYAN_EX + "Check USB Connect " + vendor_product + " x"+str(expect_usb_nums) + (" in "+str(host) if host else "")
+    print(Fore.LIGHTCYAN_EX + "Check USB Connect " + vendor_product + " x"+str(expect_usb_nums) + (" in "+str(host) if host else ""))
     output_lines = ""
     if host:
         output_lines = subprocess.check_output("ssh "+ host +" lsusb", shell=True).split("\n")
@@ -278,7 +278,7 @@ class SilverHammerSubscribeChecker():
         self.timeout = timeout
         self.launched_time = rospy.Time.now()
         self.first_time_callback = True
-        print Fore.LIGHTCYAN_EX," Checking %s %s times" % (topic_name, str(until_counter)), Fore.RESET
+        print(Fore.LIGHTCYAN_EX," Checking %s %s times" % (topic_name, str(until_counter)), Fore.RESET)
         msg_class, _, _ = rostopic.get_topic_class(topic_name, blocking=True)
         self.sub = rospy.Subscriber(topic_name, msg_class, self.callback)
 
@@ -293,11 +293,11 @@ class SilverHammerSubscribeChecker():
                 errorMessage("Estimated Hz is OUT OF EXPECTED!! min:" + str(self.expected_hz - self.expected_error_threshold) + " max: " + str(self.expected_hz + self.expected_error_threshold) + " real: " + str(rate) )
                 self.success = False
             elif diff:
-                print Fore.LIGHTMAGENTA_EX, "    ["+ str(self.counter+1)+"] Recieved Topic (" + str(self.topic_name) + ") Estimated hz : " + str(rate) + " Expected hz : " + str(self.expected_hz) +  "+-" + str(self.expected_error_threshold)
+                print(Fore.LIGHTMAGENTA_EX, "    ["+ str(self.counter+1)+"] Recieved Topic (" + str(self.topic_name) + ") Estimated hz : " + str(rate) + " Expected hz : " + str(self.expected_hz) +  "+-" + str(self.expected_error_threshold))
             else:
-                print "duration was 0"
+                print("duration was 0")
         else:
-            print Fore.LIGHTMAGENTA_EX, "    ["+ str(self.counter+1)+"] Recieved Topic (" + str(self.topic_name) + ") First Time Recieved"
+            print(Fore.LIGHTMAGENTA_EX, "    ["+ str(self.counter+1)+"] Recieved Topic (" + str(self.topic_name) + ") First Time Recieved")
         self.prev_time = rospy.Time.now()
 
         self.counter += 1
@@ -354,7 +354,7 @@ def checkBlackListDaemon(daemon_names, kill=False):
         if daemon_related_nums > 0:
             errorMessage("There is a BAD Daemon " + daemon_name + ". (" + str(daemon_related_nums) + " process)")
             if kill:
-                print "pKilling " + daemon_name + " ... "
+                print("pKilling " + daemon_name + " ... ")
                 subprocess.check_output("pkill " + daemon_name, shell=True)
                 import time
                 time.sleep(2)
@@ -412,7 +412,7 @@ def colored(string, color):
         'cyan': '\033[36m',
         'white': '\033[37m'
         }
-    if colors.has_key(color):
+    if color in colors:
         return colors[color] + string + colors['clear']
     else:
         return string
@@ -420,7 +420,7 @@ def colored(string, color):
 from operator import add
 
 def isROSWS():
-    if os.environ.has_key("ROS_WORKSPACE"):
+    if "ROS_WORKSPACE" in os.environ:
         ROS_WORKSPACE = os.environ["ROS_WORKSPACE"]
         return (ROS_WORKSPACE and 
                 os.path.exists(os.path.join(ROS_WORKSPACE, ".rosinstall")))
@@ -451,13 +451,13 @@ def checkROSPackagePath():
                 ROS_WORKSPACE = os.path.abspath(os.environ["ROS_WORKSPACE"])
                 if not p.startswith(ROS_WORKSPACE):
                     dubious_paths.append(p)
-    print colored("[ROS_PACKAGE_PATH]", "green")
+    print(colored("[ROS_PACKAGE_PATH]", "green"))
     if dubious_paths:
-        print "  ", colored("these path might be malformed: ", "red")
+        print("  ", colored("these path might be malformed: ", "red"))
         for p in dubious_paths:
-            print "    ", colored(p, "red")
+            print("    ", colored(p, "red"))
     else:
-        print "  ", colored("ROS_PACKAGE_PATH seems to be OK", "cyan")
+        print("  ", colored("ROS_PACKAGE_PATH seems to be OK", "cyan"))
 
 
 def checkGitRepoDiff(git_path):
@@ -471,7 +471,7 @@ def checkGitRepoDiff(git_path):
     if modified_files:
         errorMessage("  %d files are modified" % (len(modified_files)))
         for f in modified_files:
-            print "    ", colored(f, "red")
+            print("    ", colored(f, "red"))
     else:
         okMessage("  No modified files")
 
@@ -499,7 +499,7 @@ def checkGitBranch(git_path):
         okMessage("  No Branch Problem")
 
 def checkGitRepo(git_path):
-    print colored("[checking %s]" % git_path, "green")
+    print(colored("[checking %s]" % git_path, "green"))
     checkGitRepoDiff(git_path)
     checkGitBranch(git_path)
 

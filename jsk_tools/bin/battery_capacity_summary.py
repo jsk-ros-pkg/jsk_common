@@ -8,7 +8,7 @@ from diagnostic_msgs.msg import DiagnosticArray
 try:
     from colorama import Fore, Style, init
 except:
-  print "Please install colorama by pip install colorama"
+  print("Please install colorama by pip install colorama")
   sys.exit(1)
 
 
@@ -58,11 +58,11 @@ def output():
     fmt = "{:>31}"
     for i in range(len(data_column.keys())):
         fmt += "| {:>" + "{w}".format(w=len(data_column.keys()[i])) + "}"
-    print fmt.format("Battery Name", *data_column.keys())
+    print(fmt.format("Battery Name", *data_column.keys()))
     for name in sorted_names:
         color = getColor(results[name])
         v = [results[name][k] if k in results[name] else "N/A" for k in data_column.keys()]
-        print color + fmt.format(name, *v) + Fore.RESET
+        print(color + fmt.format(name, *v) + Fore.RESET)
 
 if __name__ == '__main__':
     init()
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     rospy.Subscriber("/diagnostics_agg", DiagnosticArray, callback)
 
     while not rospy.is_shutdown() and keep_flag:
-        print "aggregating battery info..."
+        print("aggregating battery info...")
         rospy.sleep(1)
 
     output()

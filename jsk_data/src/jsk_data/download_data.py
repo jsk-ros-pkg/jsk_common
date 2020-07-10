@@ -122,7 +122,7 @@ def check_md5sum(path, md5):
 
 
 def is_google_drive_url(url):
-    m = re.match('^https?://drive.google.com/uc\?id=.*$', url)
+    m = re.match(r'^https?://drive.google.com/uc\?id=.*$', url)
     return m is not None
 
 
