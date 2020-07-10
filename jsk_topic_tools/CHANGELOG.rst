@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.11 (2020-07-10)
+-------------------
 * [jsk_topic_tools] check nodelet version>=1.9.10 (`#1647 <https://github.com/jsk-ros-pkg/jsk_common/issues/1647>`_)
 * [jsk_topic_tools/scripts/pose_stamped_publisher.py] fix orientation bug (`#1649 <https://github.com/jsk-ros-pkg/jsk_common/issues/1649>`_)
 * Fix for noetic build (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)

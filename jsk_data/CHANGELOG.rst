@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.11 (2020-07-10)
+-------------------
 * [jsk_data] Add common rosbag_record and play file for fetch (`#1611 <https://github.com/jsk-ros-pkg/jsk_common/issues/1611>`_)
 
   * enable to give rosbag option to fetch_play.sh like pr2_play.sh

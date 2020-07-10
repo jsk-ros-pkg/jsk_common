@@ -2,8 +2,8 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.11 (2020-07-10)
+-------------------
 * Fix for noetic buid (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
 
   * fix jsk_network_tools for python3
