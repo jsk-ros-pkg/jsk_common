@@ -23,10 +23,10 @@ def isMasterAlive(timeout_sec, trials):
                 break
             # Ping failed trials times in a row, the master computer is regarded as dead.
             if i == trials - 1:
-                print "master machine looks down because ping fails with timeout={} {} times".format(timeout_sec, trials)
+                print("master machine looks down because ping fails with timeout={} {} times".format(timeout_sec, trials))
                 return False
             else:
-                print "ping fails {}/{} times".format(i, trials)
+                print("ping fails {}/{} times".format(i, trials))
 
         assert 1 == rospy.get_master().getSystemState()[0]
         run_id = rospy.get_param("/run_id")
@@ -34,9 +34,9 @@ def isMasterAlive(timeout_sec, trials):
         if not previous_run_id:
             previous_run_id = run_id
         if run_id != previous_run_id:
-            print "run_id is not same"
+            print("run_id is not same")
             previous_run_id = run_id
             return False
         return True
-    except Exception, e:
+    except Exception as e:
         return False

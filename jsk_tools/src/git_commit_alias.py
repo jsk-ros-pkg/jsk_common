@@ -26,7 +26,7 @@ for page in result:
             subprocess.check_call(["git", "config", "--global", 
                                    "alias.%s" % alias_command,
                                    alias])
-            print "Added %s" % (alias_command)
+            print("Added %s" % (alias_command))
         except:
-            print "Failed to generate alias for %s" % (member.login)
+            print("Failed to generate alias for %s" % (member.login))
 

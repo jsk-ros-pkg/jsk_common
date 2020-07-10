@@ -166,11 +166,11 @@ class EvaluationServer(object):
                                     rospy.loginfo('service %s is verified'%t.service.resolved_name)
                                     t.servicechecked = True
                                     service = t
-                                except rospy.ROSInterruptException,e:
+                                except rospy.ROSInterruptException as e:
                                     rospy.loginfo('timed out (%s)'%str(e))
                                     doshutdown = True
                                     break
-                                except rospy.ROSException,e:
+                                except rospy.ROSException as e:
                                     rospy.loginfo('service %s timed out (%s)'%(t.service.resolved_name,str(e)))
                                 break
 
@@ -197,7 +197,7 @@ class EvaluationServer(object):
                     with t.starteval:
                         if t.req is None:
                             repeat = False
-            except KeyboardInterrupt,e:
+            except KeyboardInterrupt as e:
                 rospy.loginfo('ignore service %s'%t.service.resolved_name)
 
         rospy.loginfo('services finished processing, total time: %f'%(time.time()-starttime))
@@ -233,7 +233,7 @@ def LaunchNodes(module,serviceaddrs=[('localhost','')],rosnamespace=None,args=''
     else:
         xml_text += nodes
     xml_text += '\n</launch>\n'
-    print xml_text
+    print(xml_text)
     roslaunch.pmon._shutting_down = False # roslaunch registers its own signal handlers and shuts down automatically on sigints
     launchscript = roslaunch_caller.ScriptRoslaunch(xml_text)
     try:

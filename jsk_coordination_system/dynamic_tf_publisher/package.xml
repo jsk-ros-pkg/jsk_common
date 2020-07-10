@@ -1,4 +1,4 @@
-<package>
+<package format="3">
   <name>dynamic_tf_publisher</name>
   <description>
     dynamically set the tf trensformation
@@ -16,10 +16,10 @@
   <build_depend>tf</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
 
-  <run_depend>geometry_msgs</run_depend>
-  <run_depend>message_runtime</run_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>tf</run_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>tf</exec_depend>
 
 </package>
 

@@ -1,0 +1,50 @@
+<launch>
+  <node name="talker" pkg="roscpp_tutorials" type="talker"/>
+  <node name="talker2" pkg="roscpp_tutorials" type="talker">
+    <remap from="chatter" to="chatter2"/>
+  </node>
+  <node name="manager" pkg="jsk_topic_tools" type="standalone_complexed_nodelet">
+    <rosparam>
+    nodelets:
+    - name: relay1
+      type: jsk_topic_tools/Relay
+      remappings:
+      - from: ~input
+        to: /chatter
+    - name: mux1
+      type: jsk_topic_tools/MUX
+      params:
+      - name: topics
+        value: ['/chatter']
+    - name: mux2
+      type: jsk_topic_tools/MUX
+      params:
+      - name: dummy
+        value: hogehoge
+    </rosparam>
+  </node>
+  <rosparam>
+    mux2/topics: ['/chatter2']
+  </rosparam>
+
+  <test test-name="test_standalone_complexed_nodelet" pkg="rostest" type="publishtest"
+        time-limit="10">
+    <rosparam>
+      topics:
+      - name: /chatter
+        timeout: 10
+      - name: /chatter2
+        timeout: 10
+      - name: /relay1/output
+        timeout: 10
+      - name: /mux1/selected
+        timeout: 10
+      - name: /mux1/output
+        timeout: 10
+      - name: /mux2/selected
+        timeout: 10
+      - name: /mux2/output
+        timeout: 10
+    </rosparam>
+  </test>
+</launch>

@@ -13,9 +13,9 @@ if __name__ == '__main__':
 
     while check_master() and not rospy.is_shutdown():
         time_pub = rospy.Publisher("/time", String)
-        print "----------------------"
+        print("----------------------")
         d = datetime.now()
-        print d
+        print(d)
         msg = String()
         msg.data = str(d)
         time_pub.publish(msg)

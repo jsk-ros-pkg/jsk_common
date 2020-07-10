@@ -173,6 +173,7 @@ int main(int argc, char** argv)
                 return 1;
               }
               XmlRpc::XmlRpcValue values;
+              ros::param::get(name, values);
               for (int params_i = 0; params_i < onenodelet_param["params"].size(); ++params_i) {
                 XmlRpc::XmlRpcValue oneparam = onenodelet_param["params"][params_i];
                 if (!(oneparam.getType() == XmlRpc::XmlRpcValue::TypeStruct &&

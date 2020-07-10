@@ -180,6 +180,7 @@ class SynchronizedThrottle : public nodelet::Nodelet
   static const int MAX_SYNC_NUM = 8;
 
  protected:
+  virtual ~SynchronizedThrottle();
   virtual void onInit();
   virtual void configCallback(Config &config, uint32_t level);
   virtual void subscribe();

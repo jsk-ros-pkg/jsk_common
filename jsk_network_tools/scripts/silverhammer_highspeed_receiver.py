@@ -169,7 +169,7 @@ class SilverHammerReceiver:
             self.last_received_time = rospy.Time.now()
             try:
                 self.concatenatePackets(packets)
-            except Exception,e:
+            except Exception as e:
                 rospy.logerr("failed to concatenate packets: %s", e.message)
         else:
             self.receive_process.join()
