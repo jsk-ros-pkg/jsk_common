@@ -9,7 +9,9 @@ if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
-if(NOT $ENV{ROS_DISTRO} STRLESS kinetic)
+if(NOT $ENV{ROS_DISTRO} STRLESS noetic)
+  add_compile_options(-std=c++14)
+elseif(NOT $ENV{ROS_DISTRO} STRLESS kinetic)
   add_compile_options(-std=c++11)
 endif()
 
@@ -37,7 +39,7 @@ add_dependencies(image_view2 ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_gencfg)
 
 # Point Rectangle Extractor
 add_executable(points_rectangle_extractor points_rectangle_extractor.cpp)
-find_package(Boost REQUIRED COMPONENTS signals)
+find_package(Boost REQUIRED COMPONENTS)
 include_directories(${Boost_INCLUDE_DIRS})
 find_package(PCL REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})

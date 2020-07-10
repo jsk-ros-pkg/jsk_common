@@ -1,4 +1,4 @@
-<package>
+<package format="3">
   <name>image_view2</name>
   <version>2.2.10</version>
   <description>A simple viewer for ROS image topics with draw-on features</description>
@@ -28,22 +28,24 @@
   <build_depend>std_srvs</build_depend>
   <build_depend>tf</build_depend>
 
-  <run_depend>cv_bridge</run_depend>
-  <run_depend>geometry_msgs</run_depend>
-  <run_depend>image_geometry</run_depend>
-  <run_depend>image_transport</run_depend>
-  <run_depend>image_view</run_depend>
-  <run_depend>message_filters</run_depend>
-  <run_depend>message_runtime</run_depend>
-  <run_depend>pcl_ros</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>std_srvs</run_depend>
-  <run_depend>tf</run_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>image_geometry</exec_depend>
+  <exec_depend>image_transport</exec_depend>
+  <exec_depend>image_view</exec_depend>
+  <exec_depend>message_filters</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>pcl_ros</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
+  <exec_depend>tf</exec_depend>
 
-  <test_depend>python-numpy</test_depend>
-  <test_depend>python-scipy</test_depend>
+  <test_depend condition="$ROS_PYTHON_VERSION == 2">python-numpy</test_depend>
+  <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-numpy</test_depend>
+  <test_depend condition="$ROS_PYTHON_VERSION == 2">python-scipy</test_depend>
+  <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-scipy</test_depend>
 
   <export>
 

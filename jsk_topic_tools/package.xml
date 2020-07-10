@@ -1,4 +1,4 @@
-<package>
+<package format="3">
   <name>jsk_topic_tools</name>
   <version>2.2.10</version>
   <description>jsk_topic_tools</description>
@@ -36,30 +36,33 @@
   <build_depend>tf</build_depend>
   <build_depend>topic_tools</build_depend>
 
-  <!-- list run_depend in alphabetical order -->
-  <run_depend>diagnostic_msgs</run_depend>
-  <run_depend>diagnostic_updater</run_depend>
-  <run_depend>dynamic_reconfigure</run_depend>
-  <run_depend>dynamic_tf_publisher</run_depend>
-  <run_depend>eigen_conversions</run_depend>
-  <run_depend>geometry_msgs</run_depend>
-  <run_depend>image_transport</run_depend>
-  <run_depend>message_runtime</run_depend>
-  <run_depend version_gte="1.9.11">nodelet</run_depend>
-  <run_depend>python-opencv</run_depend>
-  <run_depend>python-scipy</run_depend>
-  <run_depend>python-numpy</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>roslaunch</run_depend>
-  <run_depend>rosnode</run_depend>
-  <run_depend>rostime</run_depend>
-  <run_depend>rostopic</run_depend>
-  <run_depend>sound_play</run_depend>
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>std_srvs</run_depend>
-  <run_depend>tf</run_depend>
-  <run_depend>topic_tools</run_depend>
+  <!-- list exec_depend in alphabetical order -->
+  <exec_depend>diagnostic_msgs</exec_depend>
+  <exec_depend>diagnostic_updater</exec_depend>
+  <exec_depend>dynamic_reconfigure</exec_depend>
+  <exec_depend>dynamic_tf_publisher</exec_depend>
+  <exec_depend>eigen_conversions</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>image_transport</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend version_gte="1.9.11">nodelet</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-opencv</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-opencv</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-numpy</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-numpy</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-scipy</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-scipy</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>roslaunch</exec_depend>
+  <exec_depend>rosnode</exec_depend>
+  <exec_depend>rostime</exec_depend>
+  <exec_depend>rostopic</exec_depend>
+  <exec_depend>sound_play</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
+  <exec_depend>tf</exec_depend>
+  <exec_depend>topic_tools</exec_depend>
 
   <!-- list test_depend in alphabetical order -->
   <test_depend>roscpp_tutorials</test_depend>

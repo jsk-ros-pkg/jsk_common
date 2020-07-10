@@ -21,7 +21,7 @@ import re
 try:
     import colorama
 except:
-    print "Please install colorama by pip install colorama"
+    print("Please install colorama by pip install colorama")
     sys.exit(1)
 from colorama import Fore, Style
 
@@ -304,7 +304,7 @@ class BagPlotter():
                     counter = counter + 1
                 pbar.finish()
         if no_valid_data:
-            print Fore.RED + "Cannot find valid data in bag files, valid topics are:\n%s" % ", ".join(self.all_topics) + Fore.RESET
+            print(Fore.RED + "Cannot find valid data in bag files, valid topics are:\n%s" % ", ".join(self.all_topics) + Fore.RESET)
             return
         title = ("""Plot %s using %s from [%s] to [%s] (%d secs)""" %
                  (", ".join(self.bag_file),
@@ -344,9 +344,9 @@ class BagPlotter():
         elif event.key == "q" or event.key == "Q":
             self.runp = False
     def printUsage(self):
-        print "Usage::"
-        print "  l or L:  toggle legend"
-        print "  q or Q:  quit"
+        print("Usage::")
+        print("  l or L:  toggle legend")
+        print("  q or Q:  quit")
     def toggleLegend(self):
         self.show_legend = not self.show_legend
         plt.clf()

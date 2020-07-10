@@ -50,7 +50,7 @@ def gen_ros_alias_command(m, i):
                                                   gen_bash_alias_name(m), i)
 
 if len(sys.argv) < 2:
-    print 'You need to specify yaml file'
+    print('You need to specify yaml file')
     exit(1)
 
 robot_machines = yaml.load(open(sys.argv[1]).read())
@@ -74,7 +74,7 @@ def gen_ros_completion(ros_program, aliased_command):
 
 # generate bash command
 for m in robot_machines:
-    print gen_bash_alias_command(m['machine'])
+    print(gen_bash_alias_command(m['machine']))
 
 # generate roslaunch_hrp2007v
 for p in ros_bin_programs:
@@ -82,7 +82,7 @@ for p in ros_bin_programs:
         aliased_command_definition = gen_ros_alias_command(m['machine'], p)
         aliased_command = gen_ros_alias_name(p, m['machine'])
         complete = gen_ros_completion(p, aliased_command)
-        print aliased_command_definition
+        print(aliased_command_definition)
         if complete:
-            print complete
+            print(complete)
             
