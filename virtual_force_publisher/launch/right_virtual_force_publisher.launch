@@ -1,5 +1,4 @@
 <launch>
-<!-- c.f https://github.com/jsk-ros-pkg/jsk_common/blob/master/virtual_force_publisher/launch/virtual_force_publisher.launch -->
   <arg name="namespace" default="right_endeffector" />
   <arg name="publish_frequency" default="50.0"/>
   <arg name="time_constant" default="0.3"/>
