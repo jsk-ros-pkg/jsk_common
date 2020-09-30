@@ -5,13 +5,12 @@
   <arg name="root" default="torso_lift_link"/>
   <arg name="tip"  default="r_gripper_tool_frame"/>
   <arg name="input" default="joint_states"/>
-  <group ns="$(arg namespace)">
-    <node pkg="virtual_force_publisher" type="virtual_force_publisher" name="virtual_force_publisher">
-      <remap from="joint_states" to="/$(arg input)"/>
-      <param name="publish_frequency" value="$(arg publish_frequency)"/>
-      <param name="time_constant" value="$(arg time_constant)"/>
-      <param name="root" value="$(arg root)"/>
-      <param name="tip" value="$(arg tip)"/>
-    </node>
-  </group>
+  <include file="$(find virtual_force_publisher)/launch/virtual_force_publisher.launch" >
+    <arg name="namespace" value="$(arg namespace)" />
+    <arg name="publish_frequency" value="$(arg publish_frequency)"/>
+    <arg name="time_constant" value="$(arg time_constant)"/>
+    <arg name="root" value="$(arg root)"/>
+    <arg name="tip"  value="$(arg tip)"/>
+    <arg name="input" value="$(arg input)"/>
+  </include>
 </launch>
