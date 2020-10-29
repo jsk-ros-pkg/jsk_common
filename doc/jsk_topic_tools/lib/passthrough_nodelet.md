@@ -26,13 +26,13 @@
 
 * `~request_duration` (`jsk_topic_tools/PassthroughDuration`)
 
-  Perform topic relay for a specified duration
+  Perform topic relay for a specified duration. Duration 0 means infinite relay.
 
 ## Parameters
 
 * `~default_duration` (`double`, default: `10.0`)
 
-  Duration [s] to relay the topic.
+  Duration [s] to relay the topic. Duration 0 means infinite relay.
 
 ## Usage
 ```
