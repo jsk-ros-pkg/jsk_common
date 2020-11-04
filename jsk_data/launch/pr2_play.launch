@@ -14,7 +14,7 @@
   <!-- set params for rviz -->
   <param name="use_sim_time" value="true" />
   <param name="bagfile_names" value="$(arg bagfile_names)"/>
-  <param if="$(arg launch_robot_model)" name="robot_description" command="$(find xacro)/xacro.py '$(find pr2_description)/robots/pr2.urdf.xacro'" />
+  <param if="$(arg launch_robot_model)" name="robot_description" command="$(find xacro)/xacro '$(find pr2_description)/robots/pr2.urdf.xacro'" />
 
   <node name="relay_kinect_head_depth_rect"
         pkg="nodelet" type="nodelet"
