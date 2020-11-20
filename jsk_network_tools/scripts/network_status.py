@@ -13,6 +13,7 @@ class NetworkStatus():
         rospy.init_node('network')
         self.match_face = re.compile('(.+):(.*)')
         self.hz = rospy.get_param('~hz', 10)
+        self.skip_interfaces = rospy.get_param('~skip_interfaces', None)
         rospy.logdebug('publish network status (bps) at ' +  str(self.hz) + 'Hz')
         rospy.logdebug('usage:\n$rosrun jsk_network_tools network_status.py _hz:=[Hz]')
         self.init_publisher()
@@ -48,7 +49,6 @@ class NetworkStatus():
             self.faces_map[face[0]]["receive"] = {"publisher": pub_receive, "value": queue_reveice,
                                                   "publisher_kbps": pub_receive_kbps,
                                                   "publisher_mbps": pub_receive_mbps}
-
     def publish(self, event):
         faces = self.read_net_file()
         non_local_transmit = 0
@@ -83,7 +83,10 @@ class NetworkStatus():
             match = self.match_face.match(s)
             if match:
                 nums = match.group(2).split()
-                ret.append([match.group(1).strip(), nums[8], nums[0]])
+                name = match.group(1).strip()
+                if (self.skip_interfaces is None
+                        or name not in self.skip_interfaces):
+                    ret.append([name, nums[8], nums[0]])
         return ret
 
 if __name__ == '__main__':
