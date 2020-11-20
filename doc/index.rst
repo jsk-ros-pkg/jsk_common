@@ -25,3 +25,4 @@ ROS Packages:
    jsk_data/index
    jsk_tools/index
    jsk_topic_tools/index
+   jsk_network_tools/index
