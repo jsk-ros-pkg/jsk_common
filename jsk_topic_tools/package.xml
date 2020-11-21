@@ -24,7 +24,7 @@
   <build_depend>geometry_msgs</build_depend>
   <build_depend>image_transport</build_depend>
   <build_depend>message_generation</build_depend>
-  <build_depend version_gte="1.9.11">nodelet</build_depend>
+  <build_depend>nodelet</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>roslaunch</build_depend>
   <build_depend>rosnode</build_depend>
@@ -45,7 +45,7 @@
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>image_transport</exec_depend>
   <exec_depend>message_runtime</exec_depend>
-  <exec_depend version_gte="1.9.11">nodelet</exec_depend>
+  <exec_depend>nodelet</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-opencv</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-opencv</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-numpy</exec_depend>
