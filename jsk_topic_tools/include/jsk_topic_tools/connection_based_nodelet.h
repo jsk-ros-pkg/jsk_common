@@ -41,6 +41,7 @@
 #include <nodelet/nodelet.h>
 #include <boost/thread.hpp>
 #include <image_transport/image_transport.h>
+#include <jsk_topic_tools/nodelet_version.h>
 #include "jsk_topic_tools/log_utils.h"
 
 namespace jsk_topic_tools
@@ -150,7 +151,7 @@ namespace jsk_topic_tools
      */
     virtual bool isSubscribed();
 
-#if nodelet_VERSION_MINOR > 9 || (nodelet_VERSION_MINOR == 9 && nodelet_VERSION_PATCH >= 11)
+#if NODELET_VERSION_MINIMUM(1, 9, 11)
     /** @brief warn if there are expected remappings.
     *
     * @param[in] names Names which are expected to remapped.
