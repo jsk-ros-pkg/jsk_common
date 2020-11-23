@@ -111,9 +111,9 @@ namespace jsk_topic_tools
   bool ConnectionBasedNodelet::warnNoRemap(const std::vector<std::string> names)
   {
     bool no_warning = true;
+#if NODELET_VERSION_MINIMUM(1, 9, 11)
     // standalone
     ros::M_string remappings = ros::names::getRemappings();
-#if NODELET_VERSION_MINIMUM(1, 9, 11)
     // load
     ros::M_string remappings_loaded = getRemappingArgs();
     for (ros::M_string::iterator it = remappings_loaded.begin();
@@ -121,7 +121,6 @@ namespace jsk_topic_tools
     {
       remappings[it->first] = it->second;
     }
-#endif
     for (size_t i = 0; i < names.size(); i++)
     {
       std::string resolved_name = ros::names::resolve(/*name=*/names[i],
@@ -132,6 +131,7 @@ namespace jsk_topic_tools
         no_warning = false;
       }
     }
+#endif
     return no_warning;
   }
 
