@@ -23,6 +23,11 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   topic_tools
 )
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/jsk_topic_tools/nodelet_version.h.in
+  ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/jsk_topic_tools/nodelet_version.h)
+
 catkin_python_setup()
 add_message_files(
   FILES TopicInfo.msg
