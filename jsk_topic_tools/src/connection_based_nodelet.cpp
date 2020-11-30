@@ -33,6 +33,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
+#include <jsk_topic_tools/nodelet_version.h>
 #include "jsk_topic_tools/connection_based_nodelet.h"
 #include "jsk_topic_tools/log_utils.h"
 
@@ -107,10 +108,10 @@ namespace jsk_topic_tools
     }
   }
 
-#if nodelet_VERSION_MINOR > 9 || (nodelet_VERSION_MINOR == 9 && nodelet_VERSION_PATCH >= 11)
   bool ConnectionBasedNodelet::warnNoRemap(const std::vector<std::string> names)
   {
     bool no_warning = true;
+#if NODELET_VERSION_MINIMUM(1, 9, 11)
     // standalone
     ros::M_string remappings = ros::names::getRemappings();
     // load
@@ -130,9 +131,9 @@ namespace jsk_topic_tools
         no_warning = false;
       }
     }
+#endif
     return no_warning;
   }
-#endif
 
   void ConnectionBasedNodelet::connectionCallback(const ros::SingleSubscriberPublisher& pub)
   {
