@@ -1,0 +1,14 @@
+<launch>
+  <arg name="input" default="input" />
+  <arg name="output" default="output" />
+  <arg name="default_duration" default="10" />
+
+  <node pkg="jsk_topic_tools" name="passthrough_sample" type="passthrough">
+    <remap from="~input" to="$(arg input)" />
+    <remap from="~output" to="$(arg output)" />
+    <rosparam subst_value="true">
+      default_duration: $(arg default_duration)
+    </rosparam>
+  </node>
+
+</launch>
