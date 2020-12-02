@@ -34,3 +34,11 @@ Parameters
 * ``~approximate_sync`` (Bool, Default: ``false``)
 
   If ``true``, approximate synchronization is used for synchoronizing assigned topics.
+
+* ``~queue_size`` (Integer, Default: ``100``)
+
+  Queue length for subscribing topics.
+
+* ``~slop`` (Double, Default: ``0.1``)
+
+  Allowable misalignment time between the subscribing topics.
