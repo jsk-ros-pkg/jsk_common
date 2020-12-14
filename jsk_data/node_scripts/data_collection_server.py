@@ -89,6 +89,7 @@ class DataCollectionServer(object):
             raise ValueError('Unexpected method: {}'.format(method))
         use_message_filters = rospy.get_param('~message_filters', False)
         self.timestamp_save_dir = rospy.get_param('~timestamp_save_dir', True)
+        self.wait_save_request = rospy.get_param('~wait_save_request', False)
 
         if rospy.has_param('~with_request'):
             rospy.logwarn('Deprecated param: ~with_request, Use ~method')
@@ -281,7 +282,19 @@ class DataCollectionServer(object):
         self.start = False
         return TriggerResponse(success=True)
 
+    def wait_service_timestamp(self):
+        time_diff = None
+        now = rospy.Time.now()
+        while time_diff is None or time_diff < 0:
+            stamp = self.msg[self.topics[0]['name']]['stamp']
+            time_diff = (stamp - now).to_sec()
+            rospy.logwarn_throttle(
+                "msgs is not updated after service request")
+            rospy.sleep()
+
     def service_cb(self, req):
+        if self.wait_save_request:
+            self.wait_service_timestamp()
         result, msg = self._save()
         if result:
             return TriggerResponse(success=True, message=msg)
@@ -289,6 +302,8 @@ class DataCollectionServer(object):
             return TriggerResponse(success=False, message=msg)
 
     def sync_service_cb(self, req):
+        if self.wait_save_request:
+            self.wait_service_timestamp()
         result, msg = self._sync_save()
         if result:
             return TriggerResponse(success=True, message=msg)
