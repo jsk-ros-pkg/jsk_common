@@ -288,10 +288,9 @@ class DataCollectionServer(object):
         while time_diff is None or time_diff < 0:
             stamp = self.msg[self.topics[0]['name']]['stamp']
             time_diff = (stamp - now).to_sec()
-            rospy.logwarn(
-                "msgs is not updated after service request")
-            rospy.sleep(0.01)
-            
+            rospy.logwarn_throttle(1.0, "msgs is not updated after service request")
+            rospy.sleep(0.05)
+
     def service_cb(self, req):
         if self.wait_save_request:
             self.wait_service_timestamp()
