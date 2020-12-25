@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>audio_video_recorder</name>
+  <version>2.2.11</version>
+  <description>ROS package for recording image and audio synchronously</description>
+
+  <author email="shingogo.5511@gmail.com">Shingo Kitagawa</author>
+  <maintainer email="shingogo.5511@gmail.com">Shingo Kitagawa</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>audio_common_msgs</build_depend>
+  <build_depend>libgstreamer1.0-dev</build_depend>
+  <build_depend>libgstreamer-plugins-base1.0-dev</build_depend>
+  <build_depend>message_filters</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>audio_common_msgs</exec_depend>
+  <exec_depend>gstreamer1.0</exec_depend>
+  <exec_depend>gstreamer1.0-plugins-base</exec_depend>
+  <exec_depend>gstreamer1.0-plugins-good</exec_depend>
+  <exec_depend>gstreamer1.0-plugins-ugly</exec_depend>
+  <exec_depend>message_filters</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+</package>

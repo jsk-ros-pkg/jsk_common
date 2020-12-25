@@ -1,0 +1,31 @@
+<launch>
+  <arg name="queue_size" default="100" />
+  <arg name="do_timestamp" default="true" />
+  <arg name="file_location" default="/tmp/test.avi" />
+  <arg name="file_format" default="avi" />
+  <arg name="audio_channels" default="1" />
+  <arg name="audio_sample_rate" default="16000" />
+  <arg name="audio_format" default="wave" />
+  <arg name="audio_sample_format" default="S16LE" />
+  <arg name="video_height" default="480" />
+  <arg name="video_width" default="640" />
+  <arg name="video_framerate" default="30" />
+  <arg name="video_encoding" default="BGR" />
+
+  <include file="$(find audio_video_recorder)/launch/audio_video_recorder.launch">
+    <arg name="audio_topic_name" value="/audio" />
+    <arg name="image_topic_name" value="/kinect_head/rgb/image_rect_color" />
+    <arg name="queue_size" value="$(arg queue_size)" />
+    <arg name="do_timestamp" value="$(arg do_timestamp)" />
+    <arg name="file_location" value="$(arg file_location)" />
+    <arg name="file_format" value="$(arg file_format)" />
+    <arg name="audio_channels" value="$(arg audio_channels)" />
+    <arg name="audio_sample_rate" value="$(arg audio_sample_rate)" />
+    <arg name="audio_format" value="$(arg audio_format)" />
+    <arg name="audio_sample_format" value="$(arg audio_sample_format)" />
+    <arg name="video_height" value="$(arg video_height)" />
+    <arg name="video_width" value="$(arg video_width)" />
+    <arg name="video_framerate" value="$(arg video_framerate)" />
+    <arg name="video_encoding" value="$(arg video_encoding)" />
+  </include>
+</launch>
