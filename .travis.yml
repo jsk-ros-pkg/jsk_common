@@ -25,12 +25,12 @@ env:
     - ROS_DISTRO=indigo USE_DEB=true
     - ROS_DISTRO=indigo USE_DEB=true BEFORE_SCRIPT='$CI_SOURCE_PATH/.travis_before_script_opencv3.bash'
     - ROS_DISTRO=kinetic USE_DEB=true
-    - ROS_DISTRO=lunar   USE_DEB=true
+    - ROS_DISTRO=lunar   USE_DEB=false
     - ROS_DISTRO=melodic USE_DEB=true
     - ROS_DISTRO=noetic  USE_DEB=true
 script:
   - if [ "${CHECK_PYTHON3_COMPILE}" == "true" ]; then python3 -m compileall .; exit $?; fi
-  - source .travis/travis.sh
+  - .travis/travis.sh
 after_success:
   # trigger build of jsk-docs.readthedocs.org
   - curl -X POST -d "branches=master" -d "token=da477cb4ef53d533aeb51c2b43e8baca6202baca" https://readthedocs.org/api/v2/webhook/jsk-docs/9094/
