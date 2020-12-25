@@ -1,0 +1,4 @@
+- tar:
+    local-name: perception_pcl/pcl_ros
+    uri: https://github.com/ros-gbp/perception_pcl-release/archive/release/kinetic/pcl_ros/1.4.4-0.tar.gz
+    version: perception_pcl-release-release-kinetic-pcl_ros-1.4.4-0
