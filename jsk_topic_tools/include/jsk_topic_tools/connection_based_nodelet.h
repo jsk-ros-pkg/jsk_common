@@ -160,8 +160,25 @@ namespace jsk_topic_tools
     /** @brief
      * Advertise a topic and watch the publisher. Publishers which are
      * created by this method.
-     * It automatically reads latch boolean parameter from nh and 
+     * It automatically reads latch boolean parameter from nh and
      * publish topic with appropriate latch parameter.
+     *
+     * @param nh NodeHandle.
+     * @param topic topic name to advertise.
+     * @param queue_size queue size for publisher.
+     * @return Publisher for the advertised topic.
+     */
+    template<class T> ros::Publisher
+    advertise(ros::NodeHandle& nh, std::string topic, int queue_size)
+    {
+      bool latch;
+      nh.param("latch", latch, false);
+      return advertise<T>(nh, topic, queue_size, latch);
+    }
+
+    /** @brief
+     * Advertise a topic and watch the publisher. Publishers which are
+     * created by this method.
      *
      * @param nh NodeHandle.
      * @param topic topic name to advertise.
@@ -171,22 +188,20 @@ namespace jsk_topic_tools
      */
     template<class T> ros::Publisher
     advertise(ros::NodeHandle& nh,
-              std::string topic, int queue_size)
+              std::string topic, int queue_size, bool latch)
     {
       boost::mutex::scoped_lock lock(connection_mutex_);
       ros::SubscriberStatusCallback connect_cb
         = boost::bind(&ConnectionBasedNodelet::connectionCallback, this, _1);
       ros::SubscriberStatusCallback disconnect_cb
         = boost::bind(&ConnectionBasedNodelet::connectionCallback, this, _1);
-      bool latch;
-      nh.param("latch", latch, false);
       ros::Publisher ret = nh.advertise<T>(topic, queue_size,
                                            connect_cb,
                                            disconnect_cb,
                                            ros::VoidConstPtr(),
                                            latch);
       publishers_.push_back(ret);
-      
+
       return ret;
     }
 
