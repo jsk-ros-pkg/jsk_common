@@ -314,8 +314,6 @@ namespace jsk_topic_tools
       ros::SubscriberStatusCallback info_disconnect_cb
         = boost::bind(&ConnectionBasedNodelet::cameraInfoConnectionCallback,
                       this, _1);
-      bool latch;
-      nh.param("latch", latch, false);
       image_transport::CameraPublisher
         pub = image_transport::ImageTransport(nh).advertiseCamera(
           topic, 1,
