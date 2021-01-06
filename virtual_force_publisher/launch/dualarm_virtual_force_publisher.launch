@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find virtual_force_publisher)/launch/left_virtual_force_publisher.launch" />
+  <include file="$(find virtual_force_publisher)/launch/right_virtual_force_publisher.launch" />
+</launch>
