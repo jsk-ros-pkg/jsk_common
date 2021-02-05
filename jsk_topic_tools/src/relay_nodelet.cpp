@@ -42,6 +42,8 @@ namespace jsk_topic_tools
     output_topic_name_ = "output";
     connection_status_ = NOT_INITIALIZED;
     pnh_ = getPrivateNodeHandle();
+    pnh_.param("always_subscribe", always_subscribe_, false);
+    pnh_.param("latch", latch_, false);
     // setup diagnostic
     diagnostic_updater_.reset(
       new TimeredDiagnosticUpdater(pnh_, ros::Duration(1.0)));
@@ -60,6 +62,9 @@ namespace jsk_topic_tools
       &Relay::inputCallback, this);
     change_output_topic_srv_ = pnh_.advertiseService(
       "change_output_topic", &Relay::changeOutputTopicCallback, this);
+    if (always_subscribe_) {
+      connectCb();
+    }
   }
 
   void Relay::updateDiagnostic(
@@ -129,6 +134,9 @@ namespace jsk_topic_tools
 
   void Relay::disconnectCb()
   {
+    if (always_subscribe_) {
+      return;
+    }
     boost::mutex::scoped_lock lock(mutex_);
     NODELET_DEBUG("disconnectCb");
     if (connection_status_ != NOT_INITIALIZED) {
@@ -156,7 +164,7 @@ namespace jsk_topic_tools
                                msg->getMessageDefinition(),
                                connect_cb,
                                disconnect_cb);
-    opts.latch = false;
+    opts.latch = latch_;
     return pnh_.advertise(opts);
   }
   
