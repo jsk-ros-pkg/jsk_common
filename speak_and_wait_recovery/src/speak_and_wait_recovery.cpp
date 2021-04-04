@@ -21,7 +21,7 @@ void SpeakAndWaitRecovery::initialize(
 {
     if (not initialized_) {
         ros::NodeHandle private_nh("~/" + name);
-        private_nh.param("speak_text", speak_text_, std::string("Please clear my route."));
+        private_nh.param("speak_text", speak_text_, std::string("Make way, Please."));
         private_nh.param("duration_wait", duration_wait_, 5.0);
         private_nh.param("duration_timeout", duration_timeout_, 1.0);
         std::string sound_action_name;
