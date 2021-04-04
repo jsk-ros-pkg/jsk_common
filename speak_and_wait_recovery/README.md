@@ -3,7 +3,7 @@
 This reovery behavior will enables a robot to speak a given text and wait for a given duration.
 This will be useful when a robot stuck in a crowded environment.
 
-<image>
+<img src="https://user-images.githubusercontent.com/9410362/113511987-8644ec00-959d-11eb-8749-60842330e7bc.png" width="500px">
 
 ## speak_and_wait_recovery/SpeakAndWaitRecovery
 
