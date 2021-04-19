@@ -7,7 +7,7 @@ import os
 previous_run_id = None
 
 
-def isMasterAlive(timeout_sec, trials):
+def isMasterAlive(timeout_sec=10, trials=1):
     """
     return True if master alive and return False if
     master is not alive
