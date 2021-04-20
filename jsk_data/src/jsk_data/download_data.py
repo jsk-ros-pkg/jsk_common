@@ -62,7 +62,7 @@ def extract_file(path, to_directory='.', chmod=True):
                               % (path, member.path))
             file.extractall(members=extract_members)
             extracted_files = getnames(file)
-            extracted_files = [ extracted_file[2:-1]
+            extracted_files = [ extracted_file[2:]
                         if len(extracted_file) > 2 and extracted_file[0:2] == './'
                             else extracted_file
                                 for extracted_file in extracted_files ]
