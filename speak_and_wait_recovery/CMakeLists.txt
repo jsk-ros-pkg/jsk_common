@@ -34,6 +34,9 @@ add_library(speak_and_wait_recovery src/speak_and_wait_recovery.cpp)
 add_dependencies(speak_and_wait_recovery ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(speak_and_wait_recovery ${catkin_LIBRARIES})
 
+#
+# Install
+#
 install(TARGETS speak_and_wait_recovery
        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
@@ -49,3 +52,14 @@ install(FILES speak_and_wait_plugin.xml
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
+#
+# Testgin
+#
+if (CATKIN_ENABLE_TESTING)
+    find_package(rostest REQUIRED)
+
+    catkin_add_executable_with_gtest(${PROJECT_NAME}_simple_node test/speak_and_wait_recovery_simple_node.cpp)
+    target_link_libraries(${PROJECT_NAME}_simple_node ${catkin_LIBRARIES} ${PROJECT_NAME})
+
+    add_rostest(test/speak_and_wait_recovery.test)
+endif()

@@ -1,0 +1,31 @@
+<launch>
+
+    <node
+        pkg="speak_and_wait_recovery"
+        type="speak_and_wait_recovery_simple_node"
+        name="speak_and_wait_recovery_simple_node"
+        >
+    </node>
+
+    <node
+        pkg="sound_play"
+        type="soundplay_node.py"
+        name="sound_play"
+        >
+    </node>
+
+    <test
+        pkg="rostest"
+        type="publishtest"
+        name="publishtest"
+        test-name="speak_and_wait_recovery"
+        >
+        <rosparam>
+            topics:
+                - name: /sound_play/goal
+                  timeout: 30
+                  negative: False
+        </rosparam>
+    </test>
+
+</launch>
