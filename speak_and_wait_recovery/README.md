@@ -24,3 +24,12 @@ Duration for tf looking up transformations. (seconds)
 - `~sound_action` (string, default: `sound_play`)
 
 Action name of sound_play used for Text-To-Speech.
+
+### example
+
+Please see demo.launch for example usage.
+`navigation_stage` is required for demo.
+
+```bash
+roslaunch speak_and_wait_recovery demo.launch
+```
