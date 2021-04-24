@@ -62,10 +62,9 @@ def extract_file(path, to_directory='.', chmod=True):
                               % (path, member.path))
             file.extractall(members=extract_members)
             extracted_files = getnames(file)
-            extracted_files = [ extracted_file[2:]
-                        if len(extracted_file) > 2 and extracted_file[0:2] == './'
-                            else extracted_file
-                                for extracted_file in extracted_files ]
+            for i, extracted_file in enumerate(extracted_files):
+                if len(extracted_file) > 2 and extracted_file[0:2] == './':
+                    extracted_files[i] = extracted_file[2:]
             root_files = list(set(name.split('/')[0]
                                   for name in extracted_files))
         finally:
