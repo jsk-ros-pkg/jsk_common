@@ -14,6 +14,12 @@ NAME = 'test_python_master_util'
 
 
 class TestPythonMasterUtil(unittest.TestCase):
+    def setUp(self):
+        self.original_uri = os.environ["ROS_MASTER_URI"]
+
+    def tearDown(self):
+        os.environ["ROS_MASTER_URI"] = self.original_uri
+
     def test_isMasterAlive(self):
         self.assertTrue(isMasterAlive())
         self.assertTrue(isMasterAlive(10,1))
