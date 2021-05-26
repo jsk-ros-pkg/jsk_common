@@ -9,7 +9,7 @@ ROS package for recording audio and video synchronously
 
 ## Sample
 
-You can record audio and video on your laptop.
+You can record audio and video in one file (i.e. `AVI` file) on your computer.
 
 ```bash
 roslaunch audio_video_recorder sample_audio_video_recorder.launch
@@ -41,38 +41,38 @@ Node: `audio_video_recorder/audio_video_recorder`
 
 - `audio_format` (`String`, default: `mp3`)
 
-  Audio format
+  Format of audio topic. `mp3` and `wave` are supported.
 
 - `audio_sample_format` (`String`, default: `S16LE`)
 
-  Audio sample format
+  Sample format of audio topic.
 
 - `audio_channels` (`Int`, default: `1`)
 
-  Number of audio channel
+  Number of channel of audio topic.
 
 - `audio_depth` (`Int`, default: `16`)
 
-  Audio depth
+  Depth of audio topic
 
 - `audio_sample_rate` (`Int`, default: `16000`)
 
-  Audio sample rate
+  Sample rate of audio topic
 
 ### Video parameters
 
 - `video_encoding` (`String`, default: `RGB`)
 
-  Video encoding for `gstreamer`
+  Encoding of image topic. `RGB` and `BGR` is supported.
 
 - `video_height` (`Int`, default: `480`)
 
-  Video image height
+  Height of image topic.
 
 - `video_width` (`Int`, default: `640`)
 
-  Video image width
+  Width of image topic
 
 - `video_framerate` (`Int`, default: `30`)
 
-  Video frame rate
+  Frame rate of image topic
