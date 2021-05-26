@@ -39,6 +39,8 @@ Node: `audio_video_recorder/audio_video_recorder`
 
 ### Audio parameters
 
+Parameters for subscribing audio topic
+
 - `audio_format` (`String`, default: `mp3`)
 
   Format of audio topic. `mp3` and `wave` are supported.
@@ -60,6 +62,8 @@ Node: `audio_video_recorder/audio_video_recorder`
   Sample rate of audio topic
 
 ### Video parameters
+
+Parameters for subscribing image topic
 
 - `video_encoding` (`String`, default: `RGB`)
 
