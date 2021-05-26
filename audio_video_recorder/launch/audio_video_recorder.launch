@@ -2,7 +2,6 @@
   <arg name="audio_topic_name" />
   <arg name="image_topic_name" />
   <arg name="queue_size" />
-  <arg name="do_timestamp" />
   <arg name="file_name" />
   <arg name="file_format" />
   <arg name="audio_channels" />
@@ -20,7 +19,6 @@
     <remap from="~input/image" to="$(arg image_topic_name)" />
     <rosparam subst_value="true">
       queue_size: $(arg queue_size)
-      do_timestamp: $(arg do_timestamp)
       file_name: $(arg file_name)
       file_format: $(arg file_format)
       audio_channels: $(arg audio_channels)
