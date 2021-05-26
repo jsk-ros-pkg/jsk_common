@@ -28,7 +28,8 @@ namespace audio_video_recorder
     GstPad *video_mux_pad, *g_video_mux_pad;
 
     int queue_size;
-    bool do_timestamp;
+    // do_timestamp = true only works
+    bool do_timestamp = true;
     std::string file_name;
     std::string file_format;
 
@@ -47,7 +48,6 @@ namespace audio_video_recorder
 
     // common parameters
     ros::param::param<int>("~queue_size", queue_size, 100);
-    ros::param::param<bool>("~do_timestamp", do_timestamp, true);
     ros::param::param<std::string>("~file_name", file_name, "/tmp/test.avi");
     ros::param::param<std::string>("~file_format", file_format, "avi");
 

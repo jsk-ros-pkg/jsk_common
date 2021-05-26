@@ -25,10 +25,6 @@ Node: `audio_video_recorder/audio_video_recorder`
 
   Queue size
 
-- `do_timestamp` (`Bool`, default: `true`)
-
-  Do timestamp or not (`false` is not working now.)
-
 - `file_name` (`String`, default: `/tmp/test.avi`)
 
   Output file name
