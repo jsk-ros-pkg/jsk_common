@@ -29,7 +29,7 @@ namespace audio_video_recorder
 
     int queue_size;
     bool do_timestamp;
-    std::string file_location;
+    std::string file_name;
     std::string file_format;
 
     // audio
@@ -48,7 +48,7 @@ namespace audio_video_recorder
     // common parameters
     ros::param::param<int>("~queue_size", queue_size, 100);
     ros::param::param<bool>("~do_timestamp", do_timestamp, true);
-    ros::param::param<std::string>("~file_location", file_location, "/tmp/test.avi");
+    ros::param::param<std::string>("~file_name", file_name, "/tmp/test.avi");
     ros::param::param<std::string>("~file_format", file_format, "avi");
 
     // audio parameters
@@ -145,7 +145,7 @@ namespace audio_video_recorder
 
     // sink
     _sink = gst_element_factory_make("filesink", "sink");
-    g_object_set(G_OBJECT(_sink), "location", file_location.c_str(), NULL);
+    g_object_set(G_OBJECT(_sink), "location", file_name.c_str(), NULL);
 
     // bin
     _bin = gst_bin_new("bin");
@@ -167,7 +167,7 @@ namespace audio_video_recorder
     gst_element_sync_state_with_parent(_bin);
     gst_bin_add(GST_BIN(_pipeline), _bin);
 
-    ROS_INFO("Saving file to %s", file_location.c_str());
+    ROS_INFO("Saving file to %s", file_name.c_str());
     if (audio_format == "mp3")
     {
       // audio decode

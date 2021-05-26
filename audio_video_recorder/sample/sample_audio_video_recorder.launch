@@ -1,7 +1,7 @@
 <launch>
   <arg name="queue_size" default="100" />
   <arg name="do_timestamp" default="true" />
-  <arg name="file_location" default="/tmp/test.avi" />
+  <arg name="file_name" default="/tmp/test.avi" />
   <arg name="file_format" default="avi" />
   <arg name="audio_channels" default="1" />
   <arg name="audio_sample_rate" default="44100" />
@@ -32,7 +32,7 @@
     <arg name="image_topic_name" value="/usb_cam_node/image_raw" />
     <arg name="queue_size" value="$(arg queue_size)" />
     <arg name="do_timestamp" value="$(arg do_timestamp)" />
-    <arg name="file_location" value="$(arg file_location)" />
+    <arg name="file_name" value="$(arg file_name)" />
     <arg name="file_format" value="$(arg file_format)" />
     <arg name="audio_channels" value="$(arg audio_channels)" />
     <arg name="audio_sample_rate" value="$(arg audio_sample_rate)" />

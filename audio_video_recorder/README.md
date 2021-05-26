@@ -29,9 +29,9 @@ Node: `audio_video_recorder/audio_video_recorder`
 
   Do timestamp or not (`false` is not working now.)
 
-- `file_location` (`String`, default: `/tmp/test.avi`)
+- `file_name` (`String`, default: `/tmp/test.avi`)
 
-  Output file location
+  Output file name
 
 - `file_format` (`String`, default: `avi`)
 
