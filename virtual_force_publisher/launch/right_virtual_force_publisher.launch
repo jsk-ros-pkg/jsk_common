@@ -1,0 +1,16 @@
+<launch>
+  <arg name="namespace" default="right_endeffector" />
+  <arg name="publish_frequency" default="50.0"/>
+  <arg name="time_constant" default="0.3"/>
+  <arg name="root" default="torso_lift_link"/>
+  <arg name="tip"  default="r_gripper_tool_frame"/>
+  <arg name="input" default="joint_states"/>
+  <include file="$(find virtual_force_publisher)/launch/virtual_force_publisher.launch" >
+    <arg name="namespace" value="$(arg namespace)" />
+    <arg name="publish_frequency" value="$(arg publish_frequency)"/>
+    <arg name="time_constant" value="$(arg time_constant)"/>
+    <arg name="root" value="$(arg root)"/>
+    <arg name="tip"  value="$(arg tip)"/>
+    <arg name="input" value="$(arg input)"/>
+  </include>
+</launch>
