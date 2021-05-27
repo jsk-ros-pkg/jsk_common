@@ -9,10 +9,10 @@ ROS package for recording audio and video synchronously
 
 ## Sample launch
 
-You can record audio and video in one file (i.e. `AVI` file) on your computer.
+You can record usb camera and microphone output into one video file (i.e. `AVI` file) with the following command.
 
 ```bash
-roslaunch audio_video_recorder sample_audio_video_recorder.launch
+roslaunch audio_video_recorder sample_audio_video_recorder.launch file_name:=<output file path>
 ```
 
 ## Node: `audio_video_recorder`
