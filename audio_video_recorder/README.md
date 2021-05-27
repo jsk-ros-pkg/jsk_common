@@ -7,7 +7,7 @@ ROS package for recording audio and video synchronously
 
 [Full video on Google Drive](https://drive.google.com/file/d/1TWnRKbOdq6jPza82eNhhjn56lQXRxWjl/view?usp=sharing)
 
-## Sample
+## Sample launch
 
 You can record audio and video in one file (i.e. `AVI` file) on your computer.
 
@@ -15,15 +15,23 @@ You can record audio and video in one file (i.e. `AVI` file) on your computer.
 roslaunch audio_video_recorder sample_audio_video_recorder.launch
 ```
 
-## Parameters
+## Node: `audio_video_recorder`
 
-Node: `audio_video_recorder/audio_video_recorder`
+Node for recording audio and image topics into video file (i.e. `AVI` file)
 
-### Common parameters
+### Subscribing topics
 
-- `queue_size` (`Int`, default: `100`)
+- `~input/audio` (`audio_common_msgs/AudioData`)
 
-  Queue size
+  Audio topic name in `audio_common_msgs/AudioData` format
+
+- `~input/image` (`sensor_msgs/Image`)
+
+  Image topic name in `sensor_msgs/Image` format
+
+### Parameters
+
+#### Common parameters for recording
 
 - `file_name` (`String`, default: `/tmp/test.avi`)
 
@@ -33,9 +41,16 @@ Node: `audio_video_recorder/audio_video_recorder`
 
   Output file format (Only `avi` is supported now.)
 
-### Audio parameters
 
-Parameters for subscribing audio topic
+#### Common parameters for subscribing topic
+
+- `queue_size` (`Int`, default: `100`)
+
+  Queue size
+
+#### Parameters for subscribing audio topic `audio_common_msgs/AudioData`
+
+Audio topic should be `audio_common_msgs/AudioData` format.
 
 - `audio_format` (`String`, default: `mp3`)
 
@@ -57,9 +72,9 @@ Parameters for subscribing audio topic
 
   Sample rate of audio topic
 
-### Video parameters
+#### Parameters for subscribing image topic `sensor_msgs/Image`
 
-Parameters for subscribing image topic
+Image topic should be `sensor_msgs/Image` format
 
 - `video_encoding` (`String`, default: `RGB`)
 
