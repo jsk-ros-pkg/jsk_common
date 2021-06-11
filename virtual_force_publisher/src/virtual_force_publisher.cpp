@@ -170,13 +170,13 @@ namespace virtual_force_publisher{
 		}
 #if 1
 		{
-		  ROS_INFO("jac_t# jac_t : ");
+		  ROS_DEBUG("jac_t# jac_t : ");
 		  Eigen::Matrix<double,6,6> mat_i =  mat_i = jac_t_pseudo_inv * jac_t;
 		  for (unsigned int i = 0; i < 6; i++) {
 		    std::stringstream ss;
 		    for (unsigned int j=0; j<6; j++)
 		      ss << std::fixed << std::setw(8) << std::setprecision(4) << mat_i(j,i) << " ";
-		    ROS_INFO_STREAM(ss.str());
+		    ROS_DEBUG_STREAM(ss.str());
                     }
 		}
 #endif
@@ -227,25 +227,25 @@ namespace virtual_force_publisher{
                 wrench_stamped_pub_.publish(msg);
 
                 {
-                    ROS_INFO("jacobian : ");
+                    ROS_DEBUG("jacobian : ");
                     for (unsigned int i = 0; i < jnt_pos_.rows(); i++) {
                         std::stringstream ss;
                         for (unsigned int j=0; j<6; j++)
                             ss << std::fixed << std::setw(8) << std::setprecision(4) << jacobian_(j,i) << " ";
-                        ROS_INFO_STREAM(ss.str());
+                        ROS_DEBUG_STREAM(ss.str());
                     }
-                    ROS_INFO("effort : ");
+                    ROS_DEBUG("effort : ");
                     std::stringstream sstau;
                     for (unsigned int i = 0; i < tau.rows(); i++) {
                         sstau << std::fixed << std::setw(8) << std::setprecision(4) << tau(i) << " ";
                     }
-                    ROS_INFO_STREAM(sstau.str());
-                    ROS_INFO("force : ");
+                    ROS_DEBUG_STREAM(sstau.str());
+                    ROS_DEBUG("force : ");
                     std::stringstream ssf;
                     for (unsigned int j = 0; j < 6; j++) {
 		      ssf << std::fixed << std::setw(8) << std::setprecision(4) << F(j) << " ";
                     }
-                    ROS_INFO_STREAM(ssf.str());
+                    ROS_DEBUG_STREAM(ssf.str());
                 }
 
                 // store publish time in joint map
