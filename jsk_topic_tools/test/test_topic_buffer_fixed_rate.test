@@ -28,7 +28,7 @@
   <param name="hztest_chatter_buffer/topic" value="chatter_buffered" />
   <param name="hztest_chatter_buffer/hz" value="10.0" />
   <param name="hztest_chatter_buffer/hzerror" value="1.0" />
-  <param name="hztest_chatter_buffer/test_duration" value="5.0" />
+  <param name="hztest_chatter_buffer/test_duration" value="15.0" />
   <test test-name="hztest_chatter_buffer"
         name="hztest_chatter_buffer"
         pkg="rostest" type="hztest"
