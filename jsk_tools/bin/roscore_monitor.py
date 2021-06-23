@@ -3,7 +3,11 @@ import os
 import rospy
 import diagnostic_updater
 import diagnostic_msgs.msg
-from urlparse import urlparse
+import sys
+if sys.version_info[0] == 2:
+    from urlparse import urlparse
+else:
+    from urllib.parse import urlparse
 from jsk_tools.sanity_lib import getROSMasterCLOSE_WAIT
 
 close_wait_num = 0
