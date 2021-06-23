@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import urlparse
+import sys
+if sys.version_info[0] == 2:
+    from urlparse import urlsplit
+else:
+    from urllib.parse import urlsplit
 import rospy
 import os
 
 previous_run_id = None
 
 
-def isMasterAlive(timeout_sec, trials):
+def isMasterAlive(timeout_sec=10, trials=1):
     """
     return True if master alive and return False if
     master is not alive
@@ -15,7 +19,7 @@ def isMasterAlive(timeout_sec, trials):
     global previous_run_id
     try:
         # first check the host is available
-        master_host = urlparse.urlsplit(rospy.core.rosgraph.get_master_uri()).hostname
+        master_host = urlsplit(rospy.core.rosgraph.get_master_uri()).hostname
         for i in range(trials):
             response = os.system("ping -W {} -c 1 {} > /dev/null".format(timeout_sec, master_host))
             if response == 0:

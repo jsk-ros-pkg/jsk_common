@@ -3,11 +3,13 @@ cmake_minimum_required(VERSION 2.8.3)
 project(jsk_topic_tools)
 
 # Use ccache if installed to make it fast to generate object files
-find_program(CCACHE_FOUND ccache)
-if(CCACHE_FOUND)
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
-endif(CCACHE_FOUND)
+if (CMAKE_VERSION VERSION_LESS 3.4)
+  find_program(CCACHE_FOUND ccache)
+  if(CCACHE_FOUND)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+  endif(CCACHE_FOUND)
+endif()
 
 find_package(catkin REQUIRED COMPONENTS
   dynamic_reconfigure
@@ -146,6 +148,7 @@ if (CATKIN_ENABLE_TESTING)
   jsk_topic_tools_add_rostest(test/test_stealth_relay.test)
   jsk_topic_tools_add_rostest(test/test_synchronized_throttle.test)
   jsk_topic_tools_add_rostest(test/test_pose_stamped_publisher.test)
+  jsk_topic_tools_add_rostest(test/test_python_master_util.test)
   catkin_add_nosetests(src/jsk_topic_tools/tests)
   catkin_add_gtest(test_rosparam_utils src/tests/test_rosparam_utils.cpp)
   target_link_libraries(test_rosparam_utils ${PROJECT_NAME})
