@@ -13,9 +13,7 @@ TOPICS="/joint_states /joint_states_appended /motor_states /motor_states/abs_ang
 /viso_odom /viso_odom_integrated /biped_odom_integrated /integrated_odom \
 /thermo_lleg /thermo_rleg \
 /inside_pc_voltage_publisher \
-/multisense_local/resize_1_8/left/image_rect_color/throttle
-
-"
+/multisense_local/resize_1_8/left/image_rect_color/throttle"
 
 # size unit is mega
 # max is 100G
