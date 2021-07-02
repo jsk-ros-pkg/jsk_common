@@ -15,7 +15,6 @@ from geometry_msgs.msg import TransformStamped,Quaternion,Vector3
 from std_srvs.srv import Empty, EmptyResponse
 import tf
 import tf.msg
-import thread
 from threading import Lock
 import yaml
 
