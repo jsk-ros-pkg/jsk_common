@@ -77,7 +77,7 @@ def bag_to_csv(options, args):
         for topic, msg, time in bag.read_messages(topics=options.topic_names,
                                                   start_time=stime,
                                                   end_time=etime):
-            if streamdict.has_key(topic):
+            if topic in streamdict:
                 stream = streamdict[topic]
             else:
                 stream = open(format_csv_filename(options.output_file_format, topic),'w')

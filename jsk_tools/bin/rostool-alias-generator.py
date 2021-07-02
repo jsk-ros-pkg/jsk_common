@@ -28,7 +28,7 @@ def gen_bash_alias_name(m):
     return "bash_" + m['name']
 
 def misc_unix_env(m):
-    if m.has_key('env'):
+    if 'env' in m:
         envs = m['env']
         all_keys = envs.keys()
         ret = ""
