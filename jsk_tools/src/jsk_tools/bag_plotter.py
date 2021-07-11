@@ -194,7 +194,7 @@ class BagPlotter():
             self.setGlobalOptions(data)
             self.setPlotOptions(data)
     def readOption(self, option, name, default_value):
-        if option.has_key(name):
+        if name in option:
             return option[name]
         else:
             return default_value
@@ -213,7 +213,7 @@ class BagPlotter():
         self.all_topics = set()
         self.topic_data = []
         for opt in plot_options:
-            if not opt.has_key("title"):
+            if "title" not in opt:
                 raise BagPlotterException("plot config requires title section")
             opt["type"] = self.readOption(opt, "type", "line")
             opt["legend"] = self.readOption(opt, "legend", True)
@@ -221,15 +221,15 @@ class BagPlotter():
             opt["time_offset"] = self.readOption(opt, "time_offset", 0)
             if self.global_options["layout"] == "manual" and opt["layout"] == None:
                 raise BagPlotterException("Need to specify layout field for manual layout")
-            if not opt.has_key("topic"):
+            if "topic" not in opt:
                 raise BagPlotterException("plots config requires topic section")
-            if not opt.has_key("field"):
+            if "field" not in opt:
                 raise BagPlotterException("plots config requires fields section")
             if isinstance(opt["topic"], str):
                 opt["topic"] = [opt["topic"]]
             if isinstance(opt["field"], str):
                 opt["field"] = [opt["field"]]
-            if not opt.has_key("color"):
+            if "color" not in opt:
                 opt["color"] = [None]*len(opt["topic"])
             if not isinstance(opt["color"], list):                
                 opt["color"] = [opt["color"]]

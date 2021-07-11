@@ -48,12 +48,12 @@ import inspect
 import os, sys
 import threading
 import rospy, roslaunch
-import roslaunch_caller
+from . import roslaunch_caller
 import cPickle as pickle
 import re
 
 from srv import PickledService, PickledServiceRequest, PickledServiceResponse
-from cpuinfo import cpuinfos
+from .cpuinfo import cpuinfos
 from numpy import random
 import std_msgs.msg
 

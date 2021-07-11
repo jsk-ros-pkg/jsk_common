@@ -15,7 +15,6 @@ from geometry_msgs.msg import TransformStamped,Quaternion,Vector3
 from std_srvs.srv import Empty, EmptyResponse
 import tf
 import tf.msg
-import thread
 from threading import Lock
 import yaml
 
@@ -77,7 +76,7 @@ class dynamic_tf_publisher:
         return EmptyResponse()
 
     def assoc(self,req):
-        if (not self.cur_tf.has_key(req.child_frame)) or self.cur_tf[req.child_frame] == req.parent_frame:
+        if (req.child_frame not in self.cur_tf) or self.cur_tf[req.child_frame] == req.parent_frame:
             rospy.logwarn("unkown key %s" % (req.child_frame))
             return AssocTFResponse()
         rospy.loginfo("assoc %s -> %s"%(req.parent_frame, req.child_frame))
@@ -102,7 +101,7 @@ class dynamic_tf_publisher:
         areq = None
         rospy.loginfo("dissoc TF %s" % (req.frame_id))
         with self.lock:
-            if self.original_parent.has_key(req.frame_id):
+            if req.frame_id in self.original_parent:
                 areq = AssocTFRequest()
                 areq.header = req.header
                 areq.child_frame = req.frame_id
@@ -115,11 +114,11 @@ class dynamic_tf_publisher:
     def delete(self,req):
         rospy.loginfo("delete TF %s"%(req.header.frame_id))
         with self.lock:
-            if self.original_parent.has_key(req.header.frame_id):
+            if req.header.frame_id in self.original_parent:
                 del self.original_parent[req.header.frame_id]
-            if self.cur_tf.has_key(req.header.frame_id):
+            if req.header.frame_id in self.cur_tf:
                 del self.cur_tf[req.header.frame_id]
-            if self.update_tf.has_key(req.header.frame_id):
+            if req.header.frame_id in self.update_tf:
                 del self.update_tf[req.header.frame_id]
         return DeleteTFResponse()
 
@@ -127,7 +126,7 @@ class dynamic_tf_publisher:
         rospy.loginfo("%s => %s" % (req.cur_tf.header.frame_id, req.cur_tf.child_frame_id))
         with self.lock:
             # if not assocd
-            if not self.original_parent.has_key(req.cur_tf.child_frame_id):
+            if req.cur_tf.child_frame_id not in self.original_parent:
                 self.tf_sleep_time = 1.0/req.freq
                 self.cur_tf[req.cur_tf.child_frame_id] = req.cur_tf
                 self.update_tf[req.cur_tf.child_frame_id] = True
