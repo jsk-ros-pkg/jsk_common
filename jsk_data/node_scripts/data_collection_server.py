@@ -284,13 +284,15 @@ class DataCollectionServer(object):
         return TriggerResponse(success=True)
 
     def wait_msgs_update(self):
-        time_diff = None
         now = rospy.Time.now()
-        while time_diff is None or time_diff < 0:
-            stamp = self.msg[self.topics[0]['name']]['stamp']
-            time_diff = (stamp - now).to_sec()
-            rospy.logwarn_throttle(1.0, "msgs is not updated after service request")
-            rospy.sleep(0.05)
+        for msg_key in self.msgs.keys():
+            time_diff = None
+            while time_diff is None or time_diff < 0:
+                stamp = self.msgs[msg_key]['stamp']
+                time_diff = (stamp - now).to_sec()
+                rospy.logwarn_throttle(
+                    1.0, "msgs is not updated after service request")
+                rospy.sleep(0.05)
 
     def service_cb(self, req):
         if self.wait_save_request:
