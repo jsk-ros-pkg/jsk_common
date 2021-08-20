@@ -283,7 +283,7 @@ class DataCollectionServer(object):
         self.start = False
         return TriggerResponse(success=True)
 
-    def wait_service_timestamp(self):
+    def wait_msgs_update(self):
         time_diff = None
         now = rospy.Time.now()
         while time_diff is None or time_diff < 0:
@@ -294,7 +294,7 @@ class DataCollectionServer(object):
 
     def service_cb(self, req):
         if self.wait_save_request:
-            self.wait_service_timestamp()
+            self.wait_msgs_update()
         result, msg = self._save()
         if result:
             return TriggerResponse(success=True, message=msg)
@@ -303,7 +303,7 @@ class DataCollectionServer(object):
 
     def sync_service_cb(self, req):
         if self.wait_save_request:
-            self.wait_service_timestamp()
+            self.wait_msgs_update()
         result, msg = self._sync_save()
         if result:
             return TriggerResponse(success=True, message=msg)
@@ -312,13 +312,13 @@ class DataCollectionServer(object):
 
     def timer_cb(self, event):
         if self.wait_timer:
-            self.wait_service_timestamp()
+            self.wait_msgs_update()
         if self.start:
             result, msg = self._save()
 
     def sync_timer_cb(self, event):
         if self.wait_timer:
-            self.wait_service_timestamp()
+            self.wait_msgs_update()
         if self.start:
             result, msg = self._sync_save()
 
