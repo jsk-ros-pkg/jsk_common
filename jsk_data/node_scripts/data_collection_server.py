@@ -177,8 +177,6 @@ class DataCollectionServer(object):
             }
 
     def sync_sub_and_save_cb(self, *msgs):
-        if self.wait_save_request:
-            self.wait_service_timestamp()
         self.sync_sub_cb(*msgs)
         self._sync_save()
 
