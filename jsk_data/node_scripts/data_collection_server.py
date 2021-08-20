@@ -89,6 +89,7 @@ class DataCollectionServer(object):
             raise ValueError('Unexpected method: {}'.format(method))
         use_message_filters = rospy.get_param('~message_filters', False)
         self.timestamp_save_dir = rospy.get_param('~timestamp_save_dir', True)
+        self.wait_timer = rospy.get_param('~wait_timer', False)
         self.wait_save_request = rospy.get_param('~wait_save_request', False)
 
         if rospy.has_param('~with_request'):
@@ -310,13 +311,13 @@ class DataCollectionServer(object):
             return TriggerResponse(success=False, message=msg)
 
     def timer_cb(self, event):
-        if self.wait_save_request:
+        if self.wait_timer:
             self.wait_service_timestamp()
         if self.start:
             result, msg = self._save()
 
     def sync_timer_cb(self, event):
-        if self.wait_save_request:
+        if self.wait_timer:
             self.wait_service_timestamp()
         if self.start:
             result, msg = self._sync_save()
