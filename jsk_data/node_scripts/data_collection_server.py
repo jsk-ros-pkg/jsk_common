@@ -177,6 +177,8 @@ class DataCollectionServer(object):
             }
 
     def sync_sub_and_save_cb(self, *msgs):
+        if self.wait_save_request:
+            self.wait_service_timestamp()
         self.sync_sub_cb(*msgs)
         self._sync_save()
 
@@ -310,10 +312,14 @@ class DataCollectionServer(object):
             return TriggerResponse(success=False, message=msg)
 
     def timer_cb(self, event):
+        if self.wait_save_request:
+            self.wait_service_timestamp()
         if self.start:
             result, msg = self._save()
 
     def sync_timer_cb(self, event):
+        if self.wait_save_request:
+            self.wait_service_timestamp()
         if self.start:
             result, msg = self._sync_save()
 
