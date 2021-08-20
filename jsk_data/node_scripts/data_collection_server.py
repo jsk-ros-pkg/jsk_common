@@ -285,10 +285,10 @@ class DataCollectionServer(object):
 
     def wait_msgs_update(self):
         now = rospy.Time.now()
-        for msg_key in self.msgs.keys():
+        for msg_key in self.msg.keys():
             time_diff = None
             while time_diff is None or time_diff < 0:
-                stamp = self.msgs[msg_key]['stamp']
+                stamp = self.msg[msg_key]['stamp']
                 time_diff = (stamp - now).to_sec()
                 rospy.logwarn_throttle(
                     1.0, "msgs is not updated after service request")
