@@ -7,87 +7,68 @@ ROS package for recording audio and video synchronously
 
 [Full video on Google Drive](https://drive.google.com/file/d/1TWnRKbOdq6jPza82eNhhjn56lQXRxWjl/view?usp=sharing)
 
-## Sample launch
+## Sample
 
-You can record usb camera and microphone output into one video file (i.e. `AVI` file) with the following command.
+You can record audio and video on your laptop.
 
 ```bash
-roslaunch audio_video_recorder sample_audio_video_recorder.launch file_name:=<output file path>
+roslaunch audio_video_recorder sample_audio_video_recorder.launch
 ```
 
-## Node: `audio_video_recorder`
+## Parameters
 
-Node for recording audio and image topics into video file (i.e. `AVI` file)
+Node: `audio_video_recorder/audio_video_recorder`
 
-### Subscribing topics
-
-- `~input/audio` (`audio_common_msgs/AudioData`)
-
-  Audio topic name in `audio_common_msgs/AudioData` format
-
-- `~input/image` (`sensor_msgs/Image`)
-
-  Image topic name in `sensor_msgs/Image` format
-
-### Parameters
-
-#### Common parameters for recording
-
-- `file_name` (`String`, default: `/tmp/test.avi`)
-
-  Output file name
-
-- `file_format` (`String`, default: `avi`)
-
-  Output file format (Only `avi` is supported now.)
-
-
-#### Common parameters for subscribing topic
+### Common parameters
 
 - `queue_size` (`Int`, default: `100`)
 
   Queue size
 
-#### Parameters for subscribing audio topic `audio_common_msgs/AudioData`
+- `file_name` (`String`, default: `/tmp/test.avi`)
 
-Audio topic should be `audio_common_msgs/AudioData` format.
+  Output file location
+
+- `file_format` (`String`, default: `avi`)
+
+  Output file format (Only `avi` is supported now.)
+
+### Audio parameters
 
 - `audio_format` (`String`, default: `mp3`)
 
-  Format of audio topic. `mp3` and `wave` are supported.
+  Audio format
 
 - `audio_sample_format` (`String`, default: `S16LE`)
 
-  Sample format of audio topic.
+  Audio sample format
 
 - `audio_channels` (`Int`, default: `1`)
 
-  Number of channel of audio topic.
+  Number of audio channel
 
 - `audio_depth` (`Int`, default: `16`)
 
-  Depth of audio topic
+  Audio depth
 
 - `audio_sample_rate` (`Int`, default: `16000`)
 
-  Sample rate of audio topic
+  Audio sample rate
 
-#### Parameters for subscribing image topic `sensor_msgs/Image`
-
-Image topic should be `sensor_msgs/Image` format
+### Video parameters
 
 - `video_encoding` (`String`, default: `RGB`)
 
-  Encoding of image topic. `RGB` and `BGR` is supported.
+  Video encoding for `gstreamer`
 
 - `video_height` (`Int`, default: `480`)
 
-  Height of image topic.
+  Video image height
 
 - `video_width` (`Int`, default: `640`)
 
-  Width of image topic
+  Video image width
 
 - `video_framerate` (`Int`, default: `30`)
 
-  Frame rate of image topic
+  Video frame rate
