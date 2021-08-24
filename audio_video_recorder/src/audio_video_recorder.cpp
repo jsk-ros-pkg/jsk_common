@@ -28,7 +28,6 @@ namespace audio_video_recorder
     GstPad *video_mux_pad, *g_video_mux_pad;
 
     int queue_size;
-    // do_timestamp = true only works
     bool do_timestamp = true;
     std::string file_name;
     std::string file_format;
