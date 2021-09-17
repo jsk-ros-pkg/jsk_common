@@ -10,14 +10,36 @@ import rostopic
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--publisher-host-sort', action='store_true')
-    parser.add_argument('--include-rosout', action='store_true')
-    parser.add_argument('--show-nodes', action='store_true')
+    parser.add_argument(
+        '--subscriber-host', '-s',
+        default=None,
+        help='Subscriber hostname: (default: all)'
+    )
+    parser.add_argument(
+        '--publisher-host', '-p',
+        default=None,
+        help='Publisher hostname: (default: all)'
+    )
+    parser.add_argument(
+        '--publisher-host-sort', action='store_true',
+        help='Sort by publisher host name or not (default: False)'
+    )
+    parser.add_argument(
+        '--include-rosout', action='store_true',
+        help='Include /rosout topic or not: (default: False)'
+    )
+    parser.add_argument(
+        '--show-nodes', action='store_true',
+        help='Show node names or not: (default: False)'
+    )
     args = parser.parse_args()
+    subscriber_host = args.subscriber_host
+    publisher_host = args.publisher_host
     publisher_host_sort = args.publisher_host_sort
     include_rosout = args.include_rosout
     show_nodes = args.show_nodes
 
+    rospy.init_node('rostopic_connection_list')
     master = rosgraph.Master('/rostopic')
     pubs, subs = rostopic.get_topic_list(master)
     host_pub_topics, host_sub_topics = rostopic._rostopic_list_group_by_host(
@@ -94,10 +116,16 @@ def main():
 
         pub_hostnames = sorted(host_pub_node_dict.keys())
         for pub_hostname in pub_hostnames:
+            if (publisher_host is not None
+                    and pub_hostname != publisher_host):
+                continue
             print('Publisher host: {}'.format(pub_hostname))
             sub_dicts = host_pub_node_dict[pub_hostname]
             sub_hostnames = sorted(sub_dicts.keys())
             for sub_hostname in sub_hostnames:
+                if (subscriber_host is not None
+                        and sub_hostname != subscriber_host):
+                    continue
                 data = sub_dicts[sub_hostname]
                 for d in data:
                     print('    {} -> {} -> {}'.format(
@@ -146,10 +174,16 @@ def main():
 
         sub_hostnames = sorted(host_sub_node_dict.keys())
         for sub_hostname in sub_hostnames:
+            if (subscriber_host is not None
+                    and sub_hostname != subscriber_host):
+                continue
             print('Subscriber host: {}'.format(sub_hostname))
             pub_dicts = host_sub_node_dict[sub_hostname]
             pub_hostnames = sorted(pub_dicts.keys())
             for pub_hostname in pub_hostnames:
+                if (publisher_host is not None
+                        and pub_hostname != publisher_host):
+                    continue
                 data = pub_dicts[pub_hostname]
                 for d in data:
                     print('    {} -> {} -> {}'.format(
@@ -164,6 +198,5 @@ def main():
 
 
 if __name__ == '__main__':
-    rospy.init_node('rostopic_connection_list')
     main()
     sys.exit(0)
