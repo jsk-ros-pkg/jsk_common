@@ -1,4 +1,5 @@
 <launch>
+    <arg name="use_gui" default="true"/>
 
     <node
         pkg="tf2_ros"
@@ -31,6 +32,7 @@
         type="rviz"
         name="$(anon rviz)"
         args="-d $(find tf_relay)/config/tf_relay_sample.rviz"
+        if="$(arg use_gui)"
         />
 
 </launch>

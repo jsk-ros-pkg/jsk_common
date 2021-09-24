@@ -16,6 +16,8 @@
   <depend>geometry_msgs</depend>
   <buildtool_depend>catkin</buildtool_depend>
 
+  <test_depend>rostest</test_depend>
+
   <export>
   </export>
 </package>
