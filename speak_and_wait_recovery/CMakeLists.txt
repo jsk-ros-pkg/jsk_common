@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 2.8.3)
 project(speak_and_wait_recovery)
 
 add_compile_options(-std=c++11)
@@ -26,7 +26,6 @@ catkin_package(
 )
 
 include_directories(
-  include
   ${catkin_INCLUDE_DIRS}
 )
 
