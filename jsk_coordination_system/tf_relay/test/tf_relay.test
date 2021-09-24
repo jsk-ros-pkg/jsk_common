@@ -1,0 +1,13 @@
+<launch>
+  <include file="$(find tf_relay)/launch/tf_relay_sample.launch">
+      <arg name="use_gui" value="false"/>
+  </include>
+
+  <test
+      test-name="test_tf_relay"
+      pkg="tf_relay"
+      type="test_tf_relay.py"
+      time-limit="20.0"
+      args=""
+      />
+</launch>

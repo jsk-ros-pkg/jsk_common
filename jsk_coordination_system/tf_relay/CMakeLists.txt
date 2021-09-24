@@ -37,3 +37,32 @@ target_link_libraries(tf_relay
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
 )
+
+
+
+#
+# Install
+#
+install(TARGETS tf_relay
+       ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+       LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+       RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+       )
+
+install(DIRECTORY launch/
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+)
+
+install(DIRECTORY config/
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/config
+)
+
+
+
+#
+# Testgin
+#
+if (CATKIN_ENABLE_TESTING)
+    find_package(rostest REQUIRED)
+    add_rostest(test/tf_relay.test)
+endif()
