@@ -1,6 +1,5 @@
 #include <speak_and_wait_recovery/speak_and_wait_recovery.h>
 #include <pluginlib/class_list_macros.h>
-#include <nav_core/parameter_magic.h>
 #include <actionlib/client/simple_action_client.h>
 #include <sound_play/SoundRequestAction.h>
 #include <sound_play/SoundRequest.h>
