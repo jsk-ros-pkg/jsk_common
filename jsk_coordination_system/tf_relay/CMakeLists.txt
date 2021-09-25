@@ -64,5 +64,5 @@ install(DIRECTORY config/
 #
 if (CATKIN_ENABLE_TESTING)
     find_package(rostest REQUIRED)
-    add_rostest(test/tf_relay.test)
+    add_rostest(test/test_tf_relay.test)
 endif()

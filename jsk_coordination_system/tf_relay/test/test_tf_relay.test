@@ -8,6 +8,5 @@
       pkg="tf_relay"
       type="test_tf_relay.py"
       time-limit="20.0"
-      args=""
       />
 </launch>
