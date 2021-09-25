@@ -18,12 +18,12 @@
     <node
         pkg="tf_relay"
         type="tf_relay"
-        name="tf_relay"
+        name="tf_relay_node"
         >
         <rosparam>
-            fixed_frame_id: frame_a
-            reference_frame_id: frame_c
-            output_frame_id: frame_c_relayed
+            fixed_frame_id: 'frame_a'
+            reference_frame_id: 'frame_c'
+            output_frame_id: 'frame_relayed'
         </rosparam>
     </node>
 
