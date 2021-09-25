@@ -5,32 +5,16 @@
         type="speak_and_wait_recovery_simple_node"
         name="speak_and_wait_recovery_simple_node"
         >
-        <rosparam subst_value="true">
-            speak_text: "test"
-            duration_wait: 1.0
-            duration_timeout: 1.0
+        <rosparam>
+          recovery:
+            speak_text: 'test'
         </rosparam>
-    </node>
-
-    <node
-        pkg="sound_play"
-        type="soundplay_node.py"
-        name="sound_play"
-        >
     </node>
 
     <test
-        pkg="rostest"
-        type="publishtest"
-        name="publishtest"
-        test-name="speak_and_wait_recovery"
-        >
-        <rosparam>
-            topics:
-                - name: /sound_play/goal
-                  timeout: 60
-                  negative: False
-        </rosparam>
-    </test>
+        test-name="test_speak_and_wait_recovery"
+        pkg="speak_and_wait_recovery"
+        type="test_speak_and_wait.py"
+        />
 
 </launch>
