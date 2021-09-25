@@ -5,6 +5,11 @@
         type="speak_and_wait_recovery_simple_node"
         name="speak_and_wait_recovery_simple_node"
         >
+        <rosparam subst_value="true">
+            speak_text: "test"
+            duration_wait: 1.0
+            duration_timeout: 1.0
+        </rosparam>
     </node>
 
     <node
@@ -23,7 +28,7 @@
         <rosparam>
             topics:
                 - name: /sound_play/goal
-                  timeout: 30
+                  timeout: 60
                   negative: False
         </rosparam>
     </test>
