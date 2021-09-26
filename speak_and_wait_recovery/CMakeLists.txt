@@ -25,6 +25,11 @@ catkin_package(
         tf2_ros
 )
 
+# Abort if indigo or kinetic
+if ( $ENV{ROS_DISTRO} STREQUAL "indigo" OR $ENV{ROS_DISTRO} STREQUAL "kinetic" )
+    return()
+endif()
+
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
