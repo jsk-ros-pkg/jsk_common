@@ -89,6 +89,7 @@ class DataCollectionServer(object):
             raise ValueError('Unexpected method: {}'.format(method))
         use_message_filters = rospy.get_param('~message_filters', False)
         self.timestamp_save_dir = rospy.get_param('~timestamp_save_dir', True)
+        self.wait_timer = rospy.get_param('~wait_timer', False)
         self.wait_save_request = rospy.get_param('~wait_save_request', False)
 
         if rospy.has_param('~with_request'):
@@ -282,18 +283,20 @@ class DataCollectionServer(object):
         self.start = False
         return TriggerResponse(success=True)
 
-    def wait_service_timestamp(self):
-        time_diff = None
+    def wait_msgs_update(self):
         now = rospy.Time.now()
-        while time_diff is None or time_diff < 0:
-            stamp = self.msg[self.topics[0]['name']]['stamp']
-            time_diff = (stamp - now).to_sec()
-            rospy.logwarn_throttle(1.0, "msgs is not updated after service request")
-            rospy.sleep(0.05)
+        for msg_key in self.msg.keys():
+            time_diff = None
+            while time_diff is None or time_diff < 0:
+                stamp = self.msg[msg_key]['stamp']
+                time_diff = (stamp - now).to_sec()
+                rospy.logwarn_throttle(
+                    1.0, "msgs is not updated after service request")
+                rospy.sleep(0.05)
 
     def service_cb(self, req):
         if self.wait_save_request:
-            self.wait_service_timestamp()
+            self.wait_msgs_update()
         result, msg = self._save()
         if result:
             return TriggerResponse(success=True, message=msg)
@@ -302,7 +305,7 @@ class DataCollectionServer(object):
 
     def sync_service_cb(self, req):
         if self.wait_save_request:
-            self.wait_service_timestamp()
+            self.wait_msgs_update()
         result, msg = self._sync_save()
         if result:
             return TriggerResponse(success=True, message=msg)
@@ -310,10 +313,14 @@ class DataCollectionServer(object):
             return TriggerResponse(success=False, message=msg)
 
     def timer_cb(self, event):
+        if self.wait_timer:
+            self.wait_msgs_update()
         if self.start:
             result, msg = self._save()
 
     def sync_timer_cb(self, event):
+        if self.wait_timer:
+            self.wait_msgs_update()
         if self.start:
             result, msg = self._sync_save()
 
