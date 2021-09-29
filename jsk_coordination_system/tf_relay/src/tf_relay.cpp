@@ -46,9 +46,6 @@ namespace tf_relay {
             this->nh_private_.getParam("identity_initialize", this->identity_initialize_);
         }
 
-        /**
-         *
-         */
         this->initialized_ = false;
 
         ROS_INFO("Initialization finished.");
@@ -68,7 +65,6 @@ namespace tf_relay {
                                 this
                             );
 
-        //
         ros::spin();
     }
 

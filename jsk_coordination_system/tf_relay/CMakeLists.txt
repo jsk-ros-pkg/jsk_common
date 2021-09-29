@@ -60,7 +60,7 @@ install(DIRECTORY config/
 
 
 #
-# Testgin
+# Testing
 #
 if (CATKIN_ENABLE_TESTING)
     find_package(rostest REQUIRED)
