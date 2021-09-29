@@ -55,9 +55,6 @@ namespace tf_relay {
 
             geometry_msgs::TransformStamped msg_transform_;
 
-            /**
-             *
-             */
             void callbackTimerTF( const ros::TimerEvent& );
     };
 
