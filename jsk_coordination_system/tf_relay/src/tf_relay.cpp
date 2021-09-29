@@ -102,7 +102,7 @@ namespace tf_relay {
             this->msg_transform_.header.stamp = ros::Time::now();
             this->tf_broadcaster_.sendTransform(this->msg_transform_);
         }
-        ROS_INFO("callback called.");
+        ROS_DEBUG("callback called.");
     }
 
 }
