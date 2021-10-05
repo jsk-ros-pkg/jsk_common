@@ -18,7 +18,7 @@ There are following sub commands. See `jsk_data [sub command] --help` for more d
 
     Usage is `jsk_data put [OPTIONS] FILENAME`.
     With `--public` option, it also uploads to
-    [public Google Drive folder](https://drive.google.com/folderview?id=0B9P1L--7Wd2vUGplQkVLTFBWcFE),
+    [public Google Drive folder](https://drive.google.com/drive/folders/1PPOZDoWbJnxM7XkPMPP3iKQqrji56Vgq?usp=sharing),
     so please care about it when you handle secure data.
 
 * `delete`: Delete file on the server.
