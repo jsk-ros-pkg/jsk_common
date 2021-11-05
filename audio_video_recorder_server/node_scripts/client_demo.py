@@ -12,7 +12,8 @@ def main():
     rospy.init_node('audio_video_recorder_client_demo')
 
     destination = rospy.get_param('~destination','/tmp/')
-    file_name = destination + 'audio_video_recorder_server_demo.avi'
+    file_name_01 = destination + 'audio_video_recorder_server_demo_01.avi'
+    file_name_02 = destination + 'audio_video_recorder_server_demo_02.avi'
 
     try:
         msg_image = rospy.wait_for_message('/usb_cam_node/image_raw', Image, timeout=rospy.Duration(10))
@@ -23,10 +24,14 @@ def main():
 
     client = AudioVideoRecorderClient()
     rospy.loginfo('Start recording')
-    client.start_record('/audio','/usb_cam_node/image_raw',file_name,30)
-    rospy.sleep(10)
+    client.start_record('/audio','/usb_cam_node/image_raw',file_name_01,30)
+    rospy.sleep(5)
+    client.start_record('/audio','/usb_cam_node/image_raw',file_name_02,30)
+    rospy.sleep(5)
     rospy.loginfo('Stop recording')
-    client.stop_record(file_name)
+    client.stop_record(file_name_01)
+    rospy.sleep(5)
+    client.stop_record(file_name_02)
 
 
 if __name__ == '__main__':
