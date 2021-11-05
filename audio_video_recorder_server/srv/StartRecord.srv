@@ -1,0 +1,4 @@
+audio_video_recorder_server/RecordTask task
+---
+bool success
+string message
