@@ -5,10 +5,10 @@ string file_name # This will be used as key
 string file_format
 string audio_format
 string audio_sample_format
-string audio_channels
-string audio_depth
-string audio_sample_rate
+int32 audio_channels
+int32 audio_depth
+int32 audio_sample_rate
 string video_encoding
-string video_height
-string video_width
-string video_framerate
+int32 video_height
+int32 video_width
+int32 video_framerate

@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 import rospy
+import rospkg
 import roslaunch
 
 from .msg import RecordTask, RecordTaskArray
@@ -48,7 +49,7 @@ class AudioVideoRecorderServer:
                 'audio_topic_name:={}'.format(record_task.audio_topic_name),
                 'image_topic_name:={}'.format(record_task.image_topic_name),
                 'queue_size:={}'.format(record_task.queue_size),
-                'file_name:={}'.format(record_task.flie_name),
+                'file_name:={}'.format(record_task.file_name),
                 'file_format:={}'.format(record_task.file_format),
                 'audio_format:={}'.format(record_task.audio_format),
                 'audio_sample_format:={}'.format(record_task.audio_sample_format),
@@ -62,7 +63,7 @@ class AudioVideoRecorderServer:
                 ]
         roslaunch_file = [(
                     roslaunch.rlutil.resolve_launch_arguments([roslaunch_path])[0],
-                    roslaunch_cli_args)]
+                    roslaunch_args)]
         roslaunch_parent = roslaunch.parent.ROSLaunchParent(
             uuid,
             roslaunch_file,
@@ -94,6 +95,10 @@ class AudioVideoRecorderServer:
     def handler_start_record(self, req):
 
         success, message = self.__start_record(req.task)
+        if success:
+            rospy.loginfo('Start recoding to {}: {}'.format(req.task.file_name, message))
+        else:
+            rospy.logerr('Failed to start recoding to {}: {}'.format(req.task.file_name, message))
         response = StartRecordResponse()
         response.success = success
         response.message = message
@@ -102,6 +107,10 @@ class AudioVideoRecorderServer:
     def handler_stop_record(self, req):
 
         success, message = self.__stop_record(req.file_name)
+        if success:
+            rospy.loginfo('Stop recoding to {}: {}'.format(req.file_name, message))
+        else:
+            rospy.logerr('Failed to stop recoding to {}: {}'.format(req.file_name, message))
         response = StopRecordResponse()
         response.success = success
         response.message = message
