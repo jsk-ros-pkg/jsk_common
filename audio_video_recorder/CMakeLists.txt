@@ -52,6 +52,9 @@ add_executable(audio_video_recorder src/audio_video_recorder.cpp)
 target_link_libraries(audio_video_recorder ${catkin_LIBRARIES} ${GST1.0_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(audio_video_recorder ${catkin_EXPORTED_TARGETS})
 
+catkin_install_python(PROGRAMS node_scripts/audio_video_recorder_server node_scripts/sample_audio_video_recorder_client.py
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 install(TARGETS audio_video_recorder
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
