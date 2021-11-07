@@ -13,7 +13,7 @@
   <arg name="video_framerate" />
   <arg name="video_encoding" />
 
-  <node name="audio_video_recorder" pkg="audio_video_recorder"
+  <node name="$(anon audio_video_recorder)" pkg="audio_video_recorder"
         type="audio_video_recorder" output="screen">
     <remap from="~input/audio" to="$(arg audio_topic_name)" />
     <remap from="~input/image" to="$(arg image_topic_name)" />
