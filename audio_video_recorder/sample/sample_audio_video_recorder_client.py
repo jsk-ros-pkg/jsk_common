@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 import rospy
-from audio_video_recorder_server.libaudio_video_recorder_server import AudioVideoRecorderClient
+from audio_video_recorder.audio_video_recorder_client import AudioVideoRecorderClient
 from sensor_msgs.msg import Image
 from audio_common_msgs.msg import AudioData
 

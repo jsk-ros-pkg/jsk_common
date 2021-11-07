@@ -44,7 +44,7 @@ class AudioVideoRecorderServer:
             return False, 'There is already a recording task with the same name.'
         # start roslaunch
         uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
-        roslaunch_path = rospkg.RosPack().get_path('audio_video_recorder_server') + '/launch/audio_video_recorder.launch.xml'
+        roslaunch_path = rospkg.RosPack().get_path('audio_video_recorder') + '/launch/audio_video_recorder.launch'
         roslaunch_args = [ \
                 'audio_topic_name:={}'.format(record_task.audio_topic_name),
                 'image_topic_name:={}'.format(record_task.image_topic_name),

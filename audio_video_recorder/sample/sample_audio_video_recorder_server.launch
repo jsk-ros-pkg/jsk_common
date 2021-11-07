@@ -20,16 +20,16 @@
     </node>
 
     <node
-        pkg="audio_video_recorder_server"
+        pkg="audio_video_recorder"
         type="audio_video_recorder_server"
         name="audio_video_recorder_server"
         output="screen"
         />
 
     <node
-        pkg="audio_video_recorder_server"
-        type="client_demo.py"
-        name="client_demo"
+        pkg="audio_video_recorder"
+        type="sample_audio_video_recorder_client.py"
+        name="sample_audio_video_recorder_client"
         required="true"
         output="screen"
         />

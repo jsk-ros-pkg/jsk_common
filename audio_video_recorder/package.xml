@@ -12,18 +12,23 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
   <build_depend>audio_common_msgs</build_depend>
   <build_depend>libgstreamer1.0-dev</build_depend>
   <build_depend>libgstreamer-plugins-base1.0-dev</build_depend>
   <build_depend>message_filters</build_depend>
+  <build_depend>message_generation</build_depend>
   <build_depend>sensor_msgs</build_depend>
 
   <exec_depend>roscpp</exec_depend>
+  <exec_depend>roslaunch</exec_depend>
+  <exec_depend>rospy</exec_depend>
   <exec_depend>audio_common_msgs</exec_depend>
   <exec_depend>gstreamer1.0</exec_depend>
   <exec_depend>gstreamer1.0-plugins-base</exec_depend>
   <exec_depend>gstreamer1.0-plugins-good</exec_depend>
   <exec_depend>gstreamer1.0-plugins-ugly</exec_depend>
   <exec_depend>message_filters</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
 </package>

@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 import rospy
-from audio_video_recorder_server.audio_video_recorder_server import AudioVideoRecorderServer
+from audio_video_recorder.audio_video_recorder_server import AudioVideoRecorderServer
 
 
 def main():
