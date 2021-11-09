@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+
+import rospy
+from jsk_image_capture.jsk_image_capture import ImageCaptureServer
+
+
+def main():
+
+    rospy.init_node('image_capture_server')
+    server = ImageCaptureServer()
+    rospy.spin()
+
+
+if __name__ == '__main__':
+    main()
