@@ -4,9 +4,9 @@ import rospy
 import rospkg
 import roslaunch
 
-from .msg import RecordTask, RecordTaskArray
-from .srv import StartRecord, StartRecordRequest, StartRecordResponse
-from .srv import StopRecord, StopRecordRequest, StopRecordResponse
+from audio_video_recorder.msg import RecordTask, RecordTaskArray
+from audio_video_recorder.srv import StartRecord, StartRecordRequest, StartRecordResponse
+from audio_video_recorder.srv import StopRecord, StopRecordRequest, StopRecordResponse
 
 import threading
 
