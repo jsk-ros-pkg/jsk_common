@@ -25,6 +25,8 @@ find_package(OpenCV REQUIRED)
 
 find_package(Boost REQUIRED COMPONENTS)
 
+catkin_python_setup()
+
 generate_dynamic_reconfigure_options(
   cfg/ImageView2.cfg
 )
@@ -34,14 +36,14 @@ add_message_files(
 )
 
 add_service_files(
-  FILES ChangeMode.srv
+  FILES ChangeMode.srv Capture.srv
   )
 
 generate_messages(DEPENDENCIES geometry_msgs std_msgs)
 
 catkin_package(
     DEPENDS OpenCV PCL
-    CATKIN_DEPENDS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters
+    CATKIN_DEPENDS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_runtime
     INCLUDE_DIRS include
 )
 
@@ -81,6 +83,18 @@ install(TARGETS image_view2 points_rectangle_extractor
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+catkin_install_python(
+    PROGRAMS node_scripts/image_capture node_scripts/image_capture_server node_scripts/sample_image_capture_client.py
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(DIRECTORY euslisp
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    USE_SOURCE_PERMISSIONS
+)
+install(DIRECTORY sample
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    USE_SOURCE_PERMISSIONS
 )
 
 if(CATKIN_ENABLE_TESTING)

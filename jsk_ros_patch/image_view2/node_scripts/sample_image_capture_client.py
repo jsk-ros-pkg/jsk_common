@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 import rospy
-from jsk_image_capture.image_capture_utils import ImageCaptureClient
+from image_view2.image_capture_utils import ImageCaptureClient
 
 
 def main():

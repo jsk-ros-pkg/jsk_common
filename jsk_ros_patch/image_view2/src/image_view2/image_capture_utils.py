@@ -5,9 +5,9 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 import cv2
 
-from jsk_image_capture.srv import Capture
-from jsk_image_capture.srv import CaptureRequest
-from jsk_image_capture.srv import CaptureResponse
+from image_view2.srv import Capture
+from image_view2.srv import CaptureRequest
+from image_view2.srv import CaptureResponse
 
 
 def capture_image(image_topic, file_name, cv_bridge):
