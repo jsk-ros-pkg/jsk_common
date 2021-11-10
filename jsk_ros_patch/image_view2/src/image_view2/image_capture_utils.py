@@ -5,7 +5,9 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 import cv2
 
-from .srv import Capture, CaptureRequest, CaptureResponse
+from image_view2.srv import Capture
+from image_view2.srv import CaptureRequest
+from image_view2.srv import CaptureResponse
 
 
 def capture_image(image_topic, file_name, cv_bridge):
