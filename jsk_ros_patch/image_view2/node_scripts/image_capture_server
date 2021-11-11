@@ -9,7 +9,7 @@ def main():
 
     rospy.init_node('image_capture_server')
     server = ImageCaptureServer()
-    rospy.spin()
+    server.spin()
 
 
 if __name__ == '__main__':

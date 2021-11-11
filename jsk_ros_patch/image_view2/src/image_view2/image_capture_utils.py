@@ -9,6 +9,8 @@ from image_view2.srv import Capture
 from image_view2.srv import CaptureRequest
 from image_view2.srv import CaptureResponse
 
+from queue import Queue
+
 
 def capture_image(image_topic, file_name, cv_bridge):
     duration_timeout = rospy.get_param('~duration_timeout', 10.0)
@@ -30,20 +32,30 @@ class ImageCaptureServer:
 
     def __init__(self):
         self.cv_bridge = CvBridge()
+        self.task_queue = Queue()
         self.srv = rospy.Service(
                         '~capture',
                         Capture,
                         self.handler)
 
-    def handler(self, req):
-        success, message = capture_image(
+    def spin(self):
+
+        rate = rospy.Rate(1)
+        while not rospy.is_shutdown():
+            rate.sleep()
+            if not self.task_queue.empty():
+                req = self.task_queue.get()
+                success, message = capture_image(
                                 req.image_topic,
                                 req.file_name,
                                 self.cv_bridge
                                 )
+                rospy.loginfo('Capture a image: {}, {}'.format(success, message))
+
+    def handler(self, req):
+        self.task_queue.put(req)
         res = CaptureResponse()
-        res.success = success
-        res.message = message
+        res.success = True
         return res
 
 
