@@ -5,5 +5,8 @@
     (send req :image_topic image-topic)
     (send req :file_name file-name)
     (setq res (ros::service-call "/image_capture_server/capture" req t))
+    (if (send res :success)
+        (ros::ros-info "Succeed to capture image from ~A to ~A" image-topic file-name)
+      (ros::ros-error "Failed to capture image from ~A to ~A : ~A" image-topic file-name (send res :message)))
     (send res :success)
     ))
