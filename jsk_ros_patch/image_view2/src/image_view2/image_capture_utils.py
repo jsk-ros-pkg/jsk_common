@@ -24,7 +24,7 @@ def capture_image(image_topic, file_name, cv_bridge):
         cv2.imwrite(file_name, image)
         return True, 'Success'
     except rospy.ROSException as e:
-        rospy.loginfo('Error: {]'.format(e))
+        rospy.loginfo('Error: {}'.format(e))
         return False, 'Error: {}'.format(e)
 
 
