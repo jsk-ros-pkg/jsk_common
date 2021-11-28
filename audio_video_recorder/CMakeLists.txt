@@ -58,5 +58,5 @@ catkin_install_python(PROGRAMS node_scripts/audio_video_recorder_server node_scr
 install(TARGETS audio_video_recorder
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-install(DIRECTORY launch sample
+install(DIRECTORY launch sample euslisp
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
