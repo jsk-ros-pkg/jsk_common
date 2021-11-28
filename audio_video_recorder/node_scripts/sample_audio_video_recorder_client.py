@@ -23,14 +23,19 @@ def main():
         return
 
     client = AudioVideoRecorderClient()
-    rospy.loginfo('Start recording')
+    rospy.loginfo('Start a recording task')
     client.start_record('/audio','/usb_cam_node/image_raw',file_name_01,30)
     rospy.sleep(5)
+    rospy.loginfo('Start another recording task')
     client.start_record('/audio','/usb_cam_node/image_raw',file_name_02,30)
-    rospy.sleep(5)
-    rospy.loginfo('Stop recording')
+    rospy.sleep(2)
+    task_array = client.get_record_task_array()
+    rospy.loginfo('Get a recording task array : {}'.format(task_array))
+    rospy.sleep(3)
+    rospy.loginfo('Stop the first recording task')
     client.stop_record(file_name_01)
     rospy.sleep(5)
+    rospy.loginfo('Stop the second recording task')
     client.stop_record(file_name_02)
 
 
