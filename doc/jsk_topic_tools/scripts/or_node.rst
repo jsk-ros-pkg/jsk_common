@@ -7,6 +7,8 @@ What is this?
 
 A node that takes bool values and returns the result of the ``or`` operation.
 
+For example, this node can be used to merge the results of a node that outputs whether the robot is speaking in English or Japanese.
+
 
 Subscribing Topics
 ------------------
