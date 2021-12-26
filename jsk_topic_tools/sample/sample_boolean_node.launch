@@ -11,7 +11,7 @@
   <node name="or_node"
         pkg="jsk_topic_tools" type="boolean_node.py" >
     <rosparam>
-      operation: or
+      operator: or
     </rosparam>
     <remap from="~input1" to="/robotsound/is_speaking" />
     <remap from="~input2" to="/robotsound_jp/is_speaking" />
@@ -21,7 +21,7 @@
   <node name="and_node"
         pkg="jsk_topic_tools" type="boolean_node.py" >
     <rosparam>
-      operation: and
+      operator: and
     </rosparam>
     <remap from="~input1" to="/robotsound/is_speaking" />
     <remap from="~input2" to="/robotsound_jp/is_speaking" />
@@ -31,7 +31,7 @@
   <node name="xor_node"
         pkg="jsk_topic_tools" type="boolean_node.py" >
     <rosparam>
-      operation: xor
+      operator: xor
     </rosparam>
     <remap from="~input1" to="/robotsound/is_speaking" />
     <remap from="~input2" to="/robotsound_jp/is_speaking" />

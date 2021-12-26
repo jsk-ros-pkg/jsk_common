@@ -31,7 +31,7 @@ Publishing Topics
 Parameters
 ----------
 
-* ``~operation`` (String, required)
+* ``~operator`` (String, required)
 
   You can choose ``or``, ``and`` and ``xor``.
 
