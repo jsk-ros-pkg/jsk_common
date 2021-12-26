@@ -1,0 +1,27 @@
+<launch>
+
+  <node name="is_speaking"
+        pkg="rostopic" type="rostopic"
+        args="pub -r 100 /robotsound/is_speaking std_msgs/Bool 'data: True'" />
+
+  <node name="is_speaking_jp"
+        pkg="rostopic" type="rostopic"
+        args="pub -r 100 /robotsound_jp/is_speaking std_msgs/Bool 'data: False'" />
+
+  <node name="or_node"
+        pkg="jsk_topic_tools" type="or_node.py">
+    <remap from="~input01" to="/robotsound/is_speaking" />
+    <remap from="~input02" to="/robotsound_jp/is_speaking" />
+    <remap from="~output" to="/is_speaking" />
+  </node>
+
+  <test test-name="test_or_node"
+        name="test_or_node"
+        pkg="jsk_tools" type="test_topic_published.py">
+    <rosparam>
+      topic_0: /is_speaking
+      timeout_0: 10
+    </rosparam>
+  </test>
+
+</launch>
