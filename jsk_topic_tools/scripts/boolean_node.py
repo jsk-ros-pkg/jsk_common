@@ -30,17 +30,18 @@ class BooleanNode(object):
         self.boolean_operator = OPERATORS[self.boolean_operator]
 
         self.n_input = rospy.get_param('~number_of_input', 2)
+        self.n_input = int(self.n_input)
         if self.n_input <= 1:
             rospy.logerr('~number_of_input should be greater than 1.')
             sys.exit(1)
 
         self.data = {}
         self.subs = []
-        for i in self.n_input:
+        for i in range(self.n_input):
             self.sub = rospy.Subscriber(
-                '~input{}'.format(i),
+                '~input{}'.format(i + 1),
                 std_msgs.msg.Bool,
-                callback=lambda msg: self.callback('{}'.format(i), msg),
+                callback=lambda msg: self.callback('{}'.format(i + 1), msg),
                 queue_size=1)
 
         rate = rospy.get_param('~rate', 100)

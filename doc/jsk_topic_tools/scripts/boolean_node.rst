@@ -14,6 +14,7 @@ Subscribing Topics
 ------------------
 
 Input is prepared for the ``~number_of_input``. A number suffix is added to the ``~input``.
+The suffixes start with ``1``. If ``~number_of_input`` equals 2, subscribing topic names are ``~input1`` and ``~input2``.
 
 * ``~input{%d}`` (``std_msgs/Bool``)
 
