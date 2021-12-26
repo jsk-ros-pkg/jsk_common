@@ -18,7 +18,11 @@ class NOTNode(object):
             callback=self.callback,
             queue_size=1)
 
-        rospy.Timer(rospy.Duration(0.01), self.timer_cb)
+        rate = rospy.get_param('~rate', 100)
+        if rate == 0:
+            rospy.logwarn('You cannot set 0 as the rate; change it to 100.')
+            rate = 100
+        rospy.Timer(rospy.Duration(1.0 / rate), self.timer_cb)
 
     def callback(self, msg):
         self.data = msg.data

@@ -25,7 +25,11 @@ class ANDNode(object):
             callback=lambda msg: self.callback('sub02', msg),
             queue_size=1)
 
-        rospy.Timer(rospy.Duration(0.01), self.timer_cb)
+        rate = rospy.get_param('~rate', 100)
+        if rate == 0:
+            rospy.logwarn('You cannot set 0 as the rate; change it to 100.')
+            rate = 100
+        rospy.Timer(rospy.Duration(1.0 / rate), self.timer_cb)
 
     def callback(self, topic_name, msg):
         self.data[topic_name] = msg.data
