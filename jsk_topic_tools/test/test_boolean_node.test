@@ -11,7 +11,7 @@
       timeout_0: 10
       topic_1: /both_are_speaking
       timeout_1: 10
-      topic_2: /both_are_speaking_or_both_are_not_speaking
+      topic_2: /either_one_is_speaking
       timeout_2: 10
     </rosparam>
   </test>

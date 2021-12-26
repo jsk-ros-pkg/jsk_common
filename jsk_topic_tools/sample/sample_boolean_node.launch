@@ -35,7 +35,7 @@
     </rosparam>
     <remap from="~input1" to="/robotsound/is_speaking" />
     <remap from="~input2" to="/robotsound_jp/is_speaking" />
-    <remap from="~output" to="/both_are_speaking_or_both_are_not_speaking" />
+    <remap from="~output" to="/either_one_is_speaking" />
   </node>
 
 </launch>

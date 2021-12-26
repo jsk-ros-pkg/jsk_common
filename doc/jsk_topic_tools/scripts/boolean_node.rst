@@ -55,4 +55,4 @@ Example
   rostopic echo /robotsound_jp/is_speaking
   rostopic echo /is_speaking  # or
   rostopic echo /both_are_speaking  # and
-  rostopic echo /both_are_speaking_or_both_are_not_speaking  # xor
+  rostopic echo /either_one_is_speaking  # xor
