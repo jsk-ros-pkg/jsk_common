@@ -36,13 +36,16 @@ class BooleanNode(object):
             sys.exit(1)
 
         self.data = {}
-        self.subs = []
+        self.subs = {}
         for i in range(self.n_input):
-            self.sub = rospy.Subscriber(
-                '~input{}'.format(i + 1),
+            topic_name = '~input{}'.format(i + 1)
+            topic_name = rospy.resolve_name(topic_name)
+            sub = rospy.Subscriber(
+                topic_name,
                 std_msgs.msg.Bool,
-                callback=lambda msg: self.callback('{}'.format(i + 1), msg),
+                callback=lambda msg, tn=topic_name: self.callback(tn, msg),
                 queue_size=1)
+            self.subs[topic_name] = sub
 
         rate = rospy.get_param('~rate', 100)
         if rate == 0:
