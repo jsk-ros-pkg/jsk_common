@@ -7,7 +7,7 @@ import std_msgs.msg
 class NOTNode(object):
 
     def __init__(self):
-        self.pub_speech_flag = rospy.Publisher(
+        self.pub = rospy.Publisher(
             '~output',
             std_msgs.msg.Bool, queue_size=1)
 
@@ -31,7 +31,7 @@ class NOTNode(object):
         if self.data is None:
             return
         flag = not self.data
-        self.pub_speech_flag.publish(
+        self.pub.publish(
             std_msgs.msg.Bool(flag))
 
 

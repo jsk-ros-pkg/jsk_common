@@ -18,7 +18,7 @@ OPERATORS = {
 class BooleanNode(object):
 
     def __init__(self):
-        self.pub_speech_flag = rospy.Publisher(
+        self.pub = rospy.Publisher(
             '~output',
             std_msgs.msg.Bool, queue_size=1)
         self.boolean_operator = rospy.get_param('~operator')
@@ -57,7 +57,7 @@ class BooleanNode(object):
         if len(self.data) == 0:
             return
         flag = reduce(self.boolean_operator, self.data.values())
-        self.pub_speech_flag.publish(
+        self.pub.publish(
             std_msgs.msg.Bool(flag))
 
 
