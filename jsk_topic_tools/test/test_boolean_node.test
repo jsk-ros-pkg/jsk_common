@@ -1,0 +1,19 @@
+<launch>
+
+  <include file="$(find jsk_topic_tools)/sample/sample_boolean_node.launch" >
+  </include>
+
+  <test test-name="test_boolean_node"
+        name="test_boolean_node"
+        pkg="jsk_tools" type="test_topic_published.py">
+    <rosparam>
+      topic_0: /is_speaking
+      timeout_0: 10
+      topic_1: /both_are_speaking
+      timeout_1: 10
+      topic_2: /both_are_speaking_or_both_are_not_speaking
+      timeout_2: 10
+    </rosparam>
+  </test>
+
+</launch>

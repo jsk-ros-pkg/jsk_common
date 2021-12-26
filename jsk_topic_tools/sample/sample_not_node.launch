@@ -1,0 +1,14 @@
+<launch>
+
+  <node name="is_speaking"
+        pkg="rostopic" type="rostopic"
+        args="pub -r 100 /robotsound/is_speaking std_msgs/Bool 'data: True'" />
+
+  <node name="not_node"
+        pkg="jsk_topic_tools" type="not_node.py"
+        output="screen">
+    <remap from="~input" to="/robotsound/is_speaking" />
+    <remap from="~output" to="/robot_is_not_speaking" />
+  </node>
+
+</launch>

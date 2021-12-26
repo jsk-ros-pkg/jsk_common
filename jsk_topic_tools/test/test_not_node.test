@@ -1,15 +1,7 @@
 <launch>
 
-  <node name="is_speaking"
-        pkg="rostopic" type="rostopic"
-        args="pub -r 100 /robotsound/is_speaking std_msgs/Bool 'data: True'" />
-
-  <node name="not_node"
-        pkg="jsk_topic_tools" type="not_node.py"
-        output="screen">
-    <remap from="~input" to="/robotsound/is_speaking" />
-    <remap from="~output" to="/robot_is_not_speaking" />
-  </node>
+  <include file="$(find jsk_topic_tools)/sample/sample_not_node.launch" >
+  </include>
 
   <test test-name="test_not_node"
         name="test_not_node"
