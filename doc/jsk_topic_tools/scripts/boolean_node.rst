@@ -42,3 +42,16 @@ Parameters
 * ``~number_of_input`` (Int, Default: ``2``)
 
   Number of input.
+
+
+Example
+-------
+
+.. code-block:: bash
+
+  roslaunch jsk_topic_tools sample_boolean_node.launch
+  rostopic echo /robotsound/is_speaking
+  rostopic echo /robotsound_jp/is_speaking
+  rostopic echo /is_speaking  # or
+  rostopic echo /both_are_speaking  # and
+  rostopic echo /both_are_speaking_or_both_are_not_speaking  # xor

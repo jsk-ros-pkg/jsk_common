@@ -30,3 +30,13 @@ Parameters
 * ``~rate`` (Int, Default: ``100``)
 
   Publishing rate [Hz].
+
+
+Example
+-------
+
+.. code-block:: bash
+
+  roslaunch jsk_topic_tools sample_not_node.launch
+  rostopic echo /robotsound/is_speaking
+  rostopic echo /robot_is_not_speaking  # not
