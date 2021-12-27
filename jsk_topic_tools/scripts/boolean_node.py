@@ -64,7 +64,7 @@ class BooleanNode(object):
         self.data[topic_name] = msg.data
 
     def timer_cb(self, timer):
-        if len(self.data) == 0:
+        if len(self.data) != self.n_input:
             return
         if self.boolean_operator_str == 'not':
             flag = not list(self.data.values())[0]
