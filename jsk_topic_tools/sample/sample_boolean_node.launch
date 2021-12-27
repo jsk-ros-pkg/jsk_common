@@ -8,43 +8,16 @@
         pkg="rostopic" type="rostopic"
         args="pub -r 100 /robotsound_jp/is_speaking std_msgs/Bool 'data: False'" />
 
-  <node name="or_node"
+  <node name="boolean_node"
         pkg="jsk_topic_tools" type="boolean_node.py" >
-    <rosparam>
-      operator: or
-    </rosparam>
     <remap from="~input1" to="/robotsound/is_speaking" />
     <remap from="~input2" to="/robotsound_jp/is_speaking" />
-    <remap from="~output" to="/is_speaking" />
-  </node>
-
-  <node name="and_node"
-        pkg="jsk_topic_tools" type="boolean_node.py" >
+    <remap from="~output/or" to="/is_speaking" />
+    <remap from="~output/and" to="/both_are_speaking" />
+    <remap from="~output/xor" to="/either_one_is_speaking" />
+    <remap from="~output/not" to="/robot_is_not_speaking" />
     <rosparam>
-      operator: and
-    </rosparam>
-    <remap from="~input1" to="/robotsound/is_speaking" />
-    <remap from="~input2" to="/robotsound_jp/is_speaking" />
-    <remap from="~output" to="/both_are_speaking" />
-  </node>
-
-  <node name="xor_node"
-        pkg="jsk_topic_tools" type="boolean_node.py" >
-    <rosparam>
-      operator: xor
-    </rosparam>
-    <remap from="~input1" to="/robotsound/is_speaking" />
-    <remap from="~input2" to="/robotsound_jp/is_speaking" />
-    <remap from="~output" to="/either_one_is_speaking" />
-  </node>
-
-  <node name="not_node"
-        pkg="jsk_topic_tools" type="boolean_node.py" >
-    <remap from="~input1" to="/robotsound/is_speaking" />
-    <remap from="~output" to="/robot_is_not_speaking" />
-    <rosparam>
-      operator: not
-      number_of_input: 1
+      number_of_input: 2
     </rosparam>
   </node>
 

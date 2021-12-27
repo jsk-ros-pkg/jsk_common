@@ -19,28 +19,22 @@ OPERATORS = {
 class BooleanNode(object):
 
     def __init__(self):
-        self.pub = rospy.Publisher(
-            '~output',
-            std_msgs.msg.Bool, queue_size=1)
-        self.boolean_operator_str = rospy.get_param('~operator')
-        self.boolean_operator_str = self.boolean_operator_str.lower()
-        if self.boolean_operator_str not in OPERATORS:
-            msg = '{} not supported.'.format(self.boolean_operator_str)
-            msg += ' Supported operators are {}'.format(list(OPERATORS.keys()))
-            rospy.loerr(msg)
-            sys.exit(1)
-        self.boolean_operator = OPERATORS[self.boolean_operator_str]
-
         self.n_input = rospy.get_param('~number_of_input', 2)
         self.n_input = int(self.n_input)
-        if self.boolean_operator_str == 'not':
-            if self.n_input != 1:
-                rospy.logwarn('For not operations, '
-                              'only 1 is valid for ~number_of_input.')
-                self.n_input = 1
-        elif self.n_input <= 1:
-            rospy.logerr('~number_of_input should be greater than 1.')
+        if self.n_input <= 0:
+            rospy.logerr('~number_of_input should be greater than 0.')
             sys.exit(1)
+
+        self.pubs = {}
+        if self.n_input == 1:
+            self.pubs['not'] = rospy.Publisher(
+                '~output/not',
+                std_msgs.msg.Bool, queue_size=1)
+        else:
+            for op_str in OPERATORS:
+                self.pubs[op_str] = rospy.Publisher(
+                    '~output/{}'.format(op_str),
+                    std_msgs.msg.Bool, queue_size=1)
 
         self.data = {}
         self.subs = {}
@@ -66,12 +60,12 @@ class BooleanNode(object):
     def timer_cb(self, timer):
         if len(self.data) != self.n_input:
             return
-        if self.boolean_operator_str == 'not':
-            flag = not list(self.data.values())[0]
-        else:
-            flag = reduce(self.boolean_operator, self.data.values())
-        self.pub.publish(
-            std_msgs.msg.Bool(flag))
+        for op_str, pub in self.pubs.items():
+            if op_str == 'not':
+                flag = not list(self.data.values())[0]
+            else:
+                flag = reduce(OPERATORS[op_str], self.data.values())
+            pub.publish(std_msgs.msg.Bool(flag))
 
 
 if __name__ == '__main__':

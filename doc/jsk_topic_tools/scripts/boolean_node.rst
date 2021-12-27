@@ -5,7 +5,7 @@ boolean_node.py
 What is this?
 -------------
 
-A node that takes bool values and returns the result of the boolean operation such as ``or``, ``and``, ``not`` and ``xor``.
+A node that takes bool values and returns the results of the boolean operation such as ``or``, ``and``, ``not`` and ``xor``.
 
 For example, this node can be used to merge the results of a node that outputs whether the robot is speaking in English or Japanese.
 
@@ -25,17 +25,25 @@ In the case of ``not`` operation, only ``~input1`` is subscribed.
 Publishing Topics
 -----------------
 
-* ``~output`` (``std_msgs/Bool``)
+* ``~output/or`` (``std_msgs/Bool``)
 
-  The result of the boolean operation.
+  The result of the ``or`` operation.
+
+* ``~output/and`` (``std_msgs/Bool``)
+
+  The result of the ``and`` operation.
+
+* ``~output/not`` (``std_msgs/Bool``)
+
+  The result of the ``not`` operation.
+
+* ``~output/xor`` (``std_msgs/Bool``)
+
+  The result of the ``xor`` operation.
 
 
 Parameters
 ----------
-
-* ``~operator`` (String, required)
-
-  You can choose ``or``, ``and``, ``not`` and ``xor``.
 
 * ``~rate`` (Int, Default: ``100``)
 
@@ -43,7 +51,7 @@ Parameters
 
 * ``~number_of_input`` (Int, Default: ``2``)
 
-  Number of input.
+  Number of input. ``~number_of_input`` should be greater than 0.
 
 
 Example
