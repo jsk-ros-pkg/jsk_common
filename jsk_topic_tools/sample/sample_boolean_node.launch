@@ -38,4 +38,14 @@
     <remap from="~output" to="/either_one_is_speaking" />
   </node>
 
+  <node name="not_node"
+        pkg="jsk_topic_tools" type="boolean_node.py" >
+    <remap from="~input1" to="/robotsound/is_speaking" />
+    <remap from="~output" to="/robot_is_not_speaking" />
+    <rosparam>
+      operator: not
+      number_of_input: 1
+    </rosparam>
+  </node>
+
 </launch>

@@ -13,6 +13,8 @@
       timeout_1: 10
       topic_2: /either_one_is_speaking
       timeout_2: 10
+      topic_3: /robot_is_not_speaking
+      timeout_3: 10
     </rosparam>
   </test>
 

@@ -5,7 +5,7 @@ boolean_node.py
 What is this?
 -------------
 
-A node that takes bool values and returns the result of the boolean operation such as ``or``, ``and`` and ``xor``.
+A node that takes bool values and returns the result of the boolean operation such as ``or``, ``and``, ``not`` and ``xor``.
 
 For example, this node can be used to merge the results of a node that outputs whether the robot is speaking in English or Japanese.
 
@@ -15,6 +15,7 @@ Subscribing Topics
 
 Input is prepared for the ``~number_of_input``. A number suffix is added to the ``~input``.
 The suffixes start with ``1``. If ``~number_of_input`` equals 2, subscribing topic names are ``~input1`` and ``~input2``.
+In the case of ``not`` operation, only ``~input1`` is subscribed.
 
 * ``~input{%d}`` (``std_msgs/Bool``)
 
@@ -34,7 +35,7 @@ Parameters
 
 * ``~operator`` (String, required)
 
-  You can choose ``or``, ``and`` and ``xor``.
+  You can choose ``or``, ``and``, ``not`` and ``xor``.
 
 * ``~rate`` (Int, Default: ``100``)
 
@@ -56,3 +57,4 @@ Example
   rostopic echo /is_speaking  # or
   rostopic echo /both_are_speaking  # and
   rostopic echo /either_one_is_speaking  # xor
+  rostopic echo /robot_is_not_speaking  # not
