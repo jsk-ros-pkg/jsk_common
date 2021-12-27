@@ -17,9 +17,9 @@ Input is prepared for the ``~number_of_input``. A number suffix is added to the 
 The suffixes start with ``1``. If ``~number_of_input`` equals 2, subscribing topic names are ``~input1`` and ``~input2``.
 In the case of ``not`` operation, only ``~input1`` is subscribed.
 
-* ``~input{%d}`` (``std_msgs/Bool``)
+* ``~input{%d}`` (``AnyMsg``)
 
-  input bool value.
+  input value.
 
 
 Publishing Topics
@@ -44,6 +44,27 @@ Publishing Topics
 
 Parameters
 ----------
+
+
+* ``~input{%d}_condition`` (String, Default: ``m.data``)
+
+  Returning bool value condition using the given Python expression.
+  The Python expression can access any of the Python builtins plus:
+  ``topic`` (the topic of the message), ``m`` (the message) and ``t`` (time of message).
+
+  For example, ``~input1`` topic is ``std_msgs/String`` and if you want to check whether a sentence is a ``hello``, you can do the following.
+
+  .. code-block:: bash
+
+    input1_condition: m.data == 'hello'
+
+
+  If you want to check the frame id of the header, you can do the following.
+
+  .. code-block:: bash
+
+    input1_condition: m.header.frame_id in ['base', 'base_link']
+
 
 * ``~rate`` (Int, Default: ``100``)
 

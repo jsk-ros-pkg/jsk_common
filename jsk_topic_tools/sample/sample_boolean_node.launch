@@ -8,8 +8,21 @@
         pkg="rostopic" type="rostopic"
         args="pub -r 100 /robotsound_jp/is_speaking std_msgs/Bool 'data: False'" />
 
-  <node name="boolean_node"
-        pkg="jsk_topic_tools" type="boolean_node.py" >
+  <node name="image_pub1"
+        pkg="rostopic" type="rostopic"
+        args="pub -r 100 /image1 sensor_msgs/Image '{header: {frame_id: base}}'" />
+
+  <node name="image_pub2"
+        pkg="rostopic" type="rostopic"
+        args="pub -r 100 /image2 sensor_msgs/Image '{header: {frame_id: base_link}}'" />
+
+  <node name="hello_string_pub"
+        pkg="rostopic" type="rostopic"
+        args="pub -r 100 /chatter std_msgs/String 'data: hello'" />
+
+  <node name="boolean_node_for_speaking"
+        pkg="jsk_topic_tools" type="boolean_node.py"
+        clear_params="true" >
     <remap from="~input1" to="/robotsound/is_speaking" />
     <remap from="~input2" to="/robotsound_jp/is_speaking" />
     <remap from="~output/or" to="/is_speaking" />
@@ -18,6 +31,20 @@
     <remap from="~output/not" to="/robot_is_not_speaking" />
     <rosparam>
       number_of_input: 2
+    </rosparam>
+  </node>
+
+  <node name="boolean_node_checking_conditions"
+        pkg="jsk_topic_tools" type="boolean_node.py"
+        clear_params="true" >
+    <remap from="~input1" to="/image1" />
+    <remap from="~input2" to="/image2" />
+    <remap from="~input3" to="/chatter" />
+    <rosparam>
+      number_of_input: 3
+      input1_condition: "'base' in m.header.frame_id"
+      input2_condition: "'base' in m.header.frame_id"
+      input3_condition: m.data == 'hello'
     </rosparam>
   </node>
 
