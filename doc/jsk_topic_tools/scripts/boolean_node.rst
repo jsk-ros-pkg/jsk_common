@@ -80,10 +80,96 @@ Example
 
 .. code-block:: bash
 
-  roslaunch jsk_topic_tools sample_boolean_node.launch
-  rostopic echo /robotsound/is_speaking
-  rostopic echo /robotsound_jp/is_speaking
-  rostopic echo /is_speaking  # or
-  rostopic echo /both_are_speaking  # and
-  rostopic echo /either_one_is_speaking  # xor
-  rostopic echo /robot_is_not_speaking  # not
+  $ roslaunch jsk_topic_tools sample_boolean_node.launch
+
+
+The outputs of a simple Boolean operation are as follows.
+
+
+.. code-block:: bash
+
+  $ rostopic echo /robotsound/is_speaking -n1
+  data: True
+  ---
+  $ rostopic echo /robotsound_jp/is_speaking -n1
+  data: False
+  ---
+  $ rostopic echo /is_speaking -n1  # or
+  data: True
+  ---
+  $ rostopic echo /both_are_speaking -n1  # and
+  data: False
+  ---
+  $ rostopic echo /either_one_is_speaking -n1  # xor
+  data: True
+  ---
+
+
+In ``sample_boolean_node.launch``, there is a description that gives ``input_condition`` as follows.
+
+
+.. code-block:: XML
+
+  <node name="boolean_node_checking_conditions"
+        pkg="jsk_topic_tools" type="boolean_node.py"
+        clear_params="true" >
+    <remap from="~input1" to="/image1" />
+    <remap from="~input2" to="/image2" />
+    <remap from="~input3" to="/chatter" />
+    <rosparam>
+      number_of_input: 3
+      input1_condition: "'base' in m.header.frame_id"
+      input2_condition: "'base' in m.header.frame_id"
+      input3_condition: m.data == 'hello'
+    </rosparam>
+  </node>
+
+
+The output results when using the condition are as follows.
+
+
+.. code-block:: bash
+
+  $ rostopic echo /image1 -n1
+  header:
+    seq: 15029
+    stamp:
+      secs: 0
+      nsecs:         0
+    frame_id: "base"
+  height: 0
+  width: 0
+  encoding: ''
+  is_bigendian: 0
+  step: 0
+  data: []
+  ---
+  $ rostopic echo /image2 -n1
+  header:
+    seq: 32445
+    stamp:
+      secs: 0
+      nsecs:         0
+    frame_id: "base_link"
+  height: 0
+  width: 0
+  encoding: ''
+  is_bigendian: 0
+  step: 0
+  data: []
+  ---
+  $ rostopic echo /chatter -n1
+  data: "hello"
+  ---
+  $ rostopic echo /boolean_node_checking_conditions/output/and -n1
+  data: True
+  ---
+  $ rostopic echo /boolean_node_checking_conditions/output/not -n1
+  data: False
+  ---
+  $ rostopic echo /boolean_node_checking_conditions/output/or -n1
+  data: True
+  ---
+  $ rostopic echo /boolean_node_checking_conditions/output/xor -n1
+  data: True
+  ---
