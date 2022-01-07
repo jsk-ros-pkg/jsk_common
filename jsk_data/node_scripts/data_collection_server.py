@@ -95,6 +95,7 @@ class DataCollectionServer(object):
         self.wait_save_request = rospy.get_param('~wait_save_request', False)
         self.rosbag = rospy.get_param('~rosbag', False)
         if self.rosbag:
+            self.rosbag_process = None
             self.rosbag_topics = rospy.get_param('~rosbag_topics', [])
 
         if rospy.has_param('~with_request'):
@@ -199,11 +200,11 @@ class DataCollectionServer(object):
         cmd_rosbag = ['rosbag', 'record']
         cmd_rosbag.extend(self.rosbag_topics)
         cmd_rosbag.extend(['--output-name', filename])
-        print('subprocess cmd: {}'.format(cmd_rosbag))
         self.rosbag_process = subprocess.Popen(cmd_rosbag)
 
     def end_rosbag(self):
-        os.kill(self.rosbag_process.pid, signal.SIGTERM)
+        if self.rosbag_process:
+            os.kill(self.rosbag_process.pid, signal.SIGTERM)
 
     def save_topic(self, topic, msg, savetype, filename):
         if savetype == 'ColorImage':
@@ -296,7 +297,6 @@ class DataCollectionServer(object):
     def start_service_cb(self, req):
         self.start = True
         if self.rosbag:
-            print("rosbag start")
             self.start_rosbag()
         return TriggerResponse(success=True)
 
@@ -304,7 +304,6 @@ class DataCollectionServer(object):
         self.start = False
         if self.rosbag:
             self.end_rosbag()
-            print("rosbag stop")
         return TriggerResponse(success=True)
 
     def wait_msgs_update(self):
