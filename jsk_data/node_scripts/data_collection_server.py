@@ -97,6 +97,7 @@ class DataCollectionServer(object):
         if self.rosbag:
             self.rosbag_process = None
             self.rosbag_topics = rospy.get_param('~rosbag_topics', [])
+            self.rosbag_prefix = rospy.get_param('~rosbag_prefix', 'rosbag')
 
         if rospy.has_param('~with_request'):
             rospy.logwarn('Deprecated param: ~with_request, Use ~method')
@@ -196,7 +197,7 @@ class DataCollectionServer(object):
     def start_rosbag(self):
         postfix = rospy.Time.now()
         filename = os.path.join(
-            self.save_dir, 'rosbag-{0}'.format(postfix))
+            self.save_dir, self.rosbag_prefix + '-{0}'.format(postfix))
         cmd_rosbag = ['rosbag', 'record']
         cmd_rosbag.extend(self.rosbag_topics)
         cmd_rosbag.extend(['--output-name', filename])

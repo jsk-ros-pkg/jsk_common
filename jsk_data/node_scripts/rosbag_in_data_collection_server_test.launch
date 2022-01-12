@@ -1,0 +1,47 @@
+<launch>
+  <arg name="collect_data" default="true" />
+
+  <node name="data_collection_rosbag_test"
+        pkg="jsk_data" type="data_collection_server.py"
+        output="screen" if="$(arg collect_data)">
+    <rosparam subst_value="true">
+      message_filters: true
+      approximate_sync: true
+      save_dir: ~/Desktop/data_collection_rosbag_test
+      method: timer
+      topics:
+          - name: /kinect_head/rgb/image_rect_color
+            msg_class: sensor_msgs/Image
+            fname: pr2_image_rect_color_request.png
+            savetype: ColorImage
+      rosbag: true
+      rosbag_prefix: test
+      rosbag_topics:
+           - /rosout
+           - /tf
+           - /tf_static
+           - /joint_states
+           - /map
+           - /base_odometry/odom
+           - /robot_pose_ekf/odom_combined
+           - /base_controller/command
+           - /navigation/cmd_vel
+           - /move_base_node/NavFnROS/plan
+           - /move_base_node/DWAPlannerROS/global_plan
+           - /move_base_node/DWAPlannerROS/local_plan
+           - /move_base_node/local_costmap/costmap
+           - /move_base_node/global_costmap/costmap
+           - /move_base_node/global_costmap/footprint
+           - /safe_teleop_base/local_costmap/costmap
+           - /spots_marker_array
+           - /particlecloud
+           - /base_scan_throttled
+           - /tilt_scan_throttled
+           - /kinect_head/rgb/throttled/camera_info
+           - /kinect_head/depth_registered/throttled/camera_info
+           - /kinect_head/rgb/throttled/image_rect_color/compressed
+           - /kinect_head/depth_registered/throttled/image_rect/compressedDepth
+           - /audio
+    </rosparam>
+  </node>  
+</launch>
