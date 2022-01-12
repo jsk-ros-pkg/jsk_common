@@ -93,10 +93,9 @@ class DataCollectionServer(object):
         self.timestamp_save_dir = rospy.get_param('~timestamp_save_dir', True)
         self.wait_timer = rospy.get_param('~wait_timer', False)
         self.wait_save_request = rospy.get_param('~wait_save_request', False)
-        self.rosbag = rospy.get_param('~rosbag', False)
-        if self.rosbag:
+        self.rosbag_topics = rospy.get_param('~rosbag_topics', [])
+        if self.rosbag_topics:
             self.rosbag_process = None
-            self.rosbag_topics = rospy.get_param('~rosbag_topics', [])
             self.rosbag_prefix = rospy.get_param('~rosbag_prefix', 'rosbag')
 
         if rospy.has_param('~with_request'):
@@ -297,13 +296,13 @@ class DataCollectionServer(object):
 
     def start_service_cb(self, req):
         self.start = True
-        if self.rosbag:
+        if self.rosbag_topics:
             self.start_rosbag()
         return TriggerResponse(success=True)
 
     def end_service_cb(self, req):
         self.start = False
-        if self.rosbag:
+        if self.rosbag_topics:
             self.end_rosbag()
         return TriggerResponse(success=True)
 
