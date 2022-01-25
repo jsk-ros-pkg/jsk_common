@@ -150,6 +150,7 @@ if (CATKIN_ENABLE_TESTING)
   jsk_topic_tools_add_rostest(test/test_connection_based_transport.test)
   jsk_topic_tools_add_rostest(test/test_stealth_relay.test)
   jsk_topic_tools_add_rostest(test/test_synchronized_throttle.test)
+  jsk_topic_tools_add_rostest(test/test_static_tf_republisher.test)
   jsk_topic_tools_add_rostest(test/test_pose_stamped_publisher.test)
   jsk_topic_tools_add_rostest(test/test_python_master_util.test)
   catkin_add_nosetests(src/jsk_topic_tools/tests)
@@ -220,5 +221,4 @@ install(DIRECTORY test
 )
 install(DIRECTORY cmake config launch sample
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  USE_SOURCE_PERMISSIONS
 )
