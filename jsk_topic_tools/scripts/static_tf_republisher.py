@@ -31,7 +31,8 @@ def main():
         rospy.spin()
     else:
         broadcaster = tf2_ros.TransformBroadcaster()
-        rate = rospy.Rate(10)
+        hz = rospy.get_param('~publish_rate', 10)
+        rate = rospy.Rate(hz)
         while not rospy.is_shutdown():
             rate.sleep()
             current_time = rospy.Time.now()

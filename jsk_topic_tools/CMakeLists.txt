@@ -30,6 +30,9 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/jsk_topic_tools/nodelet_version.h.in
   ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/jsk_topic_tools/nodelet_version.h)
 
+# download and install sample data
+add_custom_target(${PROJECT_NAME}_install_sample_data ALL COMMAND python$ENV{ROS_PYTHON_VERSION} ${PROJECT_SOURCE_DIR}/scripts/install_sample_data.py)
+
 catkin_python_setup()
 add_message_files(
   FILES TopicInfo.msg
@@ -147,6 +150,7 @@ if (CATKIN_ENABLE_TESTING)
   jsk_topic_tools_add_rostest(test/test_connection_based_transport.test)
   jsk_topic_tools_add_rostest(test/test_stealth_relay.test)
   jsk_topic_tools_add_rostest(test/test_synchronized_throttle.test)
+  jsk_topic_tools_add_rostest(test/test_static_tf_republisher.test)
   jsk_topic_tools_add_rostest(test/test_pose_stamped_publisher.test)
   jsk_topic_tools_add_rostest(test/test_python_master_util.test)
   catkin_add_nosetests(src/jsk_topic_tools/tests)
@@ -217,5 +221,4 @@ install(DIRECTORY test
 )
 install(DIRECTORY cmake config launch sample
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  USE_SOURCE_PERMISSIONS
 )
