@@ -1,0 +1,32 @@
+<launch>
+    <arg name="ROSBAG" default="$(find jsk_topic_tools)/sample/data/sample_tf.bag" />
+
+    <param name="/use_sim_time" value="true" />
+    <node
+        pkg="rosbag"
+        type="play"
+        name="rosbag_play"
+        args="$(arg ROSBAG) --clock"
+        required="true"
+        />
+
+    <node
+        pkg="jsk_topic_tools"
+        type="static_tf_republisher.py"
+        name="static_tf_republisher"
+        output="screen"
+        >
+        <rosparam subst_value="true">
+            file: $(arg ROSBAG)
+            mode_static: True
+        </rosparam>
+    </node>
+
+    <node
+        pkg="rviz"
+        type="rviz"
+        name="$(anon rviz)"
+        args="-d $(find jsk_topic_tools)/sample/config/sample_static_tf_republisher.rviz"
+        required="true"
+        />
+</launch>
