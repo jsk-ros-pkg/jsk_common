@@ -3,15 +3,19 @@
 import abc
 import argparse
 from distutils.version import LooseVersion
-import pkg_resources
 import sys
 
+from diagnostic_msgs.msg import DiagnosticStatus
+import pkg_resources
 import rospy
 
 from jsk_topic_tools.name_utils import unresolve_name
+from jsk_topic_tools import TimeredDiagnosticUpdater
+from jsk_topic_tools import VitalChecker
 
 
-__all__ = ('ConnectionBasedTransport',)
+__all__ = ('ConnectionBasedTransport',
+           'DiagnosticTransport')
 
 
 SUBSCRIBED = 0
@@ -130,3 +134,47 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
         pub = rospy.Publisher(*args, **kwargs)
         self._publishers.append(pub)
         return pub
+
+
+class DiagnosticTransport(ConnectionBasedTransport):
+
+    def __init__(self, name):
+        self.name = name
+        super(DiagnosticTransport, self).__init__()
+        self.diagnostic_updater = TimeredDiagnosticUpdater(
+            rospy.Duration(1.0))
+        self.node_name = rospy.get_name()
+        self.diagnostic_updater.set_hardware_id(self.node_name)
+        self.diagnostic_updater.add('{}::{}'.format(self.node_name, self.name),
+                                    self.update_diagnostic)
+
+        self.use_warn = rospy.get_param('/diagnostic_nodelet/use_warn',
+                                        rospy.get_param('~use_warn', False))
+        if self.use_warn:
+            self.diagnostic_error_level = DiagnosticStatus.WARN
+        else:
+            self.diagnostic_error_level = DiagnosticStatus.ERROR
+        self.vital_rate = rospy.get_param('~vital_rate', 1.0)
+        self.vital_checker = VitalChecker(1.0 / self.vital_rate)
+        self.diagnostic_updater.start()
+
+    def update_diagnostic(self, stat):
+        if self._connection_status == SUBSCRIBED:
+            if self.vital_checker.is_alive():
+                stat.summary(
+                    DiagnosticStatus.OK,
+                    '{} running'.format(self.node_name))
+            else:
+                stat.summary(
+                    self.diagnostic_error_level,
+                    "{} not running for {} sec".format(
+                        self.name, self.vital_checker.dead_sec))
+        else:
+            stat.summary(
+                DiagnosticStatus.OK,
+                '{} is not subscribed'.format(self.node_name))
+        topic_names = ', '.join([pub.name for pub in self._publishers])
+        stat.add('watched topics', topic_names)
+        for pub in self._publishers:
+            stat.add(pub.name, '{} subscribers'.format(
+                pub.get_num_connections()))
