@@ -136,7 +136,13 @@ it will change to the diagnostics message `/simple_image_transport is running`.
 
 ![](images/diagnostics_is_running.jpg)
 
-If the mux feature leaves no input for the `simple_image_transport` node,
+
+```bash
+# terminal 5:
+rosservice call /mux/select input_dummy
+```
+
+When changing input for `simple_image_transport` by mux,
 the error message will change to `/simple_image_transport is not running`.
 
 ![](images/diagnostics_is_not_running.jpg)
