@@ -11,7 +11,6 @@ import rospy
 
 from jsk_topic_tools.name_utils import unresolve_name
 from jsk_topic_tools import TimeredDiagnosticUpdater
-from jsk_topic_tools import VitalChecker
 
 
 __all__ = ('ConnectionBasedTransport',
@@ -50,6 +49,17 @@ class MetaConnectionBasedTransport(abc.ABCMeta):
 
         obj._post_init()
         return obj
+
+
+class _Publisher(rospy.Publisher):
+
+    def __init__(self, *args, **kwargs):
+        super(_Publisher, self).__init__(*args, **kwargs)
+        self.last_published_time = rospy.Time.from_sec(0)
+
+    def publish(self, *args, **kwargs):
+        super(_Publisher, self).publish(*args, **kwargs)
+        self.last_published_time = rospy.Time.now()
 
 
 class ConnectionBasedTransport(rospy.SubscribeListener):
@@ -131,7 +141,7 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
         assert kwargs.get('subscriber_listener') is None
         kwargs['subscriber_listener'] = self
 
-        pub = rospy.Publisher(*args, **kwargs)
+        pub = _Publisher(*args, **kwargs)
         self._publishers.append(pub)
         return pub
 
@@ -155,12 +165,19 @@ class DiagnosticTransport(ConnectionBasedTransport):
         else:
             self.diagnostic_error_level = DiagnosticStatus.ERROR
         self.vital_rate = rospy.get_param('~vital_rate', 1.0)
-        self.vital_checker = VitalChecker(1.0 / self.vital_rate)
+        self.dead_duration = 1.0 / self.vital_rate
         self.diagnostic_updater.start()
+
+    def _is_running(self):
+        current_time = rospy.Time.now()
+        return all([
+            (current_time.to_sec() - pub.last_published_time.to_sec())
+            < self.dead_duration
+            for pub in self._publishers])
 
     def update_diagnostic(self, stat):
         if self._connection_status == SUBSCRIBED:
-            if self.vital_checker.is_alive():
+            if self._is_running():
                 stat.summary(
                     DiagnosticStatus.OK,
                     '{} running'.format(self.node_name))
@@ -168,7 +185,7 @@ class DiagnosticTransport(ConnectionBasedTransport):
                 stat.summary(
                     self.diagnostic_error_level,
                     "{} not running for {} sec".format(
-                        self.name, self.vital_checker.dead_sec))
+                        self.name, self.dead_duration))
         else:
             stat.summary(
                 DiagnosticStatus.OK,

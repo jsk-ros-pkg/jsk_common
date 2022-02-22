@@ -20,7 +20,6 @@ class SimpleImageTransport(DiagnosticTransport):
         self.sub_img.unregister()
 
     def _process(self, img_msg):
-        self.vital_checker.poke()
         self._pub.publish(img_msg)
 
 
