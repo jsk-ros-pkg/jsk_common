@@ -176,11 +176,11 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
             if self._is_running():
                 stat.summary(
                     DiagnosticStatus.OK,
-                    '{} running'.format(self.node_name))
+                    '{} is running'.format(self.node_name))
             else:
                 stat.summary(
                     self.diagnostic_error_level,
-                    "{} not running for {} sec".format(
+                    "{} is not running for {} sec".format(
                         self.node_name, self.dead_duration))
         else:
             stat.summary(
