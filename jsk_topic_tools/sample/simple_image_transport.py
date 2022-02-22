@@ -5,12 +5,12 @@ import rospy
 
 from sensor_msgs.msg import Image
 
-from jsk_topic_tools import DiagnosticTransport
+from jsk_topic_tools import ConnectionBasedTransport
 
 
-class SimpleImageTransport(DiagnosticTransport):
+class SimpleImageTransport(ConnectionBasedTransport):
     def __init__(self):
-        super(SimpleImageTransport, self).__init__('simple_image_transport')
+        super(SimpleImageTransport, self).__init__()
         self._pub = self.advertise('~output', Image, queue_size=1)
 
     def subscribe(self):

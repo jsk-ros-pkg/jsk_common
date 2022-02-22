@@ -13,8 +13,7 @@ from jsk_topic_tools.name_utils import unresolve_name
 from jsk_topic_tools import TimeredDiagnosticUpdater
 
 
-__all__ = ('ConnectionBasedTransport',
-           'DiagnosticTransport')
+__all__ = ('ConnectionBasedTransport',)
 
 
 SUBSCRIBED = 0
@@ -72,6 +71,26 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
         self._publishers = []
         self._ever_subscribed = False
         self._connection_status = NOT_SUBSCRIBED
+
+        if rospy.get_param('~enable_vital_check', True):
+            self.diagnostic_updater = TimeredDiagnosticUpdater(
+                rospy.Duration(1.0))
+            self.node_name = rospy.get_name()
+            self.diagnostic_updater.set_hardware_id(self.node_name)
+            self.diagnostic_updater.add(self.node_name,
+                                        self.update_diagnostic)
+
+            self.use_warn = rospy.get_param(
+                '/diagnostic_nodelet/use_warn',
+                rospy.get_param('~use_warn', False))
+            if self.use_warn:
+                self.diagnostic_error_level = DiagnosticStatus.WARN
+            else:
+                self.diagnostic_error_level = DiagnosticStatus.ERROR
+            self.vital_rate = rospy.get_param('~vital_rate', 1.0)
+            self.dead_duration = 1.0 / self.vital_rate
+            self.diagnostic_updater.start()
+
         kwargs = dict(
             period=rospy.Duration(5),
             callback=self._warn_never_subscribed_cb,
@@ -101,6 +120,13 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
                 '[{name}] subscribes topics only with'
                 " child subscribers. Set '~always_subscribe' as True"
                 ' to have it subscribe always.'.format(name=rospy.get_name()))
+
+    def _is_running(self):
+        current_time = rospy.Time.now()
+        return all([
+            (current_time.to_sec() - pub.last_published_time.to_sec())
+            < self.dead_duration
+            for pub in self._publishers])
 
     @abc.abstractmethod
     def subscribe(self):
@@ -145,36 +171,6 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
         self._publishers.append(pub)
         return pub
 
-
-class DiagnosticTransport(ConnectionBasedTransport):
-
-    def __init__(self, name):
-        self.name = name
-        super(DiagnosticTransport, self).__init__()
-        self.diagnostic_updater = TimeredDiagnosticUpdater(
-            rospy.Duration(1.0))
-        self.node_name = rospy.get_name()
-        self.diagnostic_updater.set_hardware_id(self.node_name)
-        self.diagnostic_updater.add('{}::{}'.format(self.node_name, self.name),
-                                    self.update_diagnostic)
-
-        self.use_warn = rospy.get_param('/diagnostic_nodelet/use_warn',
-                                        rospy.get_param('~use_warn', False))
-        if self.use_warn:
-            self.diagnostic_error_level = DiagnosticStatus.WARN
-        else:
-            self.diagnostic_error_level = DiagnosticStatus.ERROR
-        self.vital_rate = rospy.get_param('~vital_rate', 1.0)
-        self.dead_duration = 1.0 / self.vital_rate
-        self.diagnostic_updater.start()
-
-    def _is_running(self):
-        current_time = rospy.Time.now()
-        return all([
-            (current_time.to_sec() - pub.last_published_time.to_sec())
-            < self.dead_duration
-            for pub in self._publishers])
-
     def update_diagnostic(self, stat):
         if self._connection_status == SUBSCRIBED:
             if self._is_running():
@@ -185,7 +181,7 @@ class DiagnosticTransport(ConnectionBasedTransport):
                 stat.summary(
                     self.diagnostic_error_level,
                     "{} not running for {} sec".format(
-                        self.name, self.dead_duration))
+                        self.node_name, self.dead_duration))
         else:
             stat.summary(
                 DiagnosticStatus.OK,
