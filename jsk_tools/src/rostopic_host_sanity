@@ -13,8 +13,7 @@ import rosgraph
 
 def main():
     master = rosgraph.Master('/ros_host_sanity')
-    state = master.getSystemState()
-    pubs, subs, _ = state
+    pubs, subs = rostopic.get_topic_list(master=master)
 
     host_pub_topics, host_sub_topics = rostopic._rostopic_list_group_by_host(
         master, pubs, subs)
