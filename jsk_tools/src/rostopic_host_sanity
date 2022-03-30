@@ -13,13 +13,17 @@ import rosgraph
 
 def main():
     master = rosgraph.Master('/ros_host_sanity')
-    state = master.getSystemState()
-    pubs, subs, _ = state
+    if 'get_topic_list' in dir(rostopic):
+        pubs, subs = rostopic.get_topic_list(master=master)
+    else:
+        # get_topic_list only available since ros_topic 1.13.7 (indigo)
+        state = master.getSystemState()
+        pubs, subs, _ = state
 
     host_pub_topics, host_sub_topics = rostopic._rostopic_list_group_by_host(
         master, pubs, subs)
 
-    hostnames = set(host_pub_topics.keys() + host_sub_topics.keys())
+    hostnames = set(list(host_pub_topics.keys()) + list(host_sub_topics.keys()))
     for hostname in hostnames:
         cmd = 'ping -c 1 -W 1 {}'.format(hostname)
         ret = subprocess.call(shlex.split(cmd),
