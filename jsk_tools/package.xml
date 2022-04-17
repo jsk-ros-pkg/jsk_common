@@ -27,6 +27,8 @@
   <exec_depend>python-rosdep</exec_depend>
   <exec_depend>python-slacker-cli</exec_depend>
   <exec_depend>python-tabulate-pip</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-tabulate</exec_depend> <!-- python-tabulate enable since xenial (16.04) kinetic -->
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-tabulate</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-texttable</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-texttable</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-requests</exec_depend>
