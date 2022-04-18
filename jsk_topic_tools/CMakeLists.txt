@@ -12,6 +12,7 @@ if (CMAKE_VERSION VERSION_LESS 3.4)
 endif()
 
 find_package(catkin REQUIRED COMPONENTS
+  diagnostic_updater
   dynamic_reconfigure
   eigen_conversions
   geometry_msgs
