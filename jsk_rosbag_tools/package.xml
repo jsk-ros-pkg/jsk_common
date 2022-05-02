@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>jsk_rosbag_tools</name>
+  <version>0.0.1</version>
+  <description>The rosbag tools</description>
+  <license>BSD</license>
+
+  <maintainer email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</maintainer>
+  <author email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>python3-catkin-pkg-modules</buildtool_depend>
+
+  <build_depend version_gte="0.6.1">catkin_virtualenv</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend condition="$ROS_PYTHON_VERSION == 2">cv_bridge_python3</build_depend>  <!-- for melodic -->
+  <build_depend>sensor_msgs</build_depend>
+  <exec_depend>python3-empy</exec_depend>
+  <exec_depend>python3-gnupg</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-pycryptodome</exec_depend>
+  <exec_depend>python3-rospkg-modules</exec_depend>
+  <exec_depend>python3-setuptools</exec_depend>
+  <exec_depend>python3-termcolor</exec_depend>
+  <exec_depend>python3-tqdm</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>libsndfile1-dev</exec_depend>
+
+  <test_depend>roslint</test_depend>
+  <test_depend>rostest</test_depend>
+
+  <export>
+    <pip_requirements>requirements.txt</pip_requirements>
+  </export>
+</package>

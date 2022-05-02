@@ -19,6 +19,7 @@
   <exec_depend>audio_video_recorder</exec_depend>
   <exec_depend>dynamic_tf_publisher</exec_depend>
   <exec_depend>image_view2</exec_depend>
+  <exec_depend>jsk_rosbag_tools</exec_depend>
   <exec_depend>jsk_topic_tools</exec_depend>
   <exec_depend>jsk_tools</exec_depend>
   <exec_depend>multi_map_server</exec_depend>
