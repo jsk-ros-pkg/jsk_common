@@ -45,14 +45,14 @@ class WrenchTransform(ConnectionBasedTransport):
             return
         rot = transform.transform.rotation
         matrix = quaternion2matrix([rot.x, rot.y, rot.z, rot.w])[:3, :3]
-        force = np.matmul(matrix,
-                          [msg.wrench.force.x,
-                           msg.wrench.force.y,
-                           msg.wrench.force.z])
-        torque = np.matmul(matrix,
-                           [msg.wrench.torque.x,
-                            msg.wrench.torque.y,
-                            msg.wrench.torque.z])
+        force = np.dot(matrix,
+                       [msg.wrench.force.x,
+                        msg.wrench.force.y,
+                        msg.wrench.force.z])
+        torque = np.dot(matrix,
+                        [msg.wrench.torque.x,
+                         msg.wrench.torque.y,
+                         msg.wrench.torque.z])
         msg.wrench.force.x, msg.wrench.force.y, msg.wrench.force.z = force
         msg.wrench.torque.x, msg.wrench.torque.y, msg.wrench.torque.z = torque
         msg.header.frame_id = self.target_frame_id
