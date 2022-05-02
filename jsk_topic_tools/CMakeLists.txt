@@ -31,6 +31,13 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/jsk_topic_tools/nodelet_version.h.in
   ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/jsk_topic_tools/nodelet_version.h)
 
+catkin_download(download_sample_pr2_wrench-2022-05-02 https://drive.google.com/uc?id=1ym_fxRTNZOTp4PCXIq_spJwFktoOkLDK
+  DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/sample/data
+  FILENAME sample_pr2_wrench-2022-05-02.bag
+  MD5 0e2d0d431f10875cb372c85faf32b91e
+)
+add_custom_target(download ALL DEPENDS download_extra_data)
+
 catkin_python_setup()
 add_message_files(
   FILES TopicInfo.msg
