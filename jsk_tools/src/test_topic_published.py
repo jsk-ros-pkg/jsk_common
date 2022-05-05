@@ -8,7 +8,7 @@ import unittest
 
 from nose.tools import assert_false
 from nose.tools import assert_true
-
+import rosnode
 import rospy
 import rostopic
 
@@ -57,6 +57,12 @@ class TestTopicPublished(unittest.TestCase):
         if not self.topics:
             rospy.logerr('No topic is specified.')
             sys.exit(1)
+        self.check_after_kill_node = rospy.get_param(
+            '~check_after_kill_node', False)
+        if self.check_after_kill_node:
+            self.target_node_names = rospy.get_param('~node_names')
+            if not isinstance(self.target_node_names, list):
+                self.target_node_names = [self.target_node_names]
 
     def test_published(self):
         """Test topics are published and messages come"""
@@ -70,6 +76,16 @@ class TestTopicPublished(unittest.TestCase):
                 self.fail('Timed out (10s) of /clock publication.')
             time.sleep(1)
 
+        self._check_topic_pubilshed()
+
+        if self.check_after_kill_node:
+            rospy.logwarn('Check topic published after killing nodes ({})'.
+                          format(self.target_node_names))
+            rosnode.kill_nodes(self.target_node_names)
+            time.sleep(5.0)
+            self._check_topic_pubilshed()
+
+    def _check_topic_pubilshed(self):
         checkers = []
         for topic_name, timeout, negative in zip(
                 self.topics, self.timeouts, self.negatives):
@@ -94,7 +110,12 @@ class TestTopicPublished(unittest.TestCase):
                     assert_true(
                         ret, 'Topic [%s] is not published' %
                              checker.topic_name)
-            rospy.sleep(0.01)
+            try:
+                rospy.sleep(0.01)
+            except rospy.exceptions.ROSTimeMovedBackwardsException:
+                continue
+        if len(topics_finished) != len(checkers):
+            raise ValueError('Not all topics are received')
 
 
 if __name__ == '__main__':
