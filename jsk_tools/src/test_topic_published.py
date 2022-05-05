@@ -60,9 +60,16 @@ class TestTopicPublished(unittest.TestCase):
         self.check_after_kill_node = rospy.get_param(
             '~check_after_kill_node', False)
         if self.check_after_kill_node:
-            self.target_node_names = rospy.get_param('~node_names')
-            if not isinstance(self.target_node_names, list):
-                self.target_node_names = [self.target_node_names]
+            target_node_names = rospy.get_param('~node_names')
+            if not isinstance(target_node_names, list):
+                target_node_names = [target_node_names]
+            namespace = rospy.get_namespace()
+            self.target_node_names = []
+            for name in target_node_names:
+                if name.startswith('/'):
+                    self.target_node_names.append(name)
+                else:
+                    self.target_node_names.append(namespace + name)
 
     def test_published(self):
         """Test topics are published and messages come"""
