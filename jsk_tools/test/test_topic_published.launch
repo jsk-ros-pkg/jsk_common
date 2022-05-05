@@ -2,7 +2,8 @@
 
   <node name="publish_string"
         pkg="rostopic" type="rostopic"
-        args="pub /string std_msgs/String 'data: spam' -r 1">
+        args="pub /string std_msgs/String 'data: spam' -r 1"
+        respawn="true">
   </node>
 
   <test test-name="test_topic_published"
@@ -11,6 +12,8 @@
     <rosparam>
       topic_0: /string
       timeout_0: 10
+      check_after_kill_node: true
+      node_names: [publish_string,]
     </rosparam>
   </test>
 
