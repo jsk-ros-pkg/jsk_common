@@ -123,10 +123,12 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
 
     def _is_running(self):
         current_time = rospy.Time.now()
+        # check subscribed topics are published.
         return all([
             (current_time.to_sec() - pub.last_published_time.to_sec())
             < self.dead_duration
-            for pub in self._publishers])
+            for pub in self._publishers
+            if pub.get_num_connections() > 0])
 
     @abc.abstractmethod
     def subscribe(self):
