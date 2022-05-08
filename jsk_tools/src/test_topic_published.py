@@ -120,6 +120,9 @@ class TestTopicPublished(unittest.TestCase):
             try:
                 rospy.sleep(0.01)
             except rospy.exceptions.ROSTimeMovedBackwardsException:
+                # Avoid ending test with this sentence
+                # if time loops when playing rosbag.
+                # See https://github.com/jsk-ros-pkg/jsk_recognition/pull/2682#issuecomment-1120381822
                 continue
             except rospy.exceptions.ROSInterruptException:
                 not_finished_topics = [topic for topic in self.topics
