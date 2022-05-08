@@ -123,7 +123,7 @@ class TestTopicPublished(unittest.TestCase):
                 continue
             except rospy.exceptions.ROSInterruptException:
                 not_finished_topics = [topic for topic in self.topics
-                                       if not topic in topics_finished]
+                                       if topic not in topics_finished]
                 rospy.logerr('Not received topic {}'.format(
                     not_finished_topics))
                 sys.exit(0)
