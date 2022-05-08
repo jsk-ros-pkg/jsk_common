@@ -64,6 +64,7 @@ class TestDataCollectionServer(unittest.TestCase):
         self.assertTrue(ret.success)
 
         save_dir = rospy.get_param('/save_dir_request')
+        save_dir = save_dir.rstrip()
         save_dir = osp.expanduser(save_dir)
         self.check(save_dir, target='string')
 
@@ -78,6 +79,7 @@ class TestDataCollectionServer(unittest.TestCase):
         self.assertTrue(ret.success)
 
         save_dir = rospy.get_param('/save_dir_timer')
+        save_dir = save_dir.rstrip()
         save_dir = osp.expanduser(save_dir)
         self.check(save_dir, target='string')
 
@@ -86,6 +88,7 @@ class TestDataCollectionServer(unittest.TestCase):
         rospy.sleep(2)
 
         save_dir = rospy.get_param('/save_dir_all')
+        save_dir = save_dir.rstrip()
         save_dir = osp.expanduser(save_dir)
         self.check(save_dir, target='image')
 

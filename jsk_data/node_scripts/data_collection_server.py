@@ -169,6 +169,8 @@ class DataCollectionServer(object):
 
     def reconfig_cb(self, config, level):
         self.save_dir = osp.expanduser(config['save_dir'])
+        # remove newline and whitespace.
+        self.save_dir = self.save_dir.rstrip()
         if not osp.exists(self.save_dir):
             os.makedirs(self.save_dir)
         return config
