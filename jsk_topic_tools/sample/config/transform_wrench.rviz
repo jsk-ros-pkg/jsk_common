@@ -6,6 +6,8 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /RightEndeffectorWrench1
+        - /InverseWrenchStamped1
       Splitter Ratio: 0.7200854420661926
     Tree Height: 839
   - Class: rviz/Selection
@@ -856,7 +858,7 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Alpha: 1
+    - Alpha: 0.800000011920929
       Arrow Width: 0.5
       Class: rviz/WrenchStamped
       Enabled: true
@@ -886,6 +888,21 @@ Visualization Manager:
       Torque Color: 204; 204; 51
       Unreliable: false
       Value: true
+    - Alpha: 0.800000011920929
+      Arrow Width: 0.5
+      Class: rviz/WrenchStamped
+      Enabled: false
+      Force Arrow Scale: 0.05000000074505806
+      Force Color: 138; 226; 52
+      Hide Small Values: true
+      History Length: 1
+      Name: InverseWrenchStamped
+      Queue Size: 10
+      Topic: /right_endeffector/inverse_transformed_wrench
+      Torque Arrow Scale: 0.20000000298023224
+      Torque Color: 32; 74; 135
+      Unreliable: false
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -914,7 +931,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.2110676765441895
+      Distance: 6.497435569763184
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -930,9 +947,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6003982424736023
+      Pitch: 0.5953981280326843
       Target Frame: <Fixed Frame>
-      Yaw: 6.223592281341553
+      Yaw: 6.188604354858398
     Saved: ~
 Window Geometry:
   Displays:
