@@ -44,6 +44,7 @@ class WrenchTransform(ConnectionBasedTransport):
             rospy.logwarn('{}'.format(e))
             return
         rot = transform.transform.rotation
+        trans = transform.transform.translation
         matrix = quaternion2matrix([rot.x, rot.y, rot.z, rot.w])[:3, :3]
         force = np.dot(matrix,
                        [msg.wrench.force.x,
@@ -52,7 +53,8 @@ class WrenchTransform(ConnectionBasedTransport):
         torque = np.dot(matrix,
                         [msg.wrench.torque.x,
                          msg.wrench.torque.y,
-                         msg.wrench.torque.z])
+                         msg.wrench.torque.z]) + np.cross(
+                             [trans.x, trans.y, trans.z], force)
         msg.wrench.force.x, msg.wrench.force.y, msg.wrench.force.z = force
         msg.wrench.torque.x, msg.wrench.torque.y, msg.wrench.torque.z = torque
         msg.header.frame_id = self.target_frame_id
