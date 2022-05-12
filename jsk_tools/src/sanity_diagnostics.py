@@ -48,7 +48,7 @@ class SanityDiagnostics(object):
         if topic_state:
             stat.summary(DiagnosticStatus.OK, 'Topic is published')
         else:
-            stat.summary(DiagnosticStatus.OK, 'Topic is not published')
+            stat.summary(DiagnosticStatus.ERROR, 'Topic is not published')
         return stat
 
     def check_node(self, stat, node_name):
