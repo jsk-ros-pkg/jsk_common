@@ -128,6 +128,7 @@ class AudibleWarning(object):
 
         speak_rate = rospy.get_param("~speak_rate", 1.0)
         speak_wait = rospy.get_param("~speak_wait", True)
+        self.warn_stale = rospy.get_param('~warn_stale', False)
         blacklist = rospy.get_param("~blacklist", [])
         self.speak_thread = SpeakThread(speak_rate, speak_wait, blacklist)
 
@@ -148,7 +149,11 @@ class AudibleWarning(object):
             return
 
         error = filter(lambda s: s.level == DiagnosticStatus.ERROR, msg.status)
-        stale = filter(lambda s: s.level == DiagnosticStatus.STALE, msg.status)
+        if self.warn_stale:
+            stale = filter(lambda s: s.level == DiagnosticStatus.STALE,
+                           msg.status)
+        else:
+            stale = []
         self.speak_thread.add(stale, error)
 
 
