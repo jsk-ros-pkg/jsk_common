@@ -29,13 +29,13 @@ class SanityDiagnostics(object):
         self.updater = diagnostic_updater.Updater()
         self.updater.setHardwareID("none")
         for topic_name in topics:
-            def check_topic(stat):
-                self.check_topic(stat, topic_name)
-            self.updater.add(topic_name, check_topic)
+            self.updater.add(
+                topic_name,
+                lambda stat, tn=topic_name: self.check_topic(stat, tn))
         for node_name in nodes:
-            def check_node(stat):
-                self.check_node(stat, node_name)
-            self.updater.add(node_name, check_node)
+            self.updater.add(
+                node_name,
+                lambda stat, nn=node_name: self.check_node(stat, nn))
         # Timer to call updater
         self.timer = rospy.Timer(
             rospy.Duration(duration), self.check_sanity)
