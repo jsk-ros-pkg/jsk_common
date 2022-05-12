@@ -8,6 +8,7 @@ import os
 import subprocess
 from threading import Lock
 import sys
+from importlib import import_module
 import math
 try:
     import colorama
@@ -59,13 +60,27 @@ class TopicPublishedChecker(object):
         self.deadline = rospy.Time.now() + rospy.Duration(timeout)
         self.echo = echo
         self.echo_noarr = echo_noarr
+        self.data_class = data_class
+
+        self.sub = rospy.Subscriber(
+            self.topic_name,
+            rospy.msg.AnyMsg,
+            callback=self.callback,
+            queue_size=1)
         print(' Checking %s for %d seconds' % (topic_name, timeout))
-        msg_class, _, _ = rostopic.get_topic_class(topic_name, blocking=True)
-        if (data_class is not None) and (msg_class is not data_class):
-            raise rospy.ROSException('Topic msg type is different.')
-        self.sub = rospy.Subscriber(topic_name, msg_class, self.callback)
 
     def callback(self, msg):
+        # Do not check topic type until the first topic comes in
+        if isinstance(msg, rospy.AnyMsg):
+            package, msg_type = msg._connection_header['type'].split('/')
+            ros_pkg = package + '.msg'
+            msg_class = getattr(import_module(ros_pkg), msg_type)
+            if (self.data_class is not None) and (msg_class is not self.data_class):
+                raise rospy.ROSException('Topic msg type is different.')
+            self.sub.unregister()
+            deserialized_sub = rospy.Subscriber(
+                self.topic_name, msg_class, self.callback)
+            self.sub = deserialized_sub
         if self.echo and self.msg is None:  # this is first time
             print(colored('--- Echo %s' % self.topic_name, 'purple'))
             field_filter = rostopic.create_field_filter(echo_nostr=False, echo_noarr=self.echo_noarr)
