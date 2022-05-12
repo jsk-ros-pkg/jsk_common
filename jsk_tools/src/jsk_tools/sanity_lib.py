@@ -199,19 +199,23 @@ def checkNodeState(target_node_name, needed, sub_success="", sub_fail=""):
             okMessage("Node " + target_node_name + " exists")
             if sub_success:
                 print(Fore.GREEN+"    "+sub_success+ Fore.RESET)
+            return True
         else:
             errorMessage("Node " + target_node_name + " exists unexpecetedly. This should be killed with rosnode kill")
             if sub_fail:
                 print(Fore.RED+"    "+sub_fail+ Fore.RESET)
+            return False
     else:
         if needed:
             errorMessage("Node " + target_node_name + " doesn't exists. This node is NEEDED")
             if sub_fail:
                 print(Fore.RED+"    "+sub_fail+ Fore.RESET)
+            return False
         else:
             okMessage("Node " + target_node_name + " doesn't exists")
             if sub_success:
                 print(Fore.GREEN+"    "+sub_success+ Fore.RESET)
+            return True
 
 def checkUSBExist(vendor_id, product_id, expect_usb_nums = 1, host="", success_msg = "", error_msg = ""):
     """check USB Exists
