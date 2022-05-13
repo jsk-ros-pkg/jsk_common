@@ -44,7 +44,8 @@ class SanityDiagnostics(object):
         self.updater.update()
 
     def check_topic(self, stat, topic_name):
-        topic_state = checkTopicIsPublished(topic_name)
+        # Assume that topic is published at more than (1.0 / timeout) Hz
+        topic_state = checkTopicIsPublished(topic_name, timeout=10)
         if topic_state:
             stat.summary(DiagnosticStatus.OK, 'Topic is published')
         else:
