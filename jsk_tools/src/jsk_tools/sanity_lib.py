@@ -90,12 +90,15 @@ class TopicPublishedChecker(object):
 
     def check(self):
         while not rospy.is_shutdown():
-            if self.msg is not None:
+            if self.msg is not None and not isinstance(self.msg, rospy.AnyMsg):
                 return True
             elif rospy.Time.now() > self.deadline:
                 return False
             else:
                 rospy.sleep(0.1)
+
+    def unregister(self):
+        self.sub.unregister()
 
 
 def checkTopicIsPublished(topic_name, class_name = None,
@@ -124,6 +127,7 @@ def checkTopicIsPublished(topic_name, class_name = None,
         if not checker.check():
             errorMessage(" %s is not published" % checker.topic_name)
             all_success = False
+        checker.unregister()
     if not all_success:
         if error_message:
             errorMessage(error_message)
