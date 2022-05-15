@@ -13,37 +13,8 @@ from sound_play.msg import SoundRequestGoal
 from diagnostic_msgs.msg import DiagnosticArray
 from diagnostic_msgs.msg import DiagnosticStatus
 
-cached_paths = {}
-cached_result = {}
-
-
-def is_leaf(original_path):
-    if hasattr(cached_result, original_path):
-        return cached_result[original_path]
-
-    path = original_path[1:].split('/')
-
-    def _is_leaf(cached, path):
-        if not isinstance(path, list):
-            raise ValueError
-        if len(path) == 0:
-            raise ValueError
-        if len(path) == 1:
-            if path[0] in cached:
-                return False
-            else:
-                return True
-
-        parent = path[0]
-        child = path[1:]
-        if parent not in cached:
-            cached[parent] = {}
-        return _is_leaf(cached[parent], child)
-
-    result = _is_leaf(cached_paths, path)
-    if result is False:
-        cached_result[original_path] = result
-    return result
+from jsk_tools.diagnostics_utils import is_leaf
+from jsk_tools.diagnostics_utils import filter_diagnostics_status_list
 
 
 class SpeakThread(Thread):
