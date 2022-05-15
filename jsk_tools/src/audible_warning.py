@@ -2,70 +2,59 @@
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict
-import actionlib
-import rospy
 from threading import Event
-from threading import Thread
 from threading import Lock
+from threading import Thread
+
+import actionlib
+from diagnostic_msgs.msg import DiagnosticArray
+from diagnostic_msgs.msg import DiagnosticStatus
+import rospy
 from sound_play.msg import SoundRequest
 from sound_play.msg import SoundRequestAction
 from sound_play.msg import SoundRequestGoal
-from diagnostic_msgs.msg import DiagnosticArray
-from diagnostic_msgs.msg import DiagnosticStatus
 
-from jsk_tools.diagnostics_utils import is_leaf
 from jsk_tools.diagnostics_utils import filter_diagnostics_status_list
 
 
 class SpeakThread(Thread):
 
-    def __init__(self, rate=1.0, wait=True, blacklist=None):
+    def __init__(self, rate=1.0, wait=True, blacklist=None,
+                 language='en', wait_speak_duration_time=10):
         super(SpeakThread, self).__init__()
-        self.memo = {}
+        self.wait_speak_duration_time = wait_speak_duration_time
         self.event = Event()
         self.rate = rate
         self.wait = wait
         self.lock = Lock()
-        self.stale = []
-        self.error = []
+        self.status_list = []
         self.history = defaultdict(lambda: 10)
         self.blacklist = blacklist
+        self.language = language
 
         self.talk = actionlib.SimpleActionClient(
             "/robotsound", SoundRequestAction)
         self.talk.wait_for_server()
 
-        self.language = 'en'
-
     def stop(self):
         self.event.set()
 
-    def sort(self, error):
-        ret = {}
-        for s in error:
-            ns = s.name.split()[0]
-            if is_leaf(ns) is False:
-                continue
-            if any(filter(lambda n: n in ns, self.blacklist)):
-                continue
-            ret[ns] = s
-        return ret.values()
-
-    def add(self, stale, error):
+    def add(self, status_list):
         with self.lock:
-            self.stale = self.sort(stale)
-            self.error = self.sort(error)
+            self.status_list = filter_diagnostics_status_list(
+                status_list,
+                self.blacklist)
 
     def pop(self):
         with self.lock:
-            for e in self.stale + self.error:
-                if e.name not in self.history.keys():
-                    self.history[e.name] += 1
-                    return e
+            for status in self.status_list:
+                if status.name not in self.history.keys():
+                    self.history[status.name] += 1
+                    return status
             return None
 
     def sweep(self):
-        for k in self.history.keys():
+        for k in list(self.history.keys()):
             self.history[k] -= 1
             if self.history[k] == 0:
                 del self.history[k]
@@ -87,7 +76,8 @@ class SpeakThread(Thread):
 
                 self.talk.send_goal(goal)
                 if self.wait:
-                    self.talk.wait_for_result(rospy.Duration(10.0))
+                    self.talk.wait_for_result(
+                        rospy.Duration(self.wait_speak_duration_time))
             self.sweep()
 
 
