@@ -90,23 +90,31 @@ class SpeakThread(Thread):
 
 
 class AudibleWarning(object):
-    def __init__(self):
-        self.history = []
-        self.error = []
-        self.stale = []
 
+    def __init__(self):
         speak_rate = rospy.get_param("~speak_rate", 1.0)
-        speak_wait = rospy.get_param("~speak_wait", True)
-        self.warn_stale = rospy.get_param('~warn_stale', False)
+        wait_speak = rospy.get_param("~wait_speak", True)
+        language = rospy.get_param('~language', 'en')
+
+        self.diagnostics_list = []
+        if rospy.get_param("~speak_warn", True):
+            self.diagnostics_list.append(DiagnosticStatus.WARN)
+        if rospy.get_param("~speak_error", True):
+            self.diagnostics_list.append(DiagnosticStatus.ERROR)
+        if rospy.get_param("~speak_stale", True):
+            self.diagnostics_list.append(DiagnosticStatus.STALE)
+
         blacklist = rospy.get_param("~blacklist", [])
-        self.speak_thread = SpeakThread(speak_rate, speak_wait, blacklist)
+        self.speak_thread = SpeakThread(speak_rate, wait_speak, blacklist,
+                                        language)
 
         # run-stop
         self.run_stop = False
 
         # diag
-        self.sub_diag = rospy.Subscriber("/diagnostics_agg", DiagnosticArray,
-                                         self.diag_cb, queue_size=1)
+        self.sub_diag = rospy.Subscriber(
+            "/diagnostics_agg", DiagnosticArray,
+            self.diag_cb, queue_size=1)
         self.speak_thread.start()
 
     def on_shutdown(self):
@@ -116,14 +124,9 @@ class AudibleWarning(object):
     def diag_cb(self, msg):
         if self.run_stop:
             return
-
-        error = filter(lambda s: s.level == DiagnosticStatus.ERROR, msg.status)
-        if self.warn_stale:
-            stale = filter(lambda s: s.level == DiagnosticStatus.STALE,
-                           msg.status)
-        else:
-            stale = []
-        self.speak_thread.add(stale, error)
+        target_status_list = filter(lambda n: n.level in self.diagnostics_list,
+                                    msg.status)
+        self.speak_thread.add(target_status_list)
 
 
 if __name__ == '__main__':
