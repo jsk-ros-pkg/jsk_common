@@ -63,10 +63,18 @@ class SpeakThread(Thread):
         while not self.event.wait(self.rate):
             e = self.pop()
             if e:
-                # rospy.loginfo("audible warning talking: %s" % e)
-                sentence = e.name + ' ' + e.message
-                sentence = sentence.replace('/', '   ')
-                sentence = sentence.replace('_', '   ')
+                if e.level == DiagnosticStatus.WARN:
+                    prefix = 'warning.'
+                elif e.level == DiagnosticStatus.ERROR:
+                    prefix = 'error.'
+                elif e.level == DiagnosticStatus.STALE:
+                    prefix = 'stale.'
+                else:
+                    prefix = 'ok.'
+                sentence = prefix + e.name + ' ' + e.message
+                sentence = sentence.replace('/', ' ')
+                sentence = sentence.replace('_', ' ')
+                rospy.loginfo("audible warning talking: %s" % sentence)
 
                 goal = SoundRequestGoal()
                 goal.sound_request.sound = SoundRequest.SAY
