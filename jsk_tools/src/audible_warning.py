@@ -3,6 +3,7 @@
 
 from collections import defaultdict
 import heapq
+from importlib import import_module
 from threading import Event
 from threading import Lock
 from threading import Thread
@@ -16,6 +17,12 @@ from sound_play.msg import SoundRequestAction
 from sound_play.msg import SoundRequestGoal
 
 from jsk_tools.diagnostics_utils import filter_diagnostics_status_list
+
+
+def expr_eval(expr):
+    def eval_fn(topic, m, t):
+        return eval(expr)
+    return eval_fn
 
 
 class SpeakThread(Thread):
@@ -119,6 +126,16 @@ class AudibleWarning(object):
 
         # run-stop
         self.run_stop = False
+        self.run_stop_topic = rospy.get_param('~run_stop_topic', None)
+        if self.run_stop_topic:
+            run_stop_condition = rospy.get_param(
+                '~run_stop_condition', 'm.data == True')
+            self.run_stop_condition = expr_eval(run_stop_condition)
+            self.run_stop_sub = rospy.Subscriber(
+                self.run_stop_topic,
+                rospy.AnyMsg,
+                callback=self.run_stop_callback,
+                queue_size=1)
 
         # diag
         self.sub_diag = rospy.Subscriber(
@@ -126,12 +143,26 @@ class AudibleWarning(object):
             self.diag_cb, queue_size=1)
         self.speak_thread.start()
 
+    def run_stop_callback(self, msg):
+        if isinstance(msg, rospy.msg.AnyMsg):
+            package, msg_type = msg._connection_header['type'].split('/')
+            ros_pkg = package + '.msg'
+            msg_class = getattr(import_module(ros_pkg), msg_type)
+            self.run_stop_sub.unregister()
+            deserialized_sub = rospy.Subscriber(
+                self.run_stop_topic, msg_class, self.run_stop_callback)
+            self.run_stop_sub = deserialized_sub
+            return
+        self.run_stop = self.run_stop_condition(
+            self.run_stop_topic, msg, rospy.Time.now())
+
     def on_shutdown(self):
         self.speak_thread.stop()
         self.speak_thread.join()
 
     def diag_cb(self, msg):
         if self.run_stop:
+            rospy.logdebug('RUN STOP is pressed. Do not speak warning.')
             return
         target_status_list = filter(lambda n: n.level in self.diagnostics_list,
                                     msg.status)
