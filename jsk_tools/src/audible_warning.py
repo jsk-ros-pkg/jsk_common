@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict
+import heapq
 from threading import Event
 from threading import Lock
 from threading import Thread
@@ -20,15 +21,21 @@ from jsk_tools.diagnostics_utils import filter_diagnostics_status_list
 class SpeakThread(Thread):
 
     def __init__(self, rate=1.0, wait=True, blacklist=None,
-                 language='en', wait_speak_duration_time=10):
+                 language='en',
+                 volume=1.0,
+                 speak_interval=0,
+                 wait_speak_duration_time=10):
         super(SpeakThread, self).__init__()
         self.wait_speak_duration_time = wait_speak_duration_time
         self.event = Event()
         self.rate = rate
         self.wait = wait
+        self.volume = volume
         self.lock = Lock()
         self.status_list = []
-        self.history = defaultdict(lambda: 10)
+        self.speak_interval = speak_interval
+        tm = rospy.Time.now().to_sec() - speak_interval
+        self.previous_spoken_time = defaultdict(lambda tm=tm: tm)
         self.blacklist = blacklist
         self.language = language
 
@@ -41,23 +48,23 @@ class SpeakThread(Thread):
 
     def add(self, status_list):
         with self.lock:
-            self.status_list = filter_diagnostics_status_list(
-                status_list,
-                self.blacklist)
+            status_list = filter_diagnostics_status_list(
+                status_list, self.blacklist)
+            for status in status_list:
+                heapq.heappush(
+                    self.status_list,
+                    (rospy.Time.now().to_sec(), status))
 
     def pop(self):
         with self.lock:
-            for status in self.status_list:
-                if status.name not in self.history.keys():
-                    self.history[status.name] += 1
-                    return status
+            while len(self.status_list) > 0:
+                _, status = heapq.heappop(self.status_list)
+                if rospy.Time.now().to_sec() \
+                        - self.previous_spoken_time[status.name] \
+                        < self.speak_interval:
+                    continue
+                return status
             return None
-
-    def sweep(self):
-        for k in list(self.history.keys()):
-            self.history[k] -= 1
-            if self.history[k] == 0:
-                del self.history[k]
 
     def run(self):
         while not self.event.wait(self.rate):
@@ -80,20 +87,22 @@ class SpeakThread(Thread):
                 goal.sound_request.sound = SoundRequest.SAY
                 goal.sound_request.command = SoundRequest.PLAY_ONCE
                 goal.sound_request.arg = sentence
-                goal.sound_request.volume = 1.0
+                goal.sound_request.volume = self.volume
 
+                self.previous_spoken_time[e.name] = rospy.Time.now().to_sec()
                 self.talk.send_goal(goal)
                 if self.wait:
                     self.talk.wait_for_result(
                         rospy.Duration(self.wait_speak_duration_time))
-            self.sweep()
 
 
 class AudibleWarning(object):
 
     def __init__(self):
         speak_rate = rospy.get_param("~speak_rate", 1.0)
+        speak_interval = rospy.get_param("~speak_interval", 120.0)
         wait_speak = rospy.get_param("~wait_speak", True)
+        volume = rospy.get_param("~volume", 1.0)
         language = rospy.get_param('~language', 'en')
 
         self.diagnostics_list = []
@@ -106,7 +115,7 @@ class AudibleWarning(object):
 
         blacklist = rospy.get_param("~blacklist", [])
         self.speak_thread = SpeakThread(speak_rate, wait_speak, blacklist,
-                                        language)
+                                        language, volume, speak_interval)
 
         # run-stop
         self.run_stop = False
