@@ -7,9 +7,9 @@
         pkg="jsk_tools" type="test_topic_published.py">
     <rosparam>
       topic_0: /diagnostics
-      timeout_0: 10
+      timeout_0: 30
       topic_1: /diagnostics_agg
-      timeout_1: 10
+      timeout_1: 30
     </rosparam>
   </test>
 
