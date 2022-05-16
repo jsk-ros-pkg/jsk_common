@@ -3,7 +3,7 @@
     <arg name="gui" value="false"/>
   </include>
 
-  <test test-name="test_diagnostics" name="test_diagnostics"
+  <test test-name="test_sanity_diagnostics" name="test_sanity_diagnostics"
         pkg="jsk_tools" type="test_topic_published.py">
     <rosparam>
       topic_0: /diagnostics
