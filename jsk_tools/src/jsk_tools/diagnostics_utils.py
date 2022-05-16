@@ -49,7 +49,7 @@ def filter_diagnostics_status_list(status_list, blacklist):
     """
     ret = {}
     for s in status_list:
-        ns = s.name.split()[0]
+        ns = s.name
         if is_leaf(ns) is False:
             continue
         if any(filter(lambda n: n in ns, blacklist)):
