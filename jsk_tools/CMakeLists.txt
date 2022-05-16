@@ -74,7 +74,7 @@ install(DIRECTORY test
   USE_SOURCE_PERMISSIONS
   PATTERN "*.test" EXCLUDE
   )
-install(DIRECTORY src dot-files cmake launch
+install(DIRECTORY src dot-files cmake launch sample
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
   )
