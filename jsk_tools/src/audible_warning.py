@@ -28,7 +28,7 @@ def expr_eval(expr):
 class SpeakThread(Thread):
 
     def __init__(self, rate=1.0, wait=True, blacklist=None,
-                 language='en',
+                 language='',
                  volume=1.0,
                  speak_interval=0,
                  seconds_to_start_speaking=0,
@@ -97,7 +97,7 @@ class SpeakThread(Thread):
                 goal.sound_request.sound = SoundRequest.SAY
                 goal.sound_request.command = SoundRequest.PLAY_ONCE
                 goal.sound_request.arg = sentence
-                goal.sound_request.language = self.language
+                goal.sound_request.arg2 = self.language
                 goal.sound_request.volume = self.volume
 
                 self.previous_spoken_time[e.name] = rospy.Time.now().to_sec()
@@ -114,7 +114,7 @@ class AudibleWarning(object):
         speak_interval = rospy.get_param("~speak_interval", 120.0)
         wait_speak = rospy.get_param("~wait_speak", True)
         volume = rospy.get_param("~volume", 1.0)
-        language = rospy.get_param('~language', 'en')
+        language = rospy.get_param('~language', '')
         seconds_to_start_speaking = rospy.get_param(
             '~seconds_to_start_speaking', 0)
 
