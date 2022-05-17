@@ -17,6 +17,7 @@ from sound_play.msg import SoundRequestAction
 from sound_play.msg import SoundRequestGoal
 
 from jsk_tools.diagnostics_utils import filter_diagnostics_status_list
+from jsk_tools.diagnostics_utils import is_leaf
 
 
 def expr_eval(expr):
@@ -67,6 +68,8 @@ class SpeakThread(Thread):
         with self.lock:
             while len(self.status_list) > 0:
                 _, status = heapq.heappop(self.status_list)
+                if is_leaf(status.name) is False:
+                    continue
                 if rospy.Time.now().to_sec() \
                         - self.previous_spoken_time[status.name] \
                         < self.speak_interval:
