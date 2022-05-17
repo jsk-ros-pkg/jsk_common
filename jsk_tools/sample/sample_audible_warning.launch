@@ -1,0 +1,39 @@
+<launch>
+
+  <arg name="gui" default="true" />
+  <arg name="device" default="" />
+
+  <node name="pseudo_diagnostics"
+        pkg="jsk_tools" type="pseudo_diagnostics.py"
+        output="screen">
+  </node>
+
+  <node name="diagnostic_aggregator"
+        pkg="diagnostic_aggregator" type="aggregator_node"
+        clear_params="true" >
+    <rosparam command="load" file="$(find jsk_tools)/sample/config/diagnostics_analyzer.yaml" />
+  </node>
+
+  <node name="sound_play"
+        pkg="sound_play" type="soundplay_node.py">
+    <param name="device" value="$(arg device)" />
+    <param name="loop_rate" value="100" />
+  </node>
+
+  <node name="audible_warning_for_fetch"
+        pkg="jsk_tools" type="audible_warning.py"
+        output="screen" >
+    <remap from="/robotsound" to="/sound_play" />
+    <rosparam>
+      speak_interval: 0
+      seconds_to_start_speaking: 5
+    </rosparam>
+  </node>
+
+  <group if="$(arg gui)" >
+    <node name="robot_monitor"
+          pkg="rqt_robot_monitor" type="rqt_robot_monitor" >
+    </node>
+  </group>
+
+</launch>
