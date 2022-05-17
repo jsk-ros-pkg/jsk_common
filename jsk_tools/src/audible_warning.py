@@ -4,6 +4,7 @@
 from collections import defaultdict
 import heapq
 from importlib import import_module
+import re
 from threading import Event
 from threading import Lock
 from threading import Thread
@@ -137,6 +138,7 @@ class AudibleWarning(object):
             self.diagnostics_list.append(DiagnosticStatus.STALE)
 
         blacklist = rospy.get_param("~blacklist", [])
+        blacklist = list(map(re.compile, blacklist))
         self.speak_thread = SpeakThread(speak_rate, wait_speak, blacklist,
                                         language, volume, speak_interval,
                                         seconds_to_start_speaking)
