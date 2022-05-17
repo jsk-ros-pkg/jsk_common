@@ -31,7 +31,6 @@ class SpeakThread(Thread):
                  language='',
                  volume=1.0,
                  speak_interval=0,
-                 seconds_to_start_speaking=0,
                  wait_speak_duration_time=10):
         super(SpeakThread, self).__init__()
         self.wait_speak_duration_time = wait_speak_duration_time
@@ -43,8 +42,7 @@ class SpeakThread(Thread):
         self.status_list = []
         self.speak_interval = speak_interval
         tm = rospy.Time.now().to_sec() \
-            - speak_interval \
-            + seconds_to_start_speaking
+            - speak_interval
         self.previous_spoken_time = defaultdict(lambda tm=tm: tm)
         self.blacklist = blacklist
         self.language = language
@@ -117,6 +115,14 @@ class AudibleWarning(object):
         language = rospy.get_param('~language', '')
         seconds_to_start_speaking = rospy.get_param(
             '~seconds_to_start_speaking', 0)
+
+        # Wait until seconds_to_start_speaking the time has passed.
+        rate = rospy.Rate(10)
+        start_time = rospy.Time.now()
+        while not rospy.is_shutdown() \
+                and (rospy.Time.now() - start_time).to_sec() \
+                < seconds_to_start_speaking:
+            rate.sleep()
 
         self.diagnostics_list = []
         if rospy.get_param("~speak_warn", True):
