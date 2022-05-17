@@ -98,7 +98,8 @@ class SpeakThread(Thread):
                 goal.sound_request.command = SoundRequest.PLAY_ONCE
                 goal.sound_request.arg = sentence
                 goal.sound_request.arg2 = self.language
-                goal.sound_request.volume = self.volume
+                if hasattr(goal.sound_request, 'volume'):
+                    goal.sound_request.volume = self.volume
 
                 self.previous_spoken_time[e.name] = rospy.Time.now().to_sec()
                 self.talk.send_goal(goal)
