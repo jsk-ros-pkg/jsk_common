@@ -2,6 +2,7 @@
 
   <arg name="gui" default="true" />
   <arg name="device" default="" />
+  <arg name="launch_sound_play" default="true" />
 
   <node name="pseudo_diagnostics"
         pkg="jsk_tools" type="pseudo_diagnostics.py"
@@ -15,7 +16,8 @@
   </node>
 
   <node name="sound_play"
-        pkg="sound_play" type="soundplay_node.py">
+        pkg="sound_play" type="soundplay_node.py"
+        if="$(arg launch_sound_play)" >
     <param name="device" value="$(arg device)" />
     <param name="loop_rate" value="100" />
   </node>
