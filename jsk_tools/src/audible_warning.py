@@ -29,7 +29,7 @@ def expr_eval(expr):
 
 class SpeakThread(Thread):
 
-    def __init__(self, rate=1.0, wait=True, blacklist=None,
+    def __init__(self, rate=1.0, wait=True,
                  language='',
                  volume=1.0,
                  speak_interval=0,
@@ -46,7 +46,6 @@ class SpeakThread(Thread):
         tm = rospy.Time.now().to_sec() \
             - speak_interval
         self.previous_spoken_time = defaultdict(lambda tm=tm: tm)
-        self.blacklist = blacklist
         self.language = language
 
         self.talk = actionlib.SimpleActionClient(
@@ -58,8 +57,6 @@ class SpeakThread(Thread):
 
     def add(self, status_list):
         with self.lock:
-            status_list = filter_diagnostics_status_list(
-                status_list, self.blacklist)
             for status in status_list:
                 heapq.heappush(
                     self.status_list,
@@ -138,8 +135,20 @@ class AudibleWarning(object):
             self.diagnostics_list.append(DiagnosticStatus.STALE)
 
         blacklist = rospy.get_param("~blacklist", [])
-        blacklist = list(map(re.compile, blacklist))
-        self.speak_thread = SpeakThread(speak_rate, wait_speak, blacklist,
+        self.blacklist_names = []
+        self.blacklist_messages = []
+        for bl in blacklist:
+            if 'name' not in bl:
+                name = re.compile(r'.')
+            else:
+                name = re.compile(bl['name'])
+            self.blacklist_names.append(name)
+            if 'message' not in bl:
+                message = re.compile(r'.')
+            else:
+                message = re.compile(bl['message'])
+            self.blacklist_messages.append(message)
+        self.speak_thread = SpeakThread(speak_rate, wait_speak,
                                         language, volume, speak_interval,
                                         seconds_to_start_speaking)
 
@@ -153,7 +162,19 @@ class AudibleWarning(object):
                 '~run_stop_condition', 'm.data == True')
             run_stop_blacklist = rospy.get_param(
                 '~run_stop_blacklist', [])
-            self.run_stop_blacklist = list(map(re.compile, run_stop_blacklist))
+            self.run_stop_blacklist_names = []
+            self.run_stop_blacklist_messages = []
+            for bl in run_stop_blacklist:
+                if 'name' not in bl:
+                    name = re.compile(r'.')
+                else:
+                    name = re.compile(bl['name'])
+                self.run_stop_blacklist_names.append(name)
+                if 'message' not in bl:
+                    message = re.compile(r'.')
+                else:
+                    message = re.compile(bl['message'])
+                self.run_stop_blacklist_messages.append(message)
             self.run_stop_condition = expr_eval(run_stop_condition)
             self.run_stop_sub = rospy.Subscriber(
                 self.run_stop_topic,
@@ -186,20 +207,21 @@ class AudibleWarning(object):
         self.speak_thread.join()
 
     def diag_cb(self, msg):
+        target_status_list = filter(
+            lambda n: n.level in self.diagnostics_list,
+            msg.status)
         if self.run_stop:
             if self.speak_when_runstopped is False:
                 rospy.logdebug('RUN STOP is pressed. Do not speak warning.')
                 return
 
-            filtered_status = []
-            for status in msg.status:
-                for bn in self.run_stop_blacklist:
-                    if re.match(status.name, bn):
-                        filtered_status.append(status)
-                        break
-            msg.status = filtered_status
-        target_status_list = filter(lambda n: n.level in self.diagnostics_list,
-                                    msg.status)
+            target_status_list = filter_diagnostics_status_list(
+                target_status_list,
+                self.run_stop_blacklist_names,
+                self.run_stop_blacklist_messages)
+
+        target_status_list = filter_diagnostics_status_list(
+            target_status_list, self.blacklist_names, self.blacklist_messages)
         self.speak_thread.add(target_status_list)
 
 
