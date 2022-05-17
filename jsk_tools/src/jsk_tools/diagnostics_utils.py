@@ -1,3 +1,4 @@
+import itertools
 import re
 
 
@@ -34,28 +35,40 @@ def is_leaf(original_path):
     return result
 
 
-def filter_diagnostics_status_list(status_list, blacklist):
+def filter_diagnostics_status_list(status_list, blacklist,
+                                   blacklist_messages=None):
     """Filter list of DiagnosticStatus.
 
     Parameters
     ----------
-    status_list : diagnostic_msgs.msg._DiagnosticStatus.DiagnosticStatus
+    status_list : List[DiagnosticStatus]
         List of DiagnosticStatus.
-    black_list : List[str]
+    blacklist : List[str] or List[re.Pattern]
         List of blacklist.
         The path of the name contained in this list is ignored.
+    blacklist_messages : List[str] or List[re.Pattern]
+        List of blacklist for message.
+        This has a one-to-one correspondence with blacklist.
 
     Returns
     -------
-    ret.values() : Dict[str, DiagnosticStatus]
-        Key is namespace and value is status.
+    filtered_status : List[DiagnosticStatus]
+        List of filtered diagnostics status.
     """
-    ret = {}
+    blacklist_messages = blacklist_messages or []
+    filtered_status = []
     for s in status_list:
         ns = s.name
         if is_leaf(ns) is False:
             continue
-        if any(filter(lambda n: re.match(n, ns), blacklist)):
+        matched = False
+        for bn, message in itertools.zip_longest(
+                blacklist, blacklist_messages):
+            if re.match(bn, ns):
+                if message is None or re.match(message, s.message):
+                    matched = True
+                    break
+        if matched is True:
             continue
-        ret[ns] = s
-    return ret.values()
+        filtered_status.append(s)
+    return filtered_status
