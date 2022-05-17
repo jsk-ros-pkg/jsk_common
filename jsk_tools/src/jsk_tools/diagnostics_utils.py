@@ -1,3 +1,6 @@
+import re
+
+
 cached_paths = {}
 cached_result = {}
 
@@ -52,7 +55,7 @@ def filter_diagnostics_status_list(status_list, blacklist):
         ns = s.name
         if is_leaf(ns) is False:
             continue
-        if any(filter(lambda n: n in ns, blacklist)):
+        if any(filter(lambda n: re.match(n, ns), blacklist)):
             continue
         ret[ns] = s
     return ret.values()
