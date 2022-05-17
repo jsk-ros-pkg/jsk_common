@@ -89,6 +89,7 @@ class SpeakThread(Thread):
                 sentence = prefix + e.name + ' ' + e.message
                 sentence = sentence.replace('/', ' ')
                 sentence = sentence.replace('_', ' ')
+                rospy.loginfo('audible warning error name "{}"'.format(e.name))
                 rospy.loginfo("audible warning talking: %s" % sentence)
 
                 goal = SoundRequestGoal()
