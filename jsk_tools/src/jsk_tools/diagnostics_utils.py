@@ -1,4 +1,7 @@
-import itertools
+try:
+    from itertools import zip_longest
+except:
+    from itertools import izip_longest as zip_longest
 import re
 
 
@@ -62,7 +65,7 @@ def filter_diagnostics_status_list(status_list, blacklist,
         if is_leaf(ns) is False:
             continue
         matched = False
-        for bn, message in itertools.zip_longest(
+        for bn, message in zip_longest(
                 blacklist, blacklist_messages):
             if re.match(bn, ns):
                 if message is None or re.match(message, s.message):
