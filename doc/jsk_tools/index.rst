@@ -32,6 +32,14 @@ This package includes several useful tools and library for ROS software.
 .. toctree::
    :glob:
    :maxdepth: 1
+   :caption: jsk_tools scripts
+
+   ./scripts/*
+
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
    :caption: Dot Files
 
    ./dot-files/*
