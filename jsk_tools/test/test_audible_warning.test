@@ -1,0 +1,17 @@
+<launch>
+
+  <include file="$(find jsk_tools)/sample/sample_audible_warning.launch" >
+    <arg name="device" value="plughw:100,0" />  <!-- pseudo device -->
+    <arg name="gui" value="false" />
+  </include>
+
+  <test test-name="test_topic_published"
+        name="test_topic_published"
+        pkg="jsk_tools" type="test_topic_published.py">
+    <rosparam>
+      topic_0: /sound_play/goal
+      timeout_0: 10
+    </rosparam>
+  </test>
+
+</launch>
