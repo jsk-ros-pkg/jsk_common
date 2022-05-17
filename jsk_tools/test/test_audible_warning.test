@@ -5,8 +5,8 @@
     <arg name="gui" value="false" />
   </include>
 
-  <test test-name="test_topic_published"
-        name="test_topic_published"
+  <test test-name="test_audible_warning"
+        name="test_audible_warning"
         pkg="jsk_tools" type="test_topic_published.py">
     <rosparam>
       topic_0: /sound_play/goal
