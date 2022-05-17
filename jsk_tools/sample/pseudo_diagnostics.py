@@ -2,7 +2,7 @@
 
 import diagnostic_msgs
 import diagnostic_updater
-from packaging import version
+from distutils.version import LooseVersion as version
 import pkg_resources
 import rospy
 
@@ -34,8 +34,8 @@ class PseudoDiagnostics(object):
             callback=self.update_diagnostics,
             oneshot=False,
         )
-        if version.parse(pkg_resources.get_distribution('rospy').version) \
-                >= version.parse('1.12.0'):
+        if version(pkg_resources.get_distribution('rospy').version) \
+                >= version('1.12.0'):
             # on >=kinetic, it raises ROSTimeMovedBackwardsException
             # when we use rosbag play --loop.
             kwargs['reset'] = True
