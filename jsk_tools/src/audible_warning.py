@@ -144,15 +144,21 @@ class AudibleWarning(object):
                                         seconds_to_start_speaking)
 
         # run-stop
+        self.speak_when_runstopped = rospy.get_param(
+            '~speak_when_runstopped', True)
         self.run_stop = False
         self.run_stop_topic = rospy.get_param('~run_stop_topic', None)
         if self.run_stop_topic:
             run_stop_condition = rospy.get_param(
                 '~run_stop_condition', 'm.data == True')
+            run_stop_blacklist = rospy.get_param(
+                '~run_stop_blacklist', [])
+            self.run_stop_blacklist = list(map(re.compile, run_stop_blacklist))
             self.run_stop_condition = expr_eval(run_stop_condition)
             self.run_stop_sub = rospy.Subscriber(
                 self.run_stop_topic,
                 rospy.AnyMsg,
+
                 callback=self.run_stop_callback,
                 queue_size=1)
 
@@ -181,8 +187,17 @@ class AudibleWarning(object):
 
     def diag_cb(self, msg):
         if self.run_stop:
-            rospy.logdebug('RUN STOP is pressed. Do not speak warning.')
-            return
+            if self.speak_when_runstopped is False:
+                rospy.logdebug('RUN STOP is pressed. Do not speak warning.')
+                return
+
+            filtered_status = []
+            for status in msg.status:
+                for bn in self.run_stop_blacklist:
+                    if re.match(status.name, bn):
+                        filtered_status.append(status)
+                        break
+            msg.status = filtered_status
         target_status_list = filter(lambda n: n.level in self.diagnostics_list,
                                     msg.status)
         self.speak_thread.add(target_status_list)
