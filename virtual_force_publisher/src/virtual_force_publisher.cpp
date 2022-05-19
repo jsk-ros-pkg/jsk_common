@@ -141,6 +141,7 @@ namespace virtual_force_publisher{
 		KDL::Wrench    F_pub;
 		tf::Vector3 tf_force;
 		tf::Vector3 tf_torque;
+		tf::Vector3 tf_pub_force;        
 
                 tau.resize(chain_.getNrOfJoints());
 
@@ -210,8 +211,11 @@ namespace virtual_force_publisher{
 		}
 		for (unsigned int j=0; j<3; j++){
 		  F_pub.force[j] = transform.getBasis()[j].dot(tf_force);
-		  F_pub.torque[j] = transform.getBasis()[j].dot(tf_torque);
 		}
+		tf::vectorKDLToTF(F_pub.force, tf_pub_force);
+        for (unsigned int j=0; j<3; j++){
+          F_pub.torque[j] = transform.getBasis()[j].dot(tf_torque)+transform.getOrigin().cross(tf_pub_force)[j];
+        }
 
                 geometry_msgs::WrenchStamped msg;
                 msg.header.stamp = state->header.stamp;
