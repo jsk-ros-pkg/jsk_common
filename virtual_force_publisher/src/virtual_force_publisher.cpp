@@ -109,6 +109,10 @@ namespace virtual_force_publisher{
         }
         ~VirtualForcePublisher() { }
 
+        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> calculateSRInverse(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> J, double k = 1.0) {
+          return (J.transpose() * (J * J.transpose() + k * Eigen::MatrixXd::Identity(J.rows(), J.rows())).inverse()).transpose();
+        }
+
         void callbackJointState(const JointStateConstPtr& state)
         {
             std::map<std::string, double> joint_name_position;
@@ -163,11 +167,7 @@ namespace virtual_force_publisher{
 		
 		jnt_to_jac_solver_->JntToJac(jnt_pos_, jacobian_);
 		jac_t = jacobian_.data.transpose();
-		if ( jacobian_.columns() >= jacobian_.rows() ) {
-		  jac_t_pseudo_inv =(jac_t.transpose() * jac_t).inverse() *  jac_t.transpose();
-		} else {
-		  jac_t_pseudo_inv =jac_t.transpose() * ( jac_t *  jac_t.transpose() ).inverse();
-		}
+		jac_t_pseudo_inv = calculateSRInverse(jacobian_.data);
 #if 1
 		{
 		  ROS_DEBUG("jac_t# jac_t : ");
