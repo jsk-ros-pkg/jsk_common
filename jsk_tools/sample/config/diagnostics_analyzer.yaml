@@ -1,0 +1,33 @@
+analyzers:
+  topics:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Topics
+    analyzers:
+      head_camera:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: HeadCamera
+        contains: 'head_camera'
+        num_items: 1
+  nodes:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Nodes
+    analyzers:
+      robot_driver:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: RobotDriver
+        contains: 'robot_driver'
+        num_items: 1
+  cameras:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Sensors
+    analyzers:
+      pseudo_diagnostics1:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: sensor1
+        find_and_remove_prefix: 'pseudo_diagnostics: '
+        num_items: 1
+      pseudo_diagnostics2:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: sensor2
+        find_and_remove_prefix: 'pseudo_diagnostics: '
+        num_items: 1

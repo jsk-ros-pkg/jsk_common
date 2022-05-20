@@ -1,0 +1,42 @@
+<launch>
+  <arg name="gui" default="true" />
+
+  <!-- Publish target topic -->
+  <node name="image_publisher" pkg="rostopic" type="rostopic"
+        args="pub -s /head_camera/rgb/image_raw sensor_msgs/Image &quot;{
+              'header': {
+                'seq': 0,
+                'stamp': {'secs': 0, 'nsecs': 0},
+                'frame_id': ''
+                },
+              'height': 0,
+              'width': 0,
+              'encoding': '',
+              'is_bigendian': 0,
+              'step': 0,
+              'data': ''}&quot;" />
+
+  <!-- Launch target node -->
+  <node name="robot_driver" pkg="rostopic" type="rostopic"
+        args="pub -s /test std_msgs/Empty {}" />
+
+  <!-- Publish /diagnostics -->
+  <node name="sanity_diagnostics" pkg="jsk_tools" type="sanity_diagnostics.py">
+    <rosparam command="load" file="$(find jsk_tools)/sample/config/sanity_targets.yaml" />
+    <rosparam subst_value="true">
+      duration: 1
+    </rosparam>
+  </node>
+
+  <!-- Publish /diagnostics_agg -->
+  <node name="diagnostic_aggregator"
+        pkg="diagnostic_aggregator" type="aggregator_node"
+        clear_params="true" >
+    <rosparam command="load" file="$(find jsk_tools)/sample/config/diagnostics_analyzer.yaml" />
+  </node>
+
+  <!-- Visualize diagnostic aggregator -->
+  <node if="$(arg gui)"
+        name="rqt_robot_monitor" pkg="rqt_robot_monitor" type="rqt_robot_monitor" />
+
+</launch>
