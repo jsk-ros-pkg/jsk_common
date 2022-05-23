@@ -12,7 +12,7 @@
   <node name="diagnostic_aggregator"
         pkg="diagnostic_aggregator" type="aggregator_node"
         clear_params="true" >
-    <rosparam command="load" file="$(find jsk_tools)/sample/config/diagnostics_analyzer.yaml" />
+    <rosparam command="load" file="$(find jsk_tools)/sample/config/sample_audible_warning_diagnostics_analyzer.yaml" />
   </node>
 
   <node name="sound_play"

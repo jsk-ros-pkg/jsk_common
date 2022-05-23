@@ -1,0 +1,15 @@
+analyzers:
+  cameras:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Sensors
+    analyzers:
+      pseudo_diagnostics1:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: sensor1
+        find_and_remove_prefix: 'pseudo_diagnostics: '
+        num_items: 1
+      pseudo_diagnostics2:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: sensor2
+        find_and_remove_prefix: 'pseudo_diagnostics: '
+        num_items: 1
