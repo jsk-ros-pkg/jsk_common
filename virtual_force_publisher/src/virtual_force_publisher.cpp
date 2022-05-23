@@ -110,7 +110,7 @@ namespace virtual_force_publisher{
         ~VirtualForcePublisher() { }
 
         Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> calculateSRInverse(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> J, double k = 1.0) {
-          return (J.transpose() * (J * J.transpose() + k * Eigen::MatrixXd::Identity(J.rows(), J.rows())).inverse()).transpose();
+          return (J.transpose() * J + k * Eigen::MatrixXd::Identity(J.cols(), J.cols())).inverse() * J.transpose();
         }
 
         void callbackJointState(const JointStateConstPtr& state)
@@ -167,7 +167,7 @@ namespace virtual_force_publisher{
 		
 		jnt_to_jac_solver_->JntToJac(jnt_pos_, jacobian_);
 		jac_t = jacobian_.data.transpose();
-		jac_t_pseudo_inv = calculateSRInverse(jacobian_.data);
+		jac_t_pseudo_inv = calculateSRInverse(jac_t);
 #if 1
 		{
 		  ROS_DEBUG("jac_t# jac_t : ");
