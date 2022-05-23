@@ -110,7 +110,11 @@ namespace virtual_force_publisher{
         ~VirtualForcePublisher() { }
 
         Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> calculateSRInverse(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> J, double k = 1.0) {
-          return (J.transpose() * J + k * Eigen::MatrixXd::Identity(J.cols(), J.cols())).inverse() * J.transpose();
+          if (J.cols() < J.rows()) {
+            return (J.transpose() * J + k * Eigen::MatrixXd::Identity(J.cols(), J.cols())).inverse() * J.transpose();
+          } else {
+            return J.transpose() * (J * J.transpose() + k * Eigen::MatrixXd::Identity(J.rows(), J.rows())).inverse();
+          }
         }
 
         void callbackJointState(const JointStateConstPtr& state)
