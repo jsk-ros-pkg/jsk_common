@@ -30,6 +30,16 @@ class TestDataCollectionServer(unittest.TestCase):
     def setUp(self):
         rospy.init_node(NAME)
 
+    def _wait_until_data_saved(self, target_dir):
+        rate = rospy.Rate(10)
+        while not rospy.is_shutdown():
+            if len(os.listdir(target_dir)) > 0:
+                break
+            try:
+                rate.sleep()
+            except rospy.exceptions.ROSTimeMovedBackwardsException:
+                continue
+
     def check(self, save_dir, target='string'):
         sub_dirs = os.listdir(save_dir)
         self.assertGreater(len(sub_dirs), 0)
@@ -56,7 +66,6 @@ class TestDataCollectionServer(unittest.TestCase):
     def test_request(self):
         rospy.wait_for_message('/sample_topic', String)
         rospy.wait_for_service('/data_collection_server_request/save_request')
-        rospy.sleep(2)
         save_request = rospy.ServiceProxy(
             '/data_collection_server_request/save_request', Trigger
         )
@@ -66,6 +75,7 @@ class TestDataCollectionServer(unittest.TestCase):
         save_dir = rospy.get_param('/save_dir_request')
         save_dir = save_dir.rstrip()
         save_dir = osp.expanduser(save_dir)
+        self._wait_until_data_saved(save_dir)
         self.check(save_dir, target='string')
 
     def test_timer(self):
@@ -75,21 +85,21 @@ class TestDataCollectionServer(unittest.TestCase):
             '/data_collection_server_timer/start_request', Trigger
         )
         ret = start_request()
-        rospy.sleep(2)
         self.assertTrue(ret.success)
 
         save_dir = rospy.get_param('/save_dir_timer')
         save_dir = save_dir.rstrip()
         save_dir = osp.expanduser(save_dir)
+        self._wait_until_data_saved(save_dir)
         self.check(save_dir, target='string')
 
     def test_all(self):
         rospy.wait_for_message('/static_image_publisher/output', Image)
-        rospy.sleep(2)
 
         save_dir = rospy.get_param('/save_dir_all')
         save_dir = save_dir.rstrip()
         save_dir = osp.expanduser(save_dir)
+        self._wait_until_data_saved(save_dir)
         self.check(save_dir, target='image')
 
 
