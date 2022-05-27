@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+
+import rospy
+from image_view2.image_capture_utils import capture_image
+import sys
+import argparse
+from cv_bridge import CvBridge
+
+
+def main():
+
+    myargv = rospy.myargv(argv=sys.argv)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('image_topic', help='Image topic to save an image.')
+    parser.add_argument('file_name', help='Filename of saved image.')
+    args = parser.parse_args(args=myargv)
+
+    rospy.init_node('image_capture', anonymous=True)
+    cv_bridge = CvBridge()
+    success, message = capture_image(
+                            args.image_topic,
+                            args.file_name,
+                            cv_bridge
+                            )
+
+    if success:
+        rospy.loginfo('Successfully saved image from {} to {}.'.format(
+                            args.image_topic,
+                            args.file_name
+                            ))
+    else:
+        rospy.logerr('Failed to save image from {} to {}.'.format(
+                            args.image_topic,
+                            args.file_name
+                            ))
+
+
+if __name__ == '__main__':
+    main()
