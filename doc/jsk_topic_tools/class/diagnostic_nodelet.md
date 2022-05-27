@@ -17,7 +17,7 @@ Each subclass of this class is required to call `vital_checker_->poke()` on all 
     Diagnostic messages
 
 ## Parameter
-- `~vital_rate` (Double, default: `0.1`):
+- `~vital_rate` (Double, default: `1.0`):
 
     Rate to determine if the nodelet is in health.
     If the rate that the callback functions is below this parameter, error messages are displayed on diagnostics.
