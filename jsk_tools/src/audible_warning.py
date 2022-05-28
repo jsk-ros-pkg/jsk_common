@@ -12,11 +12,14 @@ from threading import Thread
 import actionlib
 from diagnostic_msgs.msg import DiagnosticArray
 from diagnostic_msgs.msg import DiagnosticStatus
+from dynamic_reconfigure.server import Server
 import rospy
 from sound_play.msg import SoundRequest
 from sound_play.msg import SoundRequestAction
 from sound_play.msg import SoundRequestGoal
 
+from jsk_tools.cfg import AudibleWarningConfig as Config
+from jsk_tools.diagnostics_utils import diagnostics_level_to_str
 from jsk_tools.diagnostics_utils import filter_diagnostics_status_list
 from jsk_tools.diagnostics_utils import is_leaf
 
@@ -33,7 +36,8 @@ class SpeakThread(Thread):
                  language='',
                  volume=1.0,
                  speak_interval=0,
-                 wait_speak_duration_time=10):
+                 wait_speak_duration_time=10,
+                 diagnostics_level_list=None):
         super(SpeakThread, self).__init__()
         self.wait_speak_duration_time = wait_speak_duration_time
         self.event = Event()
@@ -43,9 +47,11 @@ class SpeakThread(Thread):
         self.lock = Lock()
         self.status_list = []
         self.speak_interval = speak_interval
+        self.diagnostics_level_list = diagnostics_level_list or []
         tm = rospy.Time.now().to_sec() \
             - speak_interval
         self.previous_spoken_time = defaultdict(lambda tm=tm: tm)
+        self.speak_flag = True
         self.language = language
 
         self.talk = actionlib.SimpleActionClient(
@@ -54,6 +60,36 @@ class SpeakThread(Thread):
 
     def stop(self):
         self.event.set()
+
+    def set_diagnostics_level_list(self, level_list):
+        self.diagnostics_level_list = level_list
+
+    def set_speak_flag(self, flag):
+        if flag is True and self.speak_flag is False:
+            # clear queue before start speaking.
+            with self.lock:
+                self.status_list = []
+        self.speak_flag = flag
+        if self.speak_flag is True:
+            rospy.loginfo('audible warning is enabled. speak [{}] levels'
+                          .format(', '.join(map(diagnostics_level_to_str,
+                                                self.diagnostics_level_list))))
+        else:
+            rospy.loginfo('audible warning is disabled.')
+
+    def set_volume(self, volume):
+        volume = min(max(0.0, volume), 1.0)
+        if self.volume != volume:
+            self.volume = volume
+            rospy.loginfo("audible warning's volume was set to {}".format(
+                self.volume))
+
+    def set_speak_interval(self, interval):
+        interval = max(0.0, interval)
+        if self.speak_interval != interval:
+            self.speak_interval = interval
+            rospy.loginfo("audible warning's speak interval was set to {}"
+                          .format(self.speak_interval))
 
     def add(self, status_list):
         with self.lock:
@@ -79,7 +115,14 @@ class SpeakThread(Thread):
         while not self.event.wait(self.rate):
             e = self.pop()
             if e:
-                if e.level == DiagnosticStatus.WARN:
+                if self.speak_flag is False:
+                    continue
+                if e.level not in self.diagnostics_level_list:
+                    continue
+
+                if e.level == DiagnosticStatus.OK:
+                    prefix = 'ok.'
+                elif e.level == DiagnosticStatus.WARN:
                     prefix = 'warning.'
                 elif e.level == DiagnosticStatus.ERROR:
                     prefix = 'error.'
@@ -112,9 +155,7 @@ class AudibleWarning(object):
 
     def __init__(self):
         speak_rate = rospy.get_param("~speak_rate", 1.0)
-        speak_interval = rospy.get_param("~speak_interval", 120.0)
         wait_speak = rospy.get_param("~wait_speak", True)
-        volume = rospy.get_param("~volume", 1.0)
         language = rospy.get_param('~language', '')
         seconds_to_start_speaking = rospy.get_param(
             '~seconds_to_start_speaking', 0)
@@ -126,14 +167,6 @@ class AudibleWarning(object):
                 and (rospy.Time.now() - start_time).to_sec() \
                 < seconds_to_start_speaking:
             rate.sleep()
-
-        self.diagnostics_list = []
-        if rospy.get_param("~speak_warn", True):
-            self.diagnostics_list.append(DiagnosticStatus.WARN)
-        if rospy.get_param("~speak_error", True):
-            self.diagnostics_list.append(DiagnosticStatus.ERROR)
-        if rospy.get_param("~speak_stale", True):
-            self.diagnostics_list.append(DiagnosticStatus.STALE)
 
         blacklist = rospy.get_param("~blacklist", [])
         self.blacklist_names = []
@@ -149,9 +182,11 @@ class AudibleWarning(object):
             else:
                 message = re.compile(bl['message'])
             self.blacklist_messages.append(message)
-        self.speak_thread = SpeakThread(speak_rate, wait_speak,
-                                        language, volume, speak_interval,
-                                        seconds_to_start_speaking)
+        self.speak_thread = SpeakThread(
+            speak_rate, wait_speak,
+            language,
+            wait_speak_duration_time=seconds_to_start_speaking)
+        self.srv = Server(Config, self.config_callback)
 
         # run-stop
         self.speak_when_runstopped = rospy.get_param(
@@ -190,6 +225,22 @@ class AudibleWarning(object):
             self.diag_cb, queue_size=1)
         self.speak_thread.start()
 
+    def config_callback(self, config, level):
+        level_list = []
+        if config.speak_ok:
+            level_list.append(DiagnosticStatus.OK)
+        if config.speak_warn:
+            level_list.append(DiagnosticStatus.WARN)
+        if config.speak_error:
+            level_list.append(DiagnosticStatus.ERROR)
+        if config.speak_stale:
+            level_list.append(DiagnosticStatus.STALE)
+        self.speak_thread.set_diagnostics_level_list(level_list)
+        self.speak_thread.set_speak_flag(config.enable)
+        self.speak_thread.set_volume(config.volume)
+        self.speak_thread.set_speak_interval(config.speak_interval)
+        return config
+
     def run_stop_callback(self, msg):
         if isinstance(msg, rospy.msg.AnyMsg):
             package, msg_type = msg._connection_header['type'].split('/')
@@ -208,9 +259,7 @@ class AudibleWarning(object):
         self.speak_thread.join()
 
     def diag_cb(self, msg):
-        target_status_list = filter(
-            lambda n: n.level in self.diagnostics_list,
-            msg.status)
+        target_status_list = msg.status
         if self.run_stop:
             if self.speak_when_runstopped is False:
                 rospy.logdebug('RUN STOP is pressed. Do not speak warning.')
