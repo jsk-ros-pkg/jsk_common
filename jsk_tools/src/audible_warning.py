@@ -163,6 +163,9 @@ class AudibleWarning(object):
             '~seconds_to_start_speaking', 0)
 
         # Wait until seconds_to_start_speaking the time has passed.
+        self.run_stop_enabled_time = None
+        self.run_stop_disabled_time = None
+        self.run_stop_time = None
         rate = rospy.Rate(10)
         start_time = rospy.Time.now()
         while not rospy.is_shutdown() \
@@ -241,6 +244,10 @@ class AudibleWarning(object):
         self.speak_thread.set_speak_flag(config.enable)
         self.speak_thread.set_volume(config.volume)
         self.speak_thread.set_speak_interval(config.speak_interval)
+        self.ignore_time_after_runstop_is_enabled = \
+            config.ignore_time_after_runstop_is_enabled
+        self.ignore_time_after_runstop_is_disabled = \
+            config.ignore_time_after_runstop_is_disabled
         return config
 
     def run_stop_callback(self, msg):
@@ -253,8 +260,15 @@ class AudibleWarning(object):
                 self.run_stop_topic, msg_class, self.run_stop_callback)
             self.run_stop_sub = deserialized_sub
             return
-        self.run_stop = self.run_stop_condition(
-            self.run_stop_topic, msg, rospy.Time.now())
+        tm = rospy.Time.now()
+        run_stop = self.run_stop_condition(
+            self.run_stop_topic, msg, tm)
+        if run_stop != self.run_stop:
+            if run_stop is True:
+                self.run_stop_enabled_time = tm
+            else:
+                self.run_stop_disabled_time = tm
+        self.run_stop = run_stop
 
     def on_shutdown(self):
         self.speak_thread.stop()
@@ -262,6 +276,16 @@ class AudibleWarning(object):
 
     def diag_cb(self, msg):
         target_status_list = msg.status
+
+        if self.ignore_time_after_runstop_is_enabled > 0.0:
+            if ((rospy.Time.now() - self.run_stop_enabled_time).to_sec <
+                    self.ignore_time_after_runstop_is_enabled):
+                return
+        if self.ignore_time_after_runstop_is_disabled > 0.0:
+            if ((rospy.Time.now() - self.run_stop_disabled_time).to_sec <
+                    self.ignore_time_after_runstop_is_disabled):
+                return
+
         if self.run_stop:
             if self.speak_when_runstopped is False:
                 rospy.logdebug('RUN STOP is pressed. Do not speak warning.')
