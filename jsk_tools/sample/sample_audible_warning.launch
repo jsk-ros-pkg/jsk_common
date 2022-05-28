@@ -22,7 +22,7 @@
     <param name="loop_rate" value="100" />
   </node>
 
-  <node name="audible_warning_for_fetch"
+  <node name="audible_warning"
         pkg="jsk_tools" type="audible_warning.py"
         output="screen" >
     <remap from="/robotsound" to="/sound_play" />
