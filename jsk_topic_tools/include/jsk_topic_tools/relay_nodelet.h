@@ -81,6 +81,12 @@ namespace jsk_topic_tools
      */
     TimeredDiagnosticUpdater::Ptr diagnostic_updater_;
     VitalChecker::Ptr vital_checker_;
+
+    /** @brief
+     * Previous checked status of connection
+     */
+    ConnectionStatus previous_checked_connection_status_;
+
   };
 }
 
