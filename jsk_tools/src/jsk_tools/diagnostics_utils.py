@@ -4,6 +4,8 @@ except:
     from itertools import izip_longest as zip_longest
 import re
 
+from diagnostic_msgs.msg import DiagnosticStatus
+
 
 cached_paths = {}
 cached_result = {}
@@ -75,3 +77,16 @@ def filter_diagnostics_status_list(status_list, blacklist,
             continue
         filtered_status.append(s)
     return filtered_status
+
+
+def diagnostics_level_to_str(level):
+    if level == DiagnosticStatus.OK:
+        return 'OK'
+    elif level == DiagnosticStatus.WARN:
+        return 'WARN'
+    elif level == DiagnosticStatus.ERROR:
+        return 'ERROR'
+    elif level == DiagnosticStatus.STALE:
+        return 'STALE'
+    else:
+        raise ValueError('Not valid level {}'.format(level))
