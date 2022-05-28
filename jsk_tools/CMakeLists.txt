@@ -1,11 +1,19 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(jsk_tools)
 
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED
+  COMPONENTS
+  message_generation
+  dynamic_reconfigure)
 catkin_python_setup()
 set(ROS_BUILD_TYPE RelWithDebInfo)
+
+generate_dynamic_reconfigure_options(
+  cfg/AudibleWarning.cfg
+)
+
 catkin_package(
-  CATKIN_DEPENDS #
+  CATKIN_DEPENDS message_runtime #
   LIBRARIES #
   INCLUDE_DIRS #
   DEPENDS #
@@ -24,6 +32,15 @@ foreach(exec ${BIN_EXECUTABLES})
   add_custom_target(install_${exec} ALL DEPENDS ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_BIN_DESTINATION}/${exec})
   install(PROGRAMS bin/${exec} DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
 endforeach(exec)
+
+file(GLOB SCRIPT_PROGRAMS src/*.py)
+catkin_install_python(
+  PROGRAMS ${SCRIPT_PROGRAMS}
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts/)
+file(GLOB SCRIPT_BIN_PROGRAMS bin/*.py)
+catkin_install_python(
+  PROGRAMS ${SCRIPT_BIN_PROGRAMS}
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/bin/)
 
 if (CATKIN_ENABLE_TESTING)
   find_package(roslint REQUIRED)
