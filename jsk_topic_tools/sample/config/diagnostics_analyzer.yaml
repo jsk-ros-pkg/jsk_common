@@ -1,0 +1,10 @@
+analyzers:
+  cameras:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Cameras
+    analyzers:
+      simple_image_transport:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Image
+        find_and_remove_prefix: 'simple_image_transport: '
+        num_items: 1

@@ -12,6 +12,7 @@ class SimpleImageTransport(ConnectionBasedTransport):
     def __init__(self):
         super(SimpleImageTransport, self).__init__()
         self._pub = self.advertise('~output', Image, queue_size=1)
+        self._dummy_pub = self.advertise('~dummy_output', Image, queue_size=1)
 
     def subscribe(self):
         self.sub_img = rospy.Subscriber('~input', Image, self._process)
