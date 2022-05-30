@@ -15,7 +15,7 @@ This is abstruct class.
 
   If this value is `true`, `/diagnostics` will be published and the status of whether the topic has been published will be output from this node.
 
-* `~vital_rate` (Double, default: `0.1`):
+* `~vital_rate` (Double, default: `1.0`):
 
   Rate to determine if the nodelet is in health.
   If the rate that the callback functions is below this parameter, error messages are displayed on diagnostics.
