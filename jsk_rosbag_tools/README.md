@@ -36,8 +36,8 @@ optional arguments:
 ```
 rosrun jsk_rosbag_tools bag_to_video.py $(rospack find jsk_rosbag_tools)/samples/data/20220530173950_go_to_kitchen_rosbag.bag \
   --samplerate 16000 --channels 1 --audio-topic /audio \
-  --image-topics /head_camera/rgb/throttled/image_rect_color/compressed \
-  -o /tmp/output_bag
+  --image-topic /head_camera/rgb/throttled/image_rect_color/compressed \
+  -o /tmp/20220530173950_go_to_kitchen_rosbag.mp4
 ```
 
 ## video_to_bag.py
