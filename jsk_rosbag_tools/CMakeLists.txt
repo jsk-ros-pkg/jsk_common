@@ -27,7 +27,7 @@ catkin_download(download_video_data
   https://drive.google.com/uc?export=download&id=1v4YNOHnHYxLOty1lYR2R6lfNF0itCwK7
   DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/samples/data
   FILENAME 20220530173950_go_to_kitchen_rosbag.bag
-  MD5 d6a146f06e1a62430f1933704cc7a740
+  MD5 d51fa8aeacd36f7aaa1597b67bd9ffdf
 )
 add_custom_target(download ALL DEPENDS download_audio_data download_video_data)
 
