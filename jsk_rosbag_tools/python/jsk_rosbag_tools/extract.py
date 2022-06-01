@@ -1,10 +1,8 @@
 import os
 
 import numpy as np
-from pydub import AudioSegment
-from pydub import effects
 import rosbag
-import soundfile as sf
+from scipy.io.wavfile import write as wav_write
 
 from jsk_rosbag_tools.cv import compressed_format
 from jsk_rosbag_tools.cv import decompresse_imgmsg
@@ -101,8 +99,9 @@ def extract_audio(bag_filepath,
                   audio_info_topic_name=None,
                   samplerate=44100,
                   channels=1,
-                  normalize=True,
                   overwrite=True):
+    if os.path.exists(wav_outpath) and overwrite is False:
+        raise FileExistsError('{} file already exists.'.format(wav_outpath))
     topic_dict = get_topic_dict(bag_filepath)
     if topic_name not in topic_dict:
         return
@@ -116,23 +115,17 @@ def extract_audio(bag_filepath,
             channels = audio_info.channels
 
     bag = rosbag.Bag(bag_filepath)
-    with sf.SoundFile(wav_outpath, mode='w' if overwrite else 'x',
-                      samplerate=samplerate,
-                      channels=channels,
-                      format='wav') as f:
-        for _, msg, _ in bag.read_messages(topics=[topic_name]):
-            if msg._type == 'audio_common_msgs/AudioData':
-                audio_buffer = np.frombuffer(msg.data, dtype='int16')
-                audio_buffer = audio_buffer.reshape(-1, channels)
-                f.write(audio_buffer)
+    audio_buffer = []
+    for _, msg, _ in bag.read_messages(topics=[topic_name]):
+        if msg._type == 'audio_common_msgs/AudioData':
+            buf = np.frombuffer(msg.data, dtype='int16')
+            buf = buf.reshape(-1, channels)
+            audio_buffer.append(buf)
+    audio_buffer = np.concatenate(audio_buffer, axis=0)
+    wav_write(wav_outpath, rate=samplerate, data=audio_buffer)
 
     valid = os.stat(wav_outpath).st_size != 0
     if valid is False:
         return False
-
-    if normalize:
-        sound = AudioSegment.from_file(wav_outpath)
-        normalized_sound = effects.normalize(sound, 1.0)
-        normalized_sound.export(wav_outpath, format='wav')
 
     return True

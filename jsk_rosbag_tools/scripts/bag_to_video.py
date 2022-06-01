@@ -5,10 +5,10 @@ import datetime
 import os
 import sys
 
+import cv2
 import moviepy.editor as mp
 from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
 
-from jsk_rosbag_tools import cv2
 from jsk_rosbag_tools.extract import extract_audio
 from jsk_rosbag_tools.extract import extract_image_topic
 from jsk_rosbag_tools.extract import get_image_topic_names

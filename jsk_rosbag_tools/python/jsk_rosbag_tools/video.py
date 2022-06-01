@@ -3,22 +3,65 @@ from __future__ import division
 import datetime
 import math
 import os.path as osp
+import re
 import shutil
 import subprocess
+import sys
 import tempfile
+import wave
 
 import audio_common_msgs.msg
+import cv2
+from moviepy.editor import VideoFileClip
 import numpy as np
-from pydub.utils import mediainfo
 import rosbag
 import rospy
-import skvideo.io
-import soundfile as sf
 from tqdm import tqdm
 
 from jsk_rosbag_tools.cv import img_to_msg
-from jsk_rosbag_tools.cv_compat import cv2
 from jsk_rosbag_tools.merge import merge_bag
+
+
+def mediainfo(filepath):
+    prober = 'ffprobe'
+    command_args = [
+        "-v", "quiet",
+        "-show_format",
+        "-show_streams",
+        filepath
+    ]
+
+    command = [prober, '-of', 'old'] + command_args
+    res = subprocess.Popen(command, stdout=subprocess.PIPE)
+    output = res.communicate()[0].decode("utf-8")
+
+    if res.returncode != 0:
+        command = [prober] + command_args
+        output = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
+    rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
+    info = {}
+    if sys.platform == 'win32':
+        output = output.replace("\r", "")
+    for line in output.split("\n"):
+        # print(line)
+        mobj = rgx.match(line)
+
+        if mobj:
+            # print(mobj.groups())
+            inner_dict, key, value = mobj.groups()
+
+            if inner_dict:
+                try:
+                    info[inner_dict]
+                except KeyError:
+                    info[inner_dict] = {}
+                info[inner_dict][key] = value
+            else:
+                info[key] = value
+
+    return info
 
 
 def nsplit(xlst, n):
@@ -36,43 +79,15 @@ def get_video_duration(video_path):
     video_path = str(video_path)
     if not osp.exists(video_path):
         raise OSError("{} not exists".format(video_path))
-    metadata = skvideo.io.ffprobe(video_path)
-    return float(metadata['video']['@duration'])
-
-
-def get_video_avg_frame_rate(video_path):
-    video_path = str(video_path)
-    if not osp.exists(video_path):
-        raise OSError("{} not exists".format(video_path))
-    metadata = skvideo.io.ffprobe(video_path)
-    a, b = metadata['video']['@avg_frame_rate'].split('/')
-    a = int(a)
-    b = int(b)
-    return a / b
-
-
-def get_video_creation_time(video_path):
-    metadata = skvideo.io.ffprobe(video_path)
-    tag_dict = {}
-    for tag in metadata['video']['tag']:
-        tag_dict[tag['@key']] = tag['@value']
-    if 'creation_time' not in tag_dict:
-        return None
-    creation_time = tag_dict['creation_time']
-    created_at = datetime.datetime.strptime(
-        creation_time, '%Y-%m-%dT%H:%M:%S.%fZ')
-    return created_at
+    return VideoFileClip(video_path).duration
 
 
 def get_video_n_frame(video_path):
     video_path = str(video_path)
     if not osp.exists(video_path):
         raise OSError("{} not exists".format(video_path))
-    metadata = skvideo.io.ffprobe(video_path)
-    if '@nb_frames' not in metadata['video']:
-        fps = get_video_avg_frame_rate(video_path)
-        return int(fps * get_video_duration(video_path))
-    return int(metadata['video']['@nb_frames'])
+    clip = VideoFileClip(video_path)
+    return int(clip.duration * clip.fps)
 
 
 def load_frame(video_path, start=0.0, duration=-1,
@@ -108,10 +123,7 @@ def video_to_bag(video_filepath, bag_output_filepath,
                  base_unixtime=None,
                  show_progress_bar=True):
     if base_unixtime is None:
-        base_unixtime = get_video_creation_time(video_filepath)
-        if base_unixtime is None:
-            base_unixtime = datetime.datetime.now()
-        base_unixtime = base_unixtime.timestamp()
+        base_unixtime = datetime.datetime.now().timestamp()
 
     topic_name = topic_name.lstrip('/compressed')
     if compress is True:
@@ -143,7 +155,15 @@ def video_to_bag(video_filepath, bag_output_filepath,
                            stderr=subprocess.PIPE)
 
             try:
-                data, sample_rate = sf.read(wav_filepath, dtype='int16')
+                wf = wave.open(wav_filepath, mode='rb')
+                sample_rate = wf.getframerate()
+                wf.rewind()
+                buf = wf.readframes(-1)
+                if wf.getsampwidth() == 2:
+                    data = np.frombuffer(buf, dtype='int16')
+                elif wf.getsampwidth() == 4:
+                    data = np.frombuffer(buf, dtype='int32')
+                data = data.reshape(-1, wf.getnchannels())
                 media_info = mediainfo(wav_filepath)
             except RuntimeError:
                 extract_audio = False

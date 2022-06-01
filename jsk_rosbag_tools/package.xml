@@ -9,27 +9,19 @@
   <author email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</author>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <buildtool_depend>python3-catkin-pkg-modules</buildtool_depend>
+  <buildtool_depend>python-catkin-pkg-modules</buildtool_depend>
 
-  <build_depend version_gte="0.6.1">catkin_virtualenv</build_depend>
   <build_depend>cv_bridge</build_depend>
-  <build_depend condition="$ROS_PYTHON_VERSION == 2">cv_bridge_python3</build_depend>  <!-- for melodic -->
   <build_depend>sensor_msgs</build_depend>
-  <exec_depend>python3-empy</exec_depend>
-  <exec_depend>python3-gnupg</exec_depend>
-  <exec_depend>python3-numpy</exec_depend>
-  <exec_depend>python3-pycryptodome</exec_depend>
-  <exec_depend>python3-rospkg-modules</exec_depend>
-  <exec_depend>python3-setuptools</exec_depend>
-  <exec_depend>python3-termcolor</exec_depend>
-  <exec_depend>python3-tqdm</exec_depend>
-  <exec_depend>python3-yaml</exec_depend>
-  <exec_depend>libsndfile1-dev</exec_depend>
+  <exec_depend>python-moviepy-pip</exec_depend>
+  <exec_depend>python-numpy</exec_depend>
+  <exec_depend>python-rospkg-modules</exec_depend>
+  <exec_depend>python-setuptools</exec_depend>
+  <exec_depend>python-termcolor</exec_depend>
+  <exec_depend>python-tqdm</exec_depend>
+  <exec_depend>python-yaml</exec_depend>
 
   <test_depend>roslint</test_depend>
   <test_depend>rostest</test_depend>
 
-  <export>
-    <pip_requirements>requirements.txt</pip_requirements>
-  </export>
 </package>

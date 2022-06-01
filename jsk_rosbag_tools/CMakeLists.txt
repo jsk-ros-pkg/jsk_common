@@ -3,7 +3,6 @@ project(jsk_rosbag_tools)
 
 find_package(
   catkin REQUIRED
-  catkin_virtualenv
 )
 
 catkin_python_setup()
@@ -12,23 +11,11 @@ catkin_package(
   CATKIN_DEPENDS
 )
 
-if (${catkin_virtualenv_VERSION} VERSION_LESS "0.6.1")
-  message(WARNING "Please install catkin_virtualenv>=0.6.1.")
-  message(WARNING "Current catkin_virtualen version is ${catkin_virtualenv_VERSION}")
-else()
-  catkin_generate_virtualenv(
-    INPUT_REQUIREMENTS requirements.in
-    PYTHON_INTERPRETER python3
-    USE_SYSTEM_PACKAGES TRUE
-    ISOLATE_REQUIREMENTS FALSE
-    CHECK_VENV FALSE
-  )
-  file(GLOB SCRIPTS_FILES scripts/*)
-  catkin_install_python(
-    PROGRAMS ${SCRIPTS_FILES}
-    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  )
-endif()
+file(GLOB SCRIPTS_FILES scripts/*)
+catkin_install_python(
+  PROGRAMS ${SCRIPTS_FILES}
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 catkin_download(download_audio_data
   https://drive.google.com/uc?export=download&id=1rFZYoFjLqIWjEe0DaNiL3k9893m31nu7
@@ -50,12 +37,8 @@ install(FILES requirements.in requirements.txt
 
 
 if(CATKIN_ENABLE_TESTING)
-  find_package(catkin REQUIRED COMPONENTS catkin_virtualenv roslint rostest)
+  find_package(catkin REQUIRED COMPONENTS roslint rostest)
 
-  catkin_generate_virtualenv(
-    INPUT_REQUIREMENTS requirements.in
-    PYTHON_INTERPRETER python3
-  )
   set(python_test_scripts
     tests/test_jsk_rosbag_tools.py
   )
@@ -67,7 +50,5 @@ if(CATKIN_ENABLE_TESTING)
   catkin_install_python(PROGRAMS ${python_test_scripts}
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-  add_rostest(tests/test_jsk_rosbag_tools.test
-    DEPENDENCIES ${PROJECT_NAME}_generate_virtualenv
-  )
+  add_rostest(tests/test_jsk_rosbag_tools.test)
 endif()

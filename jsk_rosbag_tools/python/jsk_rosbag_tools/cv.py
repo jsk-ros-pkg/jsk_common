@@ -1,10 +1,9 @@
 import struct
 
 import cv2
+import cv_bridge
 import numpy as np
 import sensor_msgs.msg
-
-from jsk_rosbag_tools.cv_bridge_compat import cv_bridge
 
 
 _bridge = cv_bridge.CvBridge()
