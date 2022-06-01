@@ -46,6 +46,7 @@ namespace jsk_topic_tools
   void DiagnosticNodelet::onInit()
   {
     ConnectionBasedNodelet::onInit();
+    previous_checked_connection_status_ = NOT_SUBSCRIBED;
     diagnostic_updater_.reset(
       new TimeredDiagnosticUpdater(*pnh_, ros::Duration(1.0)));
     diagnostic_updater_->setHardwareID(getName());
@@ -79,6 +80,10 @@ namespace jsk_topic_tools
     diagnostic_updater::DiagnosticStatusWrapper &stat)
   {
     if (connection_status_ == SUBSCRIBED) {
+      if (previous_checked_connection_status_ != connection_status_) {
+        // Poke when start subscribing.
+        vital_checker_->poke();
+      }
       if (vital_checker_->isAlive()) {
         stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
                      getName() + " running");
@@ -107,5 +112,6 @@ namespace jsk_topic_tools
                (boost::format("%d subscribers") %
                 publishers_[i].getNumSubscribers()).str());
     }
+    previous_checked_connection_status_ = connection_status_;
   }
 }

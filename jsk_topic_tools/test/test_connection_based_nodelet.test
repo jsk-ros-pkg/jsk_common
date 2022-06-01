@@ -24,6 +24,7 @@
       input_topic_type: std_msgs/String
       check_connected_topics: [string_relay_1/output, string_relay_2/output, string_relay_3/output]
       wait_for_connection: 3
+      wait_for_disconnection: 10
     </rosparam>
     <remap from="~input" to="string_relay_4/output" />
   </test>
