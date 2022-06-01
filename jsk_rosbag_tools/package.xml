@@ -11,15 +11,18 @@
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>python-catkin-pkg-modules</buildtool_depend>
 
-  <build_depend>cv_bridge</build_depend>
-  <build_depend>sensor_msgs</build_depend>
+  <exec_depend>audio_common_msgs</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>ffmpeg</exec_depend>
   <exec_depend>python-moviepy-pip</exec_depend>
   <exec_depend>python-numpy</exec_depend>
   <exec_depend>python-rospkg-modules</exec_depend>
+  <exec_depend>python-scipy</exec_depend>
   <exec_depend>python-setuptools</exec_depend>
   <exec_depend>python-termcolor</exec_depend>
   <exec_depend>python-tqdm</exec_depend>
   <exec_depend>python-yaml</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
 
   <test_depend>roslint</test_depend>
   <test_depend>rostest</test_depend>
