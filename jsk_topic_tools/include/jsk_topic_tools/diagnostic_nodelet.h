@@ -114,7 +114,11 @@ namespace jsk_topic_tools
      * True if summary is displayed as 'Warnings', otherwise it is displayed as 'Errors'
      */
     uint8_t diagnostic_error_level_;
-    
+
+    /** @brief
+     * Previous checked status of connection
+     */
+    ConnectionStatus previous_checked_connection_status_;
 
   private:
     

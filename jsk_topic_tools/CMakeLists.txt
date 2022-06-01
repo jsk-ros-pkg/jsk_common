@@ -12,6 +12,7 @@ if (CMAKE_VERSION VERSION_LESS 3.4)
 endif()
 
 find_package(catkin REQUIRED COMPONENTS
+  diagnostic_updater
   dynamic_reconfigure
   eigen_conversions
   geometry_msgs
@@ -29,6 +30,13 @@ find_package(catkin REQUIRED COMPONENTS
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/jsk_topic_tools/nodelet_version.h.in
   ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/jsk_topic_tools/nodelet_version.h)
+
+catkin_download(download_sample_pr2_wrench-2022-05-02 https://drive.google.com/uc?id=1ym_fxRTNZOTp4PCXIq_spJwFktoOkLDK
+  DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/sample/data
+  FILENAME sample_pr2_wrench-2022-05-02.bag
+  MD5 0e2d0d431f10875cb372c85faf32b91e
+)
+add_custom_target(download ALL DEPENDS download_extra_data)
 
 catkin_python_setup()
 add_message_files(
@@ -149,6 +157,7 @@ if (CATKIN_ENABLE_TESTING)
   jsk_topic_tools_add_rostest(test/test_synchronized_throttle.test)
   jsk_topic_tools_add_rostest(test/test_pose_stamped_publisher.test)
   jsk_topic_tools_add_rostest(test/test_python_master_util.test)
+  jsk_topic_tools_add_rostest(test/test_transform_wrench.test)
   catkin_add_nosetests(src/jsk_topic_tools/tests)
   catkin_add_gtest(test_rosparam_utils src/tests/test_rosparam_utils.cpp)
   target_link_libraries(test_rosparam_utils ${PROJECT_NAME})

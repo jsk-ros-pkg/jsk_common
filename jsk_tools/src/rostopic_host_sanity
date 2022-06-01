@@ -11,15 +11,61 @@ import rostopic
 import rosgraph
 
 
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
+import os
+
+
+def _rostopic_list_group_by_host(master, pubs, subs):
+    """
+    Build up maps for hostname to topic list per hostname
+    :returns: publishers host map, subscribers host map, ``{str: set(str)}, {str: set(str)}``
+    """
+    def build_map(master, state, uricache):
+        tmap = {}
+        for topic, tnodes in state:
+            for p in tnodes:
+                if p not in uricache:
+                    uricache[p] = master.lookupNode(p)
+                uri = uricache[p]
+                puri = urlparse(uri)
+                if puri.hostname not in tmap:
+                    tmap[puri.hostname] = []
+                # recreate the system state data structure, but for a single host
+                matches = [l for x, _, l in tmap[puri.hostname] if x == topic]
+                if matches:
+                    matches[0].append(p)
+                else:
+                    # tmap[puri.hostname].append((topic, ttype, [p]))
+                    tmap[puri.hostname].append((topic, 'ttype', [p]))
+        return tmap
+
+    uricache = {}
+    host_pub_topics = build_map(master, pubs, uricache)
+    host_sub_topics = build_map(master, subs, uricache)
+    return host_pub_topics, host_sub_topics
+
+
+# on kinetic, _rostopic_list_group_by_host did not work correctly
+if os.environ['ROS_DISTRO'] in ['indigo', 'kinetic']:
+    rostopic._rostopic_list_group_by_host = _rostopic_list_group_by_host
+
+
 def main():
     master = rosgraph.Master('/ros_host_sanity')
-    state = master.getSystemState()
-    pubs, subs, _ = state
+    if 'get_topic_list' in dir(rostopic):
+        pubs, subs = rostopic.get_topic_list(master=master)
+    else:
+        # get_topic_list only available since ros_topic 1.13.7 (indigo)
+        state = master.getSystemState()
+        pubs, subs, _ = state
 
     host_pub_topics, host_sub_topics = rostopic._rostopic_list_group_by_host(
         master, pubs, subs)
 
-    hostnames = set(host_pub_topics.keys() + host_sub_topics.keys())
+    hostnames = set(list(host_pub_topics.keys()) + list(host_sub_topics.keys()))
     for hostname in hostnames:
         cmd = 'ping -c 1 -W 1 {}'.format(hostname)
         ret = subprocess.call(shlex.split(cmd),

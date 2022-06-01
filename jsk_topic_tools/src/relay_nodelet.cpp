@@ -77,6 +77,10 @@ namespace jsk_topic_tools
                    + pnh_.resolveName("input") + " active?");
     }
     else if (connection_status_ == SUBSCRIBED) {
+      if (previous_checked_connection_status_ != connection_status_) {
+        // Poke when start subscribing.
+        vital_checker_->poke();
+      }
       if (vital_checker_->isAlive()) {
         stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
                      "subscribed: " + pnh_.resolveName("output"));
@@ -94,6 +98,7 @@ namespace jsk_topic_tools
     }
     stat.add("input topic", pnh_.resolveName("input"));
     stat.add("output topic", pnh_.resolveName("output"));
+    previous_checked_connection_status_ = connection_status_;
   }
   
   void Relay::inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)

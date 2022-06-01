@@ -1,0 +1,19 @@
+analyzers:
+  topics:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Topics
+    analyzers:
+      head_camera:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: HeadCamera
+        contains: 'head_camera'
+        num_items: 1
+  nodes:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Nodes
+    analyzers:
+      robot_driver:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: RobotDriver
+        contains: 'robot_driver'
+        num_items: 1
