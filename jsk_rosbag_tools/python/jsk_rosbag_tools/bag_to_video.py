@@ -5,8 +5,8 @@ import sys
 import tempfile
 
 import cv2
-from moviepy.editor import AudioFileClip
-from moviepy.editor import VideoFileClip
+from moviepy.audio.io.AudioFileClip import AudioFileClip
+from moviepy.video.io.VideoFileClip import VideoFileClip
 from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
 
 from jsk_rosbag_tools.extract import extract_audio
