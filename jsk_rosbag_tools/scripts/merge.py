@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 
 from jsk_rosbag_tools.merge import merge_bag
