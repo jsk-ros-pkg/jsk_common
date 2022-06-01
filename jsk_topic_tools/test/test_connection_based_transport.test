@@ -11,6 +11,7 @@
       input_topic_type: sensor_msgs/Image
       check_connected_topics: [simple_image_transport/output, input_image]
       wait_for_connection: 10
+      wait_for_disconnection: 10
       hardware_id: /simple_image_transport
     </rosparam>
     <remap from="~input" to="simple_image_transport/output" />
