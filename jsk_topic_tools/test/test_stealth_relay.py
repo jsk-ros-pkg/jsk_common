@@ -20,11 +20,15 @@ class TestStealthRelay(unittest.TestCase):
         self.monitor_msg_count = 0
         sub_out = rospy.Subscriber("/stealth_relay/output", String,
                                    self.out_callback, queue_size=1)
-        for i in range(5):
-            if sub_out.get_num_connections() == 0:
-                rospy.sleep(1)
-        self.assertTrue(sub_out.get_num_connections() > 0,
-                        "output topic of stealth relay was not advertised")
+
+        rate = rospy.Rate(1)
+        try:
+            while not rospy.is_shutdown() and sub_out.get_num_connections() == 0:
+                rate.sleep()
+        except Exception as e:
+            rospy.logerr('{}'.format(e))
+            rospy.logerr("output topic of stealth relay was not advertised")
+            sys.exit(1)
 
         rospy.sleep(5)
         self.assertEqual(self.out_msg_count, 0,
@@ -33,16 +37,30 @@ class TestStealthRelay(unittest.TestCase):
         sub_monitor = rospy.Subscriber("/original_topic/relay", String,
                                        self.monitor_callback, queue_size=1)
         rospy.loginfo("subscribed monitor topic")
-        rospy.sleep(5)  # monitoring topic is subscribed for 5 seconds.
-        cnt = self.out_msg_count
+
+        # wait self.monitor_msg_count
+        try:
+            while not rospy.is_shutdown() and self.monitor_msg_count == 0:
+                rate.sleep()
+        except Exception as e:
+            rospy.logerr('{}'.format(e))
+            rospy.logerr("monitoring topic is not published")
+            sys.exit(1)
+
+        try:
+            while not rospy.is_shutdown() and self.out_msg_count == 0:
+                rate.sleep()
+        except Exception as e:
+            rospy.logerr('{}'.format(e))
+            rospy.logerr("monitoring topic is not published")
+            sys.exit(1)
         sub_monitor.unregister()
         rospy.loginfo("unsubscribed monitor topic")
-
-        self.assertGreater(self.monitor_msg_count, 0,
-                           "monitoring topic is not published")
         self.assertGreater(self.out_msg_count, 0,
                            "output topic of stealth relay was not published even monitoring topic is published")
+        cnt = self.out_msg_count
         rospy.sleep(5)
+
         self.assertLess(abs(cnt - self.out_msg_count), 40,
                         "It seems stealth relay node did not stop subscribing even if monitoring topic is not published any more")
 
