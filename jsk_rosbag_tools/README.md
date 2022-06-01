@@ -9,7 +9,7 @@ Create video from rosbag.
 ### Usage
 
 ```
-usage: bag_to_video.py [-h] [--out OUT] [--fps FPS] [--samplerate SAMPLERATE] [--channels CHANNELS] [--audio-topic AUDIO_TOPIC] [--image-topics IMAGE_TOPICS [IMAGE_TOPICS ...]] input_bagfile
+usage: bag_to_video.py [-h] [--out OUT] [--fps FPS] [--samplerate SAMPLERATE] [--channels CHANNELS] [--audio-topic AUDIO_TOPIC] [--image-topic IMAGE_TOPIC [IMAGE_TOPIC ...]] input_bagfile
 
 rosbag to video
 
@@ -18,13 +18,16 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  --out OUT, -o OUT     output directory path
+  --out OUT, -o OUT     output directory path or filename.
+                        If more than one --image-topic are specified,
+                        this will be interpreted as a directory name.
+                        Otherwise this is the file name.
   --fps FPS
   --samplerate SAMPLERATE, -r SAMPLERATE
                         sampling rate
   --channels CHANNELS   number of input channels
   --audio-topic AUDIO_TOPIC
-  --image-topics IMAGE_TOPICS [IMAGE_TOPICS ...]
+  --image-topic IMAGE_TOPIC [IMAGE_TOPIC ...]
                         Topic name to extract.
 ```
 
