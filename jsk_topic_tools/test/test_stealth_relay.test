@@ -9,7 +9,8 @@
   </node>
   <test test-name="test_stealth_relay"
         pkg="jsk_topic_tools" type="test_stealth_relay.py"
-        time-limit="40" retry="3" />
+        time-limit="360" retry="10" />
+  <!-- stealth relay is prone to test failure under heavy load -->
 
   <node name="stealth_relay" pkg="jsk_topic_tools" type="stealth_relay"
         output="screen">

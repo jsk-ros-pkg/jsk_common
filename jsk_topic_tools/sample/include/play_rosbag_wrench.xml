@@ -1,0 +1,13 @@
+<launch>
+
+  <param name="/use_sim_time" value="true" />
+  <arg name="launch_robot_model" default="false" />
+
+  <param if="$(arg launch_robot_model)"
+         name="robot_description" command="$(find xacro)/xacro '$(find pr2_description)/robots/pr2.urdf.xacro'" />
+  <node name="rosbag_play"
+        pkg="rosbag" type="play"
+        args="$(find jsk_topic_tools)/sample/data/sample_pr2_wrench-2022-05-02.bag --clock --loop">
+  </node>
+
+</launch>

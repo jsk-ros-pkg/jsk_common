@@ -50,6 +50,8 @@ if (CATKIN_ENABLE_TESTING)
     jsk_tools_add_rostest(test/test_rosparam_set.test)
   endif()
   jsk_tools_add_rostest(test/test_stdout.test)
+  jsk_tools_add_rostest(test/test_rostopic_host_sanity.test)
+  jsk_tools_add_rostest(test/test_sanity_diagnostics.test)
   find_package(jsk_tools REQUIRED)
   jsk_tools_add_shell_test(COMMAND echo "testing jsk_tools_add_shell_test")
 endif()
@@ -72,7 +74,7 @@ install(DIRECTORY test
   USE_SOURCE_PERMISSIONS
   PATTERN "*.test" EXCLUDE
   )
-install(DIRECTORY src dot-files cmake launch
+install(DIRECTORY src dot-files cmake launch sample
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
   )

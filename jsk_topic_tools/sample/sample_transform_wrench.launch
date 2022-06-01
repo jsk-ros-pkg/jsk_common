@@ -1,0 +1,59 @@
+<launch>
+
+  <arg name="gui" default="true" />
+  <arg name="launch_robot_model" default="false" />
+
+  <include file="$(find jsk_topic_tools)/sample/include/play_rosbag_wrench.xml" >
+    <arg name="launch_robot_model" value="$(arg launch_robot_model)" />
+  </include>
+
+  <group ns="left_endeffector" >
+    <node name="transform_wrench"
+          pkg="jsk_topic_tools" type="transform_wrench.py"
+          output="screen" >
+      <remap from="~input" to="wrench" />
+      <remap from="~output" to="transformed_wrench" />
+      <rosparam>
+        target_frame_id: base_footprint
+      </rosparam>
+    </node>
+    <node name="inverse_transform_wrench"
+          pkg="jsk_topic_tools" type="transform_wrench.py"
+          output="screen" >
+      <remap from="~input" to="transformed_wrench" />
+      <remap from="~output" to="inverse_transformed_wrench" />
+      <rosparam>
+        target_frame_id: l_gripper_tool_frame
+      </rosparam>
+    </node>
+  </group>
+
+  <group ns="right_endeffector" >
+    <node name="transform_wrench"
+          pkg="jsk_topic_tools" type="transform_wrench.py"
+          output="screen" >
+      <remap from="~input" to="wrench" />
+      <remap from="~output" to="transformed_wrench" />
+      <rosparam>
+        target_frame_id: base_footprint
+      </rosparam>
+    </node>
+    <node name="inverse_transform_wrench"
+          pkg="jsk_topic_tools" type="transform_wrench.py"
+          output="screen" >
+      <remap from="~input" to="transformed_wrench" />
+      <remap from="~output" to="inverse_transformed_wrench" />
+      <rosparam>
+        target_frame_id: r_gripper_tool_frame
+      </rosparam>
+    </node>
+  </group>
+
+  <group if="$(arg gui)" >
+    <node name="rviz"
+          pkg="rviz" type="rviz"
+          args="-d $(find jsk_topic_tools)/sample/config/transform_wrench.rviz">
+    </node>
+  </group>
+
+</launch>

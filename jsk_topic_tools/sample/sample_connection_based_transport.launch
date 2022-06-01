@@ -1,0 +1,27 @@
+<launch>
+
+  <node pkg="rostopic" type="rostopic" name="input"
+        args="pub /input sensor_msgs/Image 'data: [1, 2, 3]' -r 10">
+  </node>
+
+  <node name="input_mux"
+        pkg="topic_tools" type="mux"
+        args="input_image input input_dummy" >
+  </node>
+
+  <node name="simple_image_transport"
+        pkg="jsk_topic_tools" type="simple_image_transport.py"
+        clear_params="true" >
+    <rosparam>
+      enable_vital_check: true
+    </rosparam>
+    <remap from="~input" to="input_image" />
+  </node>
+
+  <node name="diagnostic_aggregator"
+        pkg="diagnostic_aggregator" type="aggregator_node"
+        clear_params="true" >
+    <rosparam command="load" file="$(find jsk_topic_tools)/sample/config/diagnostics_analyzer.yaml" />
+  </node>
+
+</launch>

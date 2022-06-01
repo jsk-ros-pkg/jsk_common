@@ -1,21 +1,18 @@
 <launch>
-  <node pkg="rostopic" type="rostopic" name="input"
-        args="pub /input sensor_msgs/Image 'data: [1, 2, 3]' -r 10">
-  </node>
 
-  <node name="simple_image_transport"
-        pkg="jsk_topic_tools" type="simple_image_transport.py">
-    <remap from="~input" to="input" />
-  </node>
+  <include file="$(find jsk_topic_tools)/sample/sample_connection_based_transport.launch" >
+  </include>
 
-  <test test-name="test_connection"
-        name="test_connection"
-        pkg="jsk_topic_tools" type="test_connection.py"
+  <test test-name="test_diagnostic_transport"
+        name="test_diagnostic_transport"
+        pkg="jsk_topic_tools" type="test_diagnostic.py"
         retry="3">
     <rosparam>
       input_topic_type: sensor_msgs/Image
-      check_connected_topics: [simple_image_transport/output, input]
+      check_connected_topics: [simple_image_transport/output, input_image]
       wait_for_connection: 10
+      wait_for_disconnection: 10
+      hardware_id: /simple_image_transport
     </rosparam>
     <remap from="~input" to="simple_image_transport/output" />
   </test>

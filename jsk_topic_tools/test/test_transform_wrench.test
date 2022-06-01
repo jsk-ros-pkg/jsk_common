@@ -1,0 +1,16 @@
+<launch>
+
+  <include file="$(find jsk_topic_tools)/sample/sample_transform_wrench.launch" >
+    <arg name="gui" value="false" />
+  </include>
+
+  <test test-name="test_transform_wrench"
+        name="test_transform_wrench"
+        pkg="jsk_tools" type="test_topic_published.py">
+    <rosparam>
+      topic_0: /right_endeffector/transformed_wrench
+      timeout_0: 10
+    </rosparam>
+  </test>
+
+</launch>

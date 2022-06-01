@@ -1,0 +1,4 @@
+topics:
+  - /head_camera/rgb/image_raw
+nodes:
+  - /robot_driver
