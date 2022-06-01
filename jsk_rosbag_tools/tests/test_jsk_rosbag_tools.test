@@ -2,6 +2,6 @@
 <launch>
 
   <test test-name="test_bag_to_video" pkg="jsk_rosbag_tools" type="test_jsk_rosbag_tools.py"
-        time-limit="3600.0" />
+        time-limit="360.0" />
 
 </launch>
