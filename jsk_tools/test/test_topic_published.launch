@@ -2,8 +2,17 @@
 
   <node name="publish_string"
         pkg="rostopic" type="rostopic"
-        args="pub /string std_msgs/String 'data: spam' -r 1">
+        args="pub /string std_msgs/String 'data: spam' -r 1"
+        respawn="true">
   </node>
+
+  <group ns="ns" >
+    <node name="publish_string"
+          pkg="rostopic" type="rostopic"
+          args="pub string std_msgs/String 'data: spam' -r 1"
+          respawn="true">
+    </node>
+  </group>
 
   <test test-name="test_topic_published"
         name="test_topic_published"
@@ -11,7 +20,23 @@
     <rosparam>
       topic_0: /string
       timeout_0: 10
+      check_after_kill_node: true
+      node_names: [publish_string,]
     </rosparam>
   </test>
+
+  <!-- test for namespace -->
+  <group ns="ns" >
+    <test test-name="test_topic_published_for_namespace"
+          name="test_topic_published"
+          pkg="jsk_tools" type="test_topic_published.py">
+      <rosparam>
+        topic_0: string
+        timeout_0: 10
+        check_after_kill_node: true
+        node_names: [publish_string,]
+      </rosparam>
+    </test>
+  </group>
 
 </launch>
