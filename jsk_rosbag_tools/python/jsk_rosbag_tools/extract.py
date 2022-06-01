@@ -1,4 +1,5 @@
 import os
+import os.path as osp
 
 import numpy as np
 import rosbag
@@ -8,6 +9,7 @@ from jsk_rosbag_tools.cv import compressed_format
 from jsk_rosbag_tools.cv import decompresse_imgmsg
 from jsk_rosbag_tools.cv import msg_to_img
 from jsk_rosbag_tools.info import get_topic_dict
+from jsk_rosbag_tools.makedirs import makedirs
 
 
 def get_image_topic_names(bag_filepath,
@@ -122,6 +124,8 @@ def extract_audio(bag_filepath,
             buf = buf.reshape(-1, channels)
             audio_buffer.append(buf)
     audio_buffer = np.concatenate(audio_buffer, axis=0)
+
+    makedirs(osp.dirname(wav_outpath))
     wav_write(wav_outpath, rate=samplerate, data=audio_buffer)
 
     valid = os.stat(wav_outpath).st_size != 0
