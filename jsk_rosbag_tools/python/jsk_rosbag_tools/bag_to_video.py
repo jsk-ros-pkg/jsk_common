@@ -5,7 +5,8 @@ import sys
 import tempfile
 
 import cv2
-import moviepy.editor as mp
+from moviepy.editor import AudioFileClip
+from moviepy.editor import VideoFileClip
 from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
 
 from jsk_rosbag_tools.extract import extract_audio
@@ -112,7 +113,7 @@ def bag_to_video(input_bagfile,
         writer.close()
 
         if audio_exists:
-            clip_output = mp.VideoFileClip(tmp_videopath).subclip().\
-                set_audio(mp.AudioFileClip(wav_outpath))
+            clip_output = VideoFileClip(tmp_videopath).subclip().\
+                set_audio(AudioFileClip(wav_outpath))
             clip_output.write_videofile(
                 output_filepath)
