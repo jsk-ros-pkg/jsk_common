@@ -56,7 +56,7 @@ _update_prompt() {
 }
 
 rossetmaster() {
-    local hostname=${1-"pr1040"}
+    local hostname=${1-"localhost"}
     local ros_port=${2-"11311"}
     export ROS_MASTER_URI=http://$hostname:$ros_port
     if [ "$NO_ROS_PROMPT" = "" ]; then
