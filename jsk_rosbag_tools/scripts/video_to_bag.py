@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
-from pathlib import Path
+import os.path as osp
 
 from jsk_rosbag_tools.video import video_to_bag
 
@@ -22,15 +22,19 @@ def main():
                         help="Don't show progress bar.")
     args = parser.parse_args()
 
-    video_path = Path(args.inputvideo)
+    video_path = args.inputvideo
     if args.out is None:
-        args.out = video_path.with_suffix('.bag')
+        args.out = osp.join(
+            osp.dirname(video_path),
+            osp.splitext(osp.basename(video_path))[0] + '.bag')
 
-    outfile = Path(args.out)
-    pattern = str(video_path.parent / (video_path.stem + "_%i.bag"))
+    outfile = args.out
+    pattern = str(osp.join(
+        osp.dirname(video_path),
+        osp.splitext(osp.basename(video_path))[0]+ "_%i.bag"))
     index = 0
-    while outfile.exists():
-        outfile = Path(pattern % index)
+    while osp.exists(outfile):
+        outfile = pattern % index
         index += 1
     video_to_bag(
         video_path, outfile,
