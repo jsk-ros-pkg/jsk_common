@@ -13,6 +13,19 @@ NAME = 'test_jsk_rosbag_tools'
 
 class TestJSKRosBagTools(unittest.TestCase):
 
+    def test_bag_to_audio(self):
+        rospack = rospkg.RosPack()
+        path = rospack.get_path('jsk_rosbag_tools')
+        video_bag_path = osp.join(path, 'samples', 'data',
+                                  '20220530173950_go_to_kitchen_rosbag.bag')
+        cmd = 'rosrun jsk_rosbag_tools bag_to_audio.py {}'.format(
+            video_bag_path)
+        proc = subprocess.Popen(cmd, shell=True)
+        proc.wait()
+
+        if proc.returncode != 0:
+            raise RuntimeError
+
     def test_tf_static_to_tf(self):
         rospack = rospkg.RosPack()
         path = rospack.get_path('jsk_rosbag_tools')
@@ -72,7 +85,7 @@ class TestJSKRosBagTools(unittest.TestCase):
         video_path = osp.join(
             output_dir,
             'head_camera--slash--rgb--slash--throttled'
-            '--slash--image_rect_color--slash--compressed-with-audio.mp4')
+            '--slash--image_rect_color--slash--compressed.mp4')
         output_filename = osp.join(path, 'tests', 'output', 'video_to_bag.bag')
         cmd = 'rosrun jsk_rosbag_tools video_to_bag.py {} ' \
             '--out {} --no-progress-bar'.format(

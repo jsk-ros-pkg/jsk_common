@@ -40,6 +40,37 @@ rosrun jsk_rosbag_tools bag_to_video.py $(rospack find jsk_rosbag_tools)/samples
   -o /tmp/20220530173950_go_to_kitchen_rosbag.mp4
 ```
 
+## bag_to_audio.py
+
+Create audio file from rosbag.
+
+### Usage
+
+```
+usage: bag_to_audio.py [-h] [--out OUT] [--samplerate SAMPLERATE] [--channels CHANNELS] [--audio-topic AUDIO_TOPIC] input_bagfile
+
+rosbag to audio
+
+positional arguments:
+  input_bagfile
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --out OUT, -o OUT     output filename. If `--audio-topic`_info is exists, you don't have to specify samplerate and channels.
+  --samplerate SAMPLERATE, -r SAMPLERATE
+                        sampling rate
+  --channels CHANNELS   number of input channels
+  --audio-topic AUDIO_TOPIC
+```
+
+### Example
+
+```
+rosrun jsk_rosbag_tools bag_to_audio.py $(rospack find jsk_rosbag_tools)/samples/data/20220530173950_go_to_kitchen_rosbag.bag \
+  --samplerate 16000 --channels 1 --audio-topic /audio \
+  -o /tmp/20220530173950_go_to_kitchen_rosbag.wav
+```
+
 ## video_to_bag.py
 
 Convert video file to bagfile.
