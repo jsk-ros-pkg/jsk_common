@@ -37,6 +37,8 @@ class TestConnection(unittest.TestCase):
         topic_type = rospy.get_param('~input_topic_type')
         check_connected_topics = rospy.get_param('~check_connected_topics')
         wait_time = rospy.get_param('~wait_for_connection', 0)
+        wait_for_disconnection_time = rospy.get_param(
+            '~wait_for_disconnection', 0)
         msg_class = roslib.message.get_message_class(topic_type)
         # Subscribe topic and bond connection
         sub = rospy.Subscriber('~input', msg_class,
@@ -59,7 +61,7 @@ class TestConnection(unittest.TestCase):
             sys.stderr.write('WARNING: running on rosdistro %s, and skipping '
                              'test for disconnection.\n' % ROS_DISTRO)
             return
-        rospy.sleep(1)  # wait for disconnection
+        rospy.sleep(wait_for_disconnection_time)  # wait for disconnection
         # Check specified topics do not exist
         _, subscriptions, _ = master.getSystemState()
         for check_topic in check_connected_topics:

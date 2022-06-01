@@ -5,8 +5,14 @@
   <node name="throttle" pkg="topic_tools" type="throttle"
         args="messages /foo 5.0 /bar"/>
 
+  <node name="sample_manager"
+        pkg="nodelet" type="nodelet"
+        args="manager"/>
+
   <node name="sync_throttle"
-        pkg="jsk_topic_tools" type="synchronized_throttle"
+        pkg="nodelet" type="nodelet"
+        args="load jsk_topic_tools/SynchronizedThrottle sample_manager"
+        respawn="true"
         output="screen">
     <rosparam>
       approximate_sync: false
@@ -20,8 +26,9 @@
   </node>
 
   <node name="async_throttle"
-        pkg="jsk_topic_tools" type="synchronized_throttle"
-
+        pkg="nodelet" type="nodelet"
+        args="load jsk_topic_tools/SynchronizedThrottle sample_manager"
+        respawn="true"
         output="screen">
     <rosparam>
       approximate_sync: true
@@ -36,5 +43,66 @@
 
   <test test-name="test_synchronized_throttle"
         pkg="jsk_topic_tools" type="test_synchronized_throttle.py"/>
+
+  <!-- Checking topic connection after killing nodes
+       https://github.com/jsk-ros-pkg/jsk_common/pull/1640 -->
+  <group ns="check_after_kill_node" >
+    <node name="sync_throttle"
+          pkg="nodelet" type="nodelet"
+          args="load jsk_topic_tools/SynchronizedThrottle /sample_manager"
+          respawn="true"
+          output="screen">
+      <rosparam>
+        approximate_sync: false
+        update_rate: 1.0
+        suffix: sync_after_kill_node
+        topics:
+        - /foo
+        - /bar
+      </rosparam>
+    </node>
+
+    <node name="async_throttle"
+          pkg="nodelet" type="nodelet"
+          args="load jsk_topic_tools/SynchronizedThrottle /sample_manager"
+          respawn="true"
+          output="screen">
+      <rosparam>
+        approximate_sync: true
+        update_rate: 1.0
+        suffix: async_after_kill_node
+        topics:
+        - /foo
+        - /bar
+      </rosparam>
+    </node>
+
+    <test test-name="test_topic_published_for_sync_throttle"
+          name="test_topic_published"
+          pkg="jsk_tools" type="test_topic_published.py">
+      <rosparam>
+        topic_0: /foo/sync_after_kill_node
+        timeout_0: 10
+        topic_1: /bar/sync_after_kill_node
+        timeout_1: 10
+        check_after_kill_node: true
+        node_names: [sync_throttle,]
+      </rosparam>
+    </test>
+
+    <test test-name="test_topic_published_for_async_throttle"
+          name="test_topic_published"
+          pkg="jsk_tools" type="test_topic_published.py">
+      <rosparam>
+        topic_0: /foo/async_after_kill_node
+        timeout_0: 10
+        topic_1: /bar/async_after_kill_node
+        timeout_1: 10
+        check_after_kill_node: true
+        node_names: [async_throttle,]
+      </rosparam>
+    </test>
+
+  </group>  <!-- check_after_kill_node -->
 
 </launch>

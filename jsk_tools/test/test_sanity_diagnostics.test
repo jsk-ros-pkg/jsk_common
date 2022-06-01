@@ -1,0 +1,16 @@
+<launch>
+  <include file="$(find jsk_tools)/sample/sample_sanity_diagnostics.launch">
+    <arg name="gui" value="false"/>
+  </include>
+
+  <test test-name="test_sanity_diagnostics" name="test_sanity_diagnostics"
+        pkg="jsk_tools" type="test_topic_published.py">
+    <rosparam>
+      topic_0: /diagnostics
+      timeout_0: 30
+      topic_1: /diagnostics_agg
+      timeout_1: 30
+    </rosparam>
+  </test>
+
+</launch>

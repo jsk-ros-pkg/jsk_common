@@ -1,0 +1,10 @@
+<launch>
+  <!-- https://github.com/jsk-ros-pkg/jsk_common/blob/master/doc/jsk_tools/cltools/rostopic_host_sanity.rst -->
+  <node name="publish_string"
+        pkg="rostopic" type="rostopic"
+        args="pub /hoge std_msgs/String 'data: ' -r 1">
+  </node>
+
+  <test pkg="jsk_tools" type="test_rostopic_host_sanity.py"
+        test-name="rostopic_host_sanity" />
+</launch>
