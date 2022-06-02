@@ -146,6 +146,14 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
         if self._connection_status == NOT_SUBSCRIBED:
             self.subscribe()
             self._connection_status = SUBSCRIBED
+
+            # Update the time of last_published_time
+            # to make it possible to take the difference time
+            # between the time of start subscribing and the current time.
+            start_time = rospy.Time.now()
+            for pub in self._publishers:
+                pub.last_published_time = start_time
+
             if not self._ever_subscribed:
                 self._ever_subscribed = True
 
