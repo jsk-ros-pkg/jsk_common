@@ -60,7 +60,8 @@ def decompresse_imgmsg(msg):
                     'Please report this error'
                     'https://github.com/jsk-ros-pkg/jsk_common/issues/new'
                     .format(msg.format))
-    fmt, compr_type = compressed_format(msg)
+    else:
+        fmt, compr_type = compressed_format(msg)
     if compr_type == 'compressedDepth':
         return msg_to_np_depth(msg, compressed=True)
     else:
