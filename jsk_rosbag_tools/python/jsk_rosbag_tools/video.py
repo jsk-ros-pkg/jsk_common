@@ -194,8 +194,8 @@ def video_to_bag(video_filepath, bag_output_filepath,
                     msg.data = audio_data.reshape(-1).tobytes()
                     timestamp = i * 0.01
                     sec = int(base_unixtime + timestamp)
-                    nsec = ((base_unixtime + timestamp)
-                            * (10 ** 9)) % (10 ** 9)
+                    nsec = (
+                        (base_unixtime + timestamp) * (10 ** 9)) % (10 ** 9)
                     ros_timestamp = rospy.rostime.Time(sec, nsec)
                     outbag.write(audio_topic_name, msg, ros_timestamp)
             merge_bag(video_out, audio_out, bag_output_filepath)

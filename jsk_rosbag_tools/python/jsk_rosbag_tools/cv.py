@@ -134,8 +134,8 @@ def msg_to_np_depth(msg, compressed=False, rescale=True):
             # it to 16UC1 again (depth in mm)
             depth_img = depth_img_scaled
         else:
-            raise Exception("Decoding of '" + depth_fmt
-                            + "' is not implemented!")
+            raise Exception(
+                "Decoding of '" + depth_fmt + "' is not implemented!")
     else:
         depth_img = _bridge.imgmsg_to_cv2(
             msg,
