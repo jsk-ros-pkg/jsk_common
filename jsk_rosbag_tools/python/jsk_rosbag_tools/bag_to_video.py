@@ -43,6 +43,7 @@ def bag_to_video(input_bagfile,
 
     output_filepaths = []
     target_image_topics = []
+    candidate_topics = get_image_topic_names(input_bagfile, rgb_only=True)
     if output_filepath is not None:
         if image_topic is None:
             raise ValueError(
@@ -53,8 +54,7 @@ def bag_to_video(input_bagfile,
     else:
         # output_dirpath is specified case.
         if image_topics is None:
-            image_topics = get_image_topic_names(
-                input_bagfile, rgb_only=True)
+            image_topics = candidate_topics
         target_image_topics = image_topics
 
         for image_topic in target_image_topics:
@@ -64,6 +64,14 @@ def bag_to_video(input_bagfile,
                     topic_name_to_file_name(image_topic) + '.mp4'))
         wav_outpath = osp.join(output_dirpath, '{}.wav'.format(
             topic_name_to_file_name(audio_topic)))
+
+    # check topics exist.
+    not_exists_topics = list(filter(
+        lambda tn: tn not in candidate_topics, target_image_topics))
+    if len(not_exists_topics) > 0:
+        raise ValueError(
+            'Topics that are not included in the rosbag are specified.'
+            ' {}'.format(list(not_exists_topics)))
 
     audio_exists = bag_to_audio(input_bagfile, wav_outpath,
                                 samplerate=samplerate,
