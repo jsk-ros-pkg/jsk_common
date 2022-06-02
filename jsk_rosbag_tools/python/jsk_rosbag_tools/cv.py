@@ -37,6 +37,29 @@ def compressed_format(msg):
 
 
 def decompresse_imgmsg(msg):
+    if ';' not in msg.format:
+        fmt = ''
+        if msg.format not in ['png', 'jpeg', 'rvl']:
+            raise RuntimeError(
+                'Unsupported or invalid compresssion format {}'
+                'Please report this error'
+                'https://github.com/jsk-ros-pkg/jsk_common/issues/new'
+                .format(msg.format))
+        if msg.format in ['rvl']:
+            compr_type = 'compressedDepth'
+        else:
+            try:
+                return msg_to_bgr(msg, compressed=True)
+            except Exception:
+                pass
+            try:
+                return msg_to_np_depth(msg, compressed=True)
+            except Exception:
+                raise RuntimeError(
+                    'Unsupported or invalid compresssion format {}'
+                    'Please report this error'
+                    'https://github.com/jsk-ros-pkg/jsk_common/issues/new'
+                    .format(msg.format))
     fmt, compr_type = compressed_format(msg)
     if compr_type == 'compressedDepth':
         return msg_to_np_depth(msg, compressed=True)
