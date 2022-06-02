@@ -24,6 +24,8 @@ def msg_to_img(msg):
     if msg.encoding in ['bgra8', 'bgr8',
                         'rgba8', 'rgb8']:
         return msg_to_bgr(msg)
+    elif msg.encoding in ['mono8']:
+        return msg_to_mono(msg)
     else:
         return msg_to_np_depth(msg)
 
@@ -87,6 +89,18 @@ def msg_to_bgr(msg, compressed=False):
         else:
             bgr_img = img
     return bgr_img
+
+
+def msg_to_mono(msg, compressed=False):
+    if compressed:
+        np_arr = np.fromstring(msg.data, np.uint8)
+        img = cv2.imdecode(
+            np_arr, cv2.IMREAD_GRAYSCALE)
+    else:
+        img = _bridge.imgmsg_to_cv2(
+            msg,
+            desired_encoding=msg.encoding)
+    return img
 
 
 def msg_to_np_depth(msg, compressed=False, rescale=True):

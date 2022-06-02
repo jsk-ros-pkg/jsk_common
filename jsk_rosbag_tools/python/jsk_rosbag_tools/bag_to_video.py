@@ -43,7 +43,8 @@ def bag_to_video(input_bagfile,
 
     output_filepaths = []
     target_image_topics = []
-    candidate_topics = get_image_topic_names(input_bagfile, rgb_only=True)
+    candidate_topics = get_image_topic_names(input_bagfile)
+
     if output_filepath is not None:
         if image_topic is None:
             raise ValueError(
@@ -54,7 +55,9 @@ def bag_to_video(input_bagfile,
     else:
         # output_dirpath is specified case.
         if image_topics is None:
-            image_topics = candidate_topics
+            # record all color topics
+            image_topics = get_image_topic_names(input_bagfile,
+                                                 rgb_only=True)
         target_image_topics = image_topics
 
         for image_topic in target_image_topics:
