@@ -6,10 +6,10 @@ import tempfile
 
 import cv2
 from moviepy.audio.io.AudioFileClip import AudioFileClip
-from moviepy.video.io.VideoFileClip import VideoFileClip
 from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
+from moviepy.video.io.VideoFileClip import VideoFileClip
 
-from jsk_rosbag_tools.extract import extract_audio
+from jsk_rosbag_tools.bag_to_audio import bag_to_audio
 from jsk_rosbag_tools.extract import extract_image_topic
 from jsk_rosbag_tools.extract import get_image_topic_names
 from jsk_rosbag_tools.makedirs import makedirs
@@ -65,10 +65,10 @@ def bag_to_video(input_bagfile,
         wav_outpath = osp.join(output_dirpath, '{}.wav'.format(
             topic_name_to_file_name(audio_topic)))
 
-    audio_exists = extract_audio(input_bagfile, wav_outpath,
-                                 samplerate=samplerate,
-                                 channels=channels,
-                                 topic_name=audio_topic)
+    audio_exists = bag_to_audio(input_bagfile, wav_outpath,
+                                samplerate=samplerate,
+                                channels=channels,
+                                topic_name=audio_topic)
 
     dt = 1.0 / fps
     for image_topic, output_filepath in zip(target_image_topics,

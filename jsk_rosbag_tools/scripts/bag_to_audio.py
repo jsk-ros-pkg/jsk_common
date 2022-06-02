@@ -5,7 +5,7 @@ import os.path as osp
 
 import termcolor
 
-from jsk_rosbag_tools.extract import extract_audio
+from jsk_rosbag_tools.bag_to_audio import bag_to_audio
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
             osp.dirname(args.input_bagfile),
             osp.splitext(osp.basename(args.input_bagfile))[0])
 
-    audio_exists = extract_audio(
+    audio_exists = bag_to_audio(
         args.input_bagfile, args.out,
         samplerate=args.samplerate,
         channels=args.channels,

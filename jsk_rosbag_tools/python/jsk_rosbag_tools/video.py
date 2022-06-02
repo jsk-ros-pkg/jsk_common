@@ -1,6 +1,5 @@
 from __future__ import division
 
-import time
 import datetime
 import math
 import os.path as osp
@@ -9,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import wave
 
 import audio_common_msgs.msg
