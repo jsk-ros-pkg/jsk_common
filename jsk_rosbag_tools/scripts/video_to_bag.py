@@ -31,7 +31,7 @@ def main():
     outfile = args.out
     pattern = str(osp.join(
         osp.dirname(video_path),
-        osp.splitext(osp.basename(video_path))[0]+ "_%i.bag"))
+        osp.splitext(osp.basename(video_path))[0] + "_%i.bag"))
     index = 0
     while osp.exists(outfile):
         outfile = pattern % index
