@@ -84,7 +84,9 @@ def bag_to_video(input_bagfile,
     dt = 1.0 / fps
     for image_topic, output_filepath in zip(target_image_topics,
                                             output_filepaths):
-        makedirs(osp.dirname(output_filepath))
+        filepath_dir = osp.dirname(output_filepath)
+        if filepath_dir:
+            makedirs(filepath_dir)
         if audio_exists:
             tmp_videopath = tempfile.NamedTemporaryFile(suffix='.mp4').name
         else:
