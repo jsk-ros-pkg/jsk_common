@@ -141,18 +141,24 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
     def is_subscribed(self):
         return self._connection_status == SUBSCRIBED
 
+    def poke(self):
+        """Update the time of last_published_time.
+
+        Update the time of last_published_time
+        to make it possible to take the difference time
+        between the time of start subscribing and the current time.
+        """
+        start_time = rospy.Time.now()
+        for pub in self._publishers:
+            pub.last_published_time = start_time
+
     def peer_subscribe(self, *args, **kwargs):
         rospy.logdebug('[{topic}] is subscribed'.format(topic=args[0]))
         if self._connection_status == NOT_SUBSCRIBED:
             self.subscribe()
             self._connection_status = SUBSCRIBED
 
-            # Update the time of last_published_time
-            # to make it possible to take the difference time
-            # between the time of start subscribing and the current time.
-            start_time = rospy.Time.now()
-            for pub in self._publishers:
-                pub.last_published_time = start_time
+            self.poke()
 
             if not self._ever_subscribed:
                 self._ever_subscribed = True
