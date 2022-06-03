@@ -165,7 +165,6 @@ class AudibleWarning(object):
         # Wait until seconds_to_start_speaking the time has passed.
         self.run_stop_enabled_time = None
         self.run_stop_disabled_time = None
-        self.run_stop_time = None
         rate = rospy.Rate(10)
         start_time = rospy.Time.now()
         while not rospy.is_shutdown() \
@@ -278,12 +277,16 @@ class AudibleWarning(object):
         target_status_list = msg.status
 
         if self.ignore_time_after_runstop_is_enabled > 0.0:
-            if ((rospy.Time.now() - self.run_stop_enabled_time).to_sec <
-                    self.ignore_time_after_runstop_is_enabled):
+            if self.run_stop_enabled_time is not None \
+                    and ((rospy.Time.now()
+                          - self.run_stop_enabled_time).to_sec <
+                         self.ignore_time_after_runstop_is_enabled):
                 return
         if self.ignore_time_after_runstop_is_disabled > 0.0:
-            if ((rospy.Time.now() - self.run_stop_disabled_time).to_sec <
-                    self.ignore_time_after_runstop_is_disabled):
+            if self.run_stop_disabled_time is not None \
+                    and ((rospy.Time.now()
+                          - self.run_stop_disabled_time).to_sec <
+                         self.ignore_time_after_runstop_is_disabled):
                 return
 
         if self.run_stop:
