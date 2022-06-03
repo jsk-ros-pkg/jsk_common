@@ -49,6 +49,14 @@ Robots using diagnostics can use this node.
 
     This is useful for ignoring errors that occur when the robot starts.
 
+* `~enable` (`Bool`, default: `True`)
+
+    If `True`, speak diagnositcs. If `False`, this node don't speak.
+
+* `~speak_ok` (`Bool`, default: `False`)
+
+    If `True`, speak ok level diagnostics.
+
 * `~speak_warn` (`Bool`, default: `True`)
 
     If `True`, speak warning level diagnostics.
@@ -80,6 +88,14 @@ Robots using diagnostics can use this node.
     ```bash
     run_stop_condition: "m.runstopped is True"
     ```
+
+* `~ignore_time_after_runstop_is_enabled` (`Float`, default: `0.0`)
+
+    Time to ignore diagnostics after runstop is enabled.
+
+* `~ignore_time_after_runstop_is_disabled` (`Float`, default: `0.0`)
+
+    Time to ignore diagnostics after runstop is disabled.
 
 - `~blacklist` (`Yaml`, required)
 
