@@ -1,4 +1,4 @@
-static_transform_republisher.py
+static_tf_republisher.py
 ===============================
 
 
@@ -13,13 +13,13 @@ Usage
 -----
 
 ```
-rosrun jsk_topic_tools static_transform_republisher.py _file:=<absolute file path to a rosbag file>
+rosrun jsk_topic_tools static_tf_republisher.py _file:=<absolute file path to a rosbag file>
 ```
 
 or
 
 ```
-rosrun jsk_topic_tools static_transform_republisher.py <file path to a rosbag file>
+rosrun jsk_topic_tools static_tf_republisher.py <file path to a rosbag file>
 ```
 
 Parameters
