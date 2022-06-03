@@ -22,6 +22,7 @@ from jsk_tools.cfg import AudibleWarningConfig as Config
 from jsk_tools.diagnostics_utils import diagnostics_level_to_str
 from jsk_tools.diagnostics_utils import filter_diagnostics_status_list
 from jsk_tools.diagnostics_utils import is_leaf
+from jsk_tools.inflection_utils import camel_to_snake
 
 
 def expr_eval(expr):
@@ -131,6 +132,7 @@ class SpeakThread(Thread):
                 else:
                     prefix = 'ok.'
                 sentence = prefix + e.name + ' ' + e.message
+                sentence = camel_to_snake(sentence)
                 sentence = sentence.replace('/', ' ')
                 sentence = sentence.replace('_', ' ')
                 rospy.loginfo('audible warning error name "{}"'.format(e.name))
