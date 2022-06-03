@@ -5,6 +5,18 @@
 This class is a base-class which can start subscribing topics if published topics are subscribed by the other node.
 This is abstruct class.
 
+Users inherit this class and define publisher by calling the `self.advertise` function.
+The return value of `self.advertise` is the `Publisher` class. User should execute publish in `callback` function.
+
+### For Expert
+
+When `publish` is executed, it is judged that this node is running normally, and published `diagnostics` becomes `OK` level.
+However, if the publisher is subscribed but the `publish` function is not called, the node is not working properly and `diagnostics` will be at the `ERROR` level.
+
+Some users may execute`publish` at any time (eg `rospy.Timer`).
+In that case, by executing the `self.poke` function in the callback function, the state of `diagnostics` will be `OK` level without executing publish.
+
+
 ## Parameter
 
 * `~always_subscribe` (Bool, default: `false`):
