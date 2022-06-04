@@ -211,6 +211,8 @@ def compress_depth_msg(msg, depth_quantization=100, depth_max=None):
         compressed_msg.data += np.array(
             cv2.imencode('.png', depth)[1]).tostring()
     else:
-        raise NotImplementedError
+        raise NotImplementedError(
+            'Unsupported compressed depth image format {}'
+            .format(msg.encoding))
 
     return compressed_msg

@@ -52,15 +52,16 @@ def extract_image_topic(bag_filepath, topic_name):
     with rosbag.Bag(bag_filepath, 'r') as input_rosbag:
         for topic, msg, _ in input_rosbag.read_messages(
                 topics=[topic_name]):
-            if topic_dict[topic]['type'] == 'sensor_msgs/Image':
+            topic_type = topic_dict[topic]['type']
+            if topic_type == 'sensor_msgs/Image':
                 bgr_img = msg_to_img(msg)
                 encoding = msg.encoding
-            elif topic_dict[topic]['type'] == \
-                    'sensor_msgs/CompressedImage':
+            elif topic_type == 'sensor_msgs/CompressedImage':
                 bgr_img = decompresse_imgmsg(msg)
                 encoding, _ = compressed_format(msg)
             else:
-                raise RuntimeError
+                raise RuntimeError('Unsupported Image topic {}'.format(
+                    topic_type))
 
             # padding image
             if bgr_img.shape[0] % 2 != 0:
@@ -72,7 +73,8 @@ def extract_image_topic(bag_filepath, topic_name):
                         (1, bgr_img.shape[1], bgr_img.shape[2]),
                         dtype=bgr_img.dtype)
                 else:
-                    raise ValueError
+                    raise ValueError('Invalid image shape {}'
+                                     .format(bgr_img.shape))
                 bgr_img = np.concatenate([bgr_img, pad_img], axis=0)
 
             if bgr_img.shape[1] % 2 != 0:
@@ -84,7 +86,8 @@ def extract_image_topic(bag_filepath, topic_name):
                         (bgr_img.shape[0], 1, bgr_img.shape[2]),
                         dtype=bgr_img.dtype)
                 else:
-                    raise ValueError
+                    raise ValueError('Invalid image shape {}'
+                                     .format(bgr_img.shape))
                 bgr_img = np.concatenate([bgr_img, pad_img], axis=1)
 
             yield msg.header.stamp.to_sec(), topic, bgr_img, encoding
