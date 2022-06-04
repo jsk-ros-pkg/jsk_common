@@ -12,6 +12,7 @@ from moviepy.video.io.VideoFileClip import VideoFileClip
 from jsk_rosbag_tools.bag_to_audio import bag_to_audio
 from jsk_rosbag_tools.extract import extract_image_topic
 from jsk_rosbag_tools.extract import get_image_topic_names
+from jsk_rosbag_tools.image_utils import resize_keeping_aspect_ratio
 from jsk_rosbag_tools.makedirs import makedirs
 from jsk_rosbag_tools.topic_name_utils import topic_name_to_file_name
 
@@ -99,12 +100,13 @@ def bag_to_video(input_bagfile,
         while stamp == 0.0:
             stamp, _, img, _ = next(images)
         start_stamp = stamp
+        width, height = img.shape[1], img.shape[0]
 
         creation_time = datetime.datetime.utcfromtimestamp(start_stamp)
         time_format = '%y-%m-%d %h:%M:%S'
         writer = FFMPEG_VideoWriter(
             tmp_videopath,
-            (img.shape[1], img.shape[0]),
+            (width, height),
             fps, logfile=None,
             ffmpeg_params=[
                 '-metadata',
@@ -113,14 +115,15 @@ def bag_to_video(input_bagfile,
             ])
 
         current_time = 0.0
-        cur_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        for stamp, _, bgr_img, _ in images:
-            rgb_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB)
+        cur_img = resize_keeping_aspect_ratio(
+            cv2.cvtColor(img, cv2.COLOR_BGR2RGB), width=width)
+        for i, (stamp, _, bgr_img, _) in enumerate(images):
             aligned_stamp = stamp - start_stamp
             while current_time < aligned_stamp:
                 current_time += dt
                 writer.write_frame(cur_img)
-            cur_img = rgb_img
+            cur_img = resize_keeping_aspect_ratio(
+                cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB), width=width)
             writer.write_frame(cur_img)
             current_time += dt
         writer.close()
