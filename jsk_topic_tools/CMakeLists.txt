@@ -37,8 +37,12 @@ catkin_download(download_sample_pr2_wrench-2022-05-02 https://drive.google.com/u
   FILENAME sample_pr2_wrench-2022-05-02.bag
   MD5 0e2d0d431f10875cb372c85faf32b91e
 )
+catkin_download(download_sample_tf https://drive.google.com/uc?id=15i7dPbMxrxR0j6KsH5mSgIWrNNTrYoV4
+  DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/sample/data
+  FILENAME sample_tf.bag
+  MD5 13cd56d8d85cdf80139bbe5f7a9e2ef0
+)
 add_custom_target(download ALL DEPENDS download_extra_data)
-add_custom_target(${PROJECT_NAME}_install_sample_data ALL COMMAND python$ENV{ROS_PYTHON_VERSION} ${PROJECT_SOURCE_DIR}/scripts/install_sample_data.py)
 
 catkin_python_setup()
 add_message_files(
