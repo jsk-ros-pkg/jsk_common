@@ -34,7 +34,7 @@ endforeach(exec)
 
 if (CATKIN_ENABLE_TESTING)
   find_package(roslint REQUIRED)
-  roslint_python(src/audible_warning.py)
+  roslint_python(node_scripts/audible_warning.py)
   roslint_python(src/jsk_tools/cltool.py)
   roslint_python(src/test_topic_published.py)
   roslint_python(src/test_rosparam_set.py)
