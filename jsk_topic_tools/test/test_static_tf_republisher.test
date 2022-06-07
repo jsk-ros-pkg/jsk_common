@@ -1,0 +1,37 @@
+<launch>
+    <arg name="ROSBAG" default="$(find jsk_topic_tools)/sample/data/sample_tf.bag" />
+
+    <param name="/use_sim_time" value="true" />
+    <node
+        pkg="rosbag"
+        type="play"
+        name="rosbag_play"
+        args="$(arg ROSBAG) --clock"
+        required="true"
+        />
+
+    <node
+        pkg="jsk_topic_tools"
+        type="static_tf_republisher.py"
+        name="static_tf_republisher"
+        output="screen"
+        >
+        <rosparam subst_value="true">
+            file: $(arg ROSBAG)
+            mode_static: True
+        </rosparam>
+    </node>
+
+    <test
+        pkg="jsk_topic_tools"
+        type="test_static_tf_republisher.py"
+        name="test_static_tf_republisher"
+        test-name="test_static_tf_republisher"
+        time-limit="30"
+        retry="3">
+        <rosparam>
+            frame_id_target: "head"
+            frame_id_source: "back"
+        </rosparam>
+    </test>
+</launch>
