@@ -23,6 +23,7 @@ from jsk_tools.diagnostics_utils import diagnostics_level_to_str
 from jsk_tools.diagnostics_utils import filter_diagnostics_status_list
 from jsk_tools.diagnostics_utils import is_leaf
 from jsk_tools.inflection_utils import camel_to_snake
+from jsk_tools.string_utils import multiple_whitespace_to_one
 
 
 def expr_eval(expr):
@@ -135,6 +136,7 @@ class SpeakThread(Thread):
                 sentence = camel_to_snake(sentence)
                 sentence = sentence.replace('/', ' ')
                 sentence = sentence.replace('_', ' ')
+                sentence = multiple_whitespace_to_one(sentence)
                 rospy.loginfo('audible warning error name "{}"'.format(e.name))
                 rospy.loginfo("audible warning talking: %s" % sentence)
 
