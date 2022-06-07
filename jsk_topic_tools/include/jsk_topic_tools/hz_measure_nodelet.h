@@ -39,6 +39,8 @@
 #include <nodelet/nodelet.h>
 #include <topic_tools/shape_shifter.h>
 
+#include "jsk_topic_tools/timered_diagnostic_updater.h"
+
 #include <queue>
 
 namespace jsk_topic_tools
@@ -50,12 +52,34 @@ namespace jsk_topic_tools
     virtual void onInit();
   protected:
     int average_message_num_;
+    double hz_;
+    double warning_hz_;
     std::queue<ros::Time> buffer_;
     ros::Publisher hz_pub_;
     ros::Subscriber sub_;
     ros::NodeHandle pnh_;
     virtual void inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
-    
+
+    /** @brief
+     * Method which is called periodically.
+     *
+     * In default, it check vitality of vital_checker_ and if vital_checker_
+     * is not poked for seconds, diagnostic status will be ERROR.
+     * @param stat Modofy stat to change status of diagnostic information.
+     */
+    virtual void updateDiagnostic(diagnostic_updater::DiagnosticStatusWrapper &stat);
+
+    /** @brief
+     * True if summary is displayed as 'Warnings', otherwise it is displayed as 'Errors'
+     */
+    uint8_t diagnostic_error_level_;
+
+    /** @brief
+     * Pointer to TimeredDiagnosticUpdater to call
+     * updateDiagnostic(diagnostic_updater::DiagnosticStatusWrapper&)
+     * periodically.
+     */
+    TimeredDiagnosticUpdater::Ptr diagnostic_updater_;
   private:
   };
 }
