@@ -30,6 +30,10 @@ If target `hz` is smaller than `~warning_hz`, this node outputs `diagnostics` at
 
     Calculate `hz` from the arrival times of `~message_num` topics.
 
+- `~warning_hz` (`Double`, default: `-1`):
+
+    If target `hz` is smaller than `~warning_hz`, this node outputs `diagnostics` at `WARN` level (if `~use_warn` is `True`) or `ERROR` level.
+
 - `~use_warn` (Bool, default: `False`):
 
     If this parameter is enabled, diagnostic messages on failure is displayed on `WARN` level instead of `ERROR` level.
