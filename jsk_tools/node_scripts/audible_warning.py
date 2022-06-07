@@ -136,6 +136,7 @@ class SpeakThread(Thread):
                 sentence = camel_to_snake(sentence)
                 sentence = sentence.replace('/', ' ')
                 sentence = sentence.replace('_', ' ')
+                sentence = sentence.replace(':', ' colon ')
                 sentence = multiple_whitespace_to_one(sentence)
                 rospy.loginfo('audible warning error name "{}"'.format(e.name))
                 rospy.loginfo("audible warning talking: %s" % sentence)
