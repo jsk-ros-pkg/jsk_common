@@ -2,6 +2,11 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add skip_interfaces param in network_status.py (`#1664 <https://github.com/jsk-ros-pkg/jsk_common/issues/1664>`_)
+* Contributors: Shingo Kitagawa
+
 2.2.11 (2020-07-10)
 -------------------
 * Fix for noetic buid (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)

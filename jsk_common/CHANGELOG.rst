@@ -2,6 +2,11 @@
 Changelog for package jsk_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add audio_video_recorder in jsk_common (`#1672 <https://github.com/jsk-ros-pkg/jsk_common/issues/1672>`_)
+* Contributors: Shingo Kitagawa
+
 2.2.11 (2020-07-10)
 -------------------
 * upgrade package.xml to format=3 for noetic (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)

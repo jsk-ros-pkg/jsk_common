@@ -1,17 +1,14 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package multi_map_server
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package audio_video_recorder
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Forthcoming
 -----------
+* add audio_video_recorder (`#1672 <https://github.com/jsk-ros-pkg/jsk_common/issues/1672>`_)
+* Contributors: Shingo Kitagawa
 
 2.2.11 (2020-07-10)
 -------------------
-* migrate to noetic with ROS_PYTHON_VERSION=2/3, use multiple ROS distro strategy http://wiki.ros.org/noetic/Migration (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
-
-  * upgrade package.xml to format=3
-
-* Contributors: Kei Okada
 
 2.2.10 (2018-11-03)
 -------------------
@@ -21,8 +18,6 @@ Forthcoming
 
 2.2.8 (2018-11-01)
 ------------------
-* Add comment about installation (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
-* Contributors: Yuto Uchimi
 
 2.2.7 (2018-06-27)
 ------------------
@@ -77,8 +72,6 @@ Forthcoming
 
 2.0.11 (2016-03-20)
 -------------------
-* Add include_dirs for multi_map_server
-* Contributors: Kentaro Wada
 
 2.0.10 (2016-02-13)
 -------------------
@@ -109,8 +102,6 @@ Forthcoming
 
 2.0.1 (2015-06-28)
 ------------------
-* [jsk_ros_patch/multi_map_server/CMakeLists.txt] hydro/indigo/jade has wet package, so remove code for groovy
-* Contributors: Kei Okada
 
 2.0.0 (2015-06-19)
 ------------------
@@ -124,11 +115,11 @@ Forthcoming
 1.0.70 (2015-05-08)
 -------------------
 
-1.0.69 (2015-05-05)
--------------------
+1.0.69 (2015-05-05 12:28)
+-------------------------
 
-1.0.68 (2015-05-05)
--------------------
+1.0.68 (2015-05-05 09:49)
+-------------------------
 
 1.0.67 (2015-05-03)
 -------------------
@@ -151,13 +142,11 @@ Forthcoming
 1.0.61 (2015-02-11)
 -------------------
 
-1.0.60 (2015-02-03)
--------------------
+1.0.60 (2015-02-03 10:12)
+-------------------------
 
-1.0.59 (2015-02-03)
--------------------
-* Remove rosbuild files
-* Contributors: Ryohei Ueda
+1.0.59 (2015-02-03 04:05)
+-------------------------
 
 1.0.58 (2015-01-07)
 -------------------
@@ -180,11 +169,11 @@ Forthcoming
 1.0.52 (2014-10-23)
 -------------------
 
-1.0.51 (2014-10-20)
--------------------
+1.0.51 (2014-10-20 16:01)
+-------------------------
 
-1.0.50 (2014-10-20)
--------------------
+1.0.50 (2014-10-20 01:50)
+-------------------------
 
 1.0.49 (2014-10-13)
 -------------------
@@ -201,16 +190,14 @@ Forthcoming
 1.0.45 (2014-09-29)
 -------------------
 
-1.0.44 (2014-09-26)
--------------------
+1.0.44 (2014-09-26 09:17)
+-------------------------
 
-1.0.43 (2014-09-26)
--------------------
+1.0.43 (2014-09-26 01:08)
+-------------------------
 
 1.0.42 (2014-09-25)
 -------------------
-* Rename executable of multi_map_server to avoid conflict against map_server
-* Contributors: Ryohei Ueda
 
 1.0.41 (2014-09-23)
 -------------------
@@ -223,13 +210,12 @@ Forthcoming
 
 1.0.38 (2014-09-13)
 -------------------
-* catkinize python_twoauth and voice_text, modify multi_map_server's catkin.cmake
-* Contributors: Yuto Inagaki
+
+1.0.37 (2014-09-08)
+-------------------
 
 1.0.36 (2014-09-01)
 -------------------
-* modify to install executable to right path
-* Contributors: Yuto Inagaki
 
 1.0.35 (2014-08-16)
 -------------------
@@ -260,8 +246,6 @@ Forthcoming
 
 1.0.26 (2014-05-30)
 -------------------
-* enable depend to map_server for default
-* Contributors: Kei Okada
 
 1.0.25 (2014-05-26)
 -------------------
@@ -290,23 +274,23 @@ Forthcoming
 1.0.17 (2014-04-20)
 -------------------
 
-1.0.16 (2014-04-19)
--------------------
+1.0.16 (2014-04-19 23:29)
+-------------------------
 
-1.0.15 (2014-04-19)
--------------------
+1.0.15 (2014-04-19 20:19)
+-------------------------
 
-1.0.14 (2014-04-19)
--------------------
+1.0.14 (2014-04-19 12:52)
+-------------------------
 
-1.0.13 (2014-04-19)
--------------------
+1.0.13 (2014-04-19 11:06)
+-------------------------
 
-1.0.12 (2014-04-18)
--------------------
+1.0.12 (2014-04-18 16:58)
+-------------------------
 
-1.0.11 (2014-04-18)
--------------------
+1.0.11 (2014-04-18 08:18)
+-------------------------
 
 1.0.10 (2014-04-17)
 -------------------
@@ -317,30 +301,20 @@ Forthcoming
 1.0.8 (2014-04-11)
 ------------------
 
+1.0.7 (2014-04-10)
+------------------
+
 1.0.6 (2014-04-07)
 ------------------
-* Added support for YAML-CPP 0.5+.
-  The new yaml-cpp API removes the "node >> outputvar;" operator, and
-  it has a new way of loading documents. There's no version hint in the
-  library's headers, so I'm getting the version number from pkg-config.
-  This is a port of @ktossell's patch for map_server.
-* Contributors: Scott K Logan
 
 1.0.5 (2014-03-31)
 ------------------
-* check if map_server exists under /opt/ros/{ROS_DISTRO}/stacks/navigation/map_server for groovy
-* Contributors: Kei Okada
 
-1.0.4 (2014-03-27)
+1.0.4 (2014-03-29)
 ------------------
-* multi_map_server: disable map_server for default in build_depend, run_depend
-* fix typo CATKIN-DEPENDS -> CATKIN_DEPENDS
-* multi_map_server: catkinize
-* Contributors: Ryohei Ueda, Kei Okada
 
 1.0.3 (2014-03-19)
 ------------------
-* update revision number to 1.0.3
 
 1.0.2 (2014-03-12)
 ------------------
@@ -350,6 +324,3 @@ Forthcoming
 
 1.0.0 (2014-03-05)
 ------------------
-* add explicit dependency to yaml-cpp as yaml-cpp i sinstalled as a rosdep system dependency
-* add multi_map_server, map_server with switch service, (this will publish TF between maps in the future)
-* Contributors: Kei Okada, Manabu Saito
