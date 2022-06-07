@@ -13,6 +13,7 @@ import actionlib
 from diagnostic_msgs.msg import DiagnosticArray
 from diagnostic_msgs.msg import DiagnosticStatus
 from dynamic_reconfigure.server import Server
+import std_msgs.msg
 import rospy
 from sound_play.msg import SoundRequest
 from sound_play.msg import SoundRequestAction
@@ -55,6 +56,13 @@ class SpeakThread(Thread):
         self.previous_spoken_time = defaultdict(lambda tm=tm: tm)
         self.speak_flag = True
         self.language = language
+
+        self.pub_original_text = rospy.Publisher('~output/original_text',
+                                                 std_msgs.msg.String,
+                                                 queue_size=1)
+        self.pub_speak_text = rospy.Publisher('~output/text',
+                                              std_msgs.msg.String,
+                                              queue_size=1)
 
         self.talk = actionlib.SimpleActionClient(
             "/robotsound", SoundRequestAction)
@@ -140,6 +148,9 @@ class SpeakThread(Thread):
                 sentence = multiple_whitespace_to_one(sentence)
                 rospy.loginfo('audible warning error name "{}"'.format(e.name))
                 rospy.loginfo("audible warning talking: %s" % sentence)
+                self.pub_original_text.publish(e.message)
+                self.pub_speak_text.publish(
+                    "audible warning talking: %s" % sentence)
 
                 goal = SoundRequestGoal()
                 goal.sound_request.sound = SoundRequest.SAY
