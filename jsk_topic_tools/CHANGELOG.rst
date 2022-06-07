@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.12 (2022-06-07)
+-------------------
 * [jsk_topic_tools] add non static_tf mode to static_tf_republisher (`#1709 <https://github.com/jsk-ros-pkg/jsk_common/issues/1709>`_)
 
   * [jsk_topic_tools] add USE_SOURCE_PERMISSIONS

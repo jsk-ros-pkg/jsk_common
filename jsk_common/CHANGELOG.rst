@@ -2,8 +2,8 @@
 Changelog for package jsk_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.12 (2022-06-07)
+-------------------
 * add audio_video_recorder in jsk_common (`#1672 <https://github.com/jsk-ros-pkg/jsk_common/issues/1672>`_)
 * Contributors: Shingo Kitagawa
 

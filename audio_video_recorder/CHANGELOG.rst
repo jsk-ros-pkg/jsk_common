@@ -2,8 +2,8 @@
 Changelog for package audio_video_recorder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.12 (2022-06-07)
+-------------------
 * add audio_video_recorder (`#1672 <https://github.com/jsk-ros-pkg/jsk_common/issues/1672>`_)
 * Contributors: Shingo Kitagawa
 

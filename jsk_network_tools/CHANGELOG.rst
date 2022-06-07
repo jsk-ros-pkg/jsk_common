@@ -2,8 +2,8 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.12 (2022-06-07)
+-------------------
 * add skip_interfaces param in network_status.py (`#1664 <https://github.com/jsk-ros-pkg/jsk_common/issues/1664>`_)
 * Contributors: Shingo Kitagawa
 

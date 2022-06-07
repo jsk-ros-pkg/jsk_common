@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.12 (2022-06-07)
+-------------------
 * [jsk_data/tess_data_collection_server] Check if text and yaml or text and image are saved in the subdirectory of `save_dir`. (`#1734 <https://github.com/jsk-ros-pkg/jsk_common/issues/1734>`_)
 * [test/data_collection_server] Wait until data saved for test. (`#1728 <https://github.com/jsk-ros-pkg/jsk_common/issues/1728>`_)
 * [jsk_data] Strip newline at test code. (`#1726 <https://github.com/jsk-ros-pkg/jsk_common/issues/1726>`_)

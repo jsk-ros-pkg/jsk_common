@@ -2,8 +2,8 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.12 (2022-06-07)
+-------------------
 * [jsk_tools] change default ROS_MASTER_URI of rossetmaster to localhost (`#1729 <https://github.com/jsk-ros-pkg/jsk_common/issues/1729>`_)
 * Add test for topic connection test after killing nodes (`#1725 <https://github.com/jsk-ros-pkg/jsk_common/issues/1725>`_)
 

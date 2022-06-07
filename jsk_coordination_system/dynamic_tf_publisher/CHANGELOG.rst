@@ -2,8 +2,8 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.12 (2022-06-07)
+-------------------
 * run 2to3 -w -f has_key for python3 compatibility (`#1695 <https://github.com/jsk-ros-pkg/jsk_common/issues/1695>`_)
 * install tf_reconfigure_publisher.py (`#1654 <https://github.com/jsk-ros-pkg/jsk_common/issues/1654>`_)
 * Contributors: Shingo Kitagawa
