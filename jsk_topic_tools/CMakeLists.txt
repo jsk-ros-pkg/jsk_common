@@ -31,10 +31,16 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/jsk_topic_tools/nodelet_version.h.in
   ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/jsk_topic_tools/nodelet_version.h)
 
+# download and install sample data
 catkin_download(download_sample_pr2_wrench-2022-05-02 https://drive.google.com/uc?id=1ym_fxRTNZOTp4PCXIq_spJwFktoOkLDK
   DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/sample/data
   FILENAME sample_pr2_wrench-2022-05-02.bag
   MD5 0e2d0d431f10875cb372c85faf32b91e
+)
+catkin_download(download_sample_tf https://drive.google.com/uc?id=15i7dPbMxrxR0j6KsH5mSgIWrNNTrYoV4
+  DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/sample/data
+  FILENAME sample_tf.bag
+  MD5 13cd56d8d85cdf80139bbe5f7a9e2ef0
 )
 add_custom_target(download ALL DEPENDS download_extra_data)
 
@@ -155,6 +161,7 @@ if (CATKIN_ENABLE_TESTING)
   jsk_topic_tools_add_rostest(test/test_connection_based_transport.test)
   jsk_topic_tools_add_rostest(test/test_stealth_relay.test)
   jsk_topic_tools_add_rostest(test/test_synchronized_throttle.test)
+  jsk_topic_tools_add_rostest(test/test_static_tf_republisher.test)
   jsk_topic_tools_add_rostest(test/test_pose_stamped_publisher.test)
   jsk_topic_tools_add_rostest(test/test_python_master_util.test)
   jsk_topic_tools_add_rostest(test/test_transform_wrench.test)
