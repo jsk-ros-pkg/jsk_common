@@ -298,13 +298,13 @@ class AudibleWarning(object):
         if self.ignore_time_after_runstop_is_enabled > 0.0:
             if self.run_stop_enabled_time is not None \
                     and ((rospy.Time.now() -
-                          self.run_stop_enabled_time).to_sec <
+                          self.run_stop_enabled_time).to_sec() <
                          self.ignore_time_after_runstop_is_enabled):
                 return
         if self.ignore_time_after_runstop_is_disabled > 0.0:
             if self.run_stop_disabled_time is not None \
                     and ((rospy.Time.now() -
-                          self.run_stop_disabled_time).to_sec <
+                          self.run_stop_disabled_time).to_sec() <
                          self.ignore_time_after_runstop_is_disabled):
                 return
 
