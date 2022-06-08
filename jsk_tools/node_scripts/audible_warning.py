@@ -104,6 +104,12 @@ class SpeakThread(Thread):
     def add(self, status_list):
         with self.lock:
             for status in status_list:
+                if is_leaf(status.name) is False:
+                    continue
+                if rospy.Time.now().to_sec() \
+                        - self.previous_spoken_time[status.name] \
+                        < self.speak_interval:
+                    continue
                 heapq.heappush(
                     self.status_list,
                     (rospy.Time.now().to_sec(), status))
