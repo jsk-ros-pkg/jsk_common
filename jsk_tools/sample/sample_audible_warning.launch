@@ -9,6 +9,14 @@
         output="screen">
   </node>
 
+  <node name="pseudo_runstop_publisher"
+        pkg="jsk_tools" type="pseudo_runstop_publisher.py"
+        output="screen">
+    <rosparam>
+      duration_time: 30
+    </rosparam>
+  </node>
+
   <node name="diagnostic_aggregator"
         pkg="diagnostic_aggregator" type="aggregator_node"
         clear_params="true" >
@@ -27,8 +35,12 @@
         output="screen" >
     <remap from="/robotsound" to="/sound_play" />
     <rosparam>
-      speak_interval: 0
+      run_stop_topic: /pseudo_runstop_publisher/runstop
+      speak_when_runstopped: true
+      speak_interval: 0.0
       seconds_to_start_speaking: 5
+      ignore_time_after_runstop_is_enabled: 10.0
+      ignore_time_after_runstop_is_disabled: 10.0
     </rosparam>
   </node>
 
