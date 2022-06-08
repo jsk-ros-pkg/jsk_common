@@ -207,8 +207,6 @@ class AudibleWarning(object):
         self.srv = Server(Config, self.config_callback)
 
         # run-stop
-        self.speak_when_runstopped = rospy.get_param(
-            '~speak_when_runstopped', True)
         self.run_stop = False
         self.run_stop_topic = rospy.get_param('~run_stop_topic', None)
         if self.run_stop_topic:
@@ -261,6 +259,7 @@ class AudibleWarning(object):
             config.ignore_time_after_runstop_is_enabled
         self.ignore_time_after_runstop_is_disabled = \
             config.ignore_time_after_runstop_is_disabled
+        self.speak_when_runstopped = config.speak_when_runstopped
         return config
 
     def run_stop_callback(self, msg):
