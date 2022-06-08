@@ -277,7 +277,7 @@ class AudibleWarning(object):
             deserialized_sub = rospy.Subscriber(
                 self.run_stop_topic, msg_class, self.run_stop_callback)
             self.run_stop_sub = deserialized_sub
-            return
+            msg = msg_class().deserialize(msg._buff)
         tm = rospy.Time.now()
         run_stop = self.run_stop_condition(
             self.run_stop_topic, msg, tm)
