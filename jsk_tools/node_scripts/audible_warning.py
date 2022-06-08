@@ -283,9 +283,11 @@ class AudibleWarning(object):
             self.run_stop_topic, msg, tm)
         if run_stop != self.run_stop:
             if run_stop is True:
-                self.run_stop_enabled_time = tm
+                self.run_stop_enabled_time = rospy.Time.now()
+                rospy.loginfo('Audible Warning: Runstop is enabled.')
             else:
-                self.run_stop_disabled_time = tm
+                self.run_stop_disabled_time = rospy.Time.now()
+                rospy.loginfo('Audible Warning: Runstop is disabled.')
         self.run_stop = run_stop
 
     def on_shutdown(self):
