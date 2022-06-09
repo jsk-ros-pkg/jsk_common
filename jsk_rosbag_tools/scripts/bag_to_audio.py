@@ -25,7 +25,7 @@ def main():
     if len(args.out) == 0:
         args.out = osp.join(
             osp.dirname(args.input_bagfile),
-            osp.splitext(osp.basename(args.input_bagfile))[0])
+            osp.splitext(osp.basename(args.input_bagfile))[0] + '.wav')
 
     audio_exists = bag_to_audio(
         args.input_bagfile, args.out,
