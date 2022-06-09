@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 import PIL
 
 
@@ -43,11 +44,29 @@ def resize_keeping_aspect_ratio(img, width=None, height=None,
     if width == img.shape[1] and height == img.shape[0]:
         return img
     if width:
-        height = width * img.shape[0] / img.shape[1]
+        height = 1.0 * width * img.shape[0] / img.shape[1]
     else:
-        width = height * img.shape[1] / img.shape[0]
+        width = 1.0 * height * img.shape[1] / img.shape[0]
     height = int(height)
     width = int(width)
     cv_interpolation = pil_to_cv2_interpolation(interpolation)
     return cv2.resize(img, (width, height),
                       interpolation=cv_interpolation)
+
+
+def resize_keeping_aspect_ratio_wrt_target_size(
+        img, width, height, interpolation='bilinear',
+        background_color=(0, 0, 0)):
+    if width == img.shape[1] and height == img.shape[0]:
+        return img
+    H, W, _ = img.shape
+    ratio = min(float(height) / H, float(width) / W)
+    M = np.array([[ratio, 0, 0],
+                  [0, ratio, 0]], dtype=np.float32)
+    dst = np.zeros((int(height), int(width), 3), dtype=img.dtype)
+    return cv2.warpAffine(
+        img, M,
+        (int(width), int(height)),
+        dst,
+        cv2.INTER_CUBIC, cv2.BORDER_CONSTANT,
+        background_color)
