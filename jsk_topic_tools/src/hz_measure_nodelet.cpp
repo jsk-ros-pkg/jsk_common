@@ -32,6 +32,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
+#include <limits>
+#include <boost/format.hpp>
 #include <pluginlib/class_list_macros.h>
 #include "jsk_topic_tools/hz_measure_nodelet.h"
 
@@ -42,9 +44,30 @@ namespace jsk_topic_tools
   void HzMeasure::onInit()
   {
     pnh_ = getPrivateNodeHandle();
+    hz_ = std::numeric_limits<double>::max();
     if (!pnh_.getParam("message_num", average_message_num_)) {
       average_message_num_ = 10; // defaults to 10
     }
+    if (!pnh_.getParam("warning_hz", warning_hz_)) {
+      warning_hz_ = -1;
+    }
+    bool use_warn = false;
+    if (pnh_.hasParam("use_warn")) {
+      pnh_.getParam("use_warn", use_warn);
+    }
+    if (use_warn) {
+      diagnostic_error_level_ = diagnostic_msgs::DiagnosticStatus::WARN;
+    } else {
+      diagnostic_error_level_ = diagnostic_msgs::DiagnosticStatus::ERROR;
+    }
+
+    diagnostic_updater_.reset(new TimeredDiagnosticUpdater(pnh_, ros::Duration(1.0)));
+    diagnostic_updater_->setHardwareID(getName());
+    diagnostic_updater_->add(getName(),
+                             boost::bind(&HzMeasure::updateDiagnostic,
+                                         this, _1));
+    diagnostic_updater_->start();
+
     hz_pub_ = pnh_.advertise<std_msgs::Float32>("output", 1);
     sub_ = pnh_.subscribe<topic_tools::ShapeShifter>("input", 1,
                                                      &HzMeasure::inputCallback, this);
@@ -59,6 +82,7 @@ namespace jsk_topic_tools
       double whole_time = (now - oldest).toSec();
       double average_time = whole_time / (buffer_.size() - 1);
       std_msgs::Float32 output;
+      hz_ = 1.0 / average_time;
       output.data = 1.0 / average_time;
       hz_pub_.publish(output);
       buffer_.pop();
@@ -67,7 +91,20 @@ namespace jsk_topic_tools
       NODELET_DEBUG("there is no enough messages yet");
     }
   }
-  
+
+  void HzMeasure::updateDiagnostic(
+    diagnostic_updater::DiagnosticStatusWrapper &stat)
+  {
+    if (hz_ > warning_hz_) {
+      stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
+                   (boost::format("%s is running at %.2f hz.")
+                    % getName() % hz_).str());
+    } else {
+      stat.summary(diagnostic_error_level_,
+                   (boost::format("%s is running at %.2f hz.")
+                    % getName() % hz_).str());
+    }
+  }
 }
 
 typedef jsk_topic_tools::HzMeasure HzMeasure;
