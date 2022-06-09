@@ -22,6 +22,8 @@ def main():
     parser.add_argument('--audio-topic', type=str, default='/audio')
     parser.add_argument('--image-topic', type=str, default=[],
                         nargs='+', help='Topic name to extract.')
+    parser.add_argument('--no-progress-bar', action='store_true',
+                        help="Don't show progress bar.")
     parser.add_argument('input_bagfile')
     args = parser.parse_args()
 
@@ -50,7 +52,8 @@ def main():
                  fps=args.fps,
                  samplerate=args.samplerate,
                  channels=args.channels,
-                 audio_topic=args.audio_topic)
+                 audio_topic=args.audio_topic,
+                 show_progress_bar=not args.no_progress_bar)
 
 
 if __name__ == '__main__':

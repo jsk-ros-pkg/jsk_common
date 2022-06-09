@@ -8,11 +8,13 @@ import cv2
 from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
 from moviepy.video.io.VideoFileClip import VideoFileClip
+from tqdm import tqdm
 
 from jsk_rosbag_tools.bag_to_audio import bag_to_audio
 from jsk_rosbag_tools.extract import extract_image_topic
 from jsk_rosbag_tools.extract import get_image_topic_names
 from jsk_rosbag_tools.image_utils import resize_keeping_aspect_ratio
+from jsk_rosbag_tools.info import get_topic_dict
 from jsk_rosbag_tools.makedirs import makedirs
 from jsk_rosbag_tools.topic_name_utils import topic_name_to_file_name
 
@@ -25,7 +27,8 @@ def bag_to_video(input_bagfile,
                  fps=30,
                  samplerate=16000,
                  channels=1,
-                 audio_topic='/audio'):
+                 audio_topic='/audio',
+                 show_progress_bar=True):
     """Create video from rosbag file.
 
     Specify only either output_filepath or output_dirpath.
@@ -35,7 +38,8 @@ def bag_to_video(input_bagfile,
 
     """
     if not os.path.exists(input_bagfile):
-        print('Input bagfile {} not exists.'.format(input_bagfile))
+        print('[bag_to_video] Input bagfile {} not exists.'
+              .format(input_bagfile))
         sys.exit(1)
 
     if output_filepath is not None and output_dirpath is not None:
@@ -77,6 +81,7 @@ def bag_to_video(input_bagfile,
             'Topics that are not included in the rosbag are specified.'
             ' {}'.format(list(not_exists_topics)))
 
+    print('[bag_to_video] Extracting audio from rosbag file.')
     audio_exists = bag_to_audio(input_bagfile, wav_outpath,
                                 samplerate=samplerate,
                                 channels=channels,
@@ -85,6 +90,8 @@ def bag_to_video(input_bagfile,
     dt = 1.0 / fps
     for image_topic, output_filepath in zip(target_image_topics,
                                             output_filepaths):
+        print('[bag_to_video] Creating video of {} from rosbag file {}.'
+              .format(image_topic, input_bagfile))
         filepath_dir = osp.dirname(output_filepath)
         if filepath_dir:
             makedirs(filepath_dir)
@@ -94,11 +101,18 @@ def bag_to_video(input_bagfile,
             tmp_videopath = output_filepath
 
         images = extract_image_topic(input_bagfile, image_topic)
+        topic_info_dict = get_topic_dict(input_bagfile)[image_topic]
+        n_frame = topic_info_dict['messages']
+
+        if show_progress_bar:
+            progress = tqdm(total=n_frame)
 
         # remove 0 time stamp
         stamp = 0.0
         while stamp == 0.0:
             stamp, _, img, _ = next(images)
+            if show_progress_bar:
+                progress.update(1)
         start_stamp = stamp
         width, height = img.shape[1], img.shape[0]
 
@@ -118,6 +132,8 @@ def bag_to_video(input_bagfile,
         cur_img = resize_keeping_aspect_ratio(
             cv2.cvtColor(img, cv2.COLOR_BGR2RGB), width=width)
         for i, (stamp, _, bgr_img, _) in enumerate(images):
+            if show_progress_bar:
+                progress.update(1)
             aligned_stamp = stamp - start_stamp
             while current_time < aligned_stamp:
                 current_time += dt
@@ -128,8 +144,16 @@ def bag_to_video(input_bagfile,
             current_time += dt
         writer.close()
 
+        if show_progress_bar:
+            progress.close()
+
         if audio_exists:
+            print('[bag_to_video] Combine video and audio')
             clip_output = VideoFileClip(tmp_videopath).subclip().\
                 set_audio(AudioFileClip(wav_outpath))
             clip_output.write_videofile(
-                output_filepath)
+                output_filepath,
+                verbose=False,
+                logger='bar' if show_progress_bar else None)
+        print('[bag_to_video] Created video is saved to {}'
+              .format(output_filepath))
