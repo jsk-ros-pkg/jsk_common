@@ -84,7 +84,12 @@ def get_video_duration(video_path):
     video_path = str(video_path)
     if not osp.exists(video_path):
         raise OSError("{} not exists".format(video_path))
-    return VideoFileClip(video_path).duration
+    cap = cv2.VideoCapture(video_path)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    cap.release()
+    duration = frame_count/fps
+    return duration
 
 
 def get_video_n_frame(video_path):
@@ -93,6 +98,14 @@ def get_video_n_frame(video_path):
         raise OSError("{} not exists".format(video_path))
     clip = VideoFileClip(video_path)
     return int(clip.duration * clip.fps)
+
+
+def get_video_fps(video_path):
+    video_path = str(video_path)
+    if not osp.exists(video_path):
+        raise OSError("{} not exists".format(video_path))
+    clip = VideoFileClip(video_path)
+    return clip.fps
 
 
 def load_frame(video_path, start=0.0, duration=-1,
@@ -122,11 +135,31 @@ def load_frame(video_path, start=0.0, duration=-1,
     vid.release()
 
 
+def count_frames(video_path, start=0.0, duration=-1,
+                 sampling_frequency=None):
+    video_duration = get_video_duration(video_path)
+    video_duration -= start
+    if duration > 0:
+        video_duration = max(video_duration - duration, 0)
+    fps = get_video_fps(video_path)
+    if sampling_frequency is not None:
+        return int(math.ceil(
+            video_duration * fps
+            / int(math.ceil(fps * sampling_frequency))))
+    else:
+        return int(math.ceil(video_duration * fps))
+
+
 def video_to_bag(video_filepath, bag_output_filepath,
                  topic_name, compress=False, audio_topic_name='/audio',
                  no_audio=False,
                  base_unixtime=None,
+                 fps=None,
                  show_progress_bar=True):
+    if fps is not None:
+        sampling_frequency = 1.0 / fps
+    else:
+        sampling_frequency = None
     if base_unixtime is None:
         base_unixtime = to_seconds(datetime.datetime.now())
 
@@ -136,11 +169,14 @@ def video_to_bag(video_filepath, bag_output_filepath,
 
     tmpdirname = tempfile.mkdtemp("", 'tmp', None)
     video_out = osp.join(tmpdirname, 'video.tmp.bag')
-    n_frame = get_video_n_frame(video_filepath)
+    n_frame = count_frames(video_filepath,
+                           sampling_frequency=sampling_frequency)
     if show_progress_bar:
         progress = tqdm(total=n_frame)
     with rosbag.Bag(video_out, 'w') as outbag:
-        for img, timestamp in load_frame(video_filepath):
+        for img, timestamp in load_frame(
+                video_filepath,
+                sampling_frequency=sampling_frequency):
             if show_progress_bar:
                 progress.update(1)
             msg = img_to_msg(img, compress=compress)
@@ -149,6 +185,8 @@ def video_to_bag(video_filepath, bag_output_filepath,
             ros_timestamp = rospy.rostime.Time(sec, nsec)
             msg.header.stamp = ros_timestamp
             outbag.write(topic_name, msg, ros_timestamp)
+    if show_progress_bar:
+        progress.close()
 
     extract_audio = True
     if no_audio is False:

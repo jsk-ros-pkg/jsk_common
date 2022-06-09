@@ -16,6 +16,8 @@ def main():
     parser.add_argument('--topic-name', type=str,
                         default='/video/rgb/image_raw',
                         help='Converted topic name.')
+    parser.add_argument('--fps', type=int,
+                        help='Frame Rate.', default=None)
     parser.add_argument('--compress', action='store_true',
                         help='Compress Image flag.')
     parser.add_argument('--no-progress-bar', action='store_true',
@@ -40,6 +42,7 @@ def main():
         video_path, outfile,
         args.topic_name,
         compress=args.compress,
+        fps=args.fps,
         show_progress_bar=not args.no_progress_bar)
 
 
