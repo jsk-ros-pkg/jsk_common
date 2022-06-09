@@ -31,7 +31,21 @@ def msg_to_img(msg):
 
 
 def compressed_format(msg):
-    fmt, compr_type = msg.format.split(';')
+    if ';' not in msg.format:
+        fmt = ''
+        if msg.format not in ['png', 'jpeg', 'rvl']:
+            raise RuntimeError(
+                'Unsupported or invalid compresssion format {}'
+                'Please report this error'
+                'https://github.com/jsk-ros-pkg/jsk_common/issues/new'
+                .format(msg.format))
+        if msg.format in ['rvl']:
+            compr_type = 'compressedDepth'
+        else:
+            # could not determine compressed format.
+            compr_type = ''
+    else:
+        fmt, compr_type = msg.format.split(';')
     # remove white space
     fmt = fmt.strip()
     compr_type = compr_type.strip()
