@@ -88,7 +88,7 @@ def get_video_duration(video_path):
     fps = cap.get(cv2.CAP_PROP_FPS)
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     cap.release()
-    duration = frame_count/fps
+    duration = frame_count / fps
     return duration
 
 
