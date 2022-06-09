@@ -144,8 +144,8 @@ def count_frames(video_path, start=0.0, duration=-1,
     fps = get_video_fps(video_path)
     if sampling_frequency is not None:
         return int(math.ceil(
-            video_duration * fps
-            / int(math.ceil(fps * sampling_frequency))))
+            video_duration * fps /
+            int(math.ceil(fps * sampling_frequency))))
     else:
         return int(math.ceil(video_duration * fps))
 
