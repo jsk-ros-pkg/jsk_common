@@ -17,6 +17,10 @@ fi
 
 ECHO_OUTPUT="$1"
 
+function getent () {
+    echo "127.0.0.1       localhost"
+}
+
 function ip () {
     # overwrite ip command.
     echo "$ECHO_OUTPUT"
