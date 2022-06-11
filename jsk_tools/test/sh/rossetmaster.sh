@@ -14,9 +14,6 @@ else
     fi
 fi
 
-function getent () {
-    echo "127.0.0.1       localhost"
-}
 
 hostname=${1-"localhost"}
 ros_port=${2-"11311"}
