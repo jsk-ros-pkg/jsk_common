@@ -154,7 +154,7 @@ class SpeakThread(Thread):
                 sentence = multiple_whitespace_to_one(sentence)
                 rospy.loginfo('audible warning error name "{}"'.format(e.name))
                 rospy.loginfo("audible warning talking: %s" % sentence)
-                self.pub_original_text.publish(e.message)
+                self.pub_original_text.publish(prefix + e.name + ' ' + e.message)
                 self.pub_speak_text.publish(
                     "audible warning talking: %s" % sentence)
 
