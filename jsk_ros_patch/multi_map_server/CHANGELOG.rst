@@ -2,6 +2,9 @@
 Changelog for package multi_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.12 (2022-06-07)
+-------------------
+
 2.2.11 (2020-07-10)
 -------------------
 * migrate to noetic with ROS_PYTHON_VERSION=2/3, use multiple ROS distro strategy http://wiki.ros.org/noetic/Migration (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)

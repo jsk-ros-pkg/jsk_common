@@ -2,6 +2,59 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.12 (2022-06-07)
+-------------------
+* [jsk_tools] change default ROS_MASTER_URI of rossetmaster to localhost (`#1729 <https://github.com/jsk-ros-pkg/jsk_common/issues/1729>`_)
+* Add test for topic connection test after killing nodes (`#1725 <https://github.com/jsk-ros-pkg/jsk_common/issues/1725>`_)
+
+  * [jsk_tools] Add comment for avoiding rospy.exceptions.ROSTimeMovedBackwardsException
+  * [jsk_tools] Fixed E713 error for membership should be "not in"
+  * Add not received topic infos
+  * [jsk_tools] Add test for namespace
+  * [jsk_tools] Add test for topic connection test after killing nodes
+  * [jsk_tools] Add check_after_kill_node option for checking topic connection after killing nodes
+
+* [jsk_tools] Add node to publish diagnostics based on topic and node status (`#1727 <https://github.com/jsk-ros-pkg/jsk_common/issues/1727>`_)
+
+  * [jsk_tools] Set longer timeout for sanity_diagnostics test
+  * [jsk_tools] Fix test name for sanity_diagnostics
+  * [jsk_tools] Install sample directory
+  * [jsk_tools] Set longer timeout for low frequency topics
+  * [jsk_tools] Unregister subscriber at the end of checkTopicIsPublished to reduce CPU load
+  * [jsk_tools] Do not check topic type until the first topic comes in
+  * [jsk_tools] Use topic name as default value
+  * [jsk_tools] Fix typo
+  * [jsk_tools] Add test for sanity_diagnostics
+  * [jsk_tools] Add sample for sanity_diagnostics
+  * [jsk_tools] Add diagnostic dependency
+  * [jsk_tools] Add node to publish /diagnostics based on topic and node status
+  * [jsk_tools] Return value of checkNodeState
+
+* [jsk_tools] use python3-progressbar and python3-rosdep for noetic (`#1722 <https://github.com/jsk-ros-pkg/jsk_common/issues/1722>`_)
+* jsk_tools: add python3-tabulate to exec_depends (`#1721 <https://github.com/jsk-ros-pkg/jsk_common/issues/1721>`_)
+* add test code to check `#1715 <https://github.com/jsk-ros-pkg/jsk_common/issues/1715>`_ (`#1717 <https://github.com/jsk-ros-pkg/jsk_common/issues/1717>`_)
+
+  * kinetic rostopic._rostopic_list_groyp_by_host did not work correctly
+  * use rostopic.get_topic_list instead of master.getSystemState
+  https://github.com/ros/ros_comm/commit/e96c407c64e1c17b0dd2bb85b67f388380527097#diff-21f05efee85a56a5b34825bb4fcfb53db99e38304206ddad7d50d6d4881696b2L1207
+  changes
+  ```
+  -        state = master.getSystemState()
+  +        pubs, subs, _ = state
+  +        pubs, subs = get_topic_list(master=master)
+  ```
+  * add test to check rostopic_host_sanity
+
+* use raw_input for python2 c.f. (`#1695 <https://github.com/jsk-ros-pkg/jsk_common/issues/1695>`_)
+
+  * run 2to3 -w -f has_key for python3 compatibility
+
+* [jsk_topic_tools/master_util.py] add default args to isMasterAlivef( `#1684 <https://github.com/jsk-ros-pkg/jsk_common/issues/1684>`_)
+
+  * [jsk_tools, jsk_topic_tools] fix urlparse import for python3
+
+* Contributors: Shimpei Sato, Iori Yanokura, Kei Okada, Koki Shinjo, Naoki Hiraoka, Naoya Yamaguchi, Shingo Kitagawa
+
 2.2.11 (2020-07-10)
 -------------------
 * Fix for noetic build (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)

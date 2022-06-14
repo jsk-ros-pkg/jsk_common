@@ -2,6 +2,13 @@
 Changelog for package virtual_force_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.12 (2022-06-07)
+-------------------
+* Calcualte sr-inverse (`#1731 <https://github.com/jsk-ros-pkg/jsk_common/issues/1731>`_)
+* use ROS_DEBUG to suppress log output (`#1674 <https://github.com/jsk-ros-pkg/jsk_common/issues/1674>`_)
+* add left and right force launch (`#1656 <https://github.com/jsk-ros-pkg/jsk_common/issues/1656>`_)
+* Contributors: Naoaki Kanazawa, Shingo Kitagawa, Iori Yanokura
+
 2.2.11 (2020-07-10)
 -------------------
 * upgrade package.xml to format=3 (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)

@@ -2,6 +2,11 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.12 (2022-06-07)
+-------------------
+* set ccache prefix only for cmake <= 3.4 (`#1694 <https://github.com/jsk-ros-pkg/jsk_common/issues/1694>`_)
+* Contributors: Yuki Furuta
+
 2.2.11 (2020-07-10)
 -------------------
 * fix for noetic build (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)

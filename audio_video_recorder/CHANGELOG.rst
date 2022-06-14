@@ -1,23 +1,14 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package dynamic_tf_publisher
+Changelog for package audio_video_recorder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 2.2.12 (2022-06-07)
 -------------------
-* run 2to3 -w -f has_key for python3 compatibility (`#1695 <https://github.com/jsk-ros-pkg/jsk_common/issues/1695>`_)
-* install tf_reconfigure_publisher.py (`#1654 <https://github.com/jsk-ros-pkg/jsk_common/issues/1654>`_)
+* add audio_video_recorder (`#1672 <https://github.com/jsk-ros-pkg/jsk_common/issues/1672>`_)
 * Contributors: Shingo Kitagawa
 
 2.2.11 (2020-07-10)
 -------------------
-* Fix for noetic build (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
-
-  * fix for python3, except, print ....
-  * upgrade package.xml to format=3
-
-* Update package name so it does not produce extra lines in rospack list (`#1625 <https://github.com/jsk-ros-pkg/jsk_common/issues/1625>`_)
-
-* Contributors: J-Rojas, Kei Okada
 
 2.2.10 (2018-11-03)
 -------------------
@@ -27,8 +18,6 @@ Changelog for package dynamic_tf_publisher
 
 2.2.8 (2018-11-01)
 ------------------
-* Add comment about installation (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
-* Contributors: Yuto Uchimi
 
 2.2.7 (2018-06-27)
 ------------------
@@ -41,8 +30,6 @@ Changelog for package dynamic_tf_publisher
 
 2.2.4 (2017-06-14)
 ------------------
-* add ROSIntrupptException, not to show strage message on shutting down (`#1522 <https://github.com/jsk-ros-pkg/jsk_common/pull/1522>`_)
-* Contributors: Kei Okada
 
 2.2.3 (2017-03-23)
 ------------------
@@ -85,15 +72,9 @@ Changelog for package dynamic_tf_publisher
 
 2.0.11 (2016-03-20)
 -------------------
-* remove dynamic_reconfigure.parameter_generator, which only used for rosbuild
-* Contributors: Kei Okada
 
 2.0.10 (2016-02-13)
 -------------------
-* [tf_publisher.py] do not import genpy since it is not used
-* [tf_publish.py] remove backward compatibility
-* queue_size is new in hydro and necessary from indigo
-* Contributors: Eisoku Kuroiwa
 
 2.0.9 (2015-12-14)
 ------------------
@@ -112,11 +93,6 @@ Changelog for package dynamic_tf_publisher
 
 2.0.4 (2015-11-25)
 ------------------
-* [dynamic_tf_publisher] Moreh helpful debug message and fix several typos
-* [dynamic_tf_publisher] Use with to acquire lock
-* [dynamic_tf_publisher] Advertise services at the last of initialization
-* [dynamic_tf_publisher] Check service collision in launching tf_publish
-* Contributors: Ryohei Ueda
 
 2.0.3 (2015-07-24)
 ------------------
@@ -139,11 +115,11 @@ Changelog for package dynamic_tf_publisher
 1.0.70 (2015-05-08)
 -------------------
 
-1.0.69 (2015-05-05)
--------------------
+1.0.69 (2015-05-05 12:28)
+-------------------------
 
-1.0.68 (2015-05-05)
--------------------
+1.0.68 (2015-05-05 09:49)
+-------------------------
 
 1.0.67 (2015-05-03)
 -------------------
@@ -166,13 +142,11 @@ Changelog for package dynamic_tf_publisher
 1.0.61 (2015-02-11)
 -------------------
 
-1.0.60 (2015-02-03)
--------------------
+1.0.60 (2015-02-03 10:12)
+-------------------------
 
-1.0.59 (2015-02-03)
--------------------
-* Remove rosbuild files
-* Contributors: Ryohei Ueda
+1.0.59 (2015-02-03 04:05)
+-------------------------
 
 1.0.58 (2015-01-07)
 -------------------
@@ -185,28 +159,21 @@ Changelog for package dynamic_tf_publisher
 
 1.0.55 (2014-12-09)
 -------------------
-* import empty srv
-* add pubish tf service
-* Contributors: Yusuke Furuta
 
 1.0.54 (2014-11-15)
 -------------------
-* Add tf publisher which can be reconfigured by dynamic_reconfigure
-* Contributors: Ryohei Ueda
 
 1.0.53 (2014-11-01)
 -------------------
-* change frequency
-* Contributors: Yusuke Furuta
 
 1.0.52 (2014-10-23)
 -------------------
 
-1.0.51 (2014-10-20)
--------------------
+1.0.51 (2014-10-20 16:01)
+-------------------------
 
-1.0.50 (2014-10-20)
--------------------
+1.0.50 (2014-10-20 01:50)
+-------------------------
 
 1.0.49 (2014-10-13)
 -------------------
@@ -223,11 +190,11 @@ Changelog for package dynamic_tf_publisher
 1.0.45 (2014-09-29)
 -------------------
 
-1.0.44 (2014-09-26)
--------------------
+1.0.44 (2014-09-26 09:17)
+-------------------------
 
-1.0.43 (2014-09-26)
--------------------
+1.0.43 (2014-09-26 01:08)
+-------------------------
 
 1.0.42 (2014-09-25)
 -------------------
@@ -244,6 +211,9 @@ Changelog for package dynamic_tf_publisher
 1.0.38 (2014-09-13)
 -------------------
 
+1.0.37 (2014-09-08)
+-------------------
+
 1.0.36 (2014-09-01)
 -------------------
 
@@ -252,8 +222,6 @@ Changelog for package dynamic_tf_publisher
 
 1.0.34 (2014-08-14)
 -------------------
-* not publish tf in service call
-* Contributors: Yusuke Furuta
 
 1.0.33 (2014-07-28)
 -------------------
@@ -306,23 +274,23 @@ Changelog for package dynamic_tf_publisher
 1.0.17 (2014-04-20)
 -------------------
 
-1.0.16 (2014-04-19)
--------------------
+1.0.16 (2014-04-19 23:29)
+-------------------------
 
-1.0.15 (2014-04-19)
--------------------
+1.0.15 (2014-04-19 20:19)
+-------------------------
 
-1.0.14 (2014-04-19)
--------------------
+1.0.14 (2014-04-19 12:52)
+-------------------------
 
-1.0.13 (2014-04-19)
--------------------
+1.0.13 (2014-04-19 11:06)
+-------------------------
 
-1.0.12 (2014-04-18)
--------------------
+1.0.12 (2014-04-18 16:58)
+-------------------------
 
-1.0.11 (2014-04-18)
--------------------
+1.0.11 (2014-04-18 08:18)
+-------------------------
 
 1.0.10 (2014-04-17)
 -------------------
@@ -333,28 +301,26 @@ Changelog for package dynamic_tf_publisher
 1.0.8 (2014-04-11)
 ------------------
 
-1.0.4 (2014-03-27)
+1.0.7 (2014-04-10)
 ------------------
-* dynamic_tf_publisher: add rospy to depends
+
+1.0.6 (2014-04-07)
+------------------
+
+1.0.5 (2014-03-31)
+------------------
+
+1.0.4 (2014-03-29)
+------------------
+
+1.0.3 (2014-03-19)
+------------------
+
+1.0.2 (2014-03-12)
+------------------
+
+1.0.1 (2014-03-07)
+------------------
 
 1.0.0 (2014-03-05)
 ------------------
-* set all package to 1.0.0
-* catkinize dynamic_tf_publisher
-* revert commit rev 5550
-* set use cache false by default
-* add parameter to select whether to use cache or not
-* fix the bug in dynamic_tf_publisher package
-* see ROS_DISTRO to use genpy.message or roslib.message (old API)
-* save tf-chain in rosparm, in case of when tf_publisher is respawned
-* roslib/Header is old style
-* debug delete callback to work /delete_tf service
-* publish tfMessage to ~tf, because it will ease debugging,
-  and add some debug print in assoc callback
-* DissocTFRequest does not have child_frame, it has frame_id slot
-* add delete tf service
-* fix error check of assocTF
-* fix bag when assoc service called again
-* do not accept set_dynamic_tf service for assocd frames
-* mv jtalk and pddl to 3rdparty directory
-* Contributors: Ryohei Ueda, Kei Okada, Manabu Saito, Yusuke Furuta, kazuto

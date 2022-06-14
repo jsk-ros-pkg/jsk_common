@@ -2,6 +2,43 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.12 (2022-06-07)
+-------------------
+* [jsk_data/tess_data_collection_server] Check if text and yaml or text and image are saved in the subdirectory of `save_dir`. (`#1734 <https://github.com/jsk-ros-pkg/jsk_common/issues/1734>`_)
+* [test/data_collection_server] Wait until data saved for test. (`#1728 <https://github.com/jsk-ros-pkg/jsk_common/issues/1728>`_)
+* [jsk_data] Strip newline at test code. (`#1726 <https://github.com/jsk-ros-pkg/jsk_common/issues/1726>`_)
+* [data_collection_server] Add rosbag to data collection server (`#1708 <https://github.com/jsk-ros-pkg/jsk_common/issues/1708>`_)
+
+  * add rosbag_options param
+  * delete sample launch file
+  * remove rosbag param
+  * add rosbag_prefix param
+  * remove print and avoid error if end is called before start
+  * add minimal functions about rosbag record in data_collection_server
+
+* [jsk_data] add wait_timer for timer method (`#1697 <https://github.com/jsk-ros-pkg/jsk_common/issues/1697>`_)
+
+  * rename to wait_msgs_update
+  * add wait_timer rosparam for timer waiting
+  * remove wait in sync_sub_and_save_cb
+  * check all msg stamp in self.msgs for wait_msgs_update
+  * add wait_service_request for timer and all method
+
+* use raw_input for python2 c.f. (`#1695 <https://github.com/jsk-ros-pkg/jsk_common/issues/1695>`_)
+* [jsk_data] add wait_save_request in data_collection_server (`#1669 <https://github.com/jsk-ros-pkg/jsk_common/issues/1669>`_)
+* fix TOPICS arg (`#1689 <https://github.com/jsk-ros-pkg/jsk_common/issues/1689>`_)
+* Update jsk_data/src/jsk_data/download_data.py (`#1685 <https://github.com/jsk-ros-pkg/jsk_common/issues/1685>`_)
+
+  * [jsk_data] fix bugs in download_data.py
+  * [jsk_data] update download_data.py to remove front './' from extracted file names
+
+
+* check if openni_launch exits to run roslaunch-check pr2_play.launch (`#1662 <https://github.com/jsk-ros-pkg/jsk_common/issues/1662>`_)
+
+  * use xacro instead of xacro.py
+
+* Contributors: Iori Yanokura, Naoaki Kanazawa, Koki Shinjo, Shingo Kitagawa, Shumpei Wakabayashi, Shun Hasegawa, Iori Yanokura, Ren Kunita
+
 2.2.11 (2020-07-10)
 -------------------
 * [jsk_data] Add common rosbag_record and play file for fetch (`#1611 <https://github.com/jsk-ros-pkg/jsk_common/issues/1611>`_)
