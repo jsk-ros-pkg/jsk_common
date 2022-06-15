@@ -155,7 +155,7 @@ class TestTopicPublished(unittest.TestCase):
                                 'But condition "{}" is not satified. '
                                 'Topic "{}"'.format(
                                     checker.topic_name, checker.condition,
-                                     checker.invalid_conditioned_msg))
+                                    checker.invalid_conditioned_msg))
                     sys.exit(1)
             try:
                 rospy.sleep(0.01)
