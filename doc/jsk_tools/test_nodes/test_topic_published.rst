@@ -38,6 +38,11 @@ Parameters
   .. code-block:: bash
     condition_0: m.header.frame_id in ['base', 'base_link']
 
+  Note that, use escape sequence when using the following symbols ``<(&lt;)``, ``>(&gt;)``, ``&(&amp;)``, ``'(&apos;)`` and ``"(&quot;)``.
+
+  .. code-block:: bash
+    condition_0: m.data &lt; 'spbm'
+
 
 Example
 -------

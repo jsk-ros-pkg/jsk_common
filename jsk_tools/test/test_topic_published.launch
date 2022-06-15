@@ -33,7 +33,7 @@
     <rosparam>
       topic_0: /string
       timeout_0: 10
-      condition_0: "m.data == 'spam'"
+      condition_0: "m.data &lt; 'spbm'"
       check_after_kill_node: true
       node_names: [publish_string,]
     </rosparam>
