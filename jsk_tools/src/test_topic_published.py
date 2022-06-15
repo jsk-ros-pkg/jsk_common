@@ -17,17 +17,30 @@ PKG = 'jsk_tools'
 NAME = 'test_topic_published'
 
 
+def expr_eval(expr):
+    def eval_fn(topic, m, t):
+        return eval(expr)
+    return eval_fn
+
+
 class PublishChecker(object):
-    def __init__(self, topic_name, timeout):
+    def __init__(self, topic_name, timeout, condition=None):
         self.topic_name = topic_name
         self.deadline = rospy.Time.now() + rospy.Duration(timeout)
         msg_class, _, _ = rostopic.get_topic_class(
             rospy.resolve_name(topic_name), blocking=True)
+        if condition is not None:
+            condition = expr_eval(condition)
+        self.condition = condition
         self.msg = None
         self.sub = rospy.Subscriber(topic_name, msg_class, self._callback)
 
     def _callback(self, msg):
-        self.msg = msg
+        if self.condition is not None:
+            if self.condition(self.topic_name, msg, rospy.Time.now()):
+                self.msg = msg
+        else:
+            self.msg = msg
 
     def assert_published(self):
         if self.msg:
@@ -45,6 +58,7 @@ class TestTopicPublished(unittest.TestCase):
         self.topics = []
         self.timeouts = []
         self.negatives = []
+        self.conditions = []
         params = rospy.get_param(rospy.get_name(), [])
         for name, value in params.items():
             if not re.match(r'^topic_\d$', name):
@@ -52,6 +66,7 @@ class TestTopicPublished(unittest.TestCase):
             self.topics.append(value)
             id = name.replace('topic_', '')
             self.timeouts.append(rospy.get_param('~timeout_{}'.format(id), 10))
+            self.conditions.append(rospy.get_param('~condition_{}'.format(id), None))
             self.negatives.append(
                 rospy.get_param('~negative_{}'.format(id), False))
         if not self.topics:
@@ -94,9 +109,9 @@ class TestTopicPublished(unittest.TestCase):
 
     def _check_topic_pubilshed(self):
         checkers = []
-        for topic_name, timeout, negative in zip(
-                self.topics, self.timeouts, self.negatives):
-            checker = PublishChecker(topic_name, timeout)
+        for topic_name, timeout, negative, condition in zip(
+                self.topics, self.timeouts, self.negatives, self.conditions):
+            checker = PublishChecker(topic_name, timeout, condition)
             checkers.append(checker)
 
         topics_finished = []
