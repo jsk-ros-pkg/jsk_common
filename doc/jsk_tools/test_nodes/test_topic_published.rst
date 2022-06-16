@@ -22,6 +22,27 @@ Parameters
 
   If it's ``True``, it tests if **not** published.
 
+- ``~condition_%d`` (``str``, Default: ``None``, Optional)
+
+  Check bool value condition using the given Python expression.
+  The Python expression can access any of the Python builtins plus:
+  ``topic`` (the topic of the message), ``m`` (the message) and ``t`` (time of message).
+
+  For example, topic is ``std_msgs/String`` and if you want to check whether a sentence is a ``hello``, you can do the following.
+
+  .. code-block:: bash
+    condition_0: m.data == 'hello'
+
+  If you want to check the frame id of the header, you can do the following.
+
+  .. code-block:: bash
+    condition_0: m.header.frame_id in ['base', 'base_link']
+
+  Note that, use escape sequence when using the following symbols ``<(&lt;)``, ``>(&gt;)``, ``&(&amp;)``, ``'(&apos;)`` and ``"(&quot;)``.
+
+  .. code-block:: bash
+    condition_0: m.data &lt; 'spbm'
+
 
 Example
 -------

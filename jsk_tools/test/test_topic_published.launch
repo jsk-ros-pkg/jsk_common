@@ -14,6 +14,7 @@
     </node>
   </group>
 
+  <!-- check without condition -->
   <test test-name="test_topic_published"
         name="test_topic_published"
         pkg="jsk_tools" type="test_topic_published.py">
@@ -25,14 +26,66 @@
     </rosparam>
   </test>
 
+  <!-- check with condition -->
+  <test test-name="test_topic_published_with_condition"
+        name="test_topic_published_with_condition"
+        pkg="jsk_tools" type="test_topic_published.py">
+    <rosparam>
+      topic_0: /string
+      timeout_0: 10
+      condition_0: "m.data &lt; 'spbm'"
+      check_after_kill_node: true
+      node_names: [publish_string,]
+    </rosparam>
+  </test>
+
+  <test test-name="test_topic_published_with_condition_negative"
+        name="test_topic_published_with_condition_negative"
+        pkg="jsk_tools" type="test_topic_published.py">
+    <rosparam>
+      topic_0: /string
+      timeout_0: 10
+      condition_0: "m.data == 'spamspam'"
+      negative_0: true
+      check_after_kill_node: true
+      node_names: [publish_string,]
+    </rosparam>
+  </test>
+
   <!-- test for namespace -->
   <group ns="ns" >
+    <!-- check without condition -->
     <test test-name="test_topic_published_for_namespace"
           name="test_topic_published"
           pkg="jsk_tools" type="test_topic_published.py">
       <rosparam>
         topic_0: string
         timeout_0: 10
+        check_after_kill_node: true
+        node_names: [publish_string,]
+      </rosparam>
+    </test>
+
+    <!-- check with condition -->
+    <test test-name="test_topic_published_for_namespace_with_condition"
+          name="test_topic_published_with_condition"
+          pkg="jsk_tools" type="test_topic_published.py">
+      <rosparam>
+        topic_0: string
+        timeout_0: 10
+        condition_0: "m.data == 'spam'"
+        check_after_kill_node: true
+        node_names: [publish_string,]
+      </rosparam>
+    </test>
+    <test test-name="test_topic_published_for_namespace_with_condition_negative"
+          name="test_topic_published_with_condition_negative"
+          pkg="jsk_tools" type="test_topic_published.py">
+      <rosparam>
+        topic_0: string
+        timeout_0: 10
+        condition_0: "m.data == 'spamspam'"
+        negative_0: true
         check_after_kill_node: true
         node_names: [publish_string,]
       </rosparam>
