@@ -21,7 +21,15 @@ class SanityDiagnostics(object):
       - /respeaker_node
     """
     def __init__(self):
-        duration = rospy.get_param('~duration', 60)
+        self.check_duration = rospy.get_param('~duration', 60)
+        # To always display the sanity diagnostics status in rqt_robot_monitor,
+        # /diagnostics should be published at more than
+        # diagnostics aggregator's update frequency (Default: 1 Hz)
+        # To do so, both frequency at which self.updater.update() is
+        # called and diagnostic updater's ~diagnostic_period must be
+        # greater than the diagnostics aggregator's update frequency.
+        pub_duration = rospy.get_param('~pub_duration', 0.3)
+        rospy.set_param('~diagnostic_period', pub_duration)
         # Get sanity target topic and node names
         topics = rospy.get_param('~topics', [])
         nodes = rospy.get_param('~nodes', [])
@@ -36,25 +44,37 @@ class SanityDiagnostics(object):
             self.updater.add(
                 node_name,
                 lambda stat, nn=node_name: self.check_node(stat, nn))
+        # Topic and node status
+        self.topic_state = True
+        self.node_state = True
+        self.last_time_check_topic = rospy.Time.now()
+        self.last_time_check_node = rospy.Time.now()
         # Timer to call updater
         self.timer = rospy.Timer(
-            rospy.Duration(duration), self.check_sanity)
+            rospy.Duration(pub_duration), self.check_sanity)
 
     def check_sanity(self, event):
         self.updater.update()
 
     def check_topic(self, stat, topic_name):
-        # Assume that topic is published at more than (1.0 / timeout) Hz
-        topic_state = checkTopicIsPublished(topic_name, timeout=10)
-        if topic_state:
+        elapsed_time = rospy.Time.now() - self.last_time_check_topic
+        if elapsed_time.secs > self.check_duration:
+            # Assume that topic is published at more than (1.0 / timeout) Hz
+            self.topic_state = checkTopicIsPublished(topic_name, timeout=10)
+            self.last_time_check_topic = rospy.Time.now()
+        if self.topic_state:
             stat.summary(DiagnosticStatus.OK, 'Topic is published')
         else:
             stat.summary(DiagnosticStatus.ERROR, 'Topic is not published')
         return stat
 
     def check_node(self, stat, node_name):
-        node_state = checkNodeState(node_name, needed=True)
-        if node_state:
+        elapsed_time = rospy.Time.now() - self.last_time_check_node
+        if elapsed_time.secs > self.check_duration:
+            # Assume that topic is published at more than (1.0 / timeout) Hz
+            self.node_state = checkNodeState(node_name, needed=True)
+            self.last_time_check_node = rospy.Time.now()
+        if self.node_state:
             stat.summary(DiagnosticStatus.OK, 'Node is alive')
         else:
             stat.summary(DiagnosticStatus.ERROR, 'Node is dead')
