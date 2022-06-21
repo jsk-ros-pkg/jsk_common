@@ -51,9 +51,9 @@ class SanityDiagnostics(object):
         self.last_time_check_node = rospy.Time.now()
         # Timer to call updater
         self.timer = rospy.Timer(
-            rospy.Duration(pub_duration), self.check_sanity)
+            rospy.Duration(pub_duration), self.pub_diagnostics)
 
-    def check_sanity(self, event):
+    def pub_diagnostics(self, event):
         self.updater.update()
 
     def check_topic(self, stat, topic_name):
