@@ -50,5 +50,6 @@ if(CATKIN_ENABLE_TESTING)
   catkin_install_python(PROGRAMS ${python_test_scripts}
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-  add_rostest(tests/test_jsk_rosbag_tools.test)
+  add_rostest(tests/test_jsk_rosbag_tools.test
+    DEPENDENCIES download_audio_data download_video_data)
 endif()
