@@ -31,11 +31,6 @@ catkin_download(download_video_data
 )
 add_custom_target(download ALL DEPENDS download_audio_data download_video_data)
 
-install(FILES requirements.in requirements.txt
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
-
-
 if(CATKIN_ENABLE_TESTING)
   find_package(catkin REQUIRED COMPONENTS roslint rostest)
 
