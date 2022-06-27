@@ -36,6 +36,7 @@ if(CATKIN_ENABLE_TESTING)
 
   set(python_test_scripts
     tests/test_jsk_rosbag_tools.py
+    tests/test_bag_to_video.py
   )
 
   roslint_python()
@@ -47,4 +48,9 @@ if(CATKIN_ENABLE_TESTING)
 
   add_rostest(tests/test_jsk_rosbag_tools.test
     DEPENDENCIES download_audio_data download_video_data)
+  if("$ENV{ROS_DISTRO}" STRGREATER "indigo")
+    # could not install moviepy on indigo.
+    add_rostest(tests/test_bag_to_video.test
+      DEPENDENCIES download_audio_data download_video_data)
+  endif()
 endif()
