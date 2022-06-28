@@ -50,9 +50,13 @@ This node publishes essential robot topic and node status to `/diagnostics`.
       - /roswww
     ```
 
-* `~duration` (`Float`, default: `1`)
+* `~duration` (`Float`, default: `60`)
 
-    Duration in which sanity is checked and `/diagnostics` is published.
+    Duration in which sanity is checked.
+
+* `~pub_duration` (`Float`, default: `0.3`)
+
+    Duration in which `/diagnostics` is published.
 
 ## Usage
 

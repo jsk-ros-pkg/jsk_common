@@ -24,7 +24,8 @@
   <node name="sanity_diagnostics" pkg="jsk_tools" type="sanity_diagnostics.py">
     <rosparam command="load" file="$(find jsk_tools)/sample/config/sanity_targets.yaml" />
     <rosparam subst_value="true">
-      duration: 1
+      duration: 10
+      pub_duration: 0.3
     </rosparam>
   </node>
 

@@ -6,8 +6,6 @@ import sys
 import time
 import unittest
 
-from nose.tools import assert_false
-from nose.tools import assert_true
 import rosnode
 import rospy
 import rostopic
@@ -17,17 +15,33 @@ PKG = 'jsk_tools'
 NAME = 'test_topic_published'
 
 
+def expr_eval(expr):
+    def eval_fn(topic, m, t):
+        return eval(expr)
+    return eval_fn
+
+
 class PublishChecker(object):
-    def __init__(self, topic_name, timeout):
+    def __init__(self, topic_name, timeout, condition=None):
         self.topic_name = topic_name
         self.deadline = rospy.Time.now() + rospy.Duration(timeout)
         msg_class, _, _ = rostopic.get_topic_class(
             rospy.resolve_name(topic_name), blocking=True)
+        if condition is not None:
+            self.condition_expr = expr_eval(condition)
+        self.condition = condition
         self.msg = None
+        self.invalid_conditioned_msg = None
         self.sub = rospy.Subscriber(topic_name, msg_class, self._callback)
 
     def _callback(self, msg):
-        self.msg = msg
+        if self.condition is not None:
+            if self.condition_expr(self.topic_name, msg, rospy.Time.now()):
+                self.msg = msg
+            else:
+                self.invalid_conditioned_msg = msg
+        else:
+            self.msg = msg
 
     def assert_published(self):
         if self.msg:
@@ -45,6 +59,7 @@ class TestTopicPublished(unittest.TestCase):
         self.topics = []
         self.timeouts = []
         self.negatives = []
+        self.conditions = []
         params = rospy.get_param(rospy.get_name(), [])
         for name, value in params.items():
             if not re.match(r'^topic_\d$', name):
@@ -52,6 +67,7 @@ class TestTopicPublished(unittest.TestCase):
             self.topics.append(value)
             id = name.replace('topic_', '')
             self.timeouts.append(rospy.get_param('~timeout_{}'.format(id), 10))
+            self.conditions.append(rospy.get_param('~condition_{}'.format(id), None))
             self.negatives.append(
                 rospy.get_param('~negative_{}'.format(id), False))
         if not self.topics:
@@ -94,9 +110,9 @@ class TestTopicPublished(unittest.TestCase):
 
     def _check_topic_pubilshed(self):
         checkers = []
-        for topic_name, timeout, negative in zip(
-                self.topics, self.timeouts, self.negatives):
-            checker = PublishChecker(topic_name, timeout)
+        for topic_name, timeout, negative, condition in zip(
+                self.topics, self.timeouts, self.negatives, self.conditions):
+            checker = PublishChecker(topic_name, timeout, condition)
             checkers.append(checker)
 
         topics_finished = []
@@ -110,13 +126,37 @@ class TestTopicPublished(unittest.TestCase):
                 if ret is None:
                     continue
                 topics_finished.append(checker.topic_name)
-                if self.negatives[i]:
-                    assert_false(ret, 'Topic [%s] is published' %
-                                      checker.topic_name)
-                else:
-                    assert_true(
-                        ret, 'Topic [%s] is not published' %
-                             checker.topic_name)
+                if self.negatives[i] and ret is True:
+                    if checker.condition is None:
+                        rospy.logerr('Topic [%s] is published' %
+                                     checker.topic_name)
+                    else:
+                        if checker.msg is not None:
+                            rospy.logerr(
+                                'Topic [{}] satisfying "{}" is published. '
+                                'Topic "{}"'
+                                .format(checker.topic_name, checker.condition,
+                                        checker.msg))
+                        else:
+                            rospy.logerr('Topic [%s] is published' %
+                                         checker.topic_name)
+                    sys.exit(1)
+                elif self.negatives[i] is False and ret is False:
+                    if checker.condition is None:
+                        rospy.logerr('Topic [%s] is not published' %
+                                     checker.topic_name)
+                    else:
+                        if checker.invalid_conditioned_msg is None:
+                            rospy.logerr('Topic [%s] is not published' %
+                                         checker.topic_name)
+                        else:
+                            rospy.logerr(
+                                'Topic [{}] is published. '
+                                'But condition "{}" is not satified. '
+                                'Topic "{}"'.format(
+                                    checker.topic_name, checker.condition,
+                                    checker.invalid_conditioned_msg))
+                    sys.exit(1)
             try:
                 rospy.sleep(0.01)
             except rospy.exceptions.ROSTimeMovedBackwardsException:
