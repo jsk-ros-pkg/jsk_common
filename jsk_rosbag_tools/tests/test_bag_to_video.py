@@ -17,12 +17,16 @@ class TestBagToVideo(unittest.TestCase):
     def _check_command(self, cmd):
         proc = subprocess.Popen(cmd, shell=True,
                                 stdout=subprocess.PIPE)
+
+        lines = ''
         with proc.stdout:
             for line in iter(proc.stdout.readline, b''):
-                rospy.loginfo('{}'.format(line.decode('utf-8').strip()))
+                lines += line.decode('utf-8').strip()
         returncode = proc.wait()
 
         if returncode != 0:
+            rospy.logerr('{}'.format(lines))
+            rospy.logerr('command {} failed.'.format(cmd))
             raise RuntimeError('command {} failed.'.format(cmd))
 
     def test_bag_to_video_and_video_to_bag_and_compress(self):
