@@ -11,10 +11,11 @@
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>python-catkin-pkg-modules</buildtool_depend>
 
+  <build_depend version_gte="0.5.1">catkin_virtualenv</build_depend>
+
   <exec_depend>audio_common_msgs</exec_depend>
   <exec_depend>cv_bridge</exec_depend>
   <exec_depend>ffmpeg</exec_depend>
-  <exec_depend>python-moviepy-pip</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-numpy</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-rospkg-modules</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-scipy</exec_depend>
@@ -33,5 +34,9 @@
 
   <test_depend>roslint</test_depend>
   <test_depend>rostest</test_depend>
+
+  <export>
+    <pip_requirements>requirements.txt</pip_requirements>
+  </export>
 
 </package>
