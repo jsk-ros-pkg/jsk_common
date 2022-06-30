@@ -156,6 +156,12 @@ optional arguments:
 rosrun jsk_rosbag_tools tf_static_to_tf.py $(rospack find jsk_rosbag_tools)/samples/data/20220530173950_go_to_kitchen_rosbag.bag
 ```
 
+### Note
+
+`jsk_topic_tools` has a [static_tf_republisher.py](https://jsk-docs.readthedocs.io/projects/jsk_common/en/latest/jsk_topic_tools/scripts/static_tf_republisher.html) which republish `/tf_static` from a rosbag file.
+
+`tf_static_to_tf.py` is an approach to rewrite the rosbag file.
+
 ## merge.py
 
 Merges two bagfiles.
