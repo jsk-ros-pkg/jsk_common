@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<launch>
+
+  <test test-name="test_bag_to_video" pkg="jsk_rosbag_tools" type="test_bag_to_video.py"
+        time-limit="360.0" />
+
+</launch>

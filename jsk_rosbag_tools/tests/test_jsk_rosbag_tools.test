@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<launch>
+
+  <test test-name="test_jsk_rosbag_tools" pkg="jsk_rosbag_tools" type="test_jsk_rosbag_tools.py"
+        time-limit="360.0" />
+
+</launch>

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>jsk_rosbag_tools</name>
+  <version>2.2.11</version>
+  <description>The rosbag tools</description>
+  <license>BSD</license>
+
+  <maintainer email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</maintainer>
+  <author email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>python-catkin-pkg-modules</buildtool_depend>
+
+  <build_depend version_gte="0.5.1">catkin_virtualenv</build_depend>
+
+  <exec_depend>audio_common_msgs</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>ffmpeg</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-numpy</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-rospkg-modules</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-scipy</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-setuptools</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-termcolor</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-tqdm</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-yaml</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-numpy</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-rospkg-modules</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-scipy</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-setuptools</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-termcolor</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-tqdm</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-yaml</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+
+  <test_depend>roslint</test_depend>
+  <test_depend>rostest</test_depend>
+
+  <export>
+    <pip_requirements>requirements.txt</pip_requirements>
+  </export>
+
+</package>
