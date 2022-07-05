@@ -3,6 +3,8 @@
 import rospy
 import rostopic
 import sys
+import genpy
+import std_msgs.msg
 
 
 class ExtractSubtopic(object):
@@ -22,14 +24,32 @@ class ExtractSubtopic(object):
             self.pub = rospy.Publisher('~output', sub_msg_class, queue_size=1)
         except ValueError:
             if sub_msg_class is str:
-                import std_msgs.msg
                 sub_msg_class = std_msgs.msg.String
                 self.pub = rospy.Publisher('~output', sub_msg_class, queue_size=1)
                 self.msg_eval_real = self.msg_eval
                 self.msg_eval = lambda msg_real: sub_msg_class(data=self.msg_eval_real(msg_real))
             elif sub_msg_class is bool:
-                import std_msgs.msg
                 sub_msg_class = std_msgs.msg.Bool
+                self.pub = rospy.Publisher('~output', sub_msg_class, queue_size=1)
+                self.msg_eval_real = self.msg_eval
+                self.msg_eval = lambda msg_real: sub_msg_class(data=self.msg_eval_real(msg_real))
+            elif sub_msg_class is int:
+                sub_msg_class = std_msgs.msg.Int32
+                self.pub = rospy.Publisher('~output', sub_msg_class, queue_size=1)
+                self.msg_eval_real = self.msg_eval
+                self.msg_eval = lambda msg_real: sub_msg_class(data=self.msg_eval_real(msg_real))
+            elif sub_msg_class is float:
+                sub_msg_class = std_msgs.msg.Float32
+                self.pub = rospy.Publisher('~output', sub_msg_class, queue_size=1)
+                self.msg_eval_real = self.msg_eval
+                self.msg_eval = lambda msg_real: sub_msg_class(data=self.msg_eval_real(msg_real))
+            elif sub_msg_class is genpy.rostime.Time:
+                sub_msg_class = std_msgs.msg.Time
+                self.pub = rospy.Publisher('~output', sub_msg_class, queue_size=1)
+                self.msg_eval_real = self.msg_eval
+                self.msg_eval = lambda msg_real: sub_msg_class(data=self.msg_eval_real(msg_real))
+            elif sub_msg_class is genpy.rostime.Duration:
+                sub_msg_class = std_msgs.msg.Duration
                 self.pub = rospy.Publisher('~output', sub_msg_class, queue_size=1)
                 self.msg_eval_real = self.msg_eval
                 self.msg_eval = lambda msg_real: sub_msg_class(data=self.msg_eval_real(msg_real))
