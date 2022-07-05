@@ -136,14 +136,14 @@ def bag_to_video(input_bagfile,
             if show_progress_bar:
                 progress.update(1)
             aligned_stamp = stamp - start_stamp
+            # write the current image until the next frame's timestamp.
             while current_time < aligned_stamp:
                 current_time += dt
                 writer.write_frame(cur_img)
+            # set current image.
             cur_img = resize_keeping_aspect_ratio_wrt_target_size(
                 cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB),
                 width=width, height=height)
-            writer.write_frame(cur_img)
-            current_time += dt
         writer.close()
 
         if show_progress_bar:
