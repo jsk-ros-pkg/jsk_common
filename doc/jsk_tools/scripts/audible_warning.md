@@ -49,6 +49,10 @@ Robots using diagnostics can use this node.
 
     This is useful for ignoring errors that occur when the robot starts.
 
+* `~wait_speak_duration_time` (`Float`, default: `30.0`)
+
+    Waiting time in `robotsound` action.
+
 * `~enable` (`Bool`, default: `True`)
 
     If `True`, speak diagnositcs. If `False`, this node don't speak.
