@@ -181,6 +181,8 @@ class AudibleWarning(object):
         language = rospy.get_param('~language', '')
         seconds_to_start_speaking = rospy.get_param(
             '~seconds_to_start_speaking', 0)
+        wait_speak_duration_time = rospy.get_param(
+            '~wait_speak_duration_time', 30.0)
 
         # Wait until seconds_to_start_speaking the time has passed.
         self.run_stop_enabled_time = None
@@ -209,7 +211,7 @@ class AudibleWarning(object):
         self.speak_thread = SpeakThread(
             speak_rate, wait_speak,
             language,
-            wait_speak_duration_time=seconds_to_start_speaking)
+            wait_speak_duration_time=wait_speak_duration_time)
         self.srv = Server(Config, self.config_callback)
 
         # run-stop
