@@ -23,9 +23,9 @@ Robots using diagnostics can use this node.
 
 ## Parameter
 
-* `~speak_rate` (`Float`, default: `1.0`)
+* `~speak_rate` (`Float`, default: `1.0 / 100.0`)
 
-    Rate of speak loop.
+    Rate of speak loop. If `~wait_speak` is `True`, wait until a robot finish speaking.
 
 * `~speak_interval` (`Float`, default: `120.0`)
 

@@ -176,7 +176,7 @@ class SpeakThread(Thread):
 class AudibleWarning(object):
 
     def __init__(self):
-        speak_rate = rospy.get_param("~speak_rate", 1.0)
+        speak_rate = rospy.get_param("~speak_rate", 1.0 / 100.0)
         wait_speak = rospy.get_param("~wait_speak", True)
         language = rospy.get_param('~language', '')
         seconds_to_start_speaking = rospy.get_param(
