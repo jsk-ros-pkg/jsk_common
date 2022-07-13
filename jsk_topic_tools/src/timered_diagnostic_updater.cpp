@@ -77,7 +77,9 @@ namespace jsk_topic_tools
 
   void TimeredDiagnosticUpdater::update()
   {
-    diagnostic_updater_->update();
+    // Since TimedDiagnosticUpdater is already managed as a timer,
+    // diagnostic_updater_->force_update is executed instead of diagnostic_updater_->update.
+    diagnostic_updater_->force_update();
   }
   
   void TimeredDiagnosticUpdater::timerCallback(const ros::TimerEvent& event)
