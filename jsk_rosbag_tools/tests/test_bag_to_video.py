@@ -7,6 +7,8 @@ import unittest
 import rospkg
 import rospy
 
+from jsk_rosbag_tools.video import get_video_duration
+
 
 PKG = 'jsk_rosbag_tools'
 NAME = 'test_bag_to_video'
@@ -28,6 +30,31 @@ class TestBagToVideo(unittest.TestCase):
             rospy.logerr('{}'.format(lines))
             rospy.logerr('command {} failed.'.format(cmd))
             raise RuntimeError('command {} failed.'.format(cmd))
+
+    def test_bag_to_video_fps(self):
+        rospack = rospkg.RosPack()
+        path = rospack.get_path('jsk_rosbag_tools')
+
+        topic = '/head_camera/rgb/throttled/image_rect_color/compressed'
+        output_path = osp.join(path, 'tests', 'output', 'video', 'video.mp4')
+        video_bag_path = osp.join(path, 'samples', 'data',
+                                  '20220530173950_go_to_kitchen_rosbag.bag')
+
+        # case 1: fps is smaller than topic's Hz.
+        fps = 1
+        cmd = 'rosrun jsk_rosbag_tools bag_to_video.py {} -o {} ' \
+            '--fps {} --image-topic {}'.format(
+                video_bag_path, output_path, fps, topic)
+        self._check_command(cmd)
+        self.assertTrue(abs(get_video_duration(output_path) - 40.0) < 1.0)
+
+        # case 2: fps is larger than topic's Hz.
+        fps = 60
+        cmd = 'rosrun jsk_rosbag_tools bag_to_video.py {} -o {} ' \
+            '--fps {} --image-topic {}'.format(
+                video_bag_path, output_path, fps, topic)
+        self._check_command(cmd)
+        self.assertTrue(abs(get_video_duration(output_path) - 40.0) < 1.0)
 
     def test_bag_to_video_and_video_to_bag_and_compress(self):
         rospack = rospkg.RosPack()
