@@ -234,6 +234,7 @@ install(FILES
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h" # Ignore *_version.h.in files
 )
 
 install(DIRECTORY scripts/
