@@ -31,21 +31,6 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/jsk_topic_tools/nodelet_version.h.in
   ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/jsk_topic_tools/nodelet_version.h)
 
-catkin_package_xml()
-# split version in parts and pass to extra file
-string(REPLACE "." ";" jsk_topic_tools_VERSION_LIST "${jsk_topic_tools_VERSION}")
-list(LENGTH jsk_topic_tools_VERSION_LIST _count)
-if(NOT _count EQUAL 3)
-  message(FATAL_ERROR "jsk_topic_tools version '${jsk_topic_tools_VERSION}' does not match 'MAJOR.MINOR.PATCH' pattern")
-endif()
-list(GET jsk_topic_tools_VERSION_LIST 0 jsk_topic_tools_VERSION_MAJOR)
-list(GET jsk_topic_tools_VERSION_LIST 1 jsk_topic_tools_VERSION_MINOR)
-list(GET jsk_topic_tools_VERSION_LIST 2 jsk_topic_tools_VERSION_PATCH)
-
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/jsk_topic_tools/jsk_topic_tools_version.h.in
-  ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/jsk_topic_tools/jsk_topic_tools_version.h)
-
 # download and install sample data
 catkin_download(download_sample_pr2_wrench-2022-05-02 https://drive.google.com/uc?id=1ym_fxRTNZOTp4PCXIq_spJwFktoOkLDK
   DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/sample/data
@@ -79,6 +64,23 @@ catkin_package(
     LIBRARIES jsk_topic_tools
     CFG_EXTRAS nodelet.cmake
 )
+
+## Generate jsk_topic_tools_version.h.
+# Note that catkin_package_xml needs to be called, but it is called in catkin_package.
+# split version in parts and pass to extra file
+string(REPLACE "." ";" jsk_topic_tools_VERSION_LIST "${jsk_topic_tools_VERSION}")
+list(LENGTH jsk_topic_tools_VERSION_LIST _count)
+if(NOT _count EQUAL 3)
+  message(FATAL_ERROR "jsk_topic_tools version '${jsk_topic_tools_VERSION}' does not match 'MAJOR.MINOR.PATCH' pattern")
+endif()
+list(GET jsk_topic_tools_VERSION_LIST 0 jsk_topic_tools_VERSION_MAJOR)
+list(GET jsk_topic_tools_VERSION_LIST 1 jsk_topic_tools_VERSION_MINOR)
+list(GET jsk_topic_tools_VERSION_LIST 2 jsk_topic_tools_VERSION_PATCH)
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/jsk_topic_tools/jsk_topic_tools_version.h.in
+  ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/jsk_topic_tools/jsk_topic_tools_version.h)
+
 
 if(topic_tools_VERSION VERSION_GREATER "1.13.2")
   add_definitions("-Dtopic_tools_relay_stealth_EXISTS")
