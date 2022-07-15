@@ -31,6 +31,21 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/jsk_topic_tools/nodelet_version.h.in
   ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/jsk_topic_tools/nodelet_version.h)
 
+catkin_package_xml()
+# split version in parts and pass to extra file
+string(REPLACE "." ";" jsk_topic_tools_VERSION_LIST "${jsk_topic_tools_VERSION}")
+list(LENGTH jsk_topic_tools_VERSION_LIST _count)
+if(NOT _count EQUAL 3)
+  message(FATAL_ERROR "jsk_topic_tools version '${jsk_topic_tools_VERSION}' does not match 'MAJOR.MINOR.PATCH' pattern")
+endif()
+list(GET jsk_topic_tools_VERSION_LIST 0 jsk_topic_tools_VERSION_MAJOR)
+list(GET jsk_topic_tools_VERSION_LIST 1 jsk_topic_tools_VERSION_MINOR)
+list(GET jsk_topic_tools_VERSION_LIST 2 jsk_topic_tools_VERSION_PATCH)
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/jsk_topic_tools/jsk_topic_tools_version.h.in
+  ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/jsk_topic_tools/jsk_topic_tools_version.h)
+
 # download and install sample data
 catkin_download(download_sample_pr2_wrench-2022-05-02 https://drive.google.com/uc?id=1ym_fxRTNZOTp4PCXIq_spJwFktoOkLDK
   DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/sample/data
@@ -219,6 +234,7 @@ install(FILES
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h" # Ignore *_version.h.in files
 )
 
 install(DIRECTORY scripts/
