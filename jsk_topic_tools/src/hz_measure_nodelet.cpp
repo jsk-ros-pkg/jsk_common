@@ -44,7 +44,6 @@ namespace jsk_topic_tools
   void HzMeasure::onInit()
   {
     pnh_ = getPrivateNodeHandle();
-    hz_ = std::numeric_limits<double>::max();
     if (!pnh_.getParam("message_num", average_message_num_)) {
       average_message_num_ = 10; // defaults to 10
     }
@@ -82,7 +81,6 @@ namespace jsk_topic_tools
       double whole_time = (now - oldest).toSec();
       double average_time = whole_time / (buffer_.size() - 1);
       std_msgs::Float32 output;
-      hz_ = 1.0 / average_time;
       output.data = 1.0 / average_time;
       hz_pub_.publish(output);
       buffer_.pop();
@@ -95,14 +93,28 @@ namespace jsk_topic_tools
   void HzMeasure::updateDiagnostic(
     diagnostic_updater::DiagnosticStatusWrapper &stat)
   {
-    if (hz_ > warning_hz_) {
-      stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
-                   (boost::format("%s is running at %.2f hz.")
-                    % getName() % hz_).str());
+    double hz = -1.0;
+    if (buffer_.size() > average_message_num_) {
+      ros::Time now = ros::Time::now();
+      ros::Time oldest = buffer_.front();
+      double whole_time = (now - oldest).toSec();
+      double average_time = whole_time / (buffer_.size() - 1);
+      hz = 1.0 / average_time;
+    }
+    if (hz > 0.0) {
+      if (hz > warning_hz_) {
+        stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
+                     (boost::format("%s is running at %.2f hz.")
+                      % getName() % hz).str());
+      } else {
+        stat.summary(diagnostic_error_level_,
+                     (boost::format("%s is running at %.2f hz.")
+                      % getName() % hz).str());
+      }
     } else {
       stat.summary(diagnostic_error_level_,
-                   (boost::format("%s is running at %.2f hz.")
-                    % getName() % hz_).str());
+                   (boost::format("%s is waiting input topic.")
+                    % getName()).str());
     }
   }
 }

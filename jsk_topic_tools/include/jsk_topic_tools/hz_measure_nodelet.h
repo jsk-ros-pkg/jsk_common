@@ -52,7 +52,6 @@ namespace jsk_topic_tools
     virtual void onInit();
   protected:
     int average_message_num_;
-    double hz_;
     double warning_hz_;
     std::queue<ros::Time> buffer_;
     ros::Publisher hz_pub_;
