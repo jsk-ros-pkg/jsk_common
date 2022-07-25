@@ -1,0 +1,21 @@
+<launch>
+  <arg name="video_height" default="480" />
+  <arg name="video_width" default="640" />
+  <arg name="video_framerate" default="30" />
+  <node name="usb_cam_node" pkg="usb_cam" type="usb_cam_node">
+    <rosparam subst_value="true">
+      image_height: $(arg video_height)
+      image_width: $(arg video_width)
+      framerate: $(arg video_framerate)
+      pixel_format: yuyv
+    </rosparam>
+  </node>
+
+  <node name="image_capture_server" pkg="image_view2" type="image_capture_server" output="screen"/>
+
+  <node name="sample_image_capture_client" pkg="image_view2" type="sample_image_capture_client.py" output="screen" >
+      <rosparam>
+          image_topic: /usb_cam_node/image_raw
+      </rosparam>
+  </node>
+</launch>

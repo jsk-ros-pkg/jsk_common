@@ -19,6 +19,14 @@ endif()
 
 find_package(catkin REQUIRED COMPONENTS roscpp dynamic_reconfigure  cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_generation std_srvs pcl_ros)
 
+find_package(PCL REQUIRED)
+
+find_package(OpenCV REQUIRED)
+
+find_package(Boost REQUIRED COMPONENTS)
+
+catkin_python_setup()
+
 generate_dynamic_reconfigure_options(
   cfg/ImageView2.cfg
 )
@@ -28,34 +36,34 @@ add_message_files(
 )
 
 add_service_files(
-  FILES ChangeMode.srv
+  FILES ChangeMode.srv Capture.srv
   )
-
-include_directories(include ${catkin_INCLUDE_DIRS})
-
-# Image viewers
-find_package(OpenCV REQUIRED)
-add_executable(image_view2 image_view2.cpp image_view2_node.cpp)
-target_link_libraries(image_view2 ${OpenCV_LIBS} ${catkin_LIBRARIES})
-add_dependencies(image_view2 ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_gencfg)
-
-# Point Rectangle Extractor
-add_executable(points_rectangle_extractor points_rectangle_extractor.cpp)
-find_package(Boost REQUIRED COMPONENTS)
-include_directories(${Boost_INCLUDE_DIRS})
-find_package(PCL REQUIRED)
-include_directories(${PCL_INCLUDE_DIRS})
-target_link_libraries(points_rectangle_extractor ${Boost_LIBRARIES} ${catkin_LIBRARIES})
-add_dependencies(points_rectangle_extractor ${PROJECT_NAME}_gencpp)
 
 generate_messages(DEPENDENCIES geometry_msgs std_msgs)
 
 catkin_package(
     DEPENDS OpenCV PCL
-    CATKIN_DEPENDS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters
-    INCLUDE_DIRS # TODO include
-    LIBRARIES # TODO
+    CATKIN_DEPENDS roscpp cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_runtime
+    INCLUDE_DIRS include
 )
+
+include_directories(
+    include
+    ${catkin_INCLUDE_DIRS}
+    ${PCL_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+)
+
+# Image viewers
+add_executable(image_view2 src/image_view2.cpp src/image_view2_node.cpp)
+target_link_libraries(image_view2 ${OpenCV_LIBS} ${catkin_LIBRARIES})
+add_dependencies(image_view2 ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_gencfg)
+
+# Point Rectangle Extractor
+add_executable(points_rectangle_extractor src/points_rectangle_extractor.cpp)
+target_link_libraries(points_rectangle_extractor ${Boost_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(points_rectangle_extractor ${PROJECT_NAME}_gencpp)
+
 
 # From https://github.com/jsk-ros-pkg/jsk_recognition/pull/2345
 # Install header files directly into ${CATKIN_PACKAGE_INCLUDE_DESTINATION}.
@@ -75,6 +83,18 @@ install(TARGETS image_view2 points_rectangle_extractor
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+catkin_install_python(
+    PROGRAMS node_scripts/image_capture node_scripts/image_capture_server node_scripts/sample_image_capture_client.py
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(DIRECTORY euslisp
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    USE_SOURCE_PERMISSIONS
+)
+install(DIRECTORY sample
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    USE_SOURCE_PERMISSIONS
 )
 
 if(CATKIN_ENABLE_TESTING)
