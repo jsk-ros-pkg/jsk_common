@@ -166,6 +166,7 @@ if (CATKIN_ENABLE_TESTING)
   endmacro()
   find_package(rostest REQUIRED)
   jsk_topic_tools_add_rostest(test/test_boolean_node.test)
+  jsk_topic_tools_add_rostest(test/test_filtered_relay.test)
   jsk_topic_tools_add_rostest(test/test_topic_buffer.test)
   jsk_topic_tools_add_rostest(test/test_topic_buffer_close_wait.test)
   # topic_buffer tests are tend to fail in GA because of CPU high load.
