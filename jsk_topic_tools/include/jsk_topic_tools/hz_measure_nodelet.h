@@ -38,6 +38,7 @@
 
 #include <nodelet/nodelet.h>
 #include <topic_tools/shape_shifter.h>
+#include <boost/thread.hpp>
 
 #include "jsk_topic_tools/timered_diagnostic_updater.h"
 
@@ -52,11 +53,15 @@ namespace jsk_topic_tools
     virtual void onInit();
   protected:
     int average_message_num_;
+    double measure_time_;
     double warning_hz_;
     std::queue<ros::Time> buffer_;
     ros::Publisher hz_pub_;
     ros::Subscriber sub_;
     ros::NodeHandle pnh_;
+    boost::mutex mutex_;
+    virtual void popBufferQueue();
+    virtual double calculateHz();
     virtual void inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
 
     /** @brief
