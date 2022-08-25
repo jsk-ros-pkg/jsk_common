@@ -3,20 +3,50 @@
         type="nodelet"
         name="nodelet_manager"
         args="manager" />
-  <node pkg="nodelet"
-        type="nodelet"
-        name="hz"
-        clear_params="true"
-        args="load jsk_topic_tools/HzMeasure /nodelet_manager">
-  </node>
-  <param name="hz/message_num" value="300" />
+
+  <group ns="message_num" >
+    <node name="hz"
+          pkg="nodelet"
+          type="nodelet"
+          clear_params="true"
+          args="load jsk_topic_tools/HzMeasure /nodelet_manager">
+      <remap from="~input" to="/hz/input" />
+      <rosparam>
+        message_num: 300
+      </rosparam>
+    </node>
+
+    <test test-name="test_hz_measure_message_num"
+          name="test_hz_measure_message_num"
+          pkg="jsk_topic_tools" type="test_hz_measure.py"
+          retry="3" >
+      <remap from="/hz/output" to="/message_num/hz/output" />
+    </test>
+  </group>
+
+  <group ns="measure_time" >
+    <node name="hz"
+          pkg="nodelet"
+          type="nodelet"
+          clear_params="true"
+          args="load jsk_topic_tools/HzMeasure /nodelet_manager">
+      <remap from="~input" to="/hz/input" />
+      <rosparam>
+        measure_time: 1.0
+      </rosparam>
+    </node>
+
+    <test test-name="test_hz_measure_measure_time"
+          name="test_hz_measure_measure_time"
+          pkg="jsk_topic_tools" type="test_hz_measure.py"
+          retry="3" >
+      <remap from="/hz/output" to="/measure_time/hz/output" />
+    </test>
+  </group>
+
   <node pkg="rostopic"
         type="rostopic"
         name="rostopic_30Hz"
         args="pub -r 30 /hz/input std_msgs/String foo" />
-  <test test-name="test_hz_measure"
-        name="test_hz_measure"
-        pkg="jsk_topic_tools" type="test_hz_measure.py"
-        retry="3" />
 
 </launch>
