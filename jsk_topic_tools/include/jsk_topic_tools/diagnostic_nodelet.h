@@ -69,6 +69,11 @@ namespace jsk_topic_tools
 
     /** @brief
      * Constructor and subclass need to call this.
+     */
+    DiagnosticNodelet();
+
+    /** @brief
+     * Constructor and subclass need to call this.
      *
      * @param name name of subclass
      */
