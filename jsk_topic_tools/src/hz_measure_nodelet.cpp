@@ -89,6 +89,7 @@ namespace jsk_topic_tools
   }
 
   void HzMeasure::popBufferQueue() {
+    boost::mutex::scoped_lock lock(mutex_);
     ros::Time now = ros::Time::now();
     while (!buffer_.empty()
            && ((measure_time_ > 0 && measure_time_ < (now - buffer_.front()).toSec())
@@ -98,6 +99,7 @@ namespace jsk_topic_tools
   }
 
   double HzMeasure::calculateHz() {
+    boost::mutex::scoped_lock lock(mutex_);
     double hz = -1.0;
     if (average_message_num_ > 0) {
       if (buffer_.size() == average_message_num_) {
@@ -120,7 +122,6 @@ namespace jsk_topic_tools
 
   void HzMeasure::inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
   {
-    boost::mutex::scoped_lock lock(mutex_);
     popBufferQueue();
     ros::Time now = ros::Time::now();
     buffer_.push(now);
@@ -137,7 +138,6 @@ namespace jsk_topic_tools
   void HzMeasure::updateDiagnostic(
     diagnostic_updater::DiagnosticStatusWrapper &stat)
   {
-    boost::mutex::scoped_lock lock(mutex_);
     popBufferQueue();
     double hz = calculateHz();
     if (hz > 0.0) {

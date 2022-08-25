@@ -49,4 +49,13 @@
         name="rostopic_30Hz"
         args="pub -r 30 /hz/input std_msgs/String foo" />
 
+  <test test-name="test_hz_measure_diagnostics_published"
+        name="test_hz_measure_diagnostics_published"
+        pkg="jsk_tools" type="test_topic_published.py">
+    <rosparam>
+      topic_0: /diagnostics
+      timeout_0: 10
+    </rosparam>
+  </test>
+
 </launch>
