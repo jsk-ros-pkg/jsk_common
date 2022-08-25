@@ -114,7 +114,7 @@ namespace jsk_topic_tools
         ros::Time now = ros::Time::now();
         time_width = std::min(measure_time_, std::max((now - buffer_.front()).toSec(), 0.0001));
       }
-      hz = (buffer_.size() - 1) / time_width;
+      hz = std::max(int(buffer_.size() - 1), 0) / time_width;
     }
     return hz;
   }
