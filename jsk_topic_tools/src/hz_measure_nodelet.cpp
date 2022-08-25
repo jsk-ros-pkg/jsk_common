@@ -98,7 +98,7 @@ namespace jsk_topic_tools
       ros::Time now = ros::Time::now();
       ros::Time oldest = buffer_.front();
       double whole_time = (now - oldest).toSec();
-      double average_time = whole_time / (buffer_.size() - 1);
+      double average_time = whole_time / buffer_.size();
       hz = 1.0 / average_time;
     }
     if (hz > 0.0) {
