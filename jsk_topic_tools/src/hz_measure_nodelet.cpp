@@ -94,7 +94,7 @@ namespace jsk_topic_tools
     diagnostic_updater::DiagnosticStatusWrapper &stat)
   {
     double hz = -1.0;
-    if (buffer_.size() > average_message_num_) {
+    if (buffer_.size() >= average_message_num_) {
       ros::Time now = ros::Time::now();
       ros::Time oldest = buffer_.front();
       double whole_time = (now - oldest).toSec();
