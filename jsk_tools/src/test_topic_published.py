@@ -15,20 +15,19 @@ PKG = 'jsk_tools'
 NAME = 'test_topic_published'
 
 
-def expr_eval(expr):
-    def eval_fn(topic, m, t):
-        return eval(expr)
-    return eval_fn
+from jsk_topic_tools.eval_utils import expr_eval
+from jsk_topic_tools.eval_utils import import_modules
 
 
 class PublishChecker(object):
-    def __init__(self, topic_name, timeout, condition=None):
+    def __init__(self, topic_name, timeout, condition=None, modules=None):
+        modules = modules or {}
         self.topic_name = topic_name
         self.deadline = rospy.Time.now() + rospy.Duration(timeout)
         msg_class, _, _ = rostopic.get_topic_class(
             rospy.resolve_name(topic_name), blocking=True)
         if condition is not None:
-            self.condition_expr = expr_eval(condition)
+            self.condition_expr = expr_eval(condition, modules)
         self.condition = condition
         self.msg = None
         self.invalid_conditioned_msg = None
@@ -60,6 +59,11 @@ class TestTopicPublished(unittest.TestCase):
         self.timeouts = []
         self.negatives = []
         self.conditions = []
+
+        import_list = rospy.get_param('~import', [])
+        import_list += ['rospy', 'numpy']
+        self.modules = import_modules(import_list)
+
         params = rospy.get_param(rospy.get_name(), [])
         for name, value in params.items():
             if not re.match(r'^topic_\d$', name):
@@ -112,7 +116,7 @@ class TestTopicPublished(unittest.TestCase):
         checkers = []
         for topic_name, timeout, negative, condition in zip(
                 self.topics, self.timeouts, self.negatives, self.conditions):
-            checker = PublishChecker(topic_name, timeout, condition)
+            checker = PublishChecker(topic_name, timeout, condition, self.modules)
             checkers.append(checker)
 
         topics_finished = []

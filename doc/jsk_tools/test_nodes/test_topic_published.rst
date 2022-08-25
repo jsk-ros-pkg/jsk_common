@@ -22,6 +22,11 @@ Parameters
 
   If it's ``True``, it tests if **not** published.
 
+- ``~import`` (``List[str]``, Default: ``[]``, Optional)
+
+  List of Python modules to import and use in ``~condition_%d`` expression.
+  For commodity rospy and numpy modules are imported by default.
+
 - ``~condition_%d`` (``str``, Default: ``None``, Optional)
 
   Check bool value condition using the given Python expression.
@@ -43,6 +48,10 @@ Parameters
   .. code-block:: bash
     condition_0: m.data &lt; 'spbm'
 
+  The modules given to ``~import`` can also be used.
+
+  .. code-block:: bash
+    condition_0: 'numpy.linalg.norm([m.wrench.force.x, m.wrench.force.y, m.wrench.force.z]) &lt; 10.0'
 
 Example
 -------
