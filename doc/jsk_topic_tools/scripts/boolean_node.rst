@@ -72,6 +72,8 @@ Parameters
 
     input1_condition: "(rospy.Time.now() - t).to_sec() &lt; 1.0"
 
+  Use escape sequence when using the following symbols <(``&lt;``), >(``&gt;``), &(``&amp;``), '(``&apos;``) and "(``&quot;``) in launch file.
+
 
 * ``~rate`` (Int, Default: ``100``)
 
