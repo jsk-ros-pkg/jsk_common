@@ -10,13 +10,12 @@ import rosnode
 import rospy
 import rostopic
 
+from jsk_topic_tools.eval_utils import expr_eval
+from jsk_topic_tools.eval_utils import import_modules
+
 
 PKG = 'jsk_tools'
 NAME = 'test_topic_published'
-
-
-from jsk_topic_tools.eval_utils import expr_eval
-from jsk_topic_tools.eval_utils import import_modules
 
 
 class PublishChecker(object):
