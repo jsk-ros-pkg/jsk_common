@@ -55,7 +55,7 @@ namespace jsk_topic_tools
       new TimeredDiagnosticUpdater(*pnh_, ros::Duration(1.0)));
     diagnostic_updater_->setHardwareID(getName());
     diagnostic_updater_->add(
-      getName() + "::" + name_,
+      getName(),
       boost::bind(
         &DiagnosticNodelet::updateDiagnostic,
         this,
@@ -94,7 +94,7 @@ namespace jsk_topic_tools
       }
       else {
         jsk_topic_tools::addDiagnosticErrorSummary(
-          name_, vital_checker_, stat, diagnostic_error_level_);
+          getName(), vital_checker_, stat, diagnostic_error_level_);
       }
     }
     else {
