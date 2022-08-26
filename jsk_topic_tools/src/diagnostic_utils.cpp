@@ -60,7 +60,7 @@ namespace jsk_topic_tools
   {
     stat.summary(
       error_level,
-      (boost::format("%s not running for %f sec")
+      (boost::format("%s not running for %.1f sec")
        % string_prefix % vital_checker->deadSec()).str());
   }
   
