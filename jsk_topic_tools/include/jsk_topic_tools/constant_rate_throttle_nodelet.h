@@ -31,6 +31,7 @@ namespace jsk_topic_tools
     ros::TransportHints th_;
     ros::NodeHandle pnh_;
     ros::Timer timer_publish_;
+    bool timer_started_;
 
     boost::mutex mutex_;
 

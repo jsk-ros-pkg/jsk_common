@@ -7,6 +7,7 @@ namespace jsk_topic_tools
     pnh_ = this->getPrivateNodeHandle();
     subscribing_ = false;
     advertised_ = false;
+    timer_started_ = false;
     msg_cached_ = boost::shared_ptr<topic_tools::ShapeShifter>(new topic_tools::ShapeShifter());
 
     srv_ = boost::make_shared<dynamic_reconfigure::Server<Config> >(pnh_);
@@ -90,7 +91,7 @@ namespace jsk_topic_tools
 
   bool ConstantRateThrottle::isLoopAlive()
   {
-      return timer_publish_.isValid() and timer_publish_.hasStarted();
+      return timer_publish_.isValid() and timer_started_;
   }
 
   void ConstantRateThrottle::startPublishLoop(double loop_rate)
@@ -104,12 +105,14 @@ namespace jsk_topic_tools
     } else {
         timer_publish_.setPeriod(ros::Duration(1.0/update_rate_));
         timer_publish_.start();
+        timer_started_ = false;
     }
   }
 
   void ConstantRateThrottle::stopPublishLoop()
   {
     timer_publish_.stop();
+    timer_started_ = false;
   }
 
 }
