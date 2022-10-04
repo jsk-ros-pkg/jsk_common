@@ -11,12 +11,6 @@ if (CMAKE_VERSION VERSION_LESS 3.4)
   endif(CCACHE_FOUND)
 endif()
 
-if(NOT $ENV{ROS_DISTRO} STRLESS noetic)
-  add_compile_options(-std=c++14)
-elseif(NOT $ENV{ROS_DISTRO} STRLESS kinetic)
-  add_compile_options(-std=c++11)
-endif()
-
 find_package(catkin REQUIRED COMPONENTS roscpp dynamic_reconfigure  cv_bridge std_msgs sensor_msgs geometry_msgs image_transport tf image_geometry message_filters message_generation std_srvs pcl_ros)
 
 generate_dynamic_reconfigure_options(
