@@ -66,7 +66,7 @@ void SynchronizedThrottle::onInit()
 
   srv_ = boost::make_shared<dynamic_reconfigure::Server<Config> >(*pnh_);
   dynamic_reconfigure::Server<Config>::CallbackType f =
-      boost::bind(&SynchronizedThrottle::configCallback, this, _1, _2);
+      [this](auto& config, auto level){ configCallback(config, level); };
   srv_->setCallback(f);
 
   // message_filter supports 2~8 input topics
@@ -89,7 +89,7 @@ void SynchronizedThrottle::onInit()
   {
     check_sub_[i] = pnh_->subscribe<topic_tools::ShapeShifterStamped>(
         input_topics_[i], 1,
-        boost::bind(&SynchronizedThrottle::checkCallback, this, _1, i));
+        [this,i](auto& msg){ checkCallback(msg, i); });
     sub_[i].reset(new message_filters::Subscriber<topic_tools::ShapeShifterStamped>());
   }
 
@@ -178,7 +178,7 @@ void SynchronizedThrottle::subscribe()
   if (n_topics < MAX_SYNC_NUM)
   {
     sub_[0]->registerCallback(
-        boost::bind(&SynchronizedThrottle::fillNullMessage, this, _1));
+        [this](auto& msg){ fillNullMessage(msg); });
   }
 
   if (approximate_sync_)
@@ -220,8 +220,16 @@ void SynchronizedThrottle::subscribe()
         return;
     }
     async_->registerCallback(
-        boost::bind(&SynchronizedThrottle::inputCallback, this,
-                    _1, _2, _3, _4, _5, _6, _7, _8));
+         boost::bind(&SynchronizedThrottle::inputCallback, this,
+                     boost::placeholders::_1,
+                     boost::placeholders::_2,
+                     boost::placeholders::_3,
+                     boost::placeholders::_4,
+                     boost::placeholders::_5,
+                     boost::placeholders::_6,
+                     boost::placeholders::_7,
+                     boost::placeholders::_8));
+
   } else {
     sync_ = boost::make_shared<message_filters::Synchronizer<SyncPolicy> >(queue_size_);
 
@@ -260,8 +268,15 @@ void SynchronizedThrottle::subscribe()
         return;
     }
     sync_->registerCallback(
-        boost::bind(&SynchronizedThrottle::inputCallback, this,
-                    _1, _2, _3, _4, _5, _6, _7, _8));
+         boost::bind(&SynchronizedThrottle::inputCallback, this,
+                     boost::placeholders::_1,
+                     boost::placeholders::_2,
+                     boost::placeholders::_3,
+                     boost::placeholders::_4,
+                     boost::placeholders::_5,
+                     boost::placeholders::_6,
+                     boost::placeholders::_7,
+                     boost::placeholders::_8));
   }
 }
 

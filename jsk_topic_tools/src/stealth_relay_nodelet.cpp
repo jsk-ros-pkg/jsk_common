@@ -69,7 +69,7 @@ namespace jsk_topic_tools
 
     srv_ = boost::make_shared<dynamic_reconfigure::Server<Config> >(*pnh_);
     dynamic_reconfigure::Server<Config>::CallbackType f =
-      boost::bind(&StealthRelay::configCallback, this, _1, _2);
+      [this](auto& config, auto level){ configCallback(config, level); };
     srv_->setCallback(f);
 
     /* To advertise output topic as the same type of input topic,

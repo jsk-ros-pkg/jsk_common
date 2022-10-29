@@ -63,9 +63,7 @@ namespace jsk_topic_tools
 
     diagnostic_updater_.reset(new TimeredDiagnosticUpdater(pnh_, ros::Duration(1.0)));
     diagnostic_updater_->setHardwareID(getName());
-    diagnostic_updater_->add(getName(),
-                             boost::bind(&HzMeasure::updateDiagnostic,
-                                         this, _1));
+    diagnostic_updater_->add(getName(), [this](auto& stat){ updateDiagnostic(stat); });
     diagnostic_updater_->start();
 
     hz_pub_ = pnh_.advertise<std_msgs::Float32>("output", 1);

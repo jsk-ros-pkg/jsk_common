@@ -103,8 +103,8 @@ public:
       private_ns_.param("spindle_frame", spindle_frame_, std::string("multisense/spindle"));
       private_ns_.param("motor_frame", motor_frame_, std::string("multisense/motor"));
       timer_ = private_ns_.createTimer(
-        ros::Duration(1.0 / rate_), boost::bind(
-          &SpinLaserSnapshotter::timerCallback, this, _1));
+        ros::Duration(1.0 / rate_),
+        [this](auto& event){ timerCallback(event); });
     }
   }
 

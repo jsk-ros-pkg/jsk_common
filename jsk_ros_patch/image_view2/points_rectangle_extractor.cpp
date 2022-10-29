@@ -43,11 +43,11 @@ public:
 
     sync_a_polygon_ = boost::make_shared < message_filters::Synchronizer< PolygonApproxSyncPolicy > > (queue_size);
     sync_a_polygon_->connectInput (points_sub_, rect_sub_);
-    sync_a_polygon_->registerCallback (boost::bind (&PointsRectExtractor::callback_polygon, this, _1, _2));
+    sync_a_polygon_->registerCallback (boost::bind (&PointsRectExtractor::callback_polygon, this, boost::placeholders::_1, boost::placeholders::_2));
 
     sync_a_point_ = boost::make_shared < message_filters::Synchronizer< PointApproxSyncPolicy > > (queue_size);
     sync_a_point_->connectInput (points_sub_, point_sub_);
-    sync_a_point_->registerCallback (boost::bind (&PointsRectExtractor::callback_point, this, _1, _2));
+    sync_a_point_->registerCallback (boost::bind (&PointsRectExtractor::callback_point, this, boost::placeholders::_1, boost::placeholders::_2));
 
     pub_ = pnode_.advertise< sensor_msgs::PointCloud2 > ("output", 1);
   }
