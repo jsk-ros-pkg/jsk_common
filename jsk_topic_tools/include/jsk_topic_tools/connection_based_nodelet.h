@@ -86,7 +86,7 @@ namespace jsk_topic_tools
     virtual void onInitPostProcess();
     
     /** @brief
-     * callback function which is called when new subscriber come
+     * callback function which is called when new subscriber connects or disconnects
      */
     virtual void connectionCallback(const ros::SingleSubscriberPublisher& pub);
 
