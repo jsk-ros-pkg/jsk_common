@@ -427,6 +427,6 @@ void SynchronizedThrottle::inputCallback(
 
 } // jsk_topic_tools
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 typedef jsk_topic_tools::SynchronizedThrottle SynchronizedThrottle;
 PLUGINLIB_EXPORT_CLASS(SynchronizedThrottle, nodelet::Nodelet)

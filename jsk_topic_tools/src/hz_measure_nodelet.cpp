@@ -34,7 +34,7 @@
 
 #include <limits>
 #include <boost/format.hpp>
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include "jsk_topic_tools/hz_measure_nodelet.h"
 
 #include "std_msgs/Float32.h"
