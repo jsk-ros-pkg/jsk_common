@@ -194,7 +194,7 @@ namespace jsk_topic_tools
   {
     if (!advertised_) {         // first time
       ros::SubscriberStatusCallback connect_cb
-        = boost::bind(&MUX::connectCb, this, _1);
+        = [this](auto& pub){ connectCb(pub); };
       ros::AdvertiseOptions opts("output", 1,
                                  msg->getMD5Sum(),
                                  msg->getDataType(),

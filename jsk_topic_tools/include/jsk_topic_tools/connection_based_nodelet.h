@@ -192,9 +192,9 @@ namespace jsk_topic_tools
     {
       boost::mutex::scoped_lock lock(connection_mutex_);
       ros::SubscriberStatusCallback connect_cb
-        = boost::bind(&ConnectionBasedNodelet::connectionCallback, this, _1);
+        = [this](auto& pub){ connectionCallback(pub); };
       ros::SubscriberStatusCallback disconnect_cb
-        = boost::bind(&ConnectionBasedNodelet::connectionCallback, this, _1);
+        = [this](auto& pub){ connectionCallback(pub); };
       ros::Publisher ret = nh.advertise<T>(topic, queue_size,
                                            connect_cb,
                                            disconnect_cb,
@@ -254,11 +254,9 @@ namespace jsk_topic_tools
     {
       boost::mutex::scoped_lock lock(connection_mutex_);
       image_transport::SubscriberStatusCallback connect_cb
-        = boost::bind(&ConnectionBasedNodelet::imageConnectionCallback,
-                      this, _1);
+        = [this](auto& pub){ imageConnectionCallback(pub); };
       image_transport::SubscriberStatusCallback disconnect_cb
-        = boost::bind(&ConnectionBasedNodelet::imageConnectionCallback,
-                      this, _1);
+        = [this](auto& pub){ imageConnectionCallback(pub); };
       image_transport::Publisher pub = image_transport::ImageTransport(nh).advertise(
         topic, 1,
         connect_cb,
@@ -318,17 +316,13 @@ namespace jsk_topic_tools
     {
       boost::mutex::scoped_lock lock(connection_mutex_);
       image_transport::SubscriberStatusCallback connect_cb
-        = boost::bind(&ConnectionBasedNodelet::cameraConnectionCallback,
-                      this, _1);
+        = [this](auto& pub){ cameraConnectionCallback(pub); };
       image_transport::SubscriberStatusCallback disconnect_cb
-        = boost::bind(&ConnectionBasedNodelet::cameraConnectionCallback,
-                      this, _1);
+        = [this](auto& pub){ cameraConnectionCallback(pub); };
       ros::SubscriberStatusCallback info_connect_cb
-        = boost::bind(&ConnectionBasedNodelet::cameraInfoConnectionCallback,
-                      this, _1);
+        = [this](auto& pub){ cameraInfoConnectionCallback(pub); };
       ros::SubscriberStatusCallback info_disconnect_cb
-        = boost::bind(&ConnectionBasedNodelet::cameraInfoConnectionCallback,
-                      this, _1);
+        = [this](auto& pub){ cameraInfoConnectionCallback(pub); };
       image_transport::CameraPublisher
         pub = image_transport::ImageTransport(nh).advertiseCamera(
           topic, 1,

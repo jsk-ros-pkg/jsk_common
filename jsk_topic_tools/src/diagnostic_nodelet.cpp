@@ -56,10 +56,7 @@ namespace jsk_topic_tools
     diagnostic_updater_->setHardwareID(getName());
     diagnostic_updater_->add(
       getName(),
-      boost::bind(
-        &DiagnosticNodelet::updateDiagnostic,
-        this,
-        _1));
+      [this](auto& stat){ updateDiagnostic(stat); });
 
     bool use_warn;
     nh_->param("/diagnostic_nodelet/use_warn", use_warn, false);
