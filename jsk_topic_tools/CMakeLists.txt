@@ -2,6 +2,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(jsk_topic_tools)
 
+add_compile_options(-std=c++11)
+
 # Use ccache if installed to make it fast to generate object files
 if (CMAKE_VERSION VERSION_LESS 3.4)
   find_program(CCACHE_FOUND ccache)
@@ -52,6 +54,7 @@ add_service_files(
   FILES List.srv Update.srv ChangeTopic.srv PassthroughDuration.srv
 )
 generate_dynamic_reconfigure_options(
+  cfg/ConstantRateThrottle.cfg
   cfg/LightweightThrottle.cfg
   cfg/StealthRelay.cfg
   cfg/SynchronizedThrottle.cfg
@@ -114,6 +117,8 @@ macro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_n
 endmacro(jsk_topic_tools_nodelet _nodelet_cpp _nodelet_class _single_nodelet_exec_name)
 
 # nodelet shared object
+jsk_topic_tools_nodelet(src/constant_rate_throttle_nodelet.cpp
+  "jsk_topic_tools/ConstantRateThrottle" "constant_rate_throttle")
 jsk_topic_tools_nodelet(src/lightweight_throttle_nodelet.cpp
   "jsk_topic_tools/LightweightThrottle" "lightweight_throttle")
 jsk_topic_tools_nodelet(src/mux_nodelet.cpp
@@ -174,6 +179,7 @@ if (CATKIN_ENABLE_TESTING)
   # jsk_topic_tools_add_rostest(test/test_topic_buffer_fixed_rate.launch)
   # jsk_topic_tools_add_rostest(test/test_topic_buffer_fixed_rate_and_update_rate.launch)
   # jsk_topic_tools_add_rostest(test/test_topic_buffer_update_rate.launch)
+  jsk_topic_tools_add_rostest(test/test_constant_rate_throttle.test)
   jsk_topic_tools_add_rostest(test/test_lightweight_throttle.test)
   jsk_topic_tools_add_rostest(test/test_topic_compare.test)
   jsk_topic_tools_add_rostest(test/test_hz_measure.test)
