@@ -66,6 +66,15 @@ Parameters
     input1_condition: m.header.frame_id in ['base', 'base_link']
 
 
+  Note that this condition is evaluated each time a topic is published. For example, a condition that checks whether a certain topic has arrived within one second look like this.
+
+  .. code-block:: bash
+
+    input1_condition: "(rospy.Time.now() - t).to_sec() &lt; 1.0"
+
+  Use escape sequence when using the following symbols <(``&lt;``), >(``&gt;``), &(``&amp;``), '(``&apos;``) and "(``&quot;``) in launch file.
+
+
 * ``~rate`` (Int, Default: ``100``)
 
   Publishing rate [Hz].
