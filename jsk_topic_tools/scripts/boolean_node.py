@@ -78,18 +78,20 @@ class BooleanNode(object):
                 lambda msg, tn=topic_name: self.callback(tn, msg))
             self.subs[topic_name] = deserialized_sub
             return
-        filter_fn = self.filter_fns[topic_name]
-        result = filter_fn(topic_name, msg, rospy.Time.now())
-        self.data[topic_name] = result
+        self.data[topic_name] = topic_name, msg, rospy.Time.now()
 
     def timer_cb(self, timer):
         if len(self.data) != self.n_input:
             return
+        eval_values = []
+        for topic_name, msg, received_time in self.data.values():
+            filter_fn = self.filter_fns[topic_name]
+            eval_values.append(filter_fn(topic_name, msg, received_time))
         for op_str, pub in self.pubs.items():
             if op_str == 'not':
-                flag = not list(self.data.values())[0]
+                flag = not list(eval_values)[0]
             else:
-                flag = reduce(OPERATORS[op_str], self.data.values())
+                flag = reduce(OPERATORS[op_str], eval_values)
             pub.publish(std_msgs.msg.Bool(flag))
 
 
