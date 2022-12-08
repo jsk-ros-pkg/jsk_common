@@ -9,6 +9,9 @@ import sys
 import rospy
 import std_msgs.msg
 
+from jsk_topic_tools.eval_utils import expr_eval
+from jsk_topic_tools.eval_utils import import_modules
+
 
 OPERATORS = {
     'or': lambda a, b: a or b,
@@ -16,12 +19,6 @@ OPERATORS = {
     'xor': xor,
     'not': None,
 }
-
-
-def expr_eval(expr):
-    def eval_fn(topic, m, t):
-        return eval(expr)
-    return eval_fn
 
 
 class BooleanNode(object):
@@ -32,6 +29,10 @@ class BooleanNode(object):
         if self.n_input <= 0:
             rospy.logerr('~number_of_input should be greater than 0.')
             sys.exit(1)
+
+        import_list = rospy.get_param('~import', [])
+        import_list += ['rospy', 'numpy']
+        self.modules = import_modules(import_list)
 
         self.pubs = {}
         if self.n_input == 1:
@@ -52,7 +53,7 @@ class BooleanNode(object):
             condition = rospy.get_param(
                 '{}_condition'.format(topic_name), 'm.data == True')
             topic_name = rospy.resolve_name(topic_name)
-            self.filter_fns[topic_name] = expr_eval(condition)
+            self.filter_fns[topic_name] = expr_eval(condition, self.modules)
             sub = rospy.Subscriber(
                 topic_name,
                 rospy.AnyMsg,

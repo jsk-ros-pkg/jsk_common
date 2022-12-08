@@ -48,4 +48,30 @@
     </rosparam>
   </node>
 
+  <!-- check topic (topic_name) Python expression -->
+  <node name="boolean_node_to_check_topic_expression"
+        pkg="jsk_topic_tools" type="boolean_node.py"
+        clear_params="true" >
+    <remap from="~input1" to="/image1" />
+    <remap from="~input2" to="/chatter" />
+    <rosparam>
+      number_of_input: 2
+      input1_condition: "'base' in m.header.frame_id"
+      input2_condition: "topic == '/chatter'"
+    </rosparam>
+  </node>
+
+  <!-- check t (time) Python expression -->
+  <node name="boolean_node_to_check_t_expression"
+        pkg="jsk_topic_tools" type="boolean_node.py"
+        clear_params="true" >
+    <remap from="~input1" to="/image1" />
+    <remap from="~input2" to="/chatter" />
+    <rosparam>
+      number_of_input: 2
+      input1_condition: "'base' in m.header.frame_id"
+      input2_condition: "(rospy.Time.now() - t).to_sec() &lt; 10.0"
+    </rosparam>
+  </node>
+
 </launch>

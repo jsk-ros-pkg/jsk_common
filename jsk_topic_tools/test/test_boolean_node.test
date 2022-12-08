@@ -15,6 +15,12 @@
       timeout_2: 10
       topic_3: /robot_is_not_speaking
       timeout_3: 10
+      topic_4: /boolean_node_to_check_topic_expression/output/and
+      timeout_4: 10
+      condition_4: "m.data is True"
+      topic_5: /boolean_node_to_check_t_expression/output/and
+      timeout_5: 10
+      condition_5: "m.data is True"
     </rosparam>
   </test>
 
