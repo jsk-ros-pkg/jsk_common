@@ -117,6 +117,7 @@ def download(client, url, output, quiet=False, chmod=True, timeout=30):
     else:
         print('[%s] Failed downloading. exit_status: %d' % (output, status))
 
+
 def check_md5sum(path, md5):
     # validate md5 string length if it is specified
     if md5 and len(md5) != 32:
