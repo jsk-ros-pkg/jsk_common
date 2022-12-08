@@ -52,12 +52,14 @@ namespace jsk_topic_tools
     virtual void onInit();
   protected:
     int average_message_num_;
-    double hz_;
+    double measure_time_;
     double warning_hz_;
     std::queue<ros::Time> buffer_;
     ros::Publisher hz_pub_;
     ros::Subscriber sub_;
     ros::NodeHandle pnh_;
+    virtual void popBufferQueue();
+    virtual double calculateHz();
     virtual void inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg);
 
     /** @brief

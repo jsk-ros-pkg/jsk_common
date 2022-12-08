@@ -44,9 +44,24 @@ namespace jsk_topic_tools
   void HzMeasure::onInit()
   {
     pnh_ = getPrivateNodeHandle();
-    hz_ = std::numeric_limits<double>::max();
-    if (!pnh_.getParam("message_num", average_message_num_)) {
-      average_message_num_ = 10; // defaults to 10
+    if (pnh_.getParam("message_num", average_message_num_) &&
+        pnh_.getParam("measure_time", measure_time_)) {
+      NODELET_WARN("Both ~measure_time and ~message_num are given. Prioritize ~measure_time.");
+      average_message_num_ = -1.0;
+    }
+    else if (pnh_.getParam("measure_time", measure_time_)) {
+      average_message_num_ = -1.0;  // disable average_message_num_
+      if (measure_time_ < 0.0) {
+        NODELET_ERROR("~measure_time should be greater than 0.0. Set 1.0 as default.");
+        measure_time_ = 1.0;
+      }
+    }
+    else if (pnh_.getParam("message_num", average_message_num_)) {
+      measure_time_ = -1.0;  // diable measure_time_
+      if (average_message_num_ < 0) {
+        NODELET_ERROR("~message_num should be greater than 0. Set 10 as default.");
+        average_message_num_ = 10;
+      }
     }
     if (!pnh_.getParam("warning_hz", warning_hz_)) {
       warning_hz_ = -1;
@@ -73,21 +88,47 @@ namespace jsk_topic_tools
                                                      &HzMeasure::inputCallback, this);
   }
 
+  void HzMeasure::popBufferQueue() {
+    ros::Time now = ros::Time::now();
+    while (!buffer_.empty()
+           && ((measure_time_ > 0 && measure_time_ < (now - buffer_.front()).toSec())
+               || (average_message_num_ > 0 && average_message_num_ < buffer_.size()))) {
+      buffer_.pop();
+    }
+  }
+
+  double HzMeasure::calculateHz() {
+    double hz = -1.0;
+    popBufferQueue();
+    if (average_message_num_ > 0) {
+      if (buffer_.size() == average_message_num_) {
+        ros::Time now = ros::Time::now();
+        ros::Time oldest = buffer_.front();
+        double whole_time = (now - oldest).toSec();
+        double average_time = whole_time / buffer_.size();
+        hz = 1.0 / average_time;
+      }
+    } else {
+      double time_width = measure_time_;
+      if (buffer_.size() > 0) {
+        ros::Time now = ros::Time::now();
+        time_width = std::min(measure_time_, std::max((now - buffer_.front()).toSec(), 0.0001));
+      }
+      hz = std::max(int(buffer_.size() - 1), 0) / time_width;
+    }
+    return hz;
+  }
+
   void HzMeasure::inputCallback(const boost::shared_ptr<topic_tools::ShapeShifter const>& msg)
   {
     ros::Time now = ros::Time::now();
     buffer_.push(now);
-    if (buffer_.size() > average_message_num_) {
-      ros::Time oldest = buffer_.front();
-      double whole_time = (now - oldest).toSec();
-      double average_time = whole_time / (buffer_.size() - 1);
+    double hz = calculateHz();
+    if (hz > 0.0) {
       std_msgs::Float32 output;
-      hz_ = 1.0 / average_time;
-      output.data = 1.0 / average_time;
+      output.data = hz;
       hz_pub_.publish(output);
-      buffer_.pop();
-    }
-    else {
+    } else {
       NODELET_DEBUG("there is no enough messages yet");
     }
   }
@@ -95,14 +136,21 @@ namespace jsk_topic_tools
   void HzMeasure::updateDiagnostic(
     diagnostic_updater::DiagnosticStatusWrapper &stat)
   {
-    if (hz_ > warning_hz_) {
-      stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
-                   (boost::format("%s is running at %.2f hz.")
-                    % getName() % hz_).str());
+    double hz = calculateHz();
+    if (hz > 0.0) {
+      if (hz > warning_hz_) {
+        stat.summary(diagnostic_msgs::DiagnosticStatus::OK,
+                     (boost::format("%s is running at %.2f hz.")
+                      % getName() % hz).str());
+      } else {
+        stat.summary(diagnostic_error_level_,
+                     (boost::format("%s is running at %.2f hz.")
+                      % getName() % hz).str());
+      }
     } else {
       stat.summary(diagnostic_error_level_,
-                   (boost::format("%s is running at %.2f hz.")
-                    % getName() % hz_).str());
+                   (boost::format("%s is waiting input topic.")
+                    % getName()).str());
     }
   }
 }
