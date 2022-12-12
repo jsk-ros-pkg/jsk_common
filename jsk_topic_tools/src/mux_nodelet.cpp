@@ -194,7 +194,11 @@ namespace jsk_topic_tools
   {
     if (!advertised_) {         // first time
       ros::SubscriberStatusCallback connect_cb
+#if __cplusplus < 201100L
+        = boost::bind(&MUX::connectCb, this, _1);
+#else
         = [this](auto& pub){ connectCb(pub); };
+#endif
       ros::AdvertiseOptions opts("output", 1,
                                  msg->getMD5Sum(),
                                  msg->getDataType(),

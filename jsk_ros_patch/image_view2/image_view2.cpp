@@ -116,7 +116,11 @@ namespace image_view2{
 
     srv_ = boost::make_shared <dynamic_reconfigure::Server<Config> >(local_nh);
     dynamic_reconfigure::Server<Config>::CallbackType f =
+#if __cplusplus < 201100L
+      boost::bind(&ImageView2::config_callback, this, _1, _2);
+#else
       [this](auto& config, auto level){ config_callback(config, level); };
+#endif
     srv_->setCallback(f);
   }
 
