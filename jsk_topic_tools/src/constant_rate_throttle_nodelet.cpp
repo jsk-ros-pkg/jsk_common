@@ -11,7 +11,7 @@ namespace jsk_topic_tools
     msg_cached_ = boost::shared_ptr<topic_tools::ShapeShifter>(new topic_tools::ShapeShifter());
 
     srv_ = boost::make_shared<dynamic_reconfigure::Server<Config> >(pnh_);
-    dynamic_reconfigure::Server<Config>::CallbackType f = boost::bind(&ConstantRateThrottle::configCallback, this, _1, _2);
+    dynamic_reconfigure::Server<Config>::CallbackType f = [this](auto& config, auto level) {configCallback(config, level); };
     srv_->setCallback(f);
 
     sub_.reset(new ros::Subscriber(
@@ -62,7 +62,7 @@ namespace jsk_topic_tools
     boost::mutex::scoped_lock lock(mutex_);
     if (!advertised_) {
         sub_->shutdown();
-        ros::SubscriberStatusCallback connect_cb = boost::bind(&ConstantRateThrottle::connectionCallback, this, _1);
+        ros::SubscriberStatusCallback connect_cb = [this](auto& pub){ connectionCallback(pub); };
         ros::AdvertiseOptions opts("output", 1,
                                    msg->getMD5Sum(),
                                    msg->getDataType(),
