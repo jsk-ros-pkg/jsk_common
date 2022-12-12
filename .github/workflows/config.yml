@@ -20,7 +20,7 @@ jobs:
             ROS_PARALLEL_TEST_JOBS: "-j8"
             # latest catkin_virtualenv with pip==21.0.1 is incompatible with python 2.x
             # https://github.com/jsk-ros-pkg/jsk_3rdparty/pull/237
-            BEFORE_SCRIPT : "sudo pip install virtualenv==15.1.0"
+            BEFORE_SCRIPT : "sudo pip install virtualenv==15.1.0 setuptools==44.1.1"
           - ROS_DISTRO: kinetic
             CONTAINER: ubuntu:16.04
             ROS_PARALLEL_TEST_JOBS: "-j8"
