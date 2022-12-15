@@ -39,6 +39,27 @@
 
 #include <jsk_topic_tools/synchronized_throttle.h>
 
+#if BOOST_VERSION < 106000  // since 1.60.0, boost uses placeholders namesapce for _1,_2...
+#ifndef BOOST_PLAEHOLDERS
+#define BOOST_PLAEHOLDERS
+namespace boost
+{
+  namespace placeholders
+  {
+    extern boost::arg<1> _1;
+    extern boost::arg<2> _2;
+    extern boost::arg<3> _3;
+    extern boost::arg<4> _4;
+    extern boost::arg<5> _5;
+    extern boost::arg<6> _6;
+    extern boost::arg<7> _7;
+    extern boost::arg<8> _8;
+    extern boost::arg<9> _9;
+  }  // namespace placeholders
+}  // namespace boost
+#endif  // BOOST_PLAEHOLDERS
+#endif  // BOOST_VERSION < 106000
+
 namespace jsk_topic_tools
 {
 
@@ -66,7 +87,11 @@ void SynchronizedThrottle::onInit()
 
   srv_ = boost::make_shared<dynamic_reconfigure::Server<Config> >(*pnh_);
   dynamic_reconfigure::Server<Config>::CallbackType f =
+#if __cplusplus < 201100L
       boost::bind(&SynchronizedThrottle::configCallback, this, _1, _2);
+#else
+      [this](auto& config, auto level){ configCallback(config, level); };
+#endif
   srv_->setCallback(f);
 
   // message_filter supports 2~8 input topics
@@ -89,7 +114,12 @@ void SynchronizedThrottle::onInit()
   {
     check_sub_[i] = pnh_->subscribe<topic_tools::ShapeShifterStamped>(
         input_topics_[i], 1,
-        boost::bind(&SynchronizedThrottle::checkCallback, this, _1, i));
+#if __cplusplus < 201100L
+	boost::bind(&SynchronizedThrottle::checkCallback, this, _1, i)
+#else
+        [this,i](auto& msg){ checkCallback(msg, i); }
+#endif
+        );
     sub_[i].reset(new message_filters::Subscriber<topic_tools::ShapeShifterStamped>());
   }
 
@@ -178,7 +208,12 @@ void SynchronizedThrottle::subscribe()
   if (n_topics < MAX_SYNC_NUM)
   {
     sub_[0]->registerCallback(
-        boost::bind(&SynchronizedThrottle::fillNullMessage, this, _1));
+#if __cplusplus < 201100L
+        boost::bind(&SynchronizedThrottle::fillNullMessage, this, _1)
+#else
+        [this](auto& msg){ fillNullMessage(msg); }
+#endif
+        );
   }
 
   if (approximate_sync_)
@@ -220,8 +255,16 @@ void SynchronizedThrottle::subscribe()
         return;
     }
     async_->registerCallback(
-        boost::bind(&SynchronizedThrottle::inputCallback, this,
-                    _1, _2, _3, _4, _5, _6, _7, _8));
+         boost::bind(&SynchronizedThrottle::inputCallback, this,
+                     boost::placeholders::_1,
+                     boost::placeholders::_2,
+                     boost::placeholders::_3,
+                     boost::placeholders::_4,
+                     boost::placeholders::_5,
+                     boost::placeholders::_6,
+                     boost::placeholders::_7,
+                     boost::placeholders::_8));
+
   } else {
     sync_ = boost::make_shared<message_filters::Synchronizer<SyncPolicy> >(queue_size_);
 
@@ -260,8 +303,15 @@ void SynchronizedThrottle::subscribe()
         return;
     }
     sync_->registerCallback(
-        boost::bind(&SynchronizedThrottle::inputCallback, this,
-                    _1, _2, _3, _4, _5, _6, _7, _8));
+         boost::bind(&SynchronizedThrottle::inputCallback, this,
+                     boost::placeholders::_1,
+                     boost::placeholders::_2,
+                     boost::placeholders::_3,
+                     boost::placeholders::_4,
+                     boost::placeholders::_5,
+                     boost::placeholders::_6,
+                     boost::placeholders::_7,
+                     boost::placeholders::_8));
   }
 }
 
@@ -427,6 +477,6 @@ void SynchronizedThrottle::inputCallback(
 
 } // jsk_topic_tools
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 typedef jsk_topic_tools::SynchronizedThrottle SynchronizedThrottle;
 PLUGINLIB_EXPORT_CLASS(SynchronizedThrottle, nodelet::Nodelet)

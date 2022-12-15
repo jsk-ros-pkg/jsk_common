@@ -200,8 +200,13 @@ int main(int argc, char **argv)
         pub_info->advertised = false;
         pub_info->topic_with_header = false;
         ROS_INFO_STREAM("subscribe " << pub_info->topic_name+string("_update"));
-        pub_info->sub = new ros::Subscriber(n.subscribe<ShapeShifter>(pub_info->topic_name+string("_update"), 10, boost::bind(in_cb, _1, pub_info)));
-
+        pub_info->sub = new ros::Subscriber(n.subscribe<ShapeShifter>(pub_info->topic_name+string("_update"), 10,
+#if __cplusplus < 201100L
+            boost::bind(in_cb, _1, pub_info)
+#else
+            [pub_info](auto& msg){ in_cb(msg, pub_info); }
+#endif
+            ));
         g_pubs.push_back(pub_info);
     }
 
