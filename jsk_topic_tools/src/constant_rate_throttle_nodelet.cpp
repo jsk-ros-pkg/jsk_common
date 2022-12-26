@@ -128,6 +128,6 @@ namespace jsk_topic_tools
 }
 
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 typedef jsk_topic_tools::ConstantRateThrottle ConstantRateThrottle;
 PLUGINLIB_EXPORT_CLASS(ConstantRateThrottle, nodelet::Nodelet)
