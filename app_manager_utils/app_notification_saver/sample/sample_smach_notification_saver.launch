@@ -1,0 +1,9 @@
+<launch>
+  <node name="rosbag_play" pkg="rosbag" type="play"
+        args="$(find app_notification_saver)/data/smach.bag --clock"
+        output="screen" required="true" />
+
+  <include file="$(find app_notification_saver)/launch/smach_notification_saver.launch" >
+    <arg name="smach_status_topic" value="/server_name/smach/container_status" />
+  </include>
+</launch>
