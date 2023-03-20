@@ -45,6 +45,11 @@ Publishing Topics
 Parameters
 ----------
 
+- ``~import`` (``List[str]``, Default: ``[]``, Optional)
+
+  List of Python modules to import and use in ``~input{%d}_condition`` expression.
+  For commodity rospy and numpy modules are imported by default.
+
 
 * ``~input{%d}_condition`` (String, Default: ``m.data``)
 
@@ -64,6 +69,21 @@ Parameters
   .. code-block:: bash
 
     input1_condition: m.header.frame_id in ['base', 'base_link']
+
+  The modules given to ``~import`` can also be used.
+
+  .. code-block:: bash
+
+    condition_0: 'numpy.linalg.norm([m.wrench.force.x, m.wrench.force.y, m.wrench.force.z]) &lt; 10.0'
+
+
+  Note that this condition is evaluated each time a topic is published. For example, a condition that checks whether a certain topic has arrived within one second look like this.
+
+  .. code-block:: bash
+
+    input1_condition: "(rospy.Time.now() - t).to_sec() &lt; 1.0"
+
+  Use escape sequence when using the following symbols <(``&lt;``), >(``&gt;``), &(``&amp;``), '(``&apos;``) and "(``&quot;``) in launch file.
 
 
 * ``~rate`` (Int, Default: ``100``)

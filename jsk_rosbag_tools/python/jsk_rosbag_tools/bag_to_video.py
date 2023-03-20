@@ -110,10 +110,15 @@ def bag_to_video(input_bagfile,
 
         # remove 0 time stamp
         stamp = 0.0
-        while stamp == 0.0:
-            stamp, _, img, _ = next(images)
-            if show_progress_bar:
-                progress.update(1)
+        try:
+            while stamp == 0.0:
+                stamp, _, img, _ = next(images)
+                if show_progress_bar:
+                    progress.update(1)
+        except StopIteration:
+            print('[bag_to_video] No timestamp found in all images')
+            print('[bag_to_video] Skipping {}'.format(image_topic))
+            break
         start_stamp = stamp
         width, height = img.shape[1], img.shape[0]
 

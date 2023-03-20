@@ -92,4 +92,22 @@
     </test>
   </group>
 
+  <!-- check import modules -->
+  <node name="publish_int"
+        pkg="rostopic" type="rostopic"
+        args="pub int std_msgs/Int64 'data: 10' -r 1"
+        respawn="true">
+  </node>
+
+  <test test-name="test_topic_published_for_import_modules"
+        name="test_topic_published_for_import_modules"
+        pkg="jsk_tools" type="test_topic_published.py">
+    <rosparam>
+      topic_0: int
+      timeout_0: 10
+      condition_0: "numpy.sum(numpy.arange(m.data)) == 45"
+      import: [numpy,]
+    </rosparam>
+  </test>
+
 </launch>

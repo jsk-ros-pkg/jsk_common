@@ -13,6 +13,27 @@
 #include <geometry_msgs/PointStamped.h>
 #include <geometry_msgs/PolygonStamped.h>
 
+#if BOOST_VERSION < 106000  // since 1.60.0, boost uses placeholders namesapce for _1,_2...
+#ifndef BOOST_PLAEHOLDERS
+#define BOOST_PLAEHOLDERS
+namespace boost
+{
+  namespace placeholders
+  {
+    extern boost::arg<1> _1;
+    extern boost::arg<2> _2;
+    extern boost::arg<3> _3;
+    extern boost::arg<4> _4;
+    extern boost::arg<5> _5;
+    extern boost::arg<6> _6;
+    extern boost::arg<7> _7;
+    extern boost::arg<8> _8;
+    extern boost::arg<9> _9;
+  }  // namespace placeholders
+}  // namespace boost
+#endif  // BOOST_PLAEHOLDERS
+#endif  // BOOST_VERSION < 106000
+
 class PointsRectExtractor
 {
   typedef message_filters::sync_policies::ApproximateTime< sensor_msgs::PointCloud2,
@@ -43,11 +64,11 @@ public:
 
     sync_a_polygon_ = boost::make_shared < message_filters::Synchronizer< PolygonApproxSyncPolicy > > (queue_size);
     sync_a_polygon_->connectInput (points_sub_, rect_sub_);
-    sync_a_polygon_->registerCallback (boost::bind (&PointsRectExtractor::callback_polygon, this, _1, _2));
+    sync_a_polygon_->registerCallback (boost::bind (&PointsRectExtractor::callback_polygon, this, boost::placeholders::_1, boost::placeholders::_2));
 
     sync_a_point_ = boost::make_shared < message_filters::Synchronizer< PointApproxSyncPolicy > > (queue_size);
     sync_a_point_->connectInput (points_sub_, point_sub_);
-    sync_a_point_->registerCallback (boost::bind (&PointsRectExtractor::callback_point, this, _1, _2));
+    sync_a_point_->registerCallback (boost::bind (&PointsRectExtractor::callback_point, this, boost::placeholders::_1, boost::placeholders::_2));
 
     pub_ = pnode_.advertise< sensor_msgs::PointCloud2 > ("output", 1);
   }

@@ -1,0 +1,31 @@
+<launch>
+
+  <node pkg="rostopic" type="rostopic" name="input"
+        args="pub /input sensor_msgs/Image 'data: [1, 2, 3]' -r 10">
+  </node>
+
+  <node
+      pkg="nodelet"
+      type="nodelet"
+      name="constant_rate_throttle"
+      args="standalone jsk_topic_tools/ConstantRateThrottle"
+      >
+      <rosparam>
+          update_rate: 7.0
+      </rosparam>
+      <remap from="~input" to="/input" />
+  </node>
+
+  <node
+      pkg="nodelet"
+      type="nodelet"
+      name="lightweight_throttle"
+      args="standalone jsk_topic_tools/LightweightThrottle"
+      >
+      <rosparam>
+          update_rate: 7.0
+      </rosparam>
+      <remap from="~input" to="/input" />
+  </node>
+
+</launch>

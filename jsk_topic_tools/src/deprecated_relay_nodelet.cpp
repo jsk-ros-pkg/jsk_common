@@ -33,7 +33,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include "jsk_topic_tools/deprecated_relay.h"
 #include "jsk_topic_tools/log_utils.h"
 namespace jsk_topic_tools
