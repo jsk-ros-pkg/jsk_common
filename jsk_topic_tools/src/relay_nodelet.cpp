@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include "jsk_topic_tools/relay_nodelet.h"
 
 namespace jsk_topic_tools
@@ -50,8 +50,12 @@ namespace jsk_topic_tools
     diagnostic_updater_->setHardwareID(getName());
     diagnostic_updater_->add(
       getName() + "::Relay",
+#if __cplusplus < 201100L
       boost::bind(
         &Relay::updateDiagnostic, this, _1));
+#else
+      [this](auto& stat){ updateDiagnostic(stat); });
+#endif
     double vital_rate;
     pnh_.param("vital_rate", vital_rate, 1.0);
     vital_checker_.reset(

@@ -26,9 +26,13 @@ If target `hz` is smaller than `~warning_hz`, this node outputs `diagnostics` at
     Diagnostic messages.
 
 ## Parameter
-- `~message_num` (`Int`, default: `10`):
+- `~measure_time` (`Double`, default: `1.0`):
 
-    Calculate `hz` from the arrival times of `~message_num` topics.
+    Calculate `hz` from the number of topics received in time in `~measure_time`.
+
+- `~message_num` (`Int`, default: `-1`):
+
+    Calculate `hz` from the arrival times of `~message_num` topics. Note that if this value is less than 0 or not set, `~measure_time` will be used.
 
 - `~warning_hz` (`Double`, default: `-1`):
 

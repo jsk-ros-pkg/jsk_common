@@ -18,6 +18,14 @@
       as std_msgs/Float32.
     </description>
   </class>
+  <class name="jsk_topic_tools/ConstantRateThrottle" type="ConstantRateThrottle"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      constant rate throttle nodelet.
+      Publish ~output from ~input with the fixed rate specified by
+      ~update_rate parameter.
+    </description>
+  </class>
   <class name="jsk_topic_tools/LightweightThrottle" type="LightweightThrottle"
          base_class_type="nodelet::Nodelet">
     <description>

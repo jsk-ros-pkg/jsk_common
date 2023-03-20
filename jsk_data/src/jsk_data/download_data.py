@@ -96,19 +96,26 @@ def decompress_rosbag(path, quiet=False, chmod=True):
     print('[%s] Finished decompressing the rosbag' % path)
 
 
-def download(client, url, output, quiet=False, chmod=True):
+def download(client, url, output, quiet=False, chmod=True, timeout=30):
     print('[%s] Downloading from %s' % (output, url))
-    cmd = '{client} {url} -O {output}'.format(client=client, url=url,
-                                              output=output)
+    if client == 'wget':
+        cmd = '{client} {url} -O {output} -T {timeout} --tries 1'.format(client=client, url=url,
+                                                                         output=output, timeout=timeout)
+    else:
+        cmd = '{client} {url} -O {output}'.format(client=client, url=url,
+                                                  output=output)
     if quiet:
         cmd += ' --quiet'
     try:
-        subprocess.call(shlex.split(cmd))
+        status = subprocess.call(shlex.split(cmd))
     finally:
         if chmod:
             if not is_file_writable(output):
                 os.chmod(output, 0o766)
-    print('[%s] Finished downloading' % output)
+    if status == 0:
+        print('[%s] Finished downloading' % output)
+    else:
+        print('[%s] Failed downloading. exit_status: %d' % (output, status))
 
 
 def check_md5sum(path, md5):

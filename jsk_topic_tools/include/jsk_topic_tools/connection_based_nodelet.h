@@ -86,7 +86,7 @@ namespace jsk_topic_tools
     virtual void onInitPostProcess();
     
     /** @brief
-     * callback function which is called when new subscriber come
+     * callback function which is called when new subscriber connects or disconnects
      */
     virtual void connectionCallback(const ros::SingleSubscriberPublisher& pub);
 
@@ -192,9 +192,17 @@ namespace jsk_topic_tools
     {
       boost::mutex::scoped_lock lock(connection_mutex_);
       ros::SubscriberStatusCallback connect_cb
+#if __cplusplus < 201100L
         = boost::bind(&ConnectionBasedNodelet::connectionCallback, this, _1);
+#else
+        = [this](auto& pub){ connectionCallback(pub); };
+#endif
       ros::SubscriberStatusCallback disconnect_cb
+#if __cplusplus < 201100L
         = boost::bind(&ConnectionBasedNodelet::connectionCallback, this, _1);
+#else
+        = [this](auto& pub){ connectionCallback(pub); };
+#endif
       ros::Publisher ret = nh.advertise<T>(topic, queue_size,
                                            connect_cb,
                                            disconnect_cb,
@@ -254,11 +262,19 @@ namespace jsk_topic_tools
     {
       boost::mutex::scoped_lock lock(connection_mutex_);
       image_transport::SubscriberStatusCallback connect_cb
+#if __cplusplus < 201100L
         = boost::bind(&ConnectionBasedNodelet::imageConnectionCallback,
                       this, _1);
+#else
+        = [this](auto& pub){ imageConnectionCallback(pub); };
+#endif
       image_transport::SubscriberStatusCallback disconnect_cb
+#if __cplusplus < 201100L
         = boost::bind(&ConnectionBasedNodelet::imageConnectionCallback,
                       this, _1);
+#else
+        = [this](auto& pub){ imageConnectionCallback(pub); };
+#endif
       image_transport::Publisher pub = image_transport::ImageTransport(nh).advertise(
         topic, 1,
         connect_cb,
@@ -318,17 +334,33 @@ namespace jsk_topic_tools
     {
       boost::mutex::scoped_lock lock(connection_mutex_);
       image_transport::SubscriberStatusCallback connect_cb
+#if __cplusplus < 201100L
         = boost::bind(&ConnectionBasedNodelet::cameraConnectionCallback,
                       this, _1);
+#else
+        = [this](auto& pub){ cameraConnectionCallback(pub); };
+#endif
       image_transport::SubscriberStatusCallback disconnect_cb
+#if __cplusplus < 201100L
         = boost::bind(&ConnectionBasedNodelet::cameraConnectionCallback,
                       this, _1);
+#else
+        = [this](auto& pub){ cameraConnectionCallback(pub); };
+#endif
       ros::SubscriberStatusCallback info_connect_cb
+#if __cplusplus < 201100L
         = boost::bind(&ConnectionBasedNodelet::cameraInfoConnectionCallback,
                       this, _1);
+#else
+        = [this](auto& pub){ cameraInfoConnectionCallback(pub); };
+#endif
       ros::SubscriberStatusCallback info_disconnect_cb
+#if __cplusplus < 201100L
         = boost::bind(&ConnectionBasedNodelet::cameraInfoConnectionCallback,
                       this, _1);
+#else
+        = [this](auto& pub){ cameraInfoConnectionCallback(pub); };
+#endif
       image_transport::CameraPublisher
         pub = image_transport::ImageTransport(nh).advertiseCamera(
           topic, 1,

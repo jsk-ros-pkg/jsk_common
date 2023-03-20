@@ -55,11 +55,16 @@ namespace jsk_topic_tools
       new TimeredDiagnosticUpdater(*pnh_, ros::Duration(1.0)));
     diagnostic_updater_->setHardwareID(getName());
     diagnostic_updater_->add(
-      getName() + "::" + name_,
+      getName(),
+#if __cplusplus < 201100L
       boost::bind(
         &DiagnosticNodelet::updateDiagnostic,
         this,
-        _1));
+        _1)
+#else
+      [this](auto& stat){ updateDiagnostic(stat); }
+#endif
+     );
 
     bool use_warn;
     nh_->param("/diagnostic_nodelet/use_warn", use_warn, false);
@@ -94,7 +99,7 @@ namespace jsk_topic_tools
       }
       else {
         jsk_topic_tools::addDiagnosticErrorSummary(
-          name_, vital_checker_, stat, diagnostic_error_level_);
+          getName(), vital_checker_, stat, diagnostic_error_level_);
       }
     }
     else {

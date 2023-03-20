@@ -20,7 +20,7 @@ jobs:
             ROS_PARALLEL_TEST_JOBS: "-j8"
             # latest catkin_virtualenv with pip==21.0.1 is incompatible with python 2.x
             # https://github.com/jsk-ros-pkg/jsk_3rdparty/pull/237
-            BEFORE_SCRIPT : "sudo pip install virtualenv==15.1.0"
+            BEFORE_SCRIPT : "sudo pip install virtualenv==15.1.0 setuptools==44.1.1"
           - ROS_DISTRO: kinetic
             CONTAINER: ubuntu:16.04
             ROS_PARALLEL_TEST_JOBS: "-j8"
@@ -56,10 +56,11 @@ jobs:
           fi
 
       - name: Chcekout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.0.2
 
       - name: Start X server
         run: |
+          if [[ "${{ matrix.CONTAINER }}" =~ "jskrobotics/ros-ubuntu:14.04" ]]; then exit 0; fi
           echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections || echo "failing on ros-ubuntu is OK" # set non interactive tzdata https://stackoverflow.com/questions/8671308/non-interactive-method-for-dpkg-reconfigure-tzdata
           sudo apt-get -y -qq install mesa-utils x11-xserver-utils xserver-xorg-video-dummy wget
           export DISPLAY=:0
@@ -68,6 +69,7 @@ jobs:
           sleep 3 # wait x server up
           export QT_X11_NO_MITSHM=1 # http://wiki.ros.org/docker/Tutorials/GUI
           xhost +local:root
+        shell: bash
 
       - name: Run jsk_travis
         uses: jsk-ros-pkg/jsk_travis@master
@@ -82,3 +84,77 @@ jobs:
           TEST_PKGS : ${{ matrix.TEST_PKGS }}
           BEFORE_SCRIPT : ${{ matrix.BEFORE_SCRIPT }}
           EXTRA_DEB : ${{ matrix.EXTRA_DEB }}
+
+
+  ubuntu:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - DISTRO: ubuntu:22.04
+
+    container: ${{ matrix.DISTRO }}
+
+    steps:
+      - name: Chcekout Source
+        uses: actions/checkout@v3.0.2
+
+      - name: Install Buildtools
+        run: |
+          set -x
+          echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+          apt update -q
+          apt install -y -q -qq catkin git curl build-essential libboost-all-dev python3-pip python3-venv python3-rosdep2
+          apt install -y -q -qq ros-desktop-dev rosbash
+          apt install -y -q -qq libself-test-dev libpcl-ros-dev
+          apt install -y -q -qq ros-core-dev ros-robot-dev
+          pip install vcstool
+          rosdep update
+
+      - name: Setup rosinstall_generator
+        run: |
+          set -x
+          # install rosinstall_geneartor with --depend-type buildtool build, see  https://github.com/ros-infrastructure/rosinstall_generator/pull/81
+          git clone https://github.com/k-okada/rosinstall_generator -b add_depend_type
+          cd rosinstall_generator
+          python3 ./setup.py install
+
+      - name: Setup Dependencies Workspace
+        run: |
+          set -x
+          # install dependencies
+          mkdir -p ~/ws_depend/src
+          cd ~/ws_depend/src
+          ROS_PACKAGE_PATH=/usr/share rosinstall_generator --rosdistro noetic --from-path $GITHUB_WORKSPACE --deps --exclude RPP --depend-type buildtool build | tee repos
+          vcs import --shallow < repos
+          # override to use latest development for 22.04
+          rosinstall_generator laser_filters laser_assembler map_server --rosdistro noetic  --upstream-development  | vcs import --force
+          rosinstall_generator catkin_virtualenv --rosdistro noetic | vcs import --force
+          rm -fr jsk_common
+          curl -s -L -O https://patch-diff.githubusercontent.com/raw/locusrobotics/catkin_virtualenv/pull/89.diff
+          patch -p1 < 89.diff
+          rosdep install -qq -r -y --from-path . --ignore-src || echo "OK"
+          cd ..
+          catkin_make_isolated --cmake-args -DCATKIN_ENABLE_TESTING=OFF
+
+      - name: Setup Workspace
+        run: |
+          set -x
+          # hack!
+          apt install -y -q -qq python-is-python3
+          sed -i s/noetic/Debian/ $GITHUB_WORKSPACE/jsk_rosbag_tools/CMakeLists.txt
+          # setup workspace
+          mkdir -p ~/ws_current/src
+          cd ~/ws_current/src
+          ln -sf $GITHUB_WORKSPACE .
+          rosdep install -qq -r -y --from-path . --ignore-src || echo "OK"
+
+      - name: Compile Packages
+        run: |
+          set -x
+          cd ~/ws_current/
+          source ~/ws_depend/devel_isolated/setup.bash
+          catkin_make_isolated --cmake-args -DCATKIN_ENABLE_TESTING=OFF
+        shell: bash
