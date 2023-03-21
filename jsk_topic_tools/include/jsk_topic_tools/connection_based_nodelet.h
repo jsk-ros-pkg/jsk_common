@@ -192,13 +192,13 @@ namespace jsk_topic_tools
     {
       boost::mutex::scoped_lock lock(connection_mutex_);
       ros::SubscriberStatusCallback connect_cb
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
         = boost::bind(&ConnectionBasedNodelet::connectionCallback, this, _1);
 #else
         = [this](auto& pub){ connectionCallback(pub); };
 #endif
       ros::SubscriberStatusCallback disconnect_cb
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
         = boost::bind(&ConnectionBasedNodelet::connectionCallback, this, _1);
 #else
         = [this](auto& pub){ connectionCallback(pub); };
@@ -262,14 +262,14 @@ namespace jsk_topic_tools
     {
       boost::mutex::scoped_lock lock(connection_mutex_);
       image_transport::SubscriberStatusCallback connect_cb
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
         = boost::bind(&ConnectionBasedNodelet::imageConnectionCallback,
                       this, _1);
 #else
         = [this](auto& pub){ imageConnectionCallback(pub); };
 #endif
       image_transport::SubscriberStatusCallback disconnect_cb
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
         = boost::bind(&ConnectionBasedNodelet::imageConnectionCallback,
                       this, _1);
 #else
@@ -334,28 +334,28 @@ namespace jsk_topic_tools
     {
       boost::mutex::scoped_lock lock(connection_mutex_);
       image_transport::SubscriberStatusCallback connect_cb
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
         = boost::bind(&ConnectionBasedNodelet::cameraConnectionCallback,
                       this, _1);
 #else
         = [this](auto& pub){ cameraConnectionCallback(pub); };
 #endif
       image_transport::SubscriberStatusCallback disconnect_cb
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
         = boost::bind(&ConnectionBasedNodelet::cameraConnectionCallback,
                       this, _1);
 #else
         = [this](auto& pub){ cameraConnectionCallback(pub); };
 #endif
       ros::SubscriberStatusCallback info_connect_cb
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
         = boost::bind(&ConnectionBasedNodelet::cameraInfoConnectionCallback,
                       this, _1);
 #else
         = [this](auto& pub){ cameraInfoConnectionCallback(pub); };
 #endif
       ros::SubscriberStatusCallback info_disconnect_cb
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
         = boost::bind(&ConnectionBasedNodelet::cameraInfoConnectionCallback,
                       this, _1);
 #else
