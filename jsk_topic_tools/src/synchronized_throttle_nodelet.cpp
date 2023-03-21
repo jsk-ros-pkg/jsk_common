@@ -87,7 +87,7 @@ void SynchronizedThrottle::onInit()
 
   srv_ = boost::make_shared<dynamic_reconfigure::Server<Config> >(*pnh_);
   dynamic_reconfigure::Server<Config>::CallbackType f =
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
       boost::bind(&SynchronizedThrottle::configCallback, this, _1, _2);
 #else
       [this](auto& config, auto level){ configCallback(config, level); };
@@ -114,7 +114,7 @@ void SynchronizedThrottle::onInit()
   {
     check_sub_[i] = pnh_->subscribe<topic_tools::ShapeShifterStamped>(
         input_topics_[i], 1,
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
 	boost::bind(&SynchronizedThrottle::checkCallback, this, _1, i)
 #else
         [this,i](auto& msg){ checkCallback(msg, i); }
@@ -208,7 +208,7 @@ void SynchronizedThrottle::subscribe()
   if (n_topics < MAX_SYNC_NUM)
   {
     sub_[0]->registerCallback(
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
         boost::bind(&SynchronizedThrottle::fillNullMessage, this, _1)
 #else
         [this](auto& msg){ fillNullMessage(msg); }

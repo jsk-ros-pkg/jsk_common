@@ -104,7 +104,7 @@ public:
       private_ns_.param("motor_frame", motor_frame_, std::string("multisense/motor"));
       timer_ = private_ns_.createTimer(
         ros::Duration(1.0 / rate_),
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
 	boost::bind(&SpinLaserSnapshotter::timerCallback, this, _1));
 #else
         [this](auto& event){ timerCallback(event); });

@@ -44,7 +44,7 @@ namespace jsk_topic_tools
   {
     timer_ = nh.createTimer(
       timer_duration,
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
       boost::bind(&TimeredDiagnosticUpdater::timerCallback,this,_1)
 #else
       [this](auto& event){ timerCallback(event); }
