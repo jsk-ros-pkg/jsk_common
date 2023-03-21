@@ -50,7 +50,7 @@ namespace jsk_topic_tools
     diagnostic_updater_->setHardwareID(getName());
     diagnostic_updater_->add(
       getName() + "::Relay",
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
       boost::bind(
         &Relay::updateDiagnostic, this, _1));
 #else
