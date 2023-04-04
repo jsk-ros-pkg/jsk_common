@@ -9,7 +9,8 @@
   <author email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</author>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <buildtool_depend>python-catkin-pkg-modules</buildtool_depend>
+  <buildtool_depend condition="$ROS_PYTHON_VERSION == 2">python-catkin-pkg-modules</buildtool_depend>
+  <buildtool_depend condition="$ROS_PYTHON_VERSION == 3">python3-catkin-pkg-modules</buildtool_depend>
 
   <build_depend version_gte="0.5.1">catkin_virtualenv</build_depend>
 
