@@ -219,8 +219,13 @@ int main(int argc, char **argv)
             sub_info->advertised = false;
             sub_info->periodic = false;
             ROS_INFO_STREAM("subscribe " << sub_info->topic_name);
-            sub_info->sub = new ros::Subscriber(n.subscribe<ShapeShifter>(sub_info->topic_name, 10, boost::bind(in_cb, _1, sub_info)));
-
+            sub_info->sub = new ros::Subscriber(n.subscribe<ShapeShifter>(sub_info->topic_name, 10,
+#if __cplusplus < 201400L
+                boost::bind(in_cb, _1, sub_info)
+#else
+                [sub_info](auto& msg){ in_cb(msg, sub_info); }
+#endif
+            ));
             // waiting for all topics are publisherd
             while (sub_info->sub->getNumPublishers() == 0 ) {
                 ros::Duration(1.0).sleep();

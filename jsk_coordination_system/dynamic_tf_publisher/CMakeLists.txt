@@ -29,7 +29,7 @@ catkin_package(
 # recursively into ${CATKIN_PACKAGE_SHARE_DESTINATION}.
 # Be careful that 'launch' and 'launch/' are different: the former is directory
 # and the latter is each content.
-install(PROGRAMS src/tf_publish.py src/tf_set.py src/tf_reconfigure_publisher.py
+catkin_install_python(PROGRAMS src/tf_publish.py src/tf_set.py src/tf_reconfigure_publisher.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 install(DIRECTORY samples

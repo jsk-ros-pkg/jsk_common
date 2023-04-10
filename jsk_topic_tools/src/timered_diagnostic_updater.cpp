@@ -43,10 +43,13 @@ namespace jsk_topic_tools
     diagnostic_updater_(new diagnostic_updater::Updater)
   {
     timer_ = nh.createTimer(
-      timer_duration, boost::bind(
-        &TimeredDiagnosticUpdater::timerCallback,
-        this,
-        _1));
+      timer_duration,
+#if __cplusplus < 201400L
+      boost::bind(&TimeredDiagnosticUpdater::timerCallback,this,_1)
+#else
+      [this](auto& event){ timerCallback(event); }
+#endif
+      );
     timer_.stop();
   }
   

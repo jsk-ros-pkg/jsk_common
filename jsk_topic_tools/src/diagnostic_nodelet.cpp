@@ -56,10 +56,15 @@ namespace jsk_topic_tools
     diagnostic_updater_->setHardwareID(getName());
     diagnostic_updater_->add(
       getName(),
+#if __cplusplus < 201400L
       boost::bind(
         &DiagnosticNodelet::updateDiagnostic,
         this,
-        _1));
+        _1)
+#else
+      [this](auto& stat){ updateDiagnostic(stat); }
+#endif
+     );
 
     bool use_warn;
     nh_->param("/diagnostic_nodelet/use_warn", use_warn, false);

@@ -7,7 +7,6 @@
 #include <dynamic_reconfigure/server.h>
 #include <jsk_topic_tools/ConstantRateThrottleConfig.h>
 #include <topic_tools/shape_shifter.h>
-#include <mutex>
 
 namespace jsk_topic_tools
 {
