@@ -78,7 +78,7 @@ namespace jsk_topic_tools
 
     diagnostic_updater_.reset(new TimeredDiagnosticUpdater(pnh_, ros::Duration(1.0)));
     diagnostic_updater_->setHardwareID(getName());
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
     diagnostic_updater_->add(getName(),
                              boost::bind(&HzMeasure::updateDiagnostic,
                                          this, _1));
