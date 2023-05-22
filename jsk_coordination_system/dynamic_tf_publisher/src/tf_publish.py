@@ -8,6 +8,7 @@
 #       change frequency by frame_id
 #
 import roslib; roslib.load_manifest('dynamic_tf_publisher')
+import roslib.message
 import rospy
 import sys
 from dynamic_tf_publisher.srv import * # SetDynamicTF
