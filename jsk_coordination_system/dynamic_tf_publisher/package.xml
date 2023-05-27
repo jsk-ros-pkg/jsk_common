@@ -21,6 +21,8 @@
   <exec_depend>rospy</exec_depend>
   <exec_depend>tf</exec_depend>
 
+  <!-- <test_depend>jsk_topic_tools</test_depend> jsk_topic_tools depends on dynamic_tf_publisher -->
+
 </package>
 
 

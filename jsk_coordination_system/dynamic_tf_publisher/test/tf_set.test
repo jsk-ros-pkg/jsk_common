@@ -1,0 +1,17 @@
+<launch>
+  <param name="dynamic_tf_publisher/tf_publisher" type="str"
+         value="transforms: [{header: {frame_id: &quot;map&quot;}, child_frame_id: &quot;robot&quot;, transform: {rotation: {w: 1.0}}}]" />
+  <include file="$(find dynamic_tf_publisher)/samples/sample.launch" />
+
+  <test
+      pkg="jsk_topic_tools"
+      type="test_static_tf_republisher.py"
+      name="test_dynamic_tf_republisher"
+      test-name="test_dynamic_tf_republisher"
+      time-limit="20" >
+    <rosparam>
+      frame_id_target: "hand"
+      frame_id_source: "map"
+    </rosparam>
+  </test>
+</launch>
