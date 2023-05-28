@@ -35,3 +35,8 @@ catkin_install_python(PROGRAMS src/tf_publish.py src/tf_set.py src/tf_reconfigur
 install(DIRECTORY samples
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   PATTERN ".svn" EXCLUDE)
+
+if (CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest(test/tf_set.test)
+endif()

@@ -8,6 +8,7 @@
 #       change frequency by frame_id
 #
 import roslib; roslib.load_manifest('dynamic_tf_publisher')
+from roslib.message import fill_message_args
 import rospy
 import sys
 from dynamic_tf_publisher.srv import * # SetDynamicTF
@@ -43,7 +44,9 @@ class dynamic_tf_publisher:
         # check the cache
         if self.use_cache and rospy.has_param('dynamic_tf_publisher'+rospy.get_name()) :
             tfm = tf.msg.tfMessage()
-            roslib.message.fill_message_args(tfm,[yaml.load(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))])
+            rospy.logerr(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))
+            fill_message_args(tfm,[yaml.load(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))])
+            rospy.logerr(tfm)
             for pose in tfm.transforms :
                 self.cur_tf[pose.child_frame_id] = pose
         self.advertiseServiceUnlessFound('/set_dynamic_tf', SetDynamicTF, self.set_tf)
