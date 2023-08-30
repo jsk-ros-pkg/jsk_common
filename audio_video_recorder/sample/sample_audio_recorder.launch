@@ -1,0 +1,25 @@
+<launch>
+  <arg name="file_name" default="/tmp/test_audio.wav" />
+  <arg name="channels" default="1" />
+  <arg name="depth" default="16" />
+  <arg name="sample_rate" default="16000" />
+  <arg name="sample_format" default="S16LE" />
+  <arg name="device" default="" />
+  <arg name="format" default="wave" />
+
+  <include file="$(find audio_capture)/launch/capture.launch">
+    <arg name="format" value="$(arg format)" />
+    <arg name="channels" value="$(arg channels)" />
+    <arg name="depth" value="$(arg depth)" />
+    <arg name="sample_rate" value="$(arg sample_rate)" />
+    <arg name="sample_format" value="$(arg sample_format)" />
+  </include>
+
+  <include file="$(find audio_video_recorder)/launch/audio_recorder.launch">
+    <arg name="audio_topic_name" value="/audio/audio" />
+    <arg name="file_name" value="$(arg file_name)" />
+    <arg name="channels" value="$(arg channels)" />
+    <arg name="depth" value="$(arg depth)" />
+    <arg name="sample_rate" value="$(arg sample_rate)" />
+  </include>
+</launch>

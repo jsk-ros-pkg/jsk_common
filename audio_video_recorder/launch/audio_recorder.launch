@@ -1,0 +1,19 @@
+<launch>
+  <arg name="audio_topic_name" />
+  <arg name="queue_size" />
+  <arg name="file_name" />
+  <arg name="channels" />
+  <arg name="depth" />
+  <arg name="sample_rate" />
+
+  <node name="audio_recorder" pkg="audio_video_recorder"
+        type="audio_recorder.py" output="screen">
+    <remap from="~input/audio" to="$(arg audio_topic_name)" />
+    <rosparam subst_value="true">
+      file_name: $(arg file_name)
+      channels: $(arg channels)
+      depth: $(arg depth)
+      sample_rate: $(arg sample_rate)
+    </rosparam>
+  </node>
+</launch>
