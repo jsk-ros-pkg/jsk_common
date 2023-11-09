@@ -1,0 +1,18 @@
+<launch>
+
+  <node name="camera_check"
+        pkg="jsk_tools" type="camera_check.py" >
+    <rosparam>
+      topic_names: ["/camera/rgb/image_raw"]
+      <!-- vid: "1d27" -->
+      <!-- pid: "0601" -->
+    </rosparam>
+  </node>
+
+  <node name="diagnostic_aggregator"
+        pkg="diagnostic_aggregator" type="aggregator_node"
+        clear_params="true" >
+    <rosparam command="load" file="$(find jsk_tools)/sample/config/analyzer.yaml"/>
+  </node>
+
+</launch>
