@@ -2,6 +2,11 @@
 Changelog for package jsk_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add jsk_rosbag_tools package (`#1738 <https://github.com/jsk-ros-pkg/jsk_common/issues/1738>`_)
+* Contributors: Kei Okada, Shingo Kitagawa, Iory Yanokura
+
 2.2.12 (2022-06-07)
 -------------------
 * add audio_video_recorder in jsk_common (`#1672 <https://github.com/jsk-ros-pkg/jsk_common/issues/1672>`_)

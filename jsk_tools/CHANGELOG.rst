@@ -2,6 +2,35 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [test_topic_published.py, boolean_node.py] Enable importing modules (`#1760 <https://github.com/jsk-ros-pkg/jsk_common/issues/1760>`_)
+* fix: make battery_capacity_summary compatible with python3 (`#1763 <https://github.com/jsk-ros-pkg/jsk_common/issues/1763>`_)
+
+  * fix(battery_capacity_summary): avoid usin keys[i]
+  * [jsk_tools/test_topic_published] Fixed E402 (module level import not at top of file) error
+  * [jsk_tools/test_topic_published] Use eval_utils module and enabled import moduels for input_condition
+
+* [jsk_tools/sanity_diagnostics.py] Modified the timing of updating (`#1756 <https://github.com/jsk-ros-pkg/jsk_common/issues/1756>`_)
+
+  * [jsk_tools/sanity_diagnostics.py] Modified the timing of updating timestamp and states for each topic and each node.
+
+* [jsk_tools] Seperate sanity check frequency and diagnostics publish frequency (`#1745 <https://github.com/jsk-ros-pkg/jsk_common/issues/1745>`_)
+
+  * Publish diagnostics at more than 1Hz, but check sanity at 0.1 Hz
+  * [jsk_tools] Change function name
+  * [jsk_tools] Seperate sanity check frequency and diagnostics publish frequency
+
+* [jsk_tools/test_topic_published.py] Add condition\_%d option for checking topic value (`#1744 <https://github.com/jsk-ros-pkg/jsk_common/issues/1744>`_)
+
+  * [jsk_tools/test_topic_published.py] Fixed E131 continuation line unaligned for hanging indent
+  * [jsk_tools/test_topic_published.py] Add document for escape sequence.
+  * [jsk_tools/test_topic_published.py] Changed the output error message based on negative and condition.
+  * [jsk_tools/test_topic_published.py] Add test for condition option
+  * [jsk_tools/test_topic_published.py] Add condition\_%d option for checking topic value
+
+* Contributors: Hiro Ishida, Iori Yanokura, Kei Okada, Naoya Yamaguchi, Shingo Kitagawa
+
 2.2.12 (2022-06-07)
 -------------------
 * [jsk_tools] change default ROS_MASTER_URI of rossetmaster to localhost (`#1729 <https://github.com/jsk-ros-pkg/jsk_common/issues/1729>`_)

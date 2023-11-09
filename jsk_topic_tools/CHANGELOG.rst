@@ -2,6 +2,98 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* use hpp instead of deprecated .h pluginlib headers (`#1777 <https://github.com/jsk-ros-pkg/jsk_common/issues/1777>`_)
+* Fix for noetic (`#1774 <https://github.com/jsk-ros-pkg/jsk_common/issues/1774>`_)
+
+  * test/test_transform_wrench.test: retry=3, time-limit=15
+
+* add test to check c++14/C++11/C++0x (`#1785 <https://github.com/jsk-ros-pkg/jsk_common/issues/1785>`_)
+
+  * auto lambda for c++14
+
+* add test to compile on 22.04, see `#1770 <https://github.com/jsk-ros-pkg/jsk_common/issues/1770>`_ (`#1773 <https://github.com/jsk-ros-pkg/jsk_common/issues/1773>`_)
+
+  * revert code before C++11
+  * <mutex> requries -std=c++11 compile options, but it is not used in source tree
+  * avoid boost::bind (esp. global _1)
+    it's deprecated to use global _1 from boost for a while now
+    and the Debian ROS packages do not provide it anymore.
+  * do not specify c++ standard
+    it break with current log4cxx which requires c++17.
+    No, going forward it's no option to specify the standard anymore.
+    And it's not necessary either.
+    same fix as https://github.com/jsk-ros-pkg/jsk_common/pull/1773/commits/18e200ca51ac035af3e8ab5955cde2b76fc9c980
+  * fixup documentation
+    this confused me when I looked through the code.
+  * avoid boost::bind (esp. global _1)
+    it's deprecated to use global _1 from boost for a while now
+    and the Debian ROS packages do not provide it anymore.
+  * update pluginlib includes
+    the non-hpp headers are deprecated since kinetic
+
+* [test_topic_published.py, boolean_node.py] Enable importing modules (`#1760 <https://github.com/jsk-ros-pkg/jsk_common/issues/1760>`_)
+* [jsk_topic_tools/DiagnosticNodelet] Use node name for diagnostic message (`#1762 <https://github.com/jsk-ros-pkg/jsk_common/issues/1762>`_)
+
+  * [jsk_topic_tools/DiagnosticNodelet] Use %.1f for readability
+  * [jsk_topic_tools/DiagnosticNodelet] Use node name for diagnostic message
+
+* [jsk_topic_tools] Eval at every timer callback (`#1758 <https://github.com/jsk-ros-pkg/jsk_common/issues/1758>`_)
+* Add ConstantRateThrottle Nodelet (`#1748 <https://github.com/jsk-ros-pkg/jsk_common/issues/1748>`_)
+
+  * [jsk_topic_tools] fix timer start flag of ConstantRateThrottleNodelet
+  * [jsk_topic_tools] add a test for ConstantRateThrottle
+  * [jsk_topic_tools] enalbe c++11 support
+  * [jsk_topic_tools] add ConstantRateThrottleNodelet and sample/docs for it.
+    [jsk_topic_tools] add constant_rate_throttle_node files
+    [jsk_topic_tools] update for constant_rate_throttle_nodelet
+    [jsk_topic_tools] add compiling of constant_rate_throttle_nodelet
+    [jsk_topic_tools] update constatn_rate_throttle_nodelet
+    [jsk_topic_tools] fix class name for ConstantRateThrottle
+    [jsk_topic_tools] fix plugin build
+    [jsk_topic_tools] update sample for constant_rate_nodelet
+    [jsk_topic_tools] fix bugs
+    [jsk_topic_tools] add constant_rate_throttle_nodelet docs
+
+* Fixed typo of Software License Agreement. and/o2r to and/or (`#1764 <https://github.com/jsk-ros-pkg/jsk_common/issues/1764>`_)
+* [jsk_topic_tools/DiagnosticsNodelet] Enable constructor without name argument (`#1761 <https://github.com/jsk-ros-pkg/jsk_common/issues/1761>`_)
+
+  * [jsk_topic_tools/boolean_node] Use eval_utils's expr_eval and enable import options
+  * [jsk_topic_tools] Add eval_utils module to eval Python expression
+  * [jsk_topic_tools] Eval at every timer callback
+
+* [jsk_topic_tools/version] Generate jsk_topic_tools_version.h without calling catkin_package_xml. (`#1755 <https://github.com/jsk-ros-pkg/jsk_common/issues/1755>`_)
+* [jsk_topic_tools/timered_diagnostics_updater] Use force_update instead of update because of update called using TimeredDiagnosticUpdater's timer (`#1752 <https://github.com/jsk-ros-pkg/jsk_common/issues/1752>`_)
+
+* [jsk_topic_tools/HzMeasureNodelet] Added measure_time param and modified to measure hz in the updateDiagnostics function. (`#1754 <https://github.com/jsk-ros-pkg/jsk_common/issues/1754>`_)
+
+  * [jsk_topic_tools/HzMeasureNodelet] Modified to measure hz in the updateDiagnostics function.
+    The hz calculation will be correct even if the topic does not come.
+  * [jsk_topic_tools/DiagnosticsNodelet] Enable constructor without name argument
+  * [jsk_topic_tools/HzMeasureNodelet] Fixed calculation for hz.
+  * [jsk_topic_tools/HzMeasureNodelet] Call popBufferQueue in calculateHz
+  * [jsk_topic_tools/HzMeasureNodelet] Fixed timing of scoped_lock to publish /diagnostics. Also, added test for diagnostics
+  * [jsk_topic_tools/HzMeasureNodelet] Add test for ~measure_time and ~message_num
+  * [jsk_topic_tools/HzMeasureNodelet] Enable ~measure_time param to calculate `hz` from the number of topics received in time in `~measure_time`
+  * [jsk_topic_tools/HzMeasureNodelet] Fixed calculation of average_time (buffer\_.size() - 1) to buffer\_.size()
+  * [jsk_topic_tools/HzMeasureNodelet] Fixed calculating hz condition
+
+* [jsk_topic_tools] Add header file to check jsk_topic_tools' version (`#1753 <https://github.com/jsk-ros-pkg/jsk_common/issues/1753>`_)
+
+  * [jsk_topic_tools] Don't install *_version.h.in files using FILES_MATCHING PATTERN
+  * [jsk_topic_tools] Add header file to check jsk_topic_tools' version
+
+* [jsk_topic_tools] merge topic_buffer tests and loose conditions (`#1739 <https://github.com/jsk-ros-pkg/jsk_common/issues/1739>`_)
+
+  * [jsk_topic_tools] Rename dropped test_topic_buffer's extention to launch
+  * [jsk_topic_tools] Commented out test_topic_buffer to loose test conditions
+
+* Add boolean operation nodes (and, or, not) (`#1706 <https://github.com/jsk-ros-pkg/jsk_common/issues/1706>`_)
+* [jsk_topic_tools/HzMeasureNodelet] Add diagnostics to monitor hz (`#1743 <https://github.com/jsk-ros-pkg/jsk_common/issues/1743>`_)
+
+* Contributors: Iori Yanokura, Kei Okada, Koki Shinjo, Lucas Walter, Shingo Kitagawa, Yoshiki Obinata, v4hn
+
 2.2.12 (2022-06-07)
 -------------------
 * [jsk_topic_tools] add non static_tf mode to static_tf_republisher (`#1709 <https://github.com/jsk-ros-pkg/jsk_common/issues/1709>`_)

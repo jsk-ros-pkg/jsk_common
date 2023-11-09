@@ -2,6 +2,27 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix for Noetic (`#1774 <https://github.com/jsk-ros-pkg/jsk_common/issues/1774>`_)
+
+  * test/publish_mouse_event.py: value of MouseEvent  must be integer
+
+* add test to compile on 22.04, see `#1770 <https://github.com/jsk-ros-pkg/jsk_common/issues/1770>`_ (`#1773 <https://github.com/jsk-ros-pkg/jsk_common/issues/1773>`_)
+
+  * revert code before C++11
+  * avoid boost::bind (esp. global _1)
+    it's deprecated to use global _1 from boost for a while now
+    and the Debian ROS packages do not provide it anymore.
+  * do not specify c++ standard
+    it break with current log4cxx which requires c++17.
+    No, going forward it's no option to specify the standard anymore.
+    And it's not necessary either.
+
+* Fixed typo of Software License Agreement. and/o2r to and/or (`#1764 <https://github.com/jsk-ros-pkg/jsk_common/issues/1764>`_)
+
+* Contributors: Kei Okada, Shingo Kitagawa, Iory Yanokura, v4hn
+
 2.2.12 (2022-06-07)
 -------------------
 * set ccache prefix only for cmake <= 3.4 (`#1694 <https://github.com/jsk-ros-pkg/jsk_common/issues/1694>`_)

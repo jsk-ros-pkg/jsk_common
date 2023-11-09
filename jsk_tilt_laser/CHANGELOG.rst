@@ -2,6 +2,23 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add test to check c++14/C++11/C++0x (`#1785 <https://github.com/jsk-ros-pkg/jsk_common/issues/1785>`_)
+
+  * auto lambda for c++14
+
+* add test to compile on 22.04, see `#1770 <https://github.com/jsk-ros-pkg/jsk_common/issues/1770>`_ (`#1773 <https://github.com/jsk-ros-pkg/jsk_common/issues/1773>`_)
+
+  * revert code before C++11
+  * avoid boost::bind (esp. global _1)
+    it's deprecated to use global _1 from boost for a while now
+    and the Debian ROS packages do not provide it anymore.
+
+* Fixed typo of Software License Agreement. and/o2r to and/or (`#1764 <https://github.com/jsk-ros-pkg/jsk_common/issues/1764>`_)
+
+* Contributors: Kei Okada, Shingo Kitagawa, Iory Yanokura, v4hn
+
 2.2.12 (2022-06-07)
 -------------------
 

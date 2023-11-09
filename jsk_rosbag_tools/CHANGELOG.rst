@@ -1,21 +1,78 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package virtual_force_publisher
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package jsk_rosbag_tools
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Forthcoming
 -----------
+* [jsk_rosbag_tools] Use python3-catkin-pkg-modules when python3 is used (`#1784 <https://github.com/jsk-ros-pkg/jsk_common/issues/1784>`_)
+
+  * [jsk_rosbag_tools] Use python3-catkin-pkg-modules when python3 is used
+
+* set python2 for jsk_rosbag_tools (`#1781 <https://github.com/jsk-ros-pkg/jsk_common/issues/1781>`_)
+
+  * set numpy version for python3
+  * split requirements.in for python2 and 3
+  * set scipy<1.9.0 to avoid build error with openblas
+    https://github.com/scipy/scipy/issues/16308
+  * install scipy to avoid numpy attribute error
+
+* catch StopIteration when all images do not have stamp (`#1767 <https://github.com/jsk-ros-pkg/jsk_common/issues/1767>`_)
+* jsk_rosbag_tools: version of jsk_common is 2.2.12 (`#1751 <https://github.com/jsk-ros-pkg/jsk_common/issues/1751>`_)
+* [jsk_rosbag_tools] Fixed a bug when the specified fps is less than the fps of the topic in rosbag. (`#1750 <https://github.com/jsk-ros-pkg/jsk_common/issues/1750>`_)
+* Add jsk_rosbag_tools package (`#1738 <https://github.com/jsk-ros-pkg/jsk_common/issues/1738>`_)
+* [jsk_rosbag_tools] Add descriptions for static_tf_republisher.py.
+* [jsk_rosbag_tools] Enable catkin_virtualenv for pip dependencies
+* [jsk_rosbag_tools] Specify python version
+* [jsk_rosbag_tools] logerr subprocess command if failed
+* [jsk_rosbag_tools] Split test to avoid indigo's error
+* [jsk_rosbag_tools] Drop installation of requirements.in and requirements.txt
+* [jsk_rosbag_tools] Add dependencies of download data
+* [jsk_rosbag_tools] Refactor test to print command log
+* [jsk_rosbag_tools] Avoid raise ValueError on invalid compressed format.
+* [jsk_rosbag_tools] Add resize_keeping_aspect_ratio_wrt_target_size to fix video
+* [jsk_rosbag_tools] Fixed W503 line break before binary operator
+* [jsk_rosbag_tools] Fixed E226 missing whitespace around arithmetic operator
+* [jsk_rosbag_tools] Add show_progress_bar option
+* [jsk_rosbag_tools] Add .wav ext
+* [jsk_rosbag_tools] Add fps option
+* [jsk_rosbag_tools] Add message to raise
+* [jsk_rosbag_tools] Resize every frame
+* [jsk_rosbag_tools] Fix bug when saving to local path with --image-topic
+* [jsk_rosbag_tools] Allow to record mono8 topics for mask images
+* [jsk_rosbag_tools] Fixed compr_type condition
+* [jsk_rosbag_tools] Check topic exists
+* [jsk_rosbag_tools] Fixed W503 line break before binary operator
+* [jsk_rosbag_tools] Rename extract_audio to bag_to_audio
+* [jsk_rosbag_tools] Fixed E225 missing whitespace around operator
+* [jsk_rosbag_tools] Decompress as much as possible
+* [jsk_rosbag_tools] Refactor dependencies
+* [jsk_rosbag_tools] Enable python2 compatibility
+* [jsk_rosbag_tools] Add shebang
+* [jsk_rosbag_tools] chmod u+x test_jsk_rosbag_tools.py
+* [jsk_rosbag_tools] Add bag_to_audio.py
+* [jsk_rosbag_tools] Makedirs in extract_audio
+* [jsk_rosbag_tools] Include AudioFileClip and VideoFileClip to prevent calling pygame.init()
+* [jsk_rosbag_tools] chmod u+x
+* [jsk_rosbag_tools] Fixed sample docs
+* [jsk_rosbag_tools] Fixed bag to video docs
+* [jsk_rosbag_tools] Import AudioFileClip and VideoFileClip
+* [jsk_rosbag_tools] Use library's function
+* [jsk_rosbag_tools] Seperate bag_to_video function as library
+* [jsk_rosbag_tools] Add topic_name_to_file_name
+* [jsk_rosbag_tools] Add makedirs library for python2
+* [jsk_rosbag_tools] Set time-limit to 360.0
+* [jsk_rosbag_tools] Modified sample bagfile to reduce test time
+* [jsk_rosbag_tools] Set version to 2.2.11
+* [jsk_rosbag_tools] Drop catkin virtualenv
+* Add jsk_rosbag_tools package
+
+* Contributors: Guilherme Affonso, Kei Okada, Naoto Tsukamoto, Shingo Kitagawa, Iory Yanokura
 
 2.2.12 (2022-06-07)
 -------------------
-* Calcualte sr-inverse (`#1731 <https://github.com/jsk-ros-pkg/jsk_common/issues/1731>`_)
-* use ROS_DEBUG to suppress log output (`#1674 <https://github.com/jsk-ros-pkg/jsk_common/issues/1674>`_)
-* add left and right force launch (`#1656 <https://github.com/jsk-ros-pkg/jsk_common/issues/1656>`_)
-* Contributors: Naoaki Kanazawa, Shingo Kitagawa, Iori Yanokura
 
 2.2.11 (2020-07-10)
 -------------------
-* upgrade package.xml to format=3 (`#1648 <https://github.com/jsk-ros-pkg/jsk_common/issues/1648>`_)
-* Contributors: Kei Okada
 
 2.2.10 (2018-11-03)
 -------------------
@@ -25,8 +82,6 @@ Forthcoming
 
 2.2.8 (2018-11-01)
 ------------------
-* Add comment about installation (`#1604 <https://github.com/jsk-ros-pkg/jsk_common/issues/1604>`_)
-* Contributors: Yuto Uchimi
 
 2.2.7 (2018-06-27)
 ------------------
@@ -114,9 +169,6 @@ Forthcoming
 
 2.0.0 (2015-06-19)
 ------------------
-* pseudo jacobian has different for m>n and n<m
-* format jacobian/effort/force output
-* Contributors: Kei Okada
 
 1.0.72 (2015-06-07)
 -------------------
@@ -127,11 +179,11 @@ Forthcoming
 1.0.70 (2015-05-08)
 -------------------
 
-1.0.69 (2015-05-05)
--------------------
+1.0.69 (2015-05-05 12:28)
+-------------------------
 
-1.0.68 (2015-05-05)
--------------------
+1.0.68 (2015-05-05 09:49)
+-------------------------
 
 1.0.67 (2015-05-03)
 -------------------
@@ -154,11 +206,11 @@ Forthcoming
 1.0.61 (2015-02-11)
 -------------------
 
-1.0.60 (2015-02-03)
--------------------
+1.0.60 (2015-02-03 10:12)
+-------------------------
 
-1.0.59 (2015-02-03)
--------------------
+1.0.59 (2015-02-03 04:05)
+-------------------------
 
 1.0.58 (2015-01-07)
 -------------------
@@ -171,15 +223,9 @@ Forthcoming
 
 1.0.55 (2014-12-09)
 -------------------
-* fix a mistack of transformation
-* add launch file for virtual_force_publisher
-* use pseudo-inv-jacobian to calc forces, add low pass filter ,use tf to transform forces to if proper coords
-* Contributors: Chi Wun Au
 
 1.0.54 (2014-11-15)
 -------------------
-* add virtual_force_publisher
-* Contributors: Kei Okada
 
 1.0.53 (2014-11-01)
 -------------------

@@ -2,6 +2,18 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_data/download_data.py] Add timeout argument to download() for wget (`#1771 <https://github.com/jsk-ros-pkg/jsk_common/issues/1771>`_)
+
+  * add  2 blank lines before function definition ros roslint
+    ```
+    src/jsk_data/download_data.py:120:1: E302 expected 2 blank lines, found 1
+    ```
+  * Add timeout argument to download() for wget
+
+* Contributors: Aoi Nakane, Kei Okada, Shingo Kitagawa
+
 2.2.12 (2022-06-07)
 -------------------
 * [jsk_data/tess_data_collection_server] Check if text and yaml or text and image are saved in the subdirectory of `save_dir`. (`#1734 <https://github.com/jsk-ros-pkg/jsk_common/issues/1734>`_)

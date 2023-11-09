@@ -2,6 +2,18 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add test to compile on 22.04, see `#1770 <https://github.com/jsk-ros-pkg/jsk_common/issues/1770>`_ (`#1773 <https://github.com/jsk-ros-pkg/jsk_common/issues/1773>`_)
+
+  * use setuptools
+    setup from distutils is deprecated and will be removed eventually.
+
+* Fixed typo of Software License Agreement. and/o2r to and/or (`#1764 <https://github.com/jsk-ros-pkg/jsk_common/issues/1764>`_)
+  Fixed typo of Software License Agreement. and/o2r to and/or
+
+* Contributors: Kei Okada, Shingo Kitagawa, Iory Yanokura, v4hn
+
 2.2.12 (2022-06-07)
 -------------------
 * add skip_interfaces param in network_status.py (`#1664 <https://github.com/jsk-ros-pkg/jsk_common/issues/1664>`_)

@@ -2,6 +2,18 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
+* add test to check if dynamic_tf_publisher/sample/sample.launch works (`#1788 <https://github.com/jsk-ros-pkg/jsk_common/issues/1788>`_)
+
+  * fixed to import roslib.message explicitly
+  * add test to check if dynamic_tf_publisher/sample/sample.launch works
+
+* [dynamic_tf_publisher] Fix Python shebang for Noetic (`#1775 <https://github.com/jsk-ros-pkg/jsk_common/issues/1775>`_)
+
+* Contributors: Kei Okada, Shingo Kitagawa, Wolfgang Merkt, Koki Amabe
+
 2.2.12 (2022-06-07)
 -------------------
 * run 2to3 -w -f has_key for python3 compatibility (`#1695 <https://github.com/jsk-ros-pkg/jsk_common/issues/1695>`_)
