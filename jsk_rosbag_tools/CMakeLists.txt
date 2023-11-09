@@ -25,7 +25,8 @@ if($ENV{ROS_DISTRO} STREQUAL "noetic")
   )
 else()
   catkin_generate_virtualenv(
-    INPUT_REQUIREMENTS requirements.in
+    INPUT_REQUIREMENTS requirements.in.python2
+    PYTHON_INTERPRETER python2
   )
 endif()
 

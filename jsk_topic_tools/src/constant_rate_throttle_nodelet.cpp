@@ -12,7 +12,7 @@ namespace jsk_topic_tools
 
     srv_ = boost::make_shared<dynamic_reconfigure::Server<Config> >(pnh_);
     dynamic_reconfigure::Server<Config>::CallbackType f
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
         = boost::bind(&ConstantRateThrottle::configCallback, this, _1, _2);
 #else
         = [this](auto& config, auto level) {configCallback(config, level); };
@@ -68,7 +68,7 @@ namespace jsk_topic_tools
     if (!advertised_) {
         sub_->shutdown();
         ros::SubscriberStatusCallback connect_cb
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
         = boost::bind(&ConstantRateThrottle::connectionCallback, this, _1);
 #else
         = [this](auto& pub){ connectionCallback(pub); };

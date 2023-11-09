@@ -30,6 +30,13 @@ jobs:
           - ROS_DISTRO: noetic
             CONTAINER: ubuntu:20.04
             ROS_PARALLEL_TEST_JOBS: "-j8"
+          - ROS_DISTRO: noetic
+            CONTAINER: ubuntu:20.04
+            ROS_PARALLEL_TEST_JOBS: "-j8"
+            TEST_PKGS: virtual_force_publisher # skip test
+            CATKIN_TOOLS_BUILD_OPTIONS: "--cmake-args -DCMAKE_CXX_FLAGS=-std=c++11 -- --summarize --no-status"
+            NOT_TEST_INSTALL: true
+            BEFORE_SCRIPT : "find $GITHUB_WORKSPACE -iname image_view2 -exec touch {}/CATKIN_IGNORE \\;"
 
 
     container: ${{ matrix.CONTAINER }}
@@ -84,6 +91,7 @@ jobs:
           TEST_PKGS : ${{ matrix.TEST_PKGS }}
           BEFORE_SCRIPT : ${{ matrix.BEFORE_SCRIPT }}
           EXTRA_DEB : ${{ matrix.EXTRA_DEB }}
+          CATKIN_TOOLS_BUILD_OPTIONS: ${{ matrix.CATKIN_TOOLS_BUILD_OPTIONS }}
 
 
   ubuntu:
@@ -94,6 +102,9 @@ jobs:
       matrix:
         include:
           - DISTRO: ubuntu:22.04
+          # - DISTRO: ubuntu:22.04
+          #   CATKIN_OPTIONS: "--ignore-pkg image_view2"
+          #   CMAKE_OPTIONS: "-DCMAKE_CXX_FLAGS=-std=c++11"
 
     container: ${{ matrix.DISTRO }}
 
@@ -133,6 +144,7 @@ jobs:
           rosinstall_generator laser_filters laser_assembler map_server --rosdistro noetic  --upstream-development  | vcs import --force
           rosinstall_generator catkin_virtualenv --rosdistro noetic | vcs import --force
           rm -fr jsk_common
+          # Run catkin_run_tests_target only when CATKIN_ENABLE_TESTING is enabled #89 (https://github.com/locusrobotics/catkin_virtualenv/pull/89)
           curl -s -L -O https://patch-diff.githubusercontent.com/raw/locusrobotics/catkin_virtualenv/pull/89.diff
           patch -p1 < 89.diff
           rosdep install -qq -r -y --from-path . --ignore-src || echo "OK"
@@ -156,5 +168,5 @@ jobs:
           set -x
           cd ~/ws_current/
           source ~/ws_depend/devel_isolated/setup.bash
-          catkin_make_isolated --cmake-args -DCATKIN_ENABLE_TESTING=OFF
+          catkin_make_isolated ${{ matrix.CATKIN_OPTIONS }} --cmake-args -DCATKIN_ENABLE_TESTING=OFF -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ${{ matrix.CMAKE_OPTIONS }}
         shell: bash

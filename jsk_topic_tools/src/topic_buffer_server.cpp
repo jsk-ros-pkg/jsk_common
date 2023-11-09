@@ -220,7 +220,7 @@ int main(int argc, char **argv)
             sub_info->periodic = false;
             ROS_INFO_STREAM("subscribe " << sub_info->topic_name);
             sub_info->sub = new ros::Subscriber(n.subscribe<ShapeShifter>(sub_info->topic_name, 10,
-#if __cplusplus < 201100L
+#if __cplusplus < 201400L
                 boost::bind(in_cb, _1, sub_info)
 #else
                 [sub_info](auto& msg){ in_cb(msg, sub_info); }
