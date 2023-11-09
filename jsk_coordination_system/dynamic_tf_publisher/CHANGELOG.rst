@@ -2,8 +2,8 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.13 (2023-11-09)
+-------------------
 
 * add test to check if dynamic_tf_publisher/sample/sample.launch works (`#1788 <https://github.com/jsk-ros-pkg/jsk_common/issues/1788>`_)
 

@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.13 (2023-11-09)
+-------------------
 * add test to check c++14/C++11/C++0x (`#1785 <https://github.com/jsk-ros-pkg/jsk_common/issues/1785>`_)
 
   * auto lambda for c++14

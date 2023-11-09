@@ -2,8 +2,8 @@
 Changelog for package jsk_rosbag_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.13 (2023-11-09)
+-------------------
 * [jsk_rosbag_tools] Use python3-catkin-pkg-modules when python3 is used (`#1784 <https://github.com/jsk-ros-pkg/jsk_common/issues/1784>`_)
 
   * [jsk_rosbag_tools] Use python3-catkin-pkg-modules when python3 is used

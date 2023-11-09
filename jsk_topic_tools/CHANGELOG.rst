@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.13 (2023-11-09)
+-------------------
 * use hpp instead of deprecated .h pluginlib headers (`#1777 <https://github.com/jsk-ros-pkg/jsk_common/issues/1777>`_)
 * Fix for noetic (`#1774 <https://github.com/jsk-ros-pkg/jsk_common/issues/1774>`_)
 

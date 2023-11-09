@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.13 (2023-11-09)
+-------------------
 * Fix for Noetic (`#1774 <https://github.com/jsk-ros-pkg/jsk_common/issues/1774>`_)
 
   * test/publish_mouse_event.py: value of MouseEvent  must be integer

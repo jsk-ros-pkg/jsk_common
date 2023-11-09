@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.13 (2023-11-09)
+-------------------
 * [jsk_data/download_data.py] Add timeout argument to download() for wget (`#1771 <https://github.com/jsk-ros-pkg/jsk_common/issues/1771>`_)
 
   * add  2 blank lines before function definition ros roslint
