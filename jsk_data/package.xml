@@ -31,6 +31,7 @@
   <exec_depend>rqt_bag</exec_depend>
   <exec_depend>rviz</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>wget</exec_depend>
   <exec_depend>xacro</exec_depend>
   <test_depend>python-freezegun-pip</test_depend>
   <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-imageio</test_depend>
