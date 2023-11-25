@@ -1,0 +1,6 @@
+- name: app_notification_saver/service_notification_saver
+  launch: app_notification_saver/service_notification_saver.launch
+  module: null
+- name: app_notification_saver/smach_notification_saver
+  launch: app_notification_saver/smach_notification_saver.launch
+  module: null
