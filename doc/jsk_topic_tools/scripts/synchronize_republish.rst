@@ -35,6 +35,10 @@ Parameters
 
   If ``true``, approximate synchronization is used for synchoronizing assigned topics.
 
+* ``~allow_headerless`` (Bool, Default: ``false``)
+
+  If ``true``, ``allow_headerless`` option of approximate synchronization is enabled.
+
 * ``~queue_size`` (Integer, Default: ``100``)
 
   Queue length for subscribing topics.
