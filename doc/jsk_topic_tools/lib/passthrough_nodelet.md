@@ -40,13 +40,13 @@
 $ roslaunch jsk_topic_tools passthrough_sample.launch
 
 # Terminal 2
-$ rostopic pub /passthrough_sample/input std_msgs/String "data: 'hello'" -r10
+$ rostopic pub /input std_msgs/String "data: 'hello'" -r10
 
 # Terminal 3
-$ rostopic echo /passthrough_sample/input
+$ rostopic echo /input
 
 # Terminal 4
-$ rostopic echo /passthrough_sample/output
+$ rostopic echo /output
 
 # Terminal 5
 $ rosservice call /passthrough_sample/request
