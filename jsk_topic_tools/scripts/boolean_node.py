@@ -7,6 +7,8 @@ from operator import xor
 import sys
 
 import rospy
+from distutils.version import LooseVersion
+import pkg_resources
 import std_msgs.msg
 
 from jsk_topic_tools.eval_utils import expr_eval
@@ -65,7 +67,17 @@ class BooleanNode(object):
         if rate == 0:
             rospy.logwarn('You cannot set 0 as the rate; change it to 100.')
             rate = 100
-        rospy.Timer(rospy.Duration(1.0 / rate), self.timer_cb)
+        kwargs = dict(
+            period=rospy.Duration(1.0 / rate),
+            callback=self.timer_cb,
+            oneshot=False,
+        )
+        if (LooseVersion(pkg_resources.get_distribution('rospy').version) >=
+                LooseVersion('1.12.0')) and rospy.get_param('/use_sim_time', None):
+            # on >=kinetic, it raises ROSTimeMovedBackwardsException
+            # when we use rosbag play --loop.
+            kwargs['reset'] = True
+        rospy.Timer(**kwargs)
 
     def callback(self, topic_name, msg):
         if isinstance(msg, rospy.msg.AnyMsg):
