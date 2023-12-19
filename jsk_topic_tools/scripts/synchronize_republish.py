@@ -9,10 +9,13 @@ from rostopic import get_topic_class
 def callback(*msgs):
     stamp = None
     for msg, pub in zip(msgs, pubs):
-        if stamp is None:
-            stamp = msg.header.stamp
-        else:
-            msg.header.stamp = stamp
+        try:
+            if stamp is None:
+                stamp = msg.header.stamp
+            else:
+                msg.header.stamp = stamp
+        except AttributeError:
+            pass
         pub.publish(msg)
 
 
@@ -20,6 +23,7 @@ if __name__ == '__main__':
     rospy.init_node('synchrnoze_republish')
     topics = rospy.get_param('~topics')
     use_async = rospy.get_param('~approximate_sync', False)
+    allow_headerless = rospy.get_param('~allow_headerless', False)
     queue_size = rospy.get_param('~queue_size', 100)
     slop = rospy.get_param('~slop', 0.1)
     pubs = []
@@ -34,7 +38,7 @@ if __name__ == '__main__':
         subs.append(sub)
     if use_async:
         sync = message_filters.ApproximateTimeSynchronizer(
-            subs, queue_size=queue_size, slop=slop)
+            subs, queue_size=queue_size, slop=slop, allow_headerless=allow_headerless)
     else:
         sync = message_filters.TimeSynchronizer(subs, queue_size=queue_size)
     sync.registerCallback(callback)
