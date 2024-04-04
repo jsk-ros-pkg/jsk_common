@@ -31,6 +31,8 @@ def extract_file(path, to_directory='.', chmod=True):
         opener, mode, getnames = zipfile.ZipFile, 'r', lambda f: f.namelist()
     elif path.endswith('.tar.gz') or path.endswith('.tgz'):
         opener, mode, getnames = tarfile.open, 'r:gz', lambda f: f.getnames()
+    elif path.endswith('.tar.xz'):
+        opener, mode, getnames = tarfile.open, 'r:xz', lambda f: f.getnames()
     elif path.endswith('.tar.bz2') or path.endswith('.tbz'):
         opener, mode, getnames = tarfile.open, 'r:bz2', lambda f: f.getnames()
     else:
