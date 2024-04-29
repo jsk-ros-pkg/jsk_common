@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 
 project(audio_video_recorder)
 
-find_package(catkin REQUIRED COMPONENTS roscpp audio_common_msgs sensor_msgs)
+find_package(catkin REQUIRED COMPONENTS roscpp audio_common_msgs message_filters sensor_msgs)
 
 find_package(PkgConfig)
 pkg_check_modules(GST1.0 gstreamer-1.0 REQUIRED)
