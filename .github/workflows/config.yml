@@ -105,6 +105,7 @@ jobs:
           # - DISTRO: ubuntu:22.04
           #   CATKIN_OPTIONS: "--ignore-pkg image_view2"
           #   CMAKE_OPTIONS: "-DCMAKE_CXX_FLAGS=-std=c++11"
+          - DISTRO: ubuntu:24.04
 
     container: ${{ matrix.DISTRO }}
 
