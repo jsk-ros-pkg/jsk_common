@@ -150,6 +150,21 @@ def _get_package_source_path(pkg_name):
     return pkg_path
 
 
+def _get_colcon_package_share_path(pkg_name):
+    """
+    Return package share path when colcon build.
+    NOTE: The install/share or install/$pkg_name/share/$pkg_name directories is not created
+    until colcon build finished. So this functions returns the path whether the directory
+    is exists or not.
+    """
+    current_colcon_prefix_path = os.getenv("COLCON_PREFIX_PATH").split(":")[0]
+    if os.path.exists(os.path.join(current_colcon_prefix_path, "share")):  # if merge install
+        share_path = os.path.join(current_colcon_prefix_path, "share", pkg_name)
+    else:  # if default install
+        share_path = os.path.join(current_colcon_prefix_path, pkg_name, "share", pkg_name)
+    return share_path
+
+
 def download_data(pkg_name, path, url, md5, download_client=None,
                   extract=False, compressed_bags=None, quiet=True, chmod=True,
                   n_times=2):
@@ -172,7 +187,10 @@ def download_data(pkg_name, path, url, md5, download_client=None,
     if compressed_bags is None:
         compressed_bags = []
     if not osp.isabs(path):
-        pkg_path = _get_package_source_path(pkg_name)
+        if os.getenv("COLCON_PREFIX_PATH"):
+            pkg_path = _get_colcon_package_share_path(pkg_name)
+        else:
+            pkg_path = _get_package_source_path(pkg_name)
         if not pkg_path:
             print('\033[31mPackage [%s] is not found in current workspace. Skipping download\033[0m' % pkg_name,
                   file=sys.stderr)
