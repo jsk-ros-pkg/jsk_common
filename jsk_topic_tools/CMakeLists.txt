@@ -244,7 +244,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
 )
 
 file(GLOB PYTHON_SCRIPTS scripts/*.py)
-list(APPEND PYTHON_SCRIPTS is_synchronized rostopic_connection_list)
+list(APPEND PYTHON_SCRIPTS scripts/is_synchronized scripts/rostopic_connection_list)
 catkin_install_python(
   PROGRAMS ${PYTHON_SCRIPTS}
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -253,7 +253,6 @@ catkin_install_python(
 install(
   PROGRAMS scripts/sample_topic_update_caller.sh
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  USE_SOURCE_PERMISSIONS
 )
 
 install(FILES ${jsk_topic_tools_test_files}

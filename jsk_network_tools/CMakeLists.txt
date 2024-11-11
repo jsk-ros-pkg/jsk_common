@@ -72,7 +72,6 @@ catkin_install_python(
 install(
   PROGRAMS scripts/expand_udp_receive_buffer.sh
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  USE_SOURCE_PERMISSIONS
 )
 install(DIRECTORY launch test
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
