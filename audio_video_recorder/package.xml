@@ -24,6 +24,7 @@
   <exec_depend>gstreamer1.0-plugins-base</exec_depend>
   <exec_depend>gstreamer1.0-plugins-good</exec_depend>
   <exec_depend>gstreamer1.0-plugins-ugly</exec_depend>
+  <exec_depend>libgstreamer1.0-dev</exec_depend>
   <exec_depend>message_filters</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
 </package>

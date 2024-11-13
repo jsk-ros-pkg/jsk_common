@@ -18,7 +18,7 @@ catkin_package(
   CATKIN_DEPENDS
 )
 
-if($ENV{ROS_DISTRO} STREQUAL "noetic")
+if($ENV{ROS_DISTRO} STRGREATER "noetic")
   catkin_generate_virtualenv(
     INPUT_REQUIREMENTS requirements.in
     PYTHON_INTERPRETER python3
