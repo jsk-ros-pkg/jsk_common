@@ -1,0 +1,37 @@
+<launch>
+    <node pkg="audio_capture" type="audio_capture" name="audio_capture" output="log">
+        <rosparam subst_value="true">
+            bitrate: 128
+            device: ""
+            channels: 1
+            sample_rate: 16000
+            format: mp3
+            sample_format: S16LE
+        </rosparam>
+    </node>
+
+    <node name="usb_cam_node" pkg="usb_cam" type="usb_cam_node" output="log">
+        <rosparam subst_value="true">
+            pixel_format: yuyv
+            image_height: 480
+            image_width: 640
+            framerate: 30
+        </rosparam>
+    </node>
+
+    <node
+        pkg="audio_video_recorder"
+        type="audio_video_recorder_server"
+        name="audio_video_recorder_server"
+        output="screen"
+        />
+
+    <node
+        pkg="audio_video_recorder"
+        type="sample_audio_video_recorder_client.py"
+        name="sample_audio_video_recorder_client"
+        required="true"
+        output="screen"
+        />
+
+</launch>

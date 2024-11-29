@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+
+import rospy
+from audio_video_recorder.audio_video_recorder_server import AudioVideoRecorderServer
+
+
+def main():
+
+    rospy.init_node('audio_video_recorder_server')
+    server = AudioVideoRecorderServer()
+    server.spin()
+
+
+if __name__=='__main__':
+    main()

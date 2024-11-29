@@ -1,0 +1,7 @@
+<launch>
+  <node
+    pkg="audio_video_recorder"
+    type="audio_video_recorder_server"
+    name="audio_video_recorder_server"
+    />
+</launch>

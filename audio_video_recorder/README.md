@@ -15,11 +15,25 @@ You can record audio and video on your laptop.
 roslaunch audio_video_recorder sample_audio_video_recorder.launch
 ```
 
-## Parameters
+If you want to sedd ROS Interface Sample (Topic/Service) of audio_video_recorder, Please run audio_video_recorder_server demo.
+
+```
+roslaunch audio_video_recorder sample_audio_video_recorder_server.launch
+```
+
+And if you want to see an example of client script for audio_video_recorder_server. please see [sample_audio_video_recorder_client.py](./node_scripts/sample_audio_video_recorder_client.py).
+
+## Nodes
+
+### audio_video_recorder
+
+Node to record audio and video with given parameters.
+
+#### Parameters
 
 Node: `audio_video_recorder/audio_video_recorder`
 
-### Common parameters
+##### Common parameters
 
 - `queue_size` (`Int`, default: `100`)
 
@@ -33,7 +47,7 @@ Node: `audio_video_recorder/audio_video_recorder`
 
   Output file format (Only `avi` is supported now.)
 
-### Audio parameters
+##### Audio parameters
 
 - `audio_format` (`String`, default: `mp3`)
 
@@ -55,7 +69,7 @@ Node: `audio_video_recorder/audio_video_recorder`
 
   Audio sample rate
 
-### Video parameters
+##### Video parameters
 
 - `video_encoding` (`String`, default: `RGB`)
 
@@ -72,3 +86,23 @@ Node: `audio_video_recorder/audio_video_recorder`
 - `video_framerate` (`Int`, default: `30`)
 
   Video frame rate
+
+### audio_video_recorder_server
+
+ROS Interface and recording task manager for audio_video_recorder.
+
+#### Services
+
+- `~start_record` (`audio_video_recorder/StartRecord`)
+
+  Start a recording task
+
+- `~stop_record` (`audio_video_recorder/StopRecord`)
+
+  Stop a specified recording task
+
+#### Publisher
+
+- `~record_tasks` (`audio_video_recorder/RecordTaskArray`)
+
+  Recording tasks currently running.
