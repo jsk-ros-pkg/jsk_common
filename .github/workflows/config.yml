@@ -157,7 +157,6 @@ jobs:
           set -x
           # hack!
           apt install -y -q -qq python-is-python3
-          sed -i s/noetic/Debian/ $GITHUB_WORKSPACE/jsk_rosbag_tools/CMakeLists.txt
           # setup workspace
           mkdir -p ~/ws_current/src
           cd ~/ws_current/src
