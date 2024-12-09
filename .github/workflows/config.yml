@@ -40,7 +40,11 @@ jobs:
             BEFORE_SCRIPT : "find $GITHUB_WORKSPACE -iname image_view2 -exec touch {}/CATKIN_IGNORE \\;"
 
 
-    container: ${{ matrix.CONTAINER }}
+    container:
+      image: ${{ matrix.CONTAINER }}
+      volumes:
+        - /tmp/node20:/__e/node20
+
     steps:
       - name: Install latest git ( use sudo for ros-ubuntu )
         run: |
@@ -62,6 +66,21 @@ jobs:
           else
              git config --global --add safe.directory $GITHUB_WORKSPACE
           fi
+
+      - name: Try to replace `node` with an glibc 2.17
+        shell: bash
+        run: |
+          if [ "${{ matrix.CONTAINER }}" = "jskrobotics/ros-ubuntu:14.04" ]; then
+             export USER=$(whoami)
+             sudo chmod 777 -R /__e/node20
+             sudo chown -R $USER /__e/node20
+          fi
+          ls -lar /__e/node20 &&
+          sudo apt-get install -y curl &&
+          curl -Lo /tmp/node.tar.gz https://unofficial-builds.nodejs.org/download/release/v20.17.0/node-v20.17.0-linux-x64-glibc-217.tar.gz &&
+          cd /__e/node20 &&
+          tar -x --strip-components=1 -f /tmp/node.tar.gz &&
+          ls -lar /__e/node20/bin/
 
       - name: Chcekout
         uses: actions/checkout@v3.0.2
@@ -169,4 +188,62 @@ jobs:
           cd ~/ws_current/
           source ~/ws_depend/devel_isolated/setup.bash
           catkin_make_isolated ${{ matrix.CATKIN_OPTIONS }} --cmake-args -DCATKIN_ENABLE_TESTING=OFF -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ${{ matrix.CMAKE_OPTIONS }}
+        shell: bash
+
+  # ROS-O setup https://github.com/v4hn/ros-o-builder/blob/jammy-one/README.md#install-instructions
+  ros-o:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - DISTRO: ubuntu:22.04
+            ROS_REPOSITORY_URL: https://raw.githubusercontent.com/v4hn/ros-o-builder/jammy-one/repository
+
+    container: ${{ matrix.DISTRO }}
+
+    env:
+      DEBIAN_FRONTEND : noninteractive
+
+    steps:
+      - name: Chcekout Source
+        uses: actions/checkout@v3.0.2
+
+      - name: Setup ROS-O deb repository
+        run: |
+          set -x
+          apt update && apt install -qq -y ca-certificates
+          echo "deb [trusted=yes] ${{ matrix.ROS_REPOSITORY_URL }}/ ./" | tee /etc/apt/sources.list.d/ros-o-builder.list
+          apt update
+          apt install -qq -y python3-rosdep2
+          echo "yaml ${{ matrix.ROS_REPOSITORY_URL }}/local.yaml debian" | tee /etc/ros/rosdep/sources.list.d/1-ros-o-builder.list
+          rosdep update
+
+      - name: Setup catkin-tools
+        run: |
+          set -x
+          # setup catkin tools
+          apt install -qq -y python3-pip
+          pip3 install catkin-tools
+          # setup build tools
+          apt install -qq -y cmake build-essential catkin ros-one-rosbash
+
+      - name: Setup Workspace
+        run: |
+          source /opt/ros/one/setup.bash
+          set -x
+          # setup workspace
+          mkdir -p ~/ws/src
+          cd ~/ws/src
+          ln -sf $GITHUB_WORKSPACE .
+          rosdep install -qq -r -y --from-path . --ignore-src || echo "OK"
+        shell: bash
+
+      - name: Compile Packages
+        run: |
+          source /opt/ros/one/setup.bash
+          set -x
+          cd ~/ws/
+          catkin build --no-status -sv ${{ matrix.CATKIN_OPTIONS }} --cmake-args -DCATKIN_ENABLE_TESTING=OFF -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ${{ matrix.CMAKE_OPTIONS }}
         shell: bash
