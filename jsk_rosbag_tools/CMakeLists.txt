@@ -18,15 +18,15 @@ catkin_package(
   CATKIN_DEPENDS
 )
 
-if(("$ENV{ROS_DISTRO}" STREQUAL "noetic") OR ("$ENV{ROS_DISTRO}" STREQUAL "Debian") OR ("$ENV{ROS_DISTRO}" STREQUAL "debian"))
-  catkin_generate_virtualenv(
-    INPUT_REQUIREMENTS requirements.in
-    PYTHON_INTERPRETER python3
-  )
-else()
+if($ENV{ROS_DISTRO} STREQUAL "indigo" OR $ENV{ROS_DISTRO} STREQUAL "kinetic" OR $ENV{ROS_DISTRO} STREQUAL "melodic")
   catkin_generate_virtualenv(
     INPUT_REQUIREMENTS requirements.in.python2
     PYTHON_INTERPRETER python2
+  )
+else()
+  catkin_generate_virtualenv(
+    INPUT_REQUIREMENTS requirements.in
+    PYTHON_INTERPRETER python3
   )
 endif()
 
