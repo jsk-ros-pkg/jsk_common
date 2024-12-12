@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.14 (2024-12-12)
+-------------------
 * [colcon][jsk_data] Support download_data with colcon (`#1803 <https://github.com/jsk-ros-pkg/jsk_common/issues/1803>`_)
 * [jsk_data] add xz support for download_data (`#1797 <https://github.com/jsk-ros-pkg/jsk_common/issues/1797>`_)
 

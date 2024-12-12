@@ -2,8 +2,8 @@
 Changelog for package jsk_rosbag_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.14 (2024-12-12)
+-------------------
 * [jsk_rosbag_tools][ros-o] only use STREQUAL to compare ROS_DISTRO in cmake (`#1807 <https://github.com/jsk-ros-pkg/jsk_common/issues/1807>`_)
 * .github/forkflows/config.yml: add ROS-O test (`#1809 <https://github.com/jsk-ros-pkg/jsk_common/issues/1809>`_)
 * [jsk_rosbag_tools] Fixed pillow version (`#1799 <https://github.com/jsk-ros-pkg/jsk_common/issues/1799>`_)

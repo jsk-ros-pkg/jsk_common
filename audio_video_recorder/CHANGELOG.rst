@@ -2,8 +2,8 @@
 Changelog for package audio_video_recorder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.14 (2024-12-12)
+-------------------
 * [audio_video_recorder] needs to find_package message_filters (`#1800 <https://github.com/jsk-ros-pkg/jsk_common/issues/1800>`_)
 * [audio_video_recorder][jsk_rosbag_tools] support ros-o (`#1807 <https://github.com/jsk-ros-pkg/jsk_common/issues/1807>`_)
   * audio_video_recorder needs to find_package message_filters
