@@ -1,0 +1,49 @@
+<launch>
+  <!-- start: arguments -->
+  <arg name="video_path" />
+  <arg name="video_title" />
+  <arg name="video_topic_name" />
+  <arg name="use_compressed" default="false" />
+  <arg name="video_decompressed_topic_name"
+       default="/app_manager/video_recorder_plugin/image" />
+  <arg name="video_fps" />
+  <arg name="video_codec" default="XVID" />
+  <arg name="use_machine" default="false" />
+  <arg name="machine_name" default="localhost" />
+  <arg name="machine_file" default="" />
+  <!-- end: arguments -->
+
+  <machine name="localhost" address="localhost" />
+  <include if="$(arg use_machine)" file="$(arg machine_file)" />
+
+  <group if="$(arg use_compressed)">
+    <node name="$(anon video_recorder_rgb_decompress)" pkg="image_transport" type="republish"
+          args="compressed raw">
+      <remap from="in" to="$(arg video_topic_name)" />
+      <remap from="out" to="$(arg video_decompressed_topic_name)" />
+    </node>
+    <node name="$(anon video_recorder)" pkg="image_view" type="video_recorder"
+          machine="$(arg machine_name)">
+      <remap from="image" to="$(arg video_decompressed_topic_name)" />
+      <rosparam subst_value="true">
+        filename: $(arg video_path)/$(arg video_title)
+        stamped_filename: false
+        fps: $(arg video_fps)
+        codec: $(arg video_codec)
+      </rosparam>
+    </node>
+  </group>
+  <group unless="$(arg use_compressed)">
+    <node name="$(anon video_recorder)" pkg="image_view" type="video_recorder"
+          machine="$(arg machine_name)">
+      <remap from="image" to="$(arg video_topic_name)" />
+      <rosparam subst_value="true">
+        filename: $(arg video_path)/$(arg video_title)
+        stamped_filename: false
+        fps: $(arg video_fps)
+        codec: $(arg video_codec)
+      </rosparam>
+    </node>
+  </group>
+
+</launch>
