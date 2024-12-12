@@ -2,6 +2,15 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [colcon][jsk_data] Support download_data with colcon (`#1803 <https://github.com/jsk-ros-pkg/jsk_common/issues/1803>`_)
+* [jsk_data] add xz support for download_data (`#1797 <https://github.com/jsk-ros-pkg/jsk_common/issues/1797>`_)
+
+* [jsk_data] add 'wget' to package.xml, jsk_data/src/download_data.py requries wget (`#1793 <https://github.com/jsk-ros-pkg/jsk_common/issues/1793>`_)
+
+* Contributors: Koki Shinjo, Yoshiki Obinata
+
 2.2.13 (2023-11-09)
 -------------------
 * [jsk_data/download_data.py] Add timeout argument to download() for wget (`#1771 <https://github.com/jsk-ros-pkg/jsk_common/issues/1771>`_)

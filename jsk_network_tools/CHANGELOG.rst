@@ -2,6 +2,13 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove use_source_permissions to fix build error (`#1805 <https://github.com/jsk-ros-pkg/jsk_common/issues/1805>`_)
+  * use catkin_install_python to install python scripts
+
+* Contributors: Yoshiki Obinata
+
 2.2.13 (2023-11-09)
 -------------------
 * add test to compile on 22.04, see `#1770 <https://github.com/jsk-ros-pkg/jsk_common/issues/1770>`_ (`#1773 <https://github.com/jsk-ros-pkg/jsk_common/issues/1773>`_)

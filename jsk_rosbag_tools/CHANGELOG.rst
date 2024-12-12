@@ -2,6 +2,14 @@
 Changelog for package jsk_rosbag_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [jsk_rosbag_tools][ros-o] only use STREQUAL to compare ROS_DISTRO in cmake (`#1807 <https://github.com/jsk-ros-pkg/jsk_common/issues/1807>`_)
+* .github/forkflows/config.yml: add ROS-O test (`#1809 <https://github.com/jsk-ros-pkg/jsk_common/issues/1809>`_)
+* [jsk_rosbag_tools] Fixed pillow version (`#1799 <https://github.com/jsk-ros-pkg/jsk_common/issues/1799>`_)
+
+* Contributors: Iori Yanokura, Yoshiki Obinata
+
 2.2.13 (2023-11-09)
 -------------------
 * [jsk_rosbag_tools] Use python3-catkin-pkg-modules when python3 is used (`#1784 <https://github.com/jsk-ros-pkg/jsk_common/issues/1784>`_)
