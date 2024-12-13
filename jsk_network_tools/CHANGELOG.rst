@@ -2,6 +2,9 @@
 Changelog for package jsk_network_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.2.14 (2024-12-12)
 -------------------
 * remove use_source_permissions to fix build error (`#1805 <https://github.com/jsk-ros-pkg/jsk_common/issues/1805>`_)

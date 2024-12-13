@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.2.14 (2024-12-12)
 -------------------
 * [jsk_topic_tools] add allow_headerless option to synchronize_republish (`#1794 <https://github.com/jsk-ros-pkg/jsk_common/issues/1794>`_)

@@ -2,6 +2,9 @@
 Changelog for package jsk_rosbag_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.2.14 (2024-12-12)
 -------------------
 * [jsk_rosbag_tools][ros-o] only use STREQUAL to compare ROS_DISTRO in cmake (`#1807 <https://github.com/jsk-ros-pkg/jsk_common/issues/1807>`_)
