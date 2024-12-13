@@ -83,7 +83,11 @@ def _list_aries_files(query=None, ls_options=None):
         cmd = 'ls {opt} {dir}/private/{q}'
         cmd = cmd.format(opt=' '.join(ls_options), dir=DATA_DIR, q=query)
         _, stdout, _ = ssh.exec_command(cmd)
-        files = stdout.read().splitlines()
+        output = stdout.read()
+        if isinstance(output, bytes):  # Python 3
+            files = output.decode('utf-8').splitlines()
+        else:
+            files = output.splitlines()
     return files
 
 

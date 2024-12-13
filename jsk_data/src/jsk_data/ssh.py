@@ -16,6 +16,7 @@ def _connect_ssh_context(host, username, password):
     try:
         ssh = paramiko.SSHClient()
         ssh.load_host_keys(os.path.expanduser('~/.ssh/known_hosts'))
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # Automatically add the host key
         ssh.connect(host, username=username, password=password)
         yield ssh
     finally:
