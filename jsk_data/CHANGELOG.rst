@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.15 (2024-12-13)
+-------------------
 * [jsk_data] Automatically add the host key and Check stdout.read() type (`#1810 <https://github.com/jsk-ros-pkg/jsk_common/issues/1810>`_)
   - stdout.read() returns a bytes object in Python 3, whereas in Python 2, it returned a str
   - The error indicates that the new version of Paramiko (2.6.0) is stricter about host key checking, requiring the server to be present in the known_hosts file by default. This is a security feature to prevent man-in-the-middle attacks.
