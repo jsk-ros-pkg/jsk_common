@@ -138,11 +138,17 @@ jobs:
           set -x
           echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
           apt update -q
+          ##
+          # https://github.com/v4hn/ros-deb-builder-action/blob/b7c0ed93fde3a86b5b1027bf8f7145cad6067c90/prepare.sh#L27-L28
+          # Canonical dropped the Debian ROS packages from 24.04 for political reasons. Wow.
+          test "${{ matrix.DISTRO }}" = "ubuntu:24.04" && apt install -y software-properties-common retry && retry -d 50,10,30,300 -t 12 add-apt-repository -y ppa:v-launchpad-jochen-sprickerhof-de/ros
+          ##
           apt install -y -q -qq catkin git curl build-essential libboost-all-dev python3-pip python3-venv python3-rosdep2
-          apt install -y -q -qq ros-desktop-dev rosbash
-          apt install -y -q -qq libself-test-dev libpcl-ros-dev
-          apt install -y -q -qq ros-core-dev ros-robot-dev
-          pip install vcstool
+          test "${{ matrix.DISTRO }}" = "ubuntu:22.04" && apt install -y -q -qq ros-desktop-dev rosbash
+          test "${{ matrix.DISTRO }}" = "ubuntu:22.04" && apt install -y -q -qq libself-test-dev libpcl-ros-dev
+          test "${{ matrix.DISTRO }}" = "ubuntu:22.04" && apt install -y -q -qq ros-core-dev ros-robot-dev
+          test "${{ matrix.DISTRO }}" = "ubuntu:22.04" && pip install vcstool
+          test "${{ matrix.DISTRO }}" != "ubuntu:22.04" && apt install -y -q -qq pipx && pipx install vcstool
           rosdep update
 
       - name: Setup rosinstall_generator
@@ -160,6 +166,7 @@ jobs:
           mkdir -p ~/ws_depend/src
           cd ~/ws_depend/src
           ROS_PACKAGE_PATH=/usr/share rosinstall_generator --rosdistro noetic --from-path $GITHUB_WORKSPACE --deps --exclude RPP --depend-type buildtool build | tee repos
+          export PATH=/github/home/.local/bin:$PATH  # for 24.04, vcs installed with pipx
           vcs import --shallow < repos
           # override to use latest development for 22.04
           rosinstall_generator laser_filters laser_assembler map_server --rosdistro noetic  --upstream-development  | vcs import --force
@@ -216,6 +223,11 @@ jobs:
           set -x
           apt update && apt install -qq -y ca-certificates
           echo "deb [trusted=yes] ${{ matrix.ROS_REPOSITORY_URL }}/ ./" | tee /etc/apt/sources.list.d/ros-o-builder.list
+          ##
+          # https://github.com/v4hn/ros-deb-builder-action/blob/b7c0ed93fde3a86b5b1027bf8f7145cad6067c90/prepare.sh#L27-L28
+          # Canonical dropped the Debian ROS packages from 24.04 for political reasons. Wow.
+          test "${{ matrix.DISTRO }}" = "ubuntu:24.04" && apt install -y software-properties-common retry && retry -d 50,10,30,300 -t 12 add-apt-repository -y ppa:v-launchpad-jochen-sprickerhof-de/ros
+          ##
           apt update
           apt install -qq -y python3-rosdep2
           echo "yaml ${{ matrix.ROS_REPOSITORY_URL }}/local.yaml debian" | tee /etc/ros/rosdep/sources.list.d/1-ros-o-builder.list
