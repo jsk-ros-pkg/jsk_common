@@ -243,9 +243,16 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h" # Ignore *_version.h.in files
 )
 
-install(DIRECTORY scripts/
+file(GLOB PYTHON_SCRIPTS scripts/*.py)
+list(APPEND PYTHON_SCRIPTS scripts/is_synchronized scripts/rostopic_connection_list)
+catkin_install_python(
+  PROGRAMS ${PYTHON_SCRIPTS}
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  USE_SOURCE_PERMISSIONS
+)
+
+install(
+  PROGRAMS scripts/sample_topic_update_caller.sh
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 install(FILES ${jsk_topic_tools_test_files}

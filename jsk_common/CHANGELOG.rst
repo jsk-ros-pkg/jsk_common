@@ -2,6 +2,12 @@
 Changelog for package jsk_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.15 (2024-12-13)
+-------------------
+
+2.2.14 (2024-12-12)
+-------------------
+
 2.2.13 (2023-11-09)
 -------------------
 * Add jsk_rosbag_tools package (`#1738 <https://github.com/jsk-ros-pkg/jsk_common/issues/1738>`_)

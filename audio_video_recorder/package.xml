@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>audio_video_recorder</name>
-  <version>2.2.13</version>
+  <version>2.2.15</version>
   <description>ROS package for recording image and audio synchronously</description>
 
   <author email="shingogo.5511@gmail.com">Shingo Kitagawa</author>
@@ -24,6 +24,7 @@
   <exec_depend>gstreamer1.0-plugins-base</exec_depend>
   <exec_depend>gstreamer1.0-plugins-good</exec_depend>
   <exec_depend>gstreamer1.0-plugins-ugly</exec_depend>
+  <exec_depend>libgstreamer1.0-dev</exec_depend>
   <exec_depend>message_filters</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
 </package>

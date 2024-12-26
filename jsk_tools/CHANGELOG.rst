@@ -2,6 +2,12 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.15 (2024-12-13)
+-------------------
+
+2.2.14 (2024-12-12)
+-------------------
+
 2.2.13 (2023-11-09)
 -------------------
 * [test_topic_published.py, boolean_node.py] Enable importing modules (`#1760 <https://github.com/jsk-ros-pkg/jsk_common/issues/1760>`_)

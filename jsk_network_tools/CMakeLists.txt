@@ -63,9 +63,15 @@ add_dependencies(silverhammer_highspeed_internal_receiver
 # recursively into ${CATKIN_PACKAGE_SHARE_DESTINATION}.
 # Be careful that 'launch' and 'launch/' are different: the former is directory
 # and the latter is each content.
-install(DIRECTORY scripts/
+
+file(GLOB PYTHON_SCRIPTS scripts/*.py)
+catkin_install_python(
+  PROGRAMS ${PYTHON_SCRIPTS}
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  USE_SOURCE_PERMISSIONS
+)
+install(
+  PROGRAMS scripts/expand_udp_receive_buffer.sh
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 install(DIRECTORY launch test
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}

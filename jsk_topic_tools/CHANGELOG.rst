@@ -2,6 +2,17 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.15 (2024-12-13)
+-------------------
+
+2.2.14 (2024-12-12)
+-------------------
+* [jsk_topic_tools] add allow_headerless option to synchronize_republish (`#1794 <https://github.com/jsk-ros-pkg/jsk_common/issues/1794>`_)
+* use catkin_install_python to install python scripts (`#1805 <https://github.com/jsk-ros-pkg/jsk_common/issues/1805>`_)
+* [jsk_topic_tools] Add reset option to use boolean_node with rosbag (`#1796 <https://github.com/jsk-ros-pkg/jsk_common/issues/1796>`_)
+
+* Contributors: Aoi Nakane, Koki Shinjo, Yoshiki Obinata
+
 2.2.13 (2023-11-09)
 -------------------
 * use hpp instead of deprecated .h pluginlib headers (`#1777 <https://github.com/jsk-ros-pkg/jsk_common/issues/1777>`_)
