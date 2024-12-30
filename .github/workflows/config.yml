@@ -125,6 +125,7 @@ jobs:
           # - DISTRO: ubuntu:22.04
           #   CATKIN_OPTIONS: "--ignore-pkg image_view2"
           #   CMAKE_OPTIONS: "-DCMAKE_CXX_FLAGS=-std=c++11"
+          - DISTRO: ubuntu:24.04
 
     container: ${{ matrix.DISTRO }}
 
@@ -137,11 +138,17 @@ jobs:
           set -x
           echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
           apt update -q
+          ##
+          # https://github.com/v4hn/ros-deb-builder-action/blob/b7c0ed93fde3a86b5b1027bf8f7145cad6067c90/prepare.sh#L27-L28
+          # Canonical dropped the Debian ROS packages from 24.04 for political reasons. Wow.
+          test "${{ matrix.DISTRO }}" = "ubuntu:24.04" && apt install -y software-properties-common retry && retry -d 50,10,30,300 -t 12 add-apt-repository -y ppa:v-launchpad-jochen-sprickerhof-de/ros
+          ##
           apt install -y -q -qq catkin git curl build-essential libboost-all-dev python3-pip python3-venv python3-rosdep2
-          apt install -y -q -qq ros-desktop-dev rosbash
-          apt install -y -q -qq libself-test-dev libpcl-ros-dev
-          apt install -y -q -qq ros-core-dev ros-robot-dev
-          pip install vcstool
+          test "${{ matrix.DISTRO }}" = "ubuntu:22.04" && apt install -y -q -qq ros-desktop-dev rosbash
+          test "${{ matrix.DISTRO }}" = "ubuntu:22.04" && apt install -y -q -qq libself-test-dev libpcl-ros-dev
+          test "${{ matrix.DISTRO }}" = "ubuntu:22.04" && apt install -y -q -qq ros-core-dev ros-robot-dev
+          test "${{ matrix.DISTRO }}" = "ubuntu:22.04" && pip install vcstool
+          test "${{ matrix.DISTRO }}" != "ubuntu:22.04" && apt install -y -q -qq pipx && pipx install vcstool
           rosdep update
 
       - name: Setup rosinstall_generator
@@ -152,23 +159,48 @@ jobs:
           cd rosinstall_generator
           python3 ./setup.py install
 
+      - name: Setup 24.04 Dependencies Workspace
+        if: matrix.DISTRO != 'ubuntu:22.04'
+        run: |
+          set -x
+          # install dependencies
+          mkdir -p ~/ws_depend/src/ros-o
+          cd ~/ws_depend/src/ros-o
+          git clone https://github.com/ros-o/rosconsole.git
+          git clone https://github.com/ros-o/gencpp.git
+          git clone https://github.com/ros-o/ros_comm.git
+          git clone https://github.com/ros-o/catkin_virtualenv.git
+          git clone https://github.com/ros-o/perception_pcl.git
+          export PATH=/github/home/.local/bin:$PATH  # for 24.04, vcs installed with pipx
+          ROS_PACKAGE_PATH=/usr/share:$(pwd) rosinstall_generator --rosdistro noetic --deps --exclude RPP --repos message_runtime message_generation | vcs import --shallow
+          ROS_PACKAGE_PATH=/usr/share:$(pwd) rosinstall_generator --rosdistro noetic rosbash | vcs import --shallow
+
+      - name: Setup 22.04 Dependencies Workspace
+        if: matrix.DISTRO == 'ubuntu:22.04'
+        run: |
+          set -x
+          # install dependencies
+          mkdir -p ~/ws_depend/src/ros-o
+          cd ~/ws_depend/src/ros-o
+          rosinstall_generator catkin_virtualenv --rosdistro noetic | vcs import --force
+          # Run catkin_run_tests_target only when CATKIN_ENABLE_TESTING is enabled #89 (https://github.com/locusrobotics/catkin_virtualenv/pull/89)
+          curl -s -L -O https://patch-diff.githubusercontent.com/raw/locusrobotics/catkin_virtualenv/pull/89.diff
+          patch -p1 < 89.diff
+
       - name: Setup Dependencies Workspace
         run: |
           set -x
           # install dependencies
-          mkdir -p ~/ws_depend/src
-          cd ~/ws_depend/src
-          ROS_PACKAGE_PATH=/usr/share rosinstall_generator --rosdistro noetic --from-path $GITHUB_WORKSPACE --deps --exclude RPP --depend-type buildtool build | tee repos
+          mkdir -p ~/ws_depend/src/3rdparty-src
+          cd ~/ws_depend/src/3rdparty-src
+          ROS_PACKAGE_PATH=/usr/share rosinstall_generator --rosdistro noetic --from-path $GITHUB_WORKSPACE $HOME/ws_depend/src/ros-o --deps --deps-only --exclude RPP test_catkin_virtualenv test_catkin_virtualenv_inherited --depend-type buildtool build | tee repos
+          export PATH=/github/home/.local/bin:$PATH  # for 24.04, vcs installed with pipx
           vcs import --shallow < repos
           # override to use latest development for 22.04
-          rosinstall_generator laser_filters laser_assembler map_server --rosdistro noetic  --upstream-development  | vcs import --force
-          rosinstall_generator catkin_virtualenv --rosdistro noetic | vcs import --force
-          rm -fr jsk_common
-          # Run catkin_run_tests_target only when CATKIN_ENABLE_TESTING is enabled #89 (https://github.com/locusrobotics/catkin_virtualenv/pull/89)
-          curl -s -L -O https://patch-diff.githubusercontent.com/raw/locusrobotics/catkin_virtualenv/pull/89.diff
-          patch -p1 < 89.diff
-          rosdep install -qq -r -y --from-path . --ignore-src || echo "OK"
-          cd ..
+          rosinstall_generator laser_filters laser_assembler map_server --rosdistro noetic --upstream-development | vcs import --force
+          ROS_PACKAGE_PATH=/usr/share:$HOME/ws_depend/src/ros-o rosinstall_generator --from-path $HOME/ws_depend/src/3rdparty-src --rosdistro noetic --deps --deps-only --exclude RPP test_catkin_virtualenv test_catkin_virtualenv_inherited | vcs import --shallow
+          cd ~/ws_depend
+          rosdep install -qq -r -y --from-path src --ignore-src || echo "OK"
           catkin_make_isolated --cmake-args -DCATKIN_ENABLE_TESTING=OFF
 
       - name: Setup Workspace
@@ -215,6 +247,11 @@ jobs:
           set -x
           apt update && apt install -qq -y ca-certificates
           echo "deb [trusted=yes] ${{ matrix.ROS_REPOSITORY_URL }}/ ./" | tee /etc/apt/sources.list.d/ros-o-builder.list
+          ##
+          # https://github.com/v4hn/ros-deb-builder-action/blob/b7c0ed93fde3a86b5b1027bf8f7145cad6067c90/prepare.sh#L27-L28
+          # Canonical dropped the Debian ROS packages from 24.04 for political reasons. Wow.
+          test "${{ matrix.DISTRO }}" = "ubuntu:24.04" && apt install -y software-properties-common retry && retry -d 50,10,30,300 -t 12 add-apt-repository -y ppa:v-launchpad-jochen-sprickerhof-de/ros
+          ##
           apt update
           apt install -qq -y python3-rosdep2
           echo "yaml ${{ matrix.ROS_REPOSITORY_URL }}/local.yaml debian" | tee /etc/ros/rosdep/sources.list.d/1-ros-o-builder.list
