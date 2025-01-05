@@ -88,7 +88,7 @@ namespace jsk_topic_tools
     }
   }
 
-  inline bool ConnectionBasedNodelet::isSubscribed()
+  bool ConnectionBasedNodelet::isSubscribed()
   {
     return connection_status_ == SUBSCRIBED;
   }
