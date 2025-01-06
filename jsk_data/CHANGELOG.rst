@@ -2,6 +2,9 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.2.15 (2024-12-13)
 -------------------
 * [jsk_data] Automatically add the host key and Check stdout.read() type (`#1810 <https://github.com/jsk-ros-pkg/jsk_common/issues/1810>`_)

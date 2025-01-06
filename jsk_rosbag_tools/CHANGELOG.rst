@@ -2,6 +2,15 @@
 Changelog for package jsk_rosbag_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [ROS-O] fix for ROS-O (`#1802 <https://github.com/jsk-ros-pkg/jsk_common/issues/1802>`_)
+
+  * jsk_rosbag_tools: use requirements.in.python3.12  for python3.12 (ubuntu 24.04)
+  * jsk_rosbag_tools/CMakeLists.txt: $ENV{ROS_DISTRO} -. "$ENV{ROS_DISTRO}" for 24.04, which does not have ROS_DISTRO environment
+
+* Contributors: Kei Okada
+
 2.2.15 (2024-12-13)
 -------------------
 

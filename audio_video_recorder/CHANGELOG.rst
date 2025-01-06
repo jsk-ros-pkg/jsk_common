@@ -2,6 +2,9 @@
 Changelog for package audio_video_recorder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.2.15 (2024-12-13)
 -------------------
 
