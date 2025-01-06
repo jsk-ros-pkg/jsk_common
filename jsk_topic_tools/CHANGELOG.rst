@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.16 (2025-01-06)
+-------------------
 * remove inline from ConnectionBaseNodelet::isSubscribed() (`#1812 <https://github.com/jsk-ros-pkg/jsk_common/issues/1812>`_)
 
   * jsk_peceptino could not find isSubscribed if it is defined as inline

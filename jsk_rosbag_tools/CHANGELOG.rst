@@ -2,8 +2,8 @@
 Changelog for package jsk_rosbag_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.16 (2025-01-06)
+-------------------
 * [ROS-O] fix for ROS-O (`#1802 <https://github.com/jsk-ros-pkg/jsk_common/issues/1802>`_)
 
   * jsk_rosbag_tools: use requirements.in.python3.12  for python3.12 (ubuntu 24.04)
