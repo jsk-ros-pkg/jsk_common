@@ -250,7 +250,7 @@ jobs:
       - name: Setup ROS-O deb repository
         run: |
           set -x
-          apt update && apt install -qq -y ca-certificates
+          apt update && apt install -qq -y ca-certificates git
           echo ${{ matrix.ROS_REPOSITORY_URL }} | tee /etc/apt/sources.list.d/ros-o-builder.list
           ##
           # https://github.com/v4hn/ros-deb-builder-action/blob/b7c0ed93fde3a86b5b1027bf8f7145cad6067c90/prepare.sh#L27-L28
@@ -288,6 +288,10 @@ jobs:
           # setup workspace
           mkdir -p ~/ws/src
           cd ~/ws/src
+          if [ "${{ matrix.DISTRO }}" = "ubuntu:24.04" ]; then
+              # TODO: remove these lines and uncomment https://github.com/ubi-agni/ros-builder-action/blob/191fab06004ad5784c28cf2ba2b18f6d163a860d/ros-one.repos#L1089 after https://github.com/locusrobotics/catkin_virtualenv/pull/115 has been merged.
+              git clone https://github.com/furushchev/catkin_virtualenv.git -b update-version
+          fi
           ln -sf $GITHUB_WORKSPACE .
           rosdep install -qq -r -y --from-path . --ignore-src || echo "OK"
         shell: bash
