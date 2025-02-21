@@ -222,7 +222,8 @@ jobs:
           catkin_make_isolated ${{ matrix.CATKIN_OPTIONS }} --cmake-args -DCATKIN_ENABLE_TESTING=OFF -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ${{ matrix.CMAKE_OPTIONS }}
         shell: bash
 
-  # ROS-O setup https://github.com/v4hn/ros-o-builder/blob/jammy-one/README.md#install-instructions
+  # ROS-O setup for v4hn https://github.com/v4hn/ros-o-builder/blob/jammy-one/README.md#install-instructions
+  # ROS-O setup for techfak https://ros.packages.techfak.net/
   ros-o:
     runs-on: ubuntu-latest
 
@@ -231,7 +232,11 @@ jobs:
       matrix:
         include:
           - DISTRO: ubuntu:22.04
-            ROS_REPOSITORY_URL: https://raw.githubusercontent.com/v4hn/ros-o-builder/jammy-one/repository
+            ROS_REPOSITORY_URL: "deb [trusted=yes] https://raw.githubusercontent.com/v4hn/ros-o-builder/jammy-one/repository ./"
+            ROSDEP_PACKAGE_MAPPING: "yaml https://raw.githubusercontent.com/v4hn/ros-o-builder/jammy-one/repository/local.yaml debian"
+          - DISTRO: ubuntu:24.04
+            ROS_REPOSITORY_URL: "deb [trusted=yes] https://ros.packages.techfak.net noble main"
+            ROSDEP_PACKAGE_MAPPING: "yaml https://ros.packages.techfak.net/ros-one.yaml ubuntu"
 
     container: ${{ matrix.DISTRO }}
 
@@ -246,25 +251,35 @@ jobs:
         run: |
           set -x
           apt update && apt install -qq -y ca-certificates
-          echo "deb [trusted=yes] ${{ matrix.ROS_REPOSITORY_URL }}/ ./" | tee /etc/apt/sources.list.d/ros-o-builder.list
+          echo ${{ matrix.ROS_REPOSITORY_URL }} | tee /etc/apt/sources.list.d/ros-o-builder.list
           ##
           # https://github.com/v4hn/ros-deb-builder-action/blob/b7c0ed93fde3a86b5b1027bf8f7145cad6067c90/prepare.sh#L27-L28
           # Canonical dropped the Debian ROS packages from 24.04 for political reasons. Wow.
           test "${{ matrix.DISTRO }}" = "ubuntu:24.04" && apt install -y software-properties-common retry && retry -d 50,10,30,300 -t 12 add-apt-repository -y ppa:v-launchpad-jochen-sprickerhof-de/ros
           ##
           apt update
-          apt install -qq -y python3-rosdep2
-          echo "yaml ${{ matrix.ROS_REPOSITORY_URL }}/local.yaml debian" | tee /etc/ros/rosdep/sources.list.d/1-ros-o-builder.list
+          if [ "${{ matrix.DISTRO }}" = "ubuntu:22.04" ]; then
+              apt install -qq -y python3-rosdep2
+          else
+              # Do not install python3-rosdep2, which is an outdated version of rosdep shipped via the Ubuntu repositories (instead of ROS)!
+              apt install -qq -y python3-rosdep
+              rosdep init
+          fi
+          echo ${{ matrix.ROSDEP_PACKAGE_MAPPING }} | tee /etc/ros/rosdep/sources.list.d/1-ros-o-builder.list
           rosdep update
 
       - name: Setup catkin-tools
         run: |
           set -x
           # setup catkin tools
-          apt install -qq -y python3-pip
-          pip3 install catkin-tools
+          apt install -qq -y python3-pip cmake build-essential ros-one-rosbash
           # setup build tools
-          apt install -qq -y cmake build-essential catkin ros-one-rosbash
+          if [ "${{ matrix.DISTRO }}" = "ubuntu:22.04" ]; then
+              pip3 install catkin-tools
+              apt install -qq -y catkin
+          else
+              apt install -qq -y ros-one-catkin python3-catkin-tools
+          fi
 
       - name: Setup Workspace
         run: |
