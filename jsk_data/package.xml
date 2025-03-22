@@ -34,7 +34,9 @@
   <exec_depend>wget</exec_depend>
   <exec_depend>xacro</exec_depend>
   <test_depend condition="$ROS_PYTHON_VERSION == 2">python-freezegun-pip</test_depend>
-  <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-freezegun</test_depend>
+  <test_depend condition="$ROS_DISTRO == noetic">python3-freezegun</test_depend>
+  <!-- TODO: Temporary commenting out for ros-o release -->
+  <!-- <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-freezegun</test_depend> -->
   <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-imageio</test_depend>
   <test_depend condition="$ROS_PYTHON_VERSION == 2">python-nose</test_depend>
   <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-nose</test_depend>
