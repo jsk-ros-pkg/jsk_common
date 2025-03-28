@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+
+import argparse
+import git
+import os
+import sys
+import webbrowser
+
+import rosdistro
+import rospkg
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        'package_name',
+        help='package name',
+    )
+    parser.add_argument(
+        '--use-rosdistro', action='store_true',
+        help='Use local rospackage information or not.'
+    )
+    parser.add_argument(
+        '--remote', '-r', default=None, help='Remote name'
+    )
+    parser.add_argument(
+        '--branch', '-b', default=None, help='Branch name'
+    )
+    args = parser.parse_args()
+    package_name = args.package_name
+    use_rosdistro = args.use_rosdistro
+    remote_name = args.remote
+    branch_name = args.branch
+
+    if not use_rosdistro:
+        rospack = rospkg.RosPack()
+        try:
+            path = rospack.get_path(package_name)
+        except rospkg.ResourceNotFound:
+            print('Package {} is not found locally.'.format(package_name))
+            sys.exit(1)
+        repo = git.Repo(path, search_parent_directories=True)
+        if remote_name is None:
+            remote = repo.remote()
+        else:
+            remotes = [r for r in repo.remotes if r.name == remote_name]
+            if len(remotes) == 0:
+                print(
+                    'Remote {} in {} is not found'.format(
+                        remote_name, package_name))
+                sys.exit(1)
+            remote = remotes[0]
+        url = remote.url
+        if url[:4] == 'git@':
+            url = 'https://github.com/' + ':'.join(url.split(':')[1:])
+        elif url[:6] == 'git://':
+            url = 'https://' + url[6:]
+        if url[-4:] == '.git':
+            url = url[:-4]
+        if branch_name is not None:
+            url = url + '/tree/{}'.format(branch_name)
+        print('Open {}'.format(url))
+        webbrowser.open(url)
+    else:
+        distro_name = os.environ.get('ROS_DISTRO')
+        index = rosdistro.get_index(rosdistro.get_index_url())
+        distro = rosdistro.get_cached_distribution(
+            index, distro_name, allow_lazy_load=True)
+        if package_name in distro.release_packages:
+            pkg = distro.release_packages[package_name]
+            repo = distro.repositories[pkg.repository_name]
+            url = repo.source_repository.url
+            if url[-4:] == '.git':
+                url = url[:-4]
+            if remote_name is not None:
+                urls = url.split('/')
+                urls[3] = remote_name
+                url = '/'.join(urls)
+            if branch_name is not None:
+                url = url + '/tree/{}'.format(branch_name)
+            print('Open {}'.format(url))
+            webbrowser.open(url)
+
+            sys.exit(0)
+        else:
+            print('Package {} is not found in rosdistro.'.format(package_name))
+            sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
