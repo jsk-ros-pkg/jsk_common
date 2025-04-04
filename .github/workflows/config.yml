@@ -224,6 +224,7 @@ jobs:
 
   # ROS-O setup for v4hn https://github.com/v4hn/ros-o-builder/blob/jammy-one/README.md#install-instructions
   # ROS-O setup for techfak https://ros.packages.techfak.net/
+  # note that v4hn uses ROS_DISTRO=one and techfak uses ROS_DISTRO
   ros-o:
     runs-on: ubuntu-latest
 
@@ -232,9 +233,11 @@ jobs:
       matrix:
         include:
           - DISTRO: ubuntu:22.04
+            ROS_ONE_VARIANT: v4hn
             ROS_REPOSITORY_URL: "deb [trusted=yes] https://raw.githubusercontent.com/v4hn/ros-o-builder/jammy-one/repository ./"
             ROSDEP_PACKAGE_MAPPING: "yaml https://raw.githubusercontent.com/v4hn/ros-o-builder/jammy-one/repository/local.yaml debian"
           - DISTRO: ubuntu:24.04
+            ROS_ONE_VARIANT: techfak
             ROS_REPOSITORY_URL: "deb [trusted=yes] https://ros.packages.techfak.net noble main"
             ROSDEP_PACKAGE_MAPPING: "yaml https://ros.packages.techfak.net/ros-one.yaml ubuntu"
 
@@ -255,31 +258,36 @@ jobs:
           ##
           # https://github.com/v4hn/ros-deb-builder-action/blob/b7c0ed93fde3a86b5b1027bf8f7145cad6067c90/prepare.sh#L27-L28
           # Canonical dropped the Debian ROS packages from 24.04 for political reasons. Wow.
-          test "${{ matrix.DISTRO }}" = "ubuntu:24.04" && apt install -y software-properties-common retry && retry -d 50,10,30,300 -t 12 add-apt-repository -y ppa:v-launchpad-jochen-sprickerhof-de/ros
+          if [[ "${{ matrix.ROS_ONE_VARIANT }}" == "v4hn" && "${{ matrix.DISTRO }}" == "ubuntu:24.04" ]]; then apt install -y software-properties-common retry && retry -d 50,10,30,300 -t 12 add-apt-repository -y ppa:v-launchpad-jochen-sprickerhof-de/ros; fi
           ##
           apt update
-          if [ "${{ matrix.DISTRO }}" = "ubuntu:22.04" ]; then
+          if [[ "${{ matrix.ROS_ONE_VARIANT }}" == "v4hn" ]]; then
               apt install -qq -y python3-rosdep2
-          else
+          fi
+          if [[ "${{ matrix.ROS_ONE_VARIANT }}" == "techfak"  ]]; then
               # Do not install python3-rosdep2, which is an outdated version of rosdep shipped via the Ubuntu repositories (instead of ROS)!
               apt install -qq -y python3-rosdep
               rosdep init
           fi
           echo ${{ matrix.ROSDEP_PACKAGE_MAPPING }} | tee /etc/ros/rosdep/sources.list.d/1-ros-o-builder.list
           rosdep update
+        shell: bash
 
       - name: Setup catkin-tools
         run: |
           set -x
           # setup catkin tools
-          apt install -qq -y python3-pip cmake build-essential ros-one-rosbash
-          # setup build tools
-          if [ "${{ matrix.DISTRO }}" = "ubuntu:22.04" ]; then
+          apt install -qq -y python3-pip
+          if [[ "${{ matrix.ROS_ONE_VARIANT }}" == "v4hn" ]]; then
               pip3 install catkin-tools
               apt install -qq -y catkin
-          else
+          fi
+          if [[ "${{ matrix.ROS_ONE_VARIANT }}" == "techfak" ]]; then
               apt install -qq -y ros-one-catkin python3-catkin-tools
           fi
+          # setup build tools
+          apt install -qq -y cmake build-essential ros-one-rosbash
+        shell: bash
 
       - name: Setup Workspace
         run: |
@@ -288,9 +296,9 @@ jobs:
           # setup workspace
           mkdir -p ~/ws/src
           cd ~/ws/src
-          if [ "${{ matrix.DISTRO }}" = "ubuntu:24.04" ]; then
-              # TODO: remove these lines and uncomment https://github.com/ubi-agni/ros-builder-action/blob/191fab06004ad5784c28cf2ba2b18f6d163a860d/ros-one.repos#L1089 after https://github.com/locusrobotics/catkin_virtualenv/pull/115 has been merged.
-              git clone https://github.com/furushchev/catkin_virtualenv.git -b update-version
+          if [[ "${{ matrix.ROS_ONE_VARIANT }}" == "techfak" ]]; then
+          # TODO: remove these lines and uncomment https://github.com/ubi-agni/ros-builder-action/blob/191fab06004ad5784c28cf2ba2b18f6d163a860d/ros-one.repos#L1089
+              git clone https://github.com/locusrobotics/catkin_virtualenv.git
           fi
           ln -sf $GITHUB_WORKSPACE .
           rosdep install -qq -r -y --from-path . --ignore-src || echo "OK"
