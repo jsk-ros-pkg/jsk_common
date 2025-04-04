@@ -279,7 +279,7 @@ jobs:
           # setup catkin tools
           apt install -qq -y python3-pip
           if [[ "${{ matrix.ROS_ONE_VARIANT }}" == "v4hn" ]]; then
-              pip3 install catkin-tools
+              pip3 install catkin-tools==0.9.4
               apt install -qq -y catkin
           fi
           if [[ "${{ matrix.ROS_ONE_VARIANT }}" == "techfak" ]]; then
