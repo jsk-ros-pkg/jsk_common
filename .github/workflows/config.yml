@@ -302,6 +302,9 @@ jobs:
           fi
           ln -sf $GITHUB_WORKSPACE .
           rosdep install -qq -r -y --from-path . --ignore-src || echo "OK"
+          # check all system packages are able to install, because ROS-O build deb files that needs all packages
+          PIP_BREAK_SYSTEM_PACKAGES=1 rosdep install -qq --simulate -y --from-path . --ignore-src -t exec -t buildtool_export -t buildtool -t build -t build_export | tee rosdep-install.sh
+          sed 's/apt-get install/apt-get -y install/;/install ros-one/s/^/#/;/pip3 install/s/^/#/' rosdep-install.sh | bash -xe
         shell: bash
 
       - name: Compile Packages
