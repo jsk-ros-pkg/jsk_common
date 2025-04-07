@@ -19,6 +19,12 @@ catkin_package(
 )
 
 if("$ENV{ROS_DISTRO}" STREQUAL "indigo" OR "$ENV{ROS_DISTRO}" STREQUAL "kinetic" OR "$ENV{ROS_DISTRO}" STREQUAL "melodic")
+  file(MAKE_DIRECTORY $ENV{HOME}/.imageio/ffmpeg)
+  file(DOWNLOAD https://github.com/imageio/imageio-binaries/raw/e7a7a2aad27decc79a3c2cd675ab4d0201e72e15/ffmpeg/ffmpeg-linux64-v3.3.1
+    ${CMAKE_BINARY_DIR}/ffmpeg-linux64-v3.3.1)
+  file (COPY ${CMAKE_BINARY_DIR}/ffmpeg-linux64-v3.3.1
+    DESTINATION $ENV{HOME}/.imageio/ffmpeg/
+    FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
   catkin_generate_virtualenv(
     INPUT_REQUIREMENTS requirements.in.python2
     PYTHON_INTERPRETER python2
