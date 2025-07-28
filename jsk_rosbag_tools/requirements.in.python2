@@ -1,2 +1,3 @@
+proglog==0.1.11
 moviepy==1.0.3
 numpy<1.21.0
