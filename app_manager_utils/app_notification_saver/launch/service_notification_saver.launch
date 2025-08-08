@@ -1,0 +1,12 @@
+<launch>
+  <!-- start: arguments -->
+  <arg name="json_path" default="/tmp/app_notification.json" />
+  <!-- end: arguments -->
+
+  <node name="service_notification_saver" pkg="app_notification_saver"
+        type="service_notification_saver_node.py">
+    <rosparam subst_value="true">
+      json_path: $(arg json_path)
+    </rosparam>
+  </node>
+</launch>

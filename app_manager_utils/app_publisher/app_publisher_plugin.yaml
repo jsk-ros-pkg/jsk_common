@@ -1,0 +1,3 @@
+- name: app_publisher/rostopic_publisher_plugin
+  launch: null
+  module: app_publisher.rostopic_publisher_plugin.RostopicPublisherPlugin
