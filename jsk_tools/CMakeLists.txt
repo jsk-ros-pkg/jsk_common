@@ -22,7 +22,11 @@ foreach(exec ${BIN_EXECUTABLES})
     COMMAND cmake -E copy ${PROJECT_SOURCE_DIR}/bin/${exec} ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_BIN_DESTINATION}/
     DEPENDS ${PROJECT_SOURCE_DIR}/bin/${exec})
   add_custom_target(install_${exec} ALL DEPENDS ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_BIN_DESTINATION}/${exec})
-  install(PROGRAMS bin/${exec} DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
+  if("${exec}" MATCHES "\\.py$")
+    catkin_install_python(PROGRAMS bin/${exec} DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
+  else()
+    install(PROGRAMS bin/${exec} DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
+  endif()
 endforeach(exec)
 
 if (CATKIN_ENABLE_TESTING)
