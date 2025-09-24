@@ -1,0 +1,10 @@
+analyzers:
+  cameras:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Cameras
+    analyzers:
+      xtion:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: xtion
+        find_and_remove_prefix: 'camera_check: '
+        num_items: 2
