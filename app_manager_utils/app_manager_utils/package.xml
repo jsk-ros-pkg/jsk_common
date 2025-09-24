@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>app_manager_utils</name>
+  <version>2.2.12</version>
+  <description>The app_manager_utils meta package</description>
+  <maintainer email="shingogo.5511@gmail.com">Shingo Kitagawa</maintainer>
+  <author email="shingogo.5511@gmail.com">Shingo Kitagawa</author>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>app_notification_saver</exec_depend>
+  <exec_depend>app_notifier</exec_depend>
+  <exec_depend>app_publisher</exec_depend>
+  <exec_depend>app_recorder</exec_depend>
+  <exec_depend>app_scheduler</exec_depend>
+  <exec_depend>app_uploader</exec_depend>
+
+  <export>
+    <metapackage />
+  </export>
+</package>

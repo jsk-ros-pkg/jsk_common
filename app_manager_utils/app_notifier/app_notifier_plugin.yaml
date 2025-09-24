@@ -1,0 +1,12 @@
+- name: app_notifier/mail_notifier_plugin
+  launch: null
+  module: app_notifier.mail_notifier_plugin.MailNotifierPlugin
+- name: app_notifier/speech_notifier_plugin
+  launch: null
+  module: app_notifier.speech_notifier_plugin.SpeechNotifierPlugin
+- name: app_notifier/tweet_notifier_plugin
+  launch: null
+  module: app_notifier.tweet_notifier_plugin.TweetNotifierPlugin
+- name: app_notifier/user_speech_notifier_plugin
+  launch: null
+  module: app_notifier.user_speech_notifier_plugin.UserSpeechNotifierPlugin
