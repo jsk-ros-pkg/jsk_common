@@ -113,8 +113,12 @@ protected:
   virtual bool isSubscribed() const;
 
   /** @brief
-   * Advertise a topic with a LifecyclePublisher and register a matched_callback
-   * to track subscriber connections. Use this instead of create_publisher().
+   * Advertise a topic and register a matched_callback to track subscriber
+   * connections. Use this instead of create_publisher().
+   *
+   * The return type is LifecyclePublisher, but it can be stored as either:
+   *   rclcpp::Publisher<T>::SharedPtr  (lifecycle-unaware)
+   *   rclcpp_lifecycle::LifecyclePublisher<T>::SharedPtr  (lifecycle-aware)
    *
    * @param topic Topic name to advertise.
    * @param qos   QoS profile for the publisher.

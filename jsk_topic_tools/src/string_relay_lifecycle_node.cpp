@@ -84,7 +84,7 @@ private:
     pub_->publish(*msg);
   }
 
-  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>::SharedPtr pub_;
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_;
 };
 
