@@ -46,14 +46,10 @@
 namespace jsk_topic_tools
 {
 
-ConnectionBasedLifecycleNode::ConnectionBasedLifecycleNode(
-  const std::string & node_name,
-  const rclcpp::NodeOptions & options)
-: rclcpp_lifecycle::LifecycleNode(node_name, options),
-  connection_status_(NOT_INITIALIZED),
-  always_subscribe_(false),
-  verbose_connection_(false),
-  ever_subscribed_(false),
+ConnectionBasedLifecycleNode::ConnectionBasedLifecycleNode(const std::string& node_name,
+                                                           const rclcpp::NodeOptions& options)
+: rclcpp_lifecycle::LifecycleNode(node_name, options), connection_status_(NOT_INITIALIZED),
+  always_subscribe_(false), verbose_connection_(false), ever_subscribed_(false),
   on_init_post_process_called_(false)
 {
   this->declare_parameter<bool>("always_subscribe", false);
@@ -83,16 +79,14 @@ void ConnectionBasedLifecycleNode::onInitPostProcess()
   // One-shot timer: warn if no subscriber connects within 5 seconds
   timer_warn_never_subscribed_ = this->create_wall_timer(std::chrono::seconds(5), [this]() {
     if (!ever_subscribed_) {
-      RCLCPP_WARN(
-        this->get_logger(), "'%s' subscribes topics only with child subscribers.",
-        this->get_name());
+      RCLCPP_WARN(this->get_logger(), "'%s' subscribes topics only with child subscribers.",
+                  this->get_name());
     }
     timer_warn_never_subscribed_->cancel();
   });
 
-  RCLCPP_INFO(
-    this->get_logger(), "Configured (always_subscribe=%s, verbose_connection=%s)",
-    always_subscribe_ ? "true" : "false", verbose_connection_ ? "true" : "false");
+  RCLCPP_INFO(this->get_logger(), "Configured (always_subscribe=%s, verbose_connection=%s)",
+              always_subscribe_ ? "true" : "false", verbose_connection_ ? "true" : "false");
 }
 
 // --- Internal lifecycle callbacks ---
@@ -100,7 +94,7 @@ void ConnectionBasedLifecycleNode::onInitPostProcess()
 // so that connectionCallback() can safely call trigger_transition() while holding the mutex.
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-ConnectionBasedLifecycleNode::on_configure(const rclcpp_lifecycle::State & state)
+ConnectionBasedLifecycleNode::on_configure(const rclcpp_lifecycle::State& state)
 {
   (void)state;
   connection_status_ = NOT_SUBSCRIBED;
@@ -108,7 +102,7 @@ ConnectionBasedLifecycleNode::on_configure(const rclcpp_lifecycle::State & state
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-ConnectionBasedLifecycleNode::on_activate(const rclcpp_lifecycle::State & state)
+ConnectionBasedLifecycleNode::on_activate(const rclcpp_lifecycle::State& state)
 {
   // Activate LifecyclePublishers
   LifecycleNode::on_activate(state);
@@ -116,7 +110,7 @@ ConnectionBasedLifecycleNode::on_activate(const rclcpp_lifecycle::State & state)
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-ConnectionBasedLifecycleNode::on_deactivate(const rclcpp_lifecycle::State & state)
+ConnectionBasedLifecycleNode::on_deactivate(const rclcpp_lifecycle::State& state)
 {
   // Deactivate LifecyclePublishers
   LifecycleNode::on_deactivate(state);
@@ -124,7 +118,7 @@ ConnectionBasedLifecycleNode::on_deactivate(const rclcpp_lifecycle::State & stat
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-ConnectionBasedLifecycleNode::on_cleanup(const rclcpp_lifecycle::State & state)
+ConnectionBasedLifecycleNode::on_cleanup(const rclcpp_lifecycle::State& state)
 {
   (void)state;
 
@@ -145,7 +139,7 @@ ConnectionBasedLifecycleNode::on_cleanup(const rclcpp_lifecycle::State & state)
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-ConnectionBasedLifecycleNode::on_shutdown(const rclcpp_lifecycle::State & state)
+ConnectionBasedLifecycleNode::on_shutdown(const rclcpp_lifecycle::State& state)
 {
   (void)state;
 
@@ -164,10 +158,7 @@ ConnectionBasedLifecycleNode::on_shutdown(const rclcpp_lifecycle::State & state)
   return CallbackReturn::SUCCESS;
 }
 
-bool ConnectionBasedLifecycleNode::isSubscribed() const
-{
-  return connection_status_ == SUBSCRIBED;
-}
+bool ConnectionBasedLifecycleNode::isSubscribed() const { return connection_status_ == SUBSCRIBED; }
 
 void ConnectionBasedLifecycleNode::connectionCallback()
 {
@@ -182,7 +173,7 @@ void ConnectionBasedLifecycleNode::connectionCallback()
   std::lock_guard<std::mutex> lock(connection_mutex_);
 
   // Check if any publisher has subscribers
-  for (const auto & pub : publishers_) {
+  for (const auto& pub : publishers_) {
     if (pub->get_subscription_count() > 0) {
       if (!ever_subscribed_) {
         ever_subscribed_ = true;
@@ -216,4 +207,4 @@ void ConnectionBasedLifecycleNode::connectionCallback()
   }
 }
 
-}  // namespace jsk_topic_tools
+} // namespace jsk_topic_tools

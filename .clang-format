@@ -4,14 +4,9 @@ Standard: c++17
 
 # -- Indentation --
 IndentWidth: 2
-TabWidth: 2
 UseTab: Never
-ContinuationIndentWidth: 2
 AccessModifierOffset: -2
-IndentCaseLabels: false
-IndentPPDirectives: None
 NamespaceIndentation: None
-LambdaBodyIndentation: Signature
 
 # -- Column limit --
 ColumnLimit: 100
@@ -19,79 +14,22 @@ ColumnLimit: 100
 # -- Braces --
 BreakBeforeBraces: Custom
 BraceWrapping:
-  AfterCaseLabel: false
   AfterClass: true
   AfterControlStatement: MultiLine
   AfterEnum: true
   AfterFunction: true
   AfterNamespace: true
   AfterStruct: true
-  AfterUnion: true
-  AfterExternBlock: true
-  BeforeCatch: false
-  BeforeElse: false
-  BeforeLambdaBody: false
-  BeforeWhile: false
-  IndentBraces: false
-  SplitEmptyFunction: false
-  SplitEmptyRecord: false
-  SplitEmptyNamespace: false
 
-# -- Alignment --
-AlignAfterOpenBracket: AlwaysBreak
-AlignConsecutiveAssignments: None
-AlignConsecutiveDeclarations: None
-AlignEscapedNewlines: Left
-AlignOperands: Align
-AlignTrailingComments:
-  Kind: Always
-
-# -- Arguments / Parameters --
-BinPackArguments: true
-BinPackParameters: false
-AllowAllParametersOfDeclarationOnNextLine: false
-
-# -- Single-line rules --
-AllowShortBlocksOnASingleLine: Never
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortEnumsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortLambdasOnASingleLine: Inline
-AllowShortLoopsOnASingleLine: false
+# -- Pointer / Reference --
+DerivePointerAlignment: false
+PointerAlignment: Left
+ReferenceAlignment: Left
 
 # -- Break rules --
 AlwaysBreakTemplateDeclarations: Yes
 BreakConstructorInitializers: BeforeColon
-BreakInheritanceList: BeforeColon
-PackConstructorInitializers: Never
 ConstructorInitializerIndentWidth: 0
-PenaltyReturnTypeOnItsOwnLine: 0
-PenaltyBreakBeforeFirstCallParameter: 100
-
-# -- Pointer / Reference --
-DerivePointerAlignment: false
-PointerAlignment: Middle
-ReferenceAlignment: Middle
-
-# -- Spaces --
-SpaceAfterCStyleCast: false
-SpaceAfterLogicalNot: false
-SpaceAfterTemplateKeyword: false
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeCaseColon: false
-SpaceBeforeCpp11BracedList: false
-SpaceBeforeCtorInitializerColon: false
-SpaceBeforeInheritanceColon: true
-SpaceBeforeParens: ControlStatements
-SpaceBeforeRangeBasedForLoopColon: true
-SpaceBeforeSquareBrackets: false
-SpaceInEmptyBlock: false
-SpacesBeforeTrailingComments: 2
-SpacesInAngles: Never
-SpacesInParens: Never
-SpacesInSquareBrackets: false
-Cpp11BracedListStyle: true
 
 # -- Includes --
 SortIncludes: CaseInsensitive
@@ -101,8 +39,4 @@ IncludeBlocks: Preserve
 FixNamespaceComments: true
 MaxEmptyLinesToKeep: 1
 SeparateDefinitionBlocks: Always
-EmptyLineAfterAccessModifier: Never
-EmptyLineBeforeAccessModifier: LogicalBlock
-InsertBraces: false
-ReflowComments: true
 ...

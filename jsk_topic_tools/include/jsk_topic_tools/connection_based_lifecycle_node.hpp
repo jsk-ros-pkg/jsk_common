@@ -78,9 +78,8 @@ enum ConnectionStatus
 class ConnectionBasedLifecycleNode : public rclcpp_lifecycle::LifecycleNode
 {
 public:
-  explicit ConnectionBasedLifecycleNode(
-    const std::string & node_name,
-    const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
+  explicit ConnectionBasedLifecycleNode(const std::string& node_name,
+                                        const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
 
   virtual ~ConnectionBasedLifecycleNode() = default;
 
@@ -124,14 +123,14 @@ protected:
    * @param qos   QoS profile for the publisher.
    * @return SharedPtr to the created LifecyclePublisher.
    */
-  template<typename MessageT>
+  template <typename MessageT>
   typename rclcpp_lifecycle::LifecyclePublisher<MessageT>::SharedPtr
-  advertise(const std::string & topic, const rclcpp::QoS & qos)
+  advertise(const std::string& topic, const rclcpp::QoS& qos)
   {
     std::lock_guard<std::mutex> lock(connection_mutex_);
 
     rclcpp::PublisherOptions pub_options;
-    pub_options.event_callbacks.matched_callback = [this](rclcpp::MatchedInfo & info) {
+    pub_options.event_callbacks.matched_callback = [this](rclcpp::MatchedInfo& info) {
       (void)info;
       connectionCallback();
     };
@@ -148,9 +147,9 @@ protected:
    * @param queue_size Queue depth for the publisher.
    * @return SharedPtr to the created LifecyclePublisher.
    */
-  template<typename MessageT>
+  template <typename MessageT>
   typename rclcpp_lifecycle::LifecyclePublisher<MessageT>::SharedPtr
-  advertise(const std::string & topic, size_t queue_size)
+  advertise(const std::string& topic, size_t queue_size)
   {
     return advertise<MessageT>(topic, rclcpp::QoS(queue_size));
   }
@@ -177,19 +176,19 @@ private:
   // --- Internal lifecycle management (not for subclass use) ---
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_configure(const rclcpp_lifecycle::State & state) override;
+  on_configure(const rclcpp_lifecycle::State& state) override;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_activate(const rclcpp_lifecycle::State & state) override;
+  on_activate(const rclcpp_lifecycle::State& state) override;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_deactivate(const rclcpp_lifecycle::State & state) override;
+  on_deactivate(const rclcpp_lifecycle::State& state) override;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_cleanup(const rclcpp_lifecycle::State & state) override;
+  on_cleanup(const rclcpp_lifecycle::State& state) override;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_shutdown(const rclcpp_lifecycle::State & state) override;
+  on_shutdown(const rclcpp_lifecycle::State& state) override;
 
   /** @brief
    * Callback invoked when a subscriber connects to or disconnects from
@@ -205,6 +204,6 @@ private:
   rclcpp::TimerBase::SharedPtr timer_warn_never_subscribed_;
 };
 
-}  // namespace jsk_topic_tools
+} // namespace jsk_topic_tools
 
-#endif  // CONNECTION_BASED_LIFECYCLE_NODE_HPP_
+#endif // CONNECTION_BASED_LIFECYCLE_NODE_HPP_
