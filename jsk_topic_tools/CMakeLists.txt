@@ -1,3 +1,40 @@
+if($ENV{ROS_VERSION} EQUAL 2)
+cmake_minimum_required(VERSION 3.8)
+project(jsk_topic_tools)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+find_package(ament_cmake_auto REQUIRED)
+
+ament_auto_find_build_dependencies()
+
+ament_auto_add_library(connection_based_lifecycle_node SHARED
+  src/connection_based_lifecycle_node.cpp
+)
+ament_auto_add_library(string_relay_lifecycle_component SHARED
+  src/string_relay_lifecycle_node.cpp
+)
+rclcpp_components_register_node(string_relay_lifecycle_component
+  PLUGIN "jsk_topic_tools::StringRelayLifecycleNode"
+  EXECUTABLE string_relay_lifecycle_node
+)
+
+if(BUILD_TESTING)
+  find_package(ament_cmake_clang_format REQUIRED)
+  find_package(launch_testing_ament_cmake REQUIRED)
+  ament_clang_format(
+    src/connection_based_lifecycle_node.cpp
+    include/jsk_topic_tools/connection_based_lifecycle_node.hpp
+    CONFIG_FILE ./.clang-format
+  )
+  add_launch_test(test/connection_based_lifecycle.test.py)
+endif()
+
+ament_auto_package()
+
+else() # if($ENV{ROS_VERSION} EQUAL 2)
 # http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
 cmake_minimum_required(VERSION 2.8.3)
 project(jsk_topic_tools)
@@ -267,3 +304,4 @@ install(DIRECTORY cmake config launch sample
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
 )
+endif() # if($ENV{ROS_VERSION} EQUAL 2)
