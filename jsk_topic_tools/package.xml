@@ -4,6 +4,7 @@
   <description>jsk_topic_tools</description>
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
   <maintainer email="ueda@jsk.t.u-tokyo.ac.jp">Ryohei Ueda</maintainer>
+  <maintainer email="obinata@jsk.imi.i.u-tokyo.ac.jp">Yoshiki Obinata</maintainer>
 
   <license>BSD</license>
 
@@ -12,10 +13,17 @@
 
   <author email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</author>
   <author email="furuta@jsk.t.u-tokyo.ac.jp">Yusuke Furuta</author>
+  <author email="obinata@jsk.imi.i.u-tokyo.ac.jp">Yoshiki Obinata</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake_auto</buildtool_depend>
 
-  <!-- list build_depend in alphabetical order -->
+  <!-- ROS2 dependencies -->
+  <depend condition="$ROS_VERSION == 2">lifecycle_msgs</depend>
+  <depend condition="$ROS_VERSION == 2">rclcpp</depend>
+  <depend condition="$ROS_VERSION == 2">rclcpp_components</depend>
+  <depend condition="$ROS_VERSION == 2">rclcpp_lifecycle</depend>
+
   <build_depend>diagnostic_msgs</build_depend>
   <build_depend>diagnostic_updater</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
@@ -67,11 +75,16 @@
   <exec_depend>topic_tools</exec_depend>
 
   <!-- list test_depend in alphabetical order -->
+  <test_depend condition="$ROS_VERSION == 2">ament_cmake_clang_format</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_ros</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_testing</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_testing_ament_cmake</test_depend>
   <test_depend>roscpp_tutorials</test_depend>
   <test_depend>roslint</test_depend>
 
   <export>
     <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>
     <nodelet plugin="${prefix}/jsk_topic_tools_test_nodelet.xml"/>
+    <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
   </export>
 </package>
