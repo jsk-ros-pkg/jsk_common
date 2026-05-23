@@ -148,7 +148,7 @@ jobs:
           test "${{ matrix.DISTRO }}" = "ubuntu:22.04" && apt install -y -q -qq libself-test-dev libpcl-ros-dev
           test "${{ matrix.DISTRO }}" = "ubuntu:22.04" && apt install -y -q -qq ros-core-dev ros-robot-dev
           test "${{ matrix.DISTRO }}" = "ubuntu:22.04" && pip install vcstool
-          test "${{ matrix.DISTRO }}" != "ubuntu:22.04" && apt install -y -q -qq pipx && pipx install vcstool
+          test "${{ matrix.DISTRO }}" != "ubuntu:22.04" && apt install -y -q -qq pipx && pipx install vcs2l
           rosdep update
 
       - name: Setup rosinstall_generator
@@ -169,7 +169,7 @@ jobs:
           git clone https://github.com/ros-o/rosconsole.git
           git clone https://github.com/ros-o/gencpp.git
           git clone https://github.com/ros-o/ros_comm.git
-          git clone https://github.com/ros-o/catkin_virtualenv.git
+          git clone https://github.com/locusrobotics/catkin_virtualenv.git
           git clone https://github.com/ros-o/perception_pcl.git
           export PATH=/github/home/.local/bin:$PATH  # for 24.04, vcs installed with pipx
           ROS_PACKAGE_PATH=/usr/share:$(pwd) rosinstall_generator --rosdistro noetic --deps --exclude RPP --repos message_runtime message_generation | vcs import --shallow
@@ -201,7 +201,7 @@ jobs:
           ROS_PACKAGE_PATH=/usr/share:$HOME/ws_depend/src/ros-o rosinstall_generator --from-path $HOME/ws_depend/src/3rdparty-src --rosdistro noetic --deps --deps-only --exclude RPP test_catkin_virtualenv test_catkin_virtualenv_inherited | vcs import --shallow
           cd ~/ws_depend
           rosdep install -qq -r -y --from-path src --ignore-src || echo "OK"
-          catkin_make_isolated --cmake-args -DCATKIN_ENABLE_TESTING=OFF
+          catkin_make_isolated --ignore-pkg test_catkin_virtualenv test_catkin_virtualenv_inherited --cmake-args -DCATKIN_ENABLE_TESTING=OFF
 
       - name: Setup Workspace
         run: |
