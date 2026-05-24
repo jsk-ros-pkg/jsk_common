@@ -1,0 +1,46 @@
+<launch>
+
+  <test test-name="test_rossetip0"
+        name="test_rossetip0"
+        pkg="jsk_tools" type="test_stdout.py">
+    <!-- testing https://github.com/jsk-ros-pkg/jsk_common/issues/1472 -->
+    <param name="~command" value="/bin/bash $(find jsk_tools)/test/sh/rossetip.sh &quot;133.11.216.210 dev wlp9s0 src 133.11.216.144 uid 1000 \    cache&quot;" />
+    <param name="~stdout" value="133.11.216.144" />
+    <param name="~shell" value="true" />
+  </test>
+
+  <test test-name="test_rossetip1"
+        name="test_rossetip1"
+        pkg="jsk_tools" type="test_stdout.py">
+    <!-- testing https://github.com/jsk-ros-pkg/jsk_common/issues/1472 -->
+    <param name="~command" value="/bin/bash $(find jsk_tools)/test/sh/rossetip.sh &quot;local 133.11.216.144 dev lo src 133.11.216.144 uid 1000 \    cache&quot;" />
+    <param name="~stdout" value="133.11.216.144" />
+    <param name="~shell" value="true" />
+  </test>
+
+  <test test-name="test_rossetip2"
+        name="test_rossetip2"
+        pkg="jsk_tools" type="test_stdout.py">
+    <!-- testing https://github.com/jsk-ros-pkg/jsk_common/issues/1472 -->
+    <param name="~command" value="/bin/bash $(find jsk_tools)/test/sh/rossetip.sh &quot;8.8.8.8 via 133.11.216.254 dev wlp9s0 src 133.11.216.144 uid 1000 \    cache&quot;" />
+    <param name="~stdout" value="133.11.216.144" />
+    <param name="~shell" value="true" />
+  </test>
+
+  <test test-name="test_rossetmaster0"
+        name="test_rossetmaster0"
+        pkg="jsk_tools" type="test_stdout.py">
+    <param name="~command" value="/bin/bash $(find jsk_tools)/test/sh/rossetmaster.sh localhost" />
+    <param name="~stdout" value="http://localhost:11311" />
+    <param name="~shell" value="true" />
+  </test>
+
+  <test test-name="test_rossetmaster1"
+        name="test_rossetmaster1"
+        pkg="jsk_tools" type="test_stdout.py">
+    <param name="~command" value="/bin/bash $(find jsk_tools)/test/sh/rossetmaster.sh hrp2017v 10017" />
+    <param name="~stdout" value="http://hrp2017v:10017" />
+    <param name="~shell" value="true" />
+  </test>
+
+</launch>
