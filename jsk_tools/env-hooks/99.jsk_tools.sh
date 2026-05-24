@@ -189,3 +189,7 @@ restart_travis() {
 rosbag_record_interactive() {
     rosbag record $(zenity --list --column topics $(rostopic list) --multiple --separator=' ')
 }
+
+get_ros_client_hostnames() {
+    rosnode list | xargs -P10 -I% bash -c "rosnode info % | grep \"contacting node\" | sed -e \"s/.*http:\/\///\" | sed -e \"s/:[0-9]*\/.*//\"" | sort -u
+}
