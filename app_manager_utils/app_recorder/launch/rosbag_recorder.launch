@@ -1,0 +1,23 @@
+<launch>
+  <!-- start: arguments -->
+  <arg name="rosbag_path" />
+  <arg name="rosbag_title" />
+  <arg name="rosbag_topic_names" />
+  <arg name="compress" default="false" />
+  <arg name="use_machine" default="false" />
+  <arg name="machine_name" default="localhost" />
+  <arg name="machine_file" default="" />
+  <!-- end: arguments -->
+
+  <machine name="localhost" address="localhost" />
+  <include if="$(arg use_machine)" file="$(arg machine_file)" />
+
+  <arg if="$(arg compress)"     name="compress_flag" value="--bz2" />
+  <arg unless="$(arg compress)" name="compress_flag" value="" />
+
+  <node name="$(anon rosbag_recorder)" pkg="rosbag" type="record"
+        output="screen" machine="$(arg machine_name)"
+        args="-q $(arg compress_flag)
+              -O $(arg rosbag_path)/$(arg rosbag_title)
+              $(arg rosbag_topic_names)" />
+</launch>

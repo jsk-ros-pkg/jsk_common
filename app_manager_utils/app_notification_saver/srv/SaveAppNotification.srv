@@ -1,0 +1,6 @@
+string title # Notification title (e.g. object detection, navigation faliure ...)
+time stamp # UNIX time when the event occurred
+string location # The location where the event occurred
+string message # Notification message
+---
+bool result # Result of whether the json was saved

@@ -1,0 +1,10 @@
+<launch>
+  <include file="$(find app_manager)/launch/app_manager.launch">
+    <arg name="use_applist" value="false"/>
+  </include>
+  <include file="$(find app_scheduler)/launch/app_scheduler.launch">
+    <arg name="duration" value="1" />
+    <arg name="update_duration" value="60" />
+    <arg name="yaml_path" value="$(find app_scheduler)/sample/sample_app_schedule.yaml" />
+  </include>
+</launch>
