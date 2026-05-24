@@ -1,0 +1,19 @@
+<launch>
+
+  <include file="$(find jsk_topic_tools)/sample/sample_filtered_relay.launch" >
+  </include>
+
+  <test test-name="test_filtered_relay"
+        name="test_filtered_relay"
+        pkg="jsk_tools" type="test_topic_published.py">
+    <rosparam>
+      topic_0: /right_endeffector/force_norm
+      timeout_0: 30
+      topic_1: /right_endeffector/filtered_wrench
+      timeout_1: 30
+      topic_2: /right_endeffector/relayed_wrench
+      timeout_2: 30
+    </rosparam>
+  </test>
+
+</launch>
