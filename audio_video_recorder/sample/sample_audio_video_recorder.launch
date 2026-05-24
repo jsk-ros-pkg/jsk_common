@@ -2,9 +2,10 @@
   <arg name="queue_size" default="100" />
   <arg name="file_name" default="/tmp/test.avi" />
   <arg name="file_format" default="avi" />
+  <arg name="audio_device" default="" />
   <arg name="audio_channels" default="1" />
   <arg name="audio_sample_rate" default="44100" />
-  <arg name="audio_format" default="mp3" />
+  <arg name="audio_format" default="wave" />
   <arg name="audio_sample_format" default="S16LE" />
   <arg name="video_height" default="480" />
   <arg name="video_width" default="640" />
@@ -20,6 +21,7 @@
   </node>
 
   <include file="$(find audio_capture)/launch/capture.launch">
+    <arg name="device" value="$(arg audio_device)" />
     <arg name="format" value="$(arg audio_format)" />
     <arg name="channels" value="$(arg audio_channels)" />
     <arg name="sample_rate" value="$(arg audio_sample_rate)" />
