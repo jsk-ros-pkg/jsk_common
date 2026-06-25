@@ -1,11 +1,18 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(jsk_tools)
 
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED
+  COMPONENTS
+  dynamic_reconfigure)
 catkin_python_setup()
 set(ROS_BUILD_TYPE RelWithDebInfo)
+
+generate_dynamic_reconfigure_options(
+  cfg/AudibleWarning.cfg
+)
+
 catkin_package(
-  CATKIN_DEPENDS #
+  CATKIN_DEPENDS dynamic_reconfigure #
   LIBRARIES #
   INCLUDE_DIRS #
   DEPENDS #
@@ -31,6 +38,7 @@ endforeach(exec)
 
 if (CATKIN_ENABLE_TESTING)
   find_package(roslint REQUIRED)
+  roslint_python(node_scripts/audible_warning.py)
   roslint_python(src/jsk_tools/cltool.py)
   roslint_python(src/test_topic_published.py)
   roslint_python(src/test_rosparam_set.py)
@@ -53,6 +61,7 @@ if (CATKIN_ENABLE_TESTING)
     # https://github.com/jsk-ros-pkg/jsk_common/pull/1293#issuecomment-164158260
     jsk_tools_add_rostest(test/test_rosparam_set.test)
   endif()
+  jsk_tools_add_rostest(test/test_audible_warning.test)
   jsk_tools_add_rostest(test/test_stdout.test)
   jsk_tools_add_rostest(test/test_rostopic_host_sanity.test)
   jsk_tools_add_rostest(test/test_sanity_diagnostics.test)
@@ -78,7 +87,7 @@ install(DIRECTORY test
   USE_SOURCE_PERMISSIONS
   PATTERN "*.test" EXCLUDE
   )
-install(DIRECTORY src dot-files cmake launch sample
+install(DIRECTORY src dot-files cmake launch sample node_scripts
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
   )

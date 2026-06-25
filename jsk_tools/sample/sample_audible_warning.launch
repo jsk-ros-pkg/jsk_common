@@ -1,0 +1,53 @@
+<launch>
+
+  <arg name="gui" default="true" />
+  <arg name="device" default="" />
+  <arg name="launch_sound_play" default="true" />
+
+  <node name="pseudo_diagnostics"
+        pkg="jsk_tools" type="pseudo_diagnostics.py"
+        output="screen">
+  </node>
+
+  <node name="pseudo_runstop_publisher"
+        pkg="jsk_tools" type="pseudo_runstop_publisher.py"
+        output="screen">
+    <rosparam>
+      duration_time: 30
+    </rosparam>
+  </node>
+
+  <node name="diagnostic_aggregator"
+        pkg="diagnostic_aggregator" type="aggregator_node"
+        clear_params="true" >
+    <rosparam command="load" file="$(find jsk_tools)/sample/config/sample_audible_warning_diagnostics_analyzer.yaml" />
+  </node>
+
+  <node name="sound_play"
+        pkg="sound_play" type="soundplay_node.py"
+        if="$(arg launch_sound_play)" >
+    <param name="device" value="$(arg device)" />
+    <param name="loop_rate" value="100" />
+  </node>
+
+  <node name="audible_warning"
+        pkg="jsk_tools" type="audible_warning.py"
+        output="screen" >
+    <remap from="/robotsound" to="/sound_play" />
+    <rosparam>
+      run_stop_topic: /pseudo_runstop_publisher/runstop
+      speak_when_runstopped: true
+      speak_interval: 0.0
+      seconds_to_start_speaking: 5
+      ignore_time_after_runstop_is_enabled: 10.0
+      ignore_time_after_runstop_is_disabled: 10.0
+    </rosparam>
+  </node>
+
+  <group if="$(arg gui)" >
+    <node name="robot_monitor"
+          pkg="rqt_robot_monitor" type="rqt_robot_monitor" >
+    </node>
+  </group>
+
+</launch>
