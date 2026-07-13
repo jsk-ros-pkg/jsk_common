@@ -1,0 +1,23 @@
+<launch>
+  <!-- start: arguments -->
+  <arg name="audio_path" />
+  <arg name="audio_title" />
+  <arg name="audio_topic_name" />
+  <arg name="audio_format" default="wave" />
+  <arg name="use_machine" default="false" />
+  <arg name="machine_name" default="localhost" />
+  <arg name="machine_file" default="" />
+  <!-- end: arguments -->
+
+  <machine name="localhost" address="localhost" />
+  <include if="$(arg use_machine)" file="$(arg machine_file)" />
+
+  <node name="$(anon audio_recorder)" pkg="audio_play" type="audio_play"
+        output="screen" machine="$(arg machine_name)">
+    <remap from="audio" to="$(arg audio_topic_name)" />
+    <rosparam subst_value="true">
+      dst: $(arg audio_path)/$(arg audio_title)
+      format: $(arg audio_format)
+    </rosparam>
+  </node>
+</launch>

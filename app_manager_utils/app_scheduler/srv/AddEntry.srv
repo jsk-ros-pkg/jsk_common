@@ -1,0 +1,4 @@
+app_scheduler/AppScheduleEntry entry
+---
+bool success
+string message

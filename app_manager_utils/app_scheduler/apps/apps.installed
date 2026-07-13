@@ -1,0 +1,9 @@
+apps:
+  - app: app_scheduler/sample0 
+    display: sample0 
+  - app: app_scheduler/sample1 
+    display: sample1
+  - app: app_scheduler/sample2 
+    display: sample2
+  - app: app_scheduler/sample3 
+    display: sample3
