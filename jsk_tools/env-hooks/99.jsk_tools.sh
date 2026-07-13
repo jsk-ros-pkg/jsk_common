@@ -44,7 +44,11 @@ _update_prompt() {
             export PS1="${WITHOUT_ROS_PROMPT}"
         fi
     elif [ "$master_host" != "" ]; then
-        local ros_prompt="[$ROS_MASTER_URI][$ROS_IP]"
+        if [[ "$ROS_HOSTNAME" != "" && "$ROS_IP" == "" ]]; then
+            local ros_prompt="[$ROS_MASTER_URI][$ROS_HOSTNAME]"
+        else
+            local ros_prompt="[$ROS_MASTER_URI][$ROS_IP]"
+        fi
         if [ "$CATKIN_SHELL" = "bash" ]; then
             export PS1="\[\033[00;31m\]$ros_prompt\[\033[00m\] ${WITHOUT_ROS_PROMPT}"
         elif [ "$CATKIN_SHELL" = "zsh" ]; then
@@ -86,6 +90,7 @@ rossetip_dev() {
 
 rossetip_addr() {
     local target_host=${1-"133.11.216.211"}
+    echo "target_host: $target_host"
     # Check if target_host looks like ip address or not
     if [ "$(echo $target_host | sed -e 's/[0-9\.]//g')" != "" ]; then
         target_host_ip=$(timeout 0.01 getent hosts ${target_host} | cut -f 1 -d ' ')
@@ -120,6 +125,24 @@ rossetip() {
     else
         echo -e "\e[1;31mset ROS_IP and ROS_HOSTNAME to $ROS_IP\e[m"
     fi
+    if [ "$NO_ROS_PROMPT" = "" ]; then
+        _update_prompt
+    fi
+}
+
+rossetclient() {
+    local client_interface=$1
+    if [[ $client_interface =~ [0-9]+.[0-9]+.[0-9]+.[0-9]+ ]]; then
+        export ROS_IP="$client_interface"
+    else
+        local addr_if_client_is_device=${LANC=C ip -o -4 a | grep lo\ \ \  | cut -d\  -f7 | cut -d\/ -f1}
+        if [[ $addr_if_client_is_device = "" ]]; then
+            export ROS_IP="$addr_if_client_is_device"
+        else
+            export ROS_HOSTNAME="$client_interface"
+        fi
+    fi
+    echo -e "\e[1;31mset ROS_IP to \"$ROS_IP\" and ROS_HOSTNAME to \"$ROS_HOSTNAME\"\e[m"
     if [ "$NO_ROS_PROMPT" = "" ]; then
         _update_prompt
     fi
