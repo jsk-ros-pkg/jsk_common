@@ -42,14 +42,20 @@ jobs:
 
     container:
       image: ${{ matrix.CONTAINER }}
-      volumes:
-        - /tmp/node20:/__e/node20
 
     steps:
-      - name: Install latest git ( use sudo for ros-ubuntu )
+      - name: Install git
+        shell: bash
         run: |
-          (apt-get update && apt-get install -y sudo) || echo "OK"
-          sudo apt-get update && sudo apt-get install -y software-properties-common && sudo apt-get update && sudo add-apt-repository -y ppa:git-core/ppa && sudo apt-get update && sudo apt-get install -y git
+          set -eux
+          export DEBIAN_FRONTEND=noninteractive
+          if [ "${{ matrix.CONTAINER }}" != "jskrobotics/ros-ubuntu:14.04" ]; then
+            apt-get update
+            apt-get install -y -qq sudo
+          fi
+          sudo apt-get update
+          sudo apt-get update -o Acquire::Retries=3
+          sudo apt-get install -y --no-install-recommends git ca-certificates
 
       - name: work around permission issue  # https://github.com/actions/checkout/issues/760#issuecomment-1097501613
         run: |
@@ -67,23 +73,14 @@ jobs:
              git config --global --add safe.directory $GITHUB_WORKSPACE
           fi
 
-      - name: Try to replace `node` with an glibc 2.17
+      - name: Checkout repository without Node.js
         shell: bash
         run: |
-          if [ "${{ matrix.CONTAINER }}" = "jskrobotics/ros-ubuntu:14.04" ]; then
-             export USER=$(whoami)
-             sudo chmod 777 -R /__e/node20
-             sudo chown -R $USER /__e/node20
-          fi
-          ls -lar /__e/node20 &&
-          sudo apt-get install -y curl &&
-          curl -Lo /tmp/node.tar.gz https://unofficial-builds.nodejs.org/download/release/v20.17.0/node-v20.17.0-linux-x64-glibc-217.tar.gz &&
-          cd /__e/node20 &&
-          tar -x --strip-components=1 -f /tmp/node.tar.gz &&
-          ls -lar /__e/node20/bin/
-
-      - name: Chcekout
-        uses: actions/checkout@v3.0.2
+          set -eux
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --no-tags --prune --depth=1 origin "${GITHUB_REF}"
+          git checkout --detach FETCH_HEAD
 
       - name: Start X server
         run: |
