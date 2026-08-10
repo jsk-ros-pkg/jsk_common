@@ -1,0 +1,57 @@
+<launch>
+
+  <arg name="gui" default="false" />
+  <arg name="launch_robot_model" default="false" />
+
+  <include file="$(find jsk_topic_tools)/sample/sample_transform_wrench.launch" >
+    <arg name="launch_robot_model" value="$(arg launch_robot_model)" />
+    <arg name="gui" value="$(arg gui)" />
+  </include>
+
+  <node name="filtered_relay"
+        pkg="jsk_topic_tools" type="filtered_relay.py"
+        output="screen"
+        clear_params="true" >
+    <remap from="~input" to="right_endeffector/wrench" />
+    <remap from="~output" to="right_endeffector/force_norm" />
+    <rosparam>
+      output_type: std_msgs/Float32
+      import: [std_msgs, geometry_msgs, numpy]
+      filter: "numpy.linalg.norm([m.wrench.force.x, m.wrench.force.y, m.wrench.force.z]) &gt; 10.0"
+      transform: "numpy.linalg.norm([m.wrench.force.x, m.wrench.force.y, m.wrench.force.z])"
+    </rosparam>
+  </node>
+
+  <node name="echo_force_norm"
+        pkg="rostopic" type="rostopic"
+        args="echo /right_endeffector/force_norm"
+        output="screen"
+        clear_params="true" >
+  </node>
+
+  <node name="filtered_relay_without_transform"
+        pkg="jsk_topic_tools" type="filtered_relay.py"
+        output="screen"
+        clear_params="true" >
+    <remap from="~input" to="right_endeffector/wrench" />
+    <remap from="~output" to="right_endeffector/filtered_wrench" />
+    <rosparam>
+      output_type: geometry_msgs/WrenchStamped
+      import: [geometry_msgs, numpy]
+      filter: "numpy.linalg.norm([m.wrench.force.x, m.wrench.force.y, m.wrench.force.z]) &gt; 10.0"
+    </rosparam>
+  </node>
+
+  <node name="filtered_relay_without_filter"
+        pkg="jsk_topic_tools" type="filtered_relay.py"
+        output="screen"
+        clear_params="true" >
+    <remap from="~input" to="right_endeffector/wrench" />
+    <remap from="~output" to="right_endeffector/relayed_wrench" />
+    <rosparam>
+      output_type: geometry_msgs/WrenchStamped
+      import: [geometry_msgs]
+    </rosparam>
+  </node>
+
+</launch>
