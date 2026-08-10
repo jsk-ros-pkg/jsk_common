@@ -1,0 +1,72 @@
+<launch>
+  <!-- start: arguments -->
+  <arg name="video_path" />
+  <arg name="video_title" />
+  <arg name="audio_topic_name" />
+  <arg name="audio_channels" />
+  <arg name="audio_sample_rate" />
+  <arg name="audio_format" />
+  <arg name="audio_sample_format" />
+  <arg name="video_topic_name" />
+  <arg name="use_compressed" default="false" />
+  <arg name="video_decompressed_topic_name"
+       default="/app_manager/audio_video_recorder_plugin/image" />
+  <arg name="video_height" />
+  <arg name="video_width" />
+  <arg name="video_framerate" />
+  <arg name="video_encoding" />
+  <arg name="use_machine" default="false" />
+  <arg name="machine_name" default="localhost" />
+  <arg name="machine_file" default="" />
+  <!-- end: arguments -->
+
+  <machine name="localhost" address="localhost" />
+  <include if="$(arg use_machine)" file="$(arg machine_file)" />
+
+  <group if="$(arg use_compressed)">
+    <node name="$(anon audio_video_recorder_rgb_decompress)" pkg="image_transport" type="republish"
+          args="compressed raw">
+      <remap from="in" to="$(arg video_topic_name)" />
+      <remap from="out" to="$(arg video_decompressed_topic_name)" />
+    </node>
+    <node name="$(anon audio_video_recorder)" pkg="audio_video_recorder"
+          type="audio_video_recorder" output="screen" machine="$(arg machine_name)">
+      <remap from="~input/audio" to="$(arg audio_topic_name)" />
+      <remap from="~input/image" to="$(arg video_decompressed_topic_name)" />
+      <rosparam subst_value="true">
+        queue_size: 100
+        file_name: $(arg video_path)/$(arg video_title)
+        file_format: avi
+        audio_channels: $(arg audio_channels)
+        audio_sample_rate: $(arg audio_sample_rate)
+        audio_format: $(arg audio_format)
+        audio_sample_format: $(arg audio_sample_format)
+        video_height: $(arg video_height)
+        video_width: $(arg video_width)
+        video_framerate: $(arg video_framerate)
+        video_encoding: $(arg video_encoding)
+      </rosparam>
+    </node>
+  </group>
+  <group unless="$(arg use_compressed)">
+    <node name="$(anon audio_video_recorder)" pkg="audio_video_recorder"
+          type="audio_video_recorder" output="screen" machine="$(arg machine_name)">
+      <remap from="~input/audio" to="$(arg audio_topic_name)" />
+      <remap from="~input/image" to="$(arg video_topic_name)" />
+      <rosparam subst_value="true">
+        queue_size: 100
+        file_name: $(arg video_path)/$(arg video_title)
+        file_format: avi
+        audio_channels: $(arg audio_channels)
+        audio_sample_rate: $(arg audio_sample_rate)
+        audio_format: $(arg audio_format)
+        audio_sample_format: $(arg audio_sample_format)
+        video_height: $(arg video_height)
+        video_width: $(arg video_width)
+        video_framerate: $(arg video_framerate)
+        video_encoding: $(arg video_encoding)
+      </rosparam>
+    </node>
+  </group>
+
+</launch>

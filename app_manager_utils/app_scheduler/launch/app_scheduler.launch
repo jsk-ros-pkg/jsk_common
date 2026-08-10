@@ -1,0 +1,14 @@
+<launch>
+  <arg name="yaml_path" />
+
+  <arg name="duration" default="1"/>
+  <arg name="update_duration" default="10" />
+
+  <node name="app_scheduler" pkg="app_scheduler" type="app_scheduler" output="screen">
+    <rosparam subst_value="true">
+      duration: $(arg duration)
+      update_duration: $(arg update_duration)
+      yaml_path: $(arg yaml_path)
+    </rosparam>
+  </node>
+</launch>
