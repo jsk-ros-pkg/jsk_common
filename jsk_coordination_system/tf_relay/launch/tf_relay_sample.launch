@@ -1,0 +1,38 @@
+<launch>
+    <arg name="use_gui" default="true"/>
+
+    <node
+        pkg="tf2_ros"
+        type="static_transform_publisher"
+        name="transform_publisher_a_to_b"
+        args="1 0 0 0 0 0 frame_a frame_b"
+        />
+
+    <node
+        pkg="tf2_ros"
+        type="static_transform_publisher"
+        name="transform_publisher_b_to_c"
+        args="0 0 1 0 0 0 frame_b frame_c"
+        />
+
+    <node
+        pkg="tf_relay"
+        type="tf_relay"
+        name="tf_relay_node"
+        >
+        <rosparam>
+            fixed_frame_id: 'frame_a'
+            reference_frame_id: 'frame_c'
+            output_frame_id: 'frame_relayed'
+        </rosparam>
+    </node>
+
+    <node
+        pkg="rviz"
+        type="rviz"
+        name="$(anon rviz)"
+        args="-d $(find tf_relay)/config/tf_relay_sample.rviz"
+        if="$(arg use_gui)"
+        />
+
+</launch>
