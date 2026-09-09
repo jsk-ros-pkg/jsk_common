@@ -14,15 +14,17 @@
   <build_depend>message_generation</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>tf</build_depend>
+  <build_depend>tf2_ros</build_depend>
+  <build_depend>tf2_msgs</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
 
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>message_runtime</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>tf</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_msgs</exec_depend>
 
   <!-- <test_depend>jsk_topic_tools</test_depend> jsk_topic_tools depends on dynamic_tf_publisher -->
 
 </package>
-
-

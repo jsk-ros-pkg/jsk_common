@@ -12,10 +12,9 @@ from roslib.message import fill_message_args
 import rospy
 import sys
 from dynamic_tf_publisher.srv import * # SetDynamicTF
-from geometry_msgs.msg import TransformStamped,Quaternion,Vector3
 from std_srvs.srv import Empty, EmptyResponse
-import tf
-import tf.msg
+import tf2_ros
+from tf2_msgs.msg import TFMessage
 from threading import Lock
 import yaml
 
@@ -28,12 +27,13 @@ class dynamic_tf_publisher:
         except rospy.ROSException as e:
             rospy.Service(name, srv, callback)
     def __init__(self):
-        self.pub_tf = rospy.Publisher("/tf", tf.msg.tfMessage, queue_size=1)
-        self.pub_tf_mine = rospy.Publisher("~tf", tf.msg.tfMessage, queue_size=1)
+        self.pub_tf = rospy.Publisher("/tf", TFMessage, queue_size=1)
+        self.pub_tf_mine = rospy.Publisher("~tf", TFMessage, queue_size=1)
         self.cur_tf = dict()
         self.original_parent = dict()
         self.update_tf = dict()
-        self.listener = tf.TransformListener()
+        self.tf_buffer = tf2_ros.Buffer()
+        self.listener = tf2_ros.TransformListener(self.tf_buffer)
         self.tf_sleep_time = 1.0
         self.lock = Lock()
 
@@ -43,7 +43,7 @@ class dynamic_tf_publisher:
         self.check_update_last_update = rospy.Time(0)
         # check the cache
         if self.use_cache and rospy.has_param('dynamic_tf_publisher'+rospy.get_name()) :
-            tfm = tf.msg.tfMessage()
+            tfm = TFMessage()
             rospy.logerr(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))
             fill_message_args(tfm,[yaml.load(rospy.get_param('dynamic_tf_publisher'+rospy.get_name()))])
             rospy.logerr(tfm)
@@ -58,7 +58,7 @@ class dynamic_tf_publisher:
     def publish_tf(self, req=None):
         with self.lock:
             time = rospy.Time.now()
-            tfm = tf.msg.tfMessage()
+            tfm = TFMessage()
 
             if self.check_update:
                 publish_all = False
@@ -83,13 +83,8 @@ class dynamic_tf_publisher:
             rospy.logwarn("unkown key %s" % (req.child_frame))
             return AssocTFResponse()
         rospy.loginfo("assoc %s -> %s"%(req.parent_frame, req.child_frame))
-        self.listener.waitForTransform(req.parent_frame,
-                                       req.child_frame,
-                                       req.header.stamp, rospy.Duration(1.0))
-        ts = TransformStamped()
-        (trans,rot) = self.listener.lookupTransform(req.parent_frame, req.child_frame, req.header.stamp)
-        ts.transform.translation = Vector3(*trans)
-        ts.transform.rotation = Quaternion(*rot)
+        ts = self.tf_buffer.lookup_transform(req.parent_frame, req.child_frame,
+                                             req.header.stamp, rospy.Duration(1.0))
         ts.header.stamp = req.header.stamp
         ts.header.frame_id = req.parent_frame
         ts.child_frame_id = req.child_frame
@@ -111,7 +106,7 @@ class dynamic_tf_publisher:
                 areq.parent_frame = self.original_parent[req.frame_id]
         if areq:
             self.assoc(areq)
-            self.original_parent.pop(req.frame_id) # remove 
+            self.original_parent.pop(req.frame_id) # remove
         return DissocTFResponse()
 
     def delete(self,req):
@@ -137,7 +132,7 @@ class dynamic_tf_publisher:
             # set parameter
             if self.use_cache:
                 time = rospy.Time.now()
-                tfm = tf.msg.tfMessage()
+                tfm = TFMessage()
                 for frame_id in self.cur_tf.keys():
                     pose = self.cur_tf[frame_id]
                     pose.header.stamp = time
@@ -158,4 +153,3 @@ if __name__ == "__main__":
             pub.publish_and_sleep()
     except rospy.ROSInterruptException:
         pass
-
