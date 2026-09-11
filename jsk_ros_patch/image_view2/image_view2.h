@@ -42,7 +42,9 @@
 #include <sensor_msgs/image_encodings.h>
 #include <image_transport/image_transport.h>
 #include <image_geometry/pinhole_camera_model.h>
-#include <tf/transform_listener.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <dynamic_reconfigure/server.h>
 
 #include <image_view2/ImageMarker2.h>
@@ -197,7 +199,7 @@ namespace image_view2
     bool lookupTransformation(
       std::string frame_id, ros::Time& acquisition_time,
       std::map<std::string, int>& tf_fail,
-      tf::StampedTransform &transform);
+      geometry_msgs::TransformStamped &transform);
     void processMouseEvent(int event, int x, int y, int flags, void* param);
     void processLeftButtonDown(int x, int y);
     void processMove(int x, int y);
@@ -232,7 +234,8 @@ namespace image_view2
     int grid_thickness_, prev_thickness_;
     bool fisheye_mode_;
 
-    tf::TransformListener tf_listener_;
+    tf2_ros::Buffer tf_buffer_;
+    tf2_ros::TransformListener tf_listener_;
     image_geometry::PinholeCameraModel cam_model_;
     std::vector<std::string> frame_ids_;
     std::vector<cv::Point2d> point_array_;
