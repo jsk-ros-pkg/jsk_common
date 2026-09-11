@@ -12,3 +12,6 @@ jobs:
       - uses: ros-industrial/industrial_ci@master
         env:
           ROS_DISTRO: jazzy
+          # rosdep's `pip:` installer refuses to install globally on
+          # Python >= 3.11 (PEP 668) unless explicitly told to.
+          PIP_BREAK_SYSTEM_PACKAGES: '1'
