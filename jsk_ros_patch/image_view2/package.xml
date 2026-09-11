@@ -11,43 +11,87 @@
 
   <author email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
 
+  <!-- cv_bridge, geometry_msgs, image_geometry, image_transport,
+       message_filters, sensor_msgs, std_msgs, std_srvs are released for
+       both ROS1 and ROS2, so no condition -->
   <build_depend>cv_bridge</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>image_geometry</build_depend>
   <build_depend>image_transport</build_depend>
-  <build_depend>image_view</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">image_view</build_depend>
   <build_depend>message_filters</build_depend>
-  <build_depend>message_generation</build_depend>
-  <build_depend>pcl_ros</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>rostest</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">message_generation</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">pcl_ros</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">roscpp</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">rostest</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>std_srvs</build_depend>
-  <build_depend>tf</build_depend>
+  <!-- tf2_ros/tf2_geometry_msgs are used on both ROS1 and ROS2 (not tf1
+       on ROS1) so that the tf lookup code is shared verbatim -->
+  <build_depend>tf2_ros</build_depend>
+  <build_depend>tf2_geometry_msgs</build_depend>
+  <!-- shared ROS1/ROS2 compat.h (RosTime/RosPublisher<T>/ROS_INFO
+       macros/...), released for both ROS1 and ROS2, so no condition. -->
+  <build_depend>jsk_ros1_ros2_compat</build_depend>
+  <!-- find_package(Boost COMPONENTS thread) in CMakeLists.txt (used by
+       image_view2.h's boost::mutex members). Under ROS1 this comes in
+       transitively (roscpp itself depends on Boost); ROS2's
+       rosdep-based dependency install only installs what's declared
+       here, so it needs to be explicit there. -->
+  <build_depend condition="$ROS_VERSION == 2">libboost-thread-dev</build_depend>
+  <!-- ROS1 gets PCL transitively via pcl_ros; ROS2 needs it explicitly.
+       Not a build_depend: rosidl_auto_generate_interfaces() (used
+       below) requires every build_depend to have a matching
+       find_package() call by name, and "libpcl-all-dev" (a rosdep/apt
+       key) doesn't match the find_package(PCL ...) CMake call. -->
+  <exec_depend condition="$ROS_VERSION == 2">libpcl-all-dev</exec_depend>
+  <build_depend>pcl_conversions</build_depend>
 
   <exec_depend>cv_bridge</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>image_geometry</exec_depend>
   <exec_depend>image_transport</exec_depend>
-  <exec_depend>image_view</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">image_view</exec_depend>
   <exec_depend>message_filters</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
-  <exec_depend>pcl_ros</exec_depend>
-  <exec_depend>roscpp</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">message_runtime</exec_depend>
+  <!-- points_rectangle_extractor (PCL-based) is a stretch-goal not yet
+       ROS2-ported; pcl_ros stays ROS1-only for now. publishPointArray()
+       only needs bare PCL types + pcl_conversions, released for both. -->
+  <exec_depend condition="$ROS_VERSION == 1">pcl_ros</exec_depend>
+  <exec_depend>pcl_conversions</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">roscpp</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>std_srvs</exec_depend>
-  <exec_depend>tf</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
+  <exec_depend>jsk_ros1_ros2_compat</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 2">libboost-thread-dev</exec_depend>
+  <!-- pre-existing gap: used by ImageView2.cfg/config_callback under
+       ROS1 but was missing from package.xml -->
+  <exec_depend condition="$ROS_VERSION == 1">dynamic_reconfigure</exec_depend>
 
   <test_depend condition="$ROS_PYTHON_VERSION == 2">python-numpy</test_depend>
   <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-numpy</test_depend>
   <test_depend condition="$ROS_PYTHON_VERSION == 2">python-scipy</test_depend>
   <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-scipy</test_depend>
 
-  <export>
+  <!-- ROS2 dependencies -->
+  <buildtool_depend condition="$ROS_VERSION == 2">rosidl_default_generators</buildtool_depend>
+  <depend condition="$ROS_VERSION == 2">rclcpp</depend>
+  <exec_depend condition="$ROS_VERSION == 2">rosidl_default_runtime</exec_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_ros</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_testing</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_testing_ament_cmake</test_depend>
 
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <export>
+    <build_type condition="$ROS_VERSION == 1">catkin</build_type>
+    <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
   </export>
 </package>

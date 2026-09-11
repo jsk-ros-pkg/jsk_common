@@ -36,12 +36,92 @@
 #ifndef IMAGE_VIEW2_H_
 #define IMAGE_VIEW2_H_
 
-#include <ros/ros.h>
+// ROS1/ROS2 detection (ROS_VERSION_MAJOR) and the shared compat layer
+// (RosTime/RosPublisher<T>/ROS_INFO macros/JSK_ROS1_ROS2_COMPAT_MSG_ALIAS/
+// ...) come from jsk_ros1_ros2_compat/compat.h, included first since
+// the message-type aliasing below depends on it. jsk_ros1_ros2_compat/
+// const_ptr.h (the ConstPtr->ConstSharedPtr shim) is included
+// separately, further below, after this file's own message headers --
+// see that header for why.
+#include <jsk_ros1_ros2_compat/compat.h>
+
+#if ROS_VERSION_MAJOR != 1
+// <rclcpp/rclcpp.hpp> already included by compat.h above.
+#include <sensor_msgs/msg/image.hpp>
+#include <sensor_msgs/msg/camera_info.hpp>
+#include <sensor_msgs/msg/point_cloud2.hpp>
+#include <cv_bridge/cv_bridge.hpp>
+#include <sensor_msgs/image_encodings.hpp>
+#include <image_transport/image_transport.hpp>
+#include <image_geometry/pinhole_camera_model.hpp>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <pcl/point_types.h>
+#include <pcl_conversions/pcl_conversions.h>
+
+#include <image_view2/msg/image_marker2.hpp>
+#include <image_view2/msg/point_array_stamped.hpp>
+#include <image_view2/msg/mouse_event.hpp>
+#include <image_view2/srv/change_mode.hpp>
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/point32.hpp>
+#include <geometry_msgs/msg/point_stamped.hpp>
+#include <geometry_msgs/msg/polygon_stamped.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <std_msgs/msg/color_rgba.hpp>
+#include <std_msgs/msg/header.hpp>
+#include <std_srvs/srv/empty.hpp>
+#include <boost/thread.hpp>
+#include <boost/format.hpp>
+#include <boost/foreach.hpp>
+#include <boost/circular_buffer.hpp>
+#include <boost/lambda/lambda.hpp>
+
+// ROS1/ROS2 compatibility shim: rather than touching every one of the
+// ~70 call sites below that spell out ROS1's generated typedefs
+// (image_view2::ImageMarker2::ConstPtr, sensor_msgs::ImageConstPtr,
+// etc.), alias them onto their ROS2 equivalents here.
+// JSK_ROS1_ROS2_COMPAT_MSG_ALIAS()/_CONST_PTR_ALIAS()/
+// _SRV_REQ_RES_ALIAS() (jsk_ros1_ros2_compat/msg_alias.h) cover the
+// flat-name `Type`/`TypeConstPtr`/`TypeRequest`/`TypeResponse`
+// patterns generically.
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(image_view2, ImageMarker2)
+JSK_ROS1_ROS2_COMPAT_CONST_PTR_ALIAS(image_view2, ImageMarker2)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(image_view2, PointArrayStamped)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(image_view2, MouseEvent)
+JSK_ROS1_ROS2_COMPAT_SRV_ALIAS(image_view2, ChangeMode)
+JSK_ROS1_ROS2_COMPAT_SRV_REQ_RES_ALIAS(image_view2, ChangeMode)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(sensor_msgs, Image)
+JSK_ROS1_ROS2_COMPAT_CONST_PTR_ALIAS(sensor_msgs, Image)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(sensor_msgs, CameraInfo)
+JSK_ROS1_ROS2_COMPAT_CONST_PTR_ALIAS(sensor_msgs, CameraInfo)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(sensor_msgs, PointCloud2)
+JSK_ROS1_ROS2_COMPAT_SRV_ALIAS(std_srvs, Empty)
+JSK_ROS1_ROS2_COMPAT_SRV_REQ_RES_ALIAS(std_srvs, Empty)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(geometry_msgs, Point)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(geometry_msgs, Point32)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(geometry_msgs, PointStamped)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(geometry_msgs, PolygonStamped)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(geometry_msgs, PoseStamped)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(geometry_msgs, TransformStamped)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(std_msgs, ColorRGBA)
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(std_msgs, Header)
+// Last: only safe now that every message/service header above is
+// already fully parsed -- see const_ptr.h.
+#include <jsk_ros1_ros2_compat/const_ptr.h>
+#else
+// <ros/ros.h> already included by the detection block above.
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <image_transport/image_transport.h>
 #include <image_geometry/pinhole_camera_model.h>
+// tf2_ros (not tf1) is used on the ROS1 side too, so that the tf lookup
+// code below (lookupTransformation() and the draw*3D methods) is
+// shared verbatim between ROS1 and ROS2 -- tf2_ros::Buffer/
+// TransformListener and tf2::doTransform() have the same API on both.
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
@@ -63,7 +143,7 @@
 #include <image_view2/ImageView2Config.h>
 
 #include <image_view2/MouseEvent.h>
-
+#endif
 
 #if ( CV_MAJOR_VERSION >= 4)
 #include <opencv2/highgui.hpp>
@@ -89,11 +169,13 @@ namespace image_view2
     else
       return CV_RGB(color.r*255, color.g*255, color.b*255);
   }
-  
+
   class ImageView2
   {
   public:
+#if ROS_VERSION_MAJOR == 1
     typedef ImageView2Config Config;
+#endif
     enum KEY_MODE {
       MODE_RECTANGLE,
       MODE_SERIES,
@@ -103,9 +185,13 @@ namespace image_view2
       MODE_POLY,
       MODE_NONE
     };
-      
+
     ImageView2();
+#if ROS_VERSION_MAJOR != 1
+    ImageView2(rclcpp::Node::SharedPtr node);
+#else
     ImageView2(ros::NodeHandle& nh);
+#endif
     ~ImageView2();
     void pressKey(int key);
     void markerCb(const image_view2::ImageMarker2ConstPtr& marker);
@@ -130,18 +216,19 @@ namespace image_view2
     bool use_window;
   protected:
   private:
+#if ROS_VERSION_MAJOR != 1
+    rcl_interfaces::msg::SetParametersResult config_callback(
+      const std::vector<rclcpp::Parameter> &parameters);
+#else
     void config_callback(Config &config, uint32_t level);
+#endif
     void eventCb(
       const image_view2::MouseEvent::ConstPtr& event_msg);
     void pointArrayToMask(std::vector<cv::Point2d>& points,
                           cv::Mat& mask);
-    // Templatized (PubT) in preparation for ROS2 support: ROS2's
-    // per-message-type rclcpp::Publisher<T>::SharedPtr will need to
-    // reuse these helpers too. No functional change here -- PubT is
-    // always ros::Publisher under ROS1, so pub.publish(...) below
-    // behaves exactly as before. Template definitions must be visible
-    // at their instantiation sites, so they move to this header,
-    // right after the class, rather than staying in image_view2.cpp.
+    // `PubT` is `ros::Publisher` (ROS1, type-erased, called as
+    // `pub.publish(...)`) or `rclcpp::Publisher<MsgT>::SharedPtr` (ROS2,
+    // called as `pub->publish(...)`) -- see ROS1_ROS2_COMPAT::publishMsg() below.
     template<typename PubT>
     void publishMonoImage(PubT& pub,
                           cv::Mat& image,
@@ -194,10 +281,10 @@ namespace image_view2
     void drawInteraction();
     void drawGrid();
     void cropROI();
-    void drawInfo(ros::Time& before_rendering);
+    void drawInfo(ROS1_ROS2_COMPAT::RosTime& before_rendering);
     void resolveLocalMarkerQueue();
     bool lookupTransformation(
-      std::string frame_id, ros::Time& acquisition_time,
+      std::string frame_id, ROS1_ROS2_COMPAT::RosTime& acquisition_time,
       std::map<std::string, int>& tf_fail,
       geometry_msgs::TransformStamped &transform);
     void processMouseEvent(int event, int x, int y, int flags, void* param);
@@ -209,14 +296,21 @@ namespace image_view2
     void createDistortGridImage();
     V_ImageMarkerMessage local_queue_;
     image_transport::Subscriber image_sub_;
-    ros::Subscriber event_sub_;
-    ros::Subscriber info_sub_;
-    ros::Subscriber marker_sub_;
+#if ROS_VERSION_MAJOR != 1
+    rclcpp::Node::SharedPtr node_;
+#endif
+    ROS1_ROS2_COMPAT::RosSubscriber<image_view2::MouseEvent> event_sub_;
+    ROS1_ROS2_COMPAT::RosSubscriber<sensor_msgs::CameraInfo> info_sub_;
+    ROS1_ROS2_COMPAT::RosSubscriber<image_view2::ImageMarker2> marker_sub_;
     std::string marker_topic_;
     boost::circular_buffer<double> times_;
     image_transport::Publisher image_pub_;
     image_transport::Publisher local_image_pub_;
+#if ROS_VERSION_MAJOR != 1
+    rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr on_set_parameters_handle_;
+#else
     boost::shared_ptr <dynamic_reconfigure::Server<Config> > srv_;
+#endif
 
     V_ImageMarkerMessage marker_queue_;
     boost::mutex queue_mutex_;
@@ -234,8 +328,12 @@ namespace image_view2
     int grid_thickness_, prev_thickness_;
     bool fisheye_mode_;
 
-    tf2_ros::Buffer tf_buffer_;
-    tf2_ros::TransformListener tf_listener_;
+    // shared_ptr (constructed in the ctor body, not the initializer
+    // list) because tf2_ros::Buffer's constructor signature differs
+    // between ROS1 (just an optional cache-time Duration) and ROS2
+    // (needs an rclcpp::Clock::SharedPtr).
+    boost::shared_ptr<tf2_ros::Buffer> tf_buffer_;
+    boost::shared_ptr<tf2_ros::TransformListener> tf_listener_;
     image_geometry::PinholeCameraModel cam_model_;
     std::vector<std::string> frame_ids_;
     std::vector<cv::Point2d> point_array_;
@@ -265,17 +363,17 @@ namespace image_view2
     bool region_continuous_publish_;
     bool continuous_ready_;
     bool left_button_clicked_;
-    ros::Publisher point_pub_;
-    ros::Publisher point_array_pub_;
-    ros::Publisher rectangle_pub_;
-    ros::Publisher rectangle_img_pub_;
-    ros::Publisher move_point_pub_;
-    ros::Publisher foreground_mask_pub_;
-    ros::Publisher background_mask_pub_;
-    ros::Publisher foreground_rect_pub_;
-    ros::Publisher background_rect_pub_;
-    ros::Publisher line_pub_;
-    ros::Publisher poly_pub_;
+    ROS1_ROS2_COMPAT::RosPublisher<geometry_msgs::PointStamped> point_pub_;
+    ROS1_ROS2_COMPAT::RosPublisher<sensor_msgs::PointCloud2> point_array_pub_;
+    ROS1_ROS2_COMPAT::RosPublisher<geometry_msgs::PolygonStamped> rectangle_pub_;
+    ROS1_ROS2_COMPAT::RosPublisher<sensor_msgs::Image> rectangle_img_pub_;
+    ROS1_ROS2_COMPAT::RosPublisher<geometry_msgs::PointStamped> move_point_pub_;
+    ROS1_ROS2_COMPAT::RosPublisher<sensor_msgs::Image> foreground_mask_pub_;
+    ROS1_ROS2_COMPAT::RosPublisher<sensor_msgs::Image> background_mask_pub_;
+    ROS1_ROS2_COMPAT::RosPublisher<geometry_msgs::PolygonStamped> foreground_rect_pub_;
+    ROS1_ROS2_COMPAT::RosPublisher<geometry_msgs::PolygonStamped> background_rect_pub_;
+    ROS1_ROS2_COMPAT::RosPublisher<geometry_msgs::PolygonStamped> line_pub_;
+    ROS1_ROS2_COMPAT::RosPublisher<geometry_msgs::PolygonStamped> poly_pub_;
     KEY_MODE mode_;
     bool autosize_;
     bool window_initialized_;
@@ -302,14 +400,14 @@ namespace image_view2
     bool isPolySelectingFirstTime();
     bool isSelectingLineStartPoint();
     void resetInteraction();
-    ros::ServiceServer rectangle_mode_srv_;
-    ros::ServiceServer series_mode_srv_;
-    ros::ServiceServer grabcut_mode_srv_;
-    ros::ServiceServer grabcut_rect_mode_srv_;
-    ros::ServiceServer line_mode_srv_;
-    ros::ServiceServer none_mode_srv_;
-    ros::ServiceServer poly_mode_srv_;
-    ros::ServiceServer change_mode_srv_;
+    ROS1_ROS2_COMPAT::RosServiceServer<std_srvs::Empty> rectangle_mode_srv_;
+    ROS1_ROS2_COMPAT::RosServiceServer<std_srvs::Empty> series_mode_srv_;
+    ROS1_ROS2_COMPAT::RosServiceServer<std_srvs::Empty> grabcut_mode_srv_;
+    ROS1_ROS2_COMPAT::RosServiceServer<std_srvs::Empty> grabcut_rect_mode_srv_;
+    ROS1_ROS2_COMPAT::RosServiceServer<std_srvs::Empty> line_mode_srv_;
+    ROS1_ROS2_COMPAT::RosServiceServer<std_srvs::Empty> none_mode_srv_;
+    ROS1_ROS2_COMPAT::RosServiceServer<std_srvs::Empty> poly_mode_srv_;
+    ROS1_ROS2_COMPAT::RosServiceServer<image_view2::ChangeMode> change_mode_srv_;
     bool changeModeServiceCallback(
       image_view2::ChangeModeRequest& req,
       image_view2::ChangeModeResponse& res);
@@ -338,6 +436,11 @@ namespace image_view2
     KEY_MODE stringToMode(const std::string& str);
   };
 
+  // Template method definitions (must be visible at the two call sites
+  // in image_view2.cpp, which each instantiate a different PubT):
+  // foreground_mask_pub_/background_mask_pub_ are
+  // ROS1_ROS2_COMPAT::RosPublisher<sensor_msgs::Image>, foreground_rect_pub_/
+  // background_rect_pub_ are ROS1_ROS2_COMPAT::RosPublisher<geometry_msgs::PolygonStamped>.
   template<typename PubT>
   void ImageView2::publishMonoImage(PubT& pub,
                                     cv::Mat& image,
@@ -345,7 +448,7 @@ namespace image_view2
   {
     cv_bridge::CvImage image_bridge(
       header, sensor_msgs::image_encodings::MONO8, image);
-    pub.publish(image_bridge.toImageMsg());
+    ROS1_ROS2_COMPAT::publishMsg(pub, *image_bridge.toImageMsg());
   }
 
   template<typename PubT>
@@ -371,13 +474,13 @@ namespace image_view2
     geometry_msgs::PolygonStamped poly;
     poly.header = header;
     geometry_msgs::Point32 min_pt, max_pt;
-    min_pt.x = min_x; 
+    min_pt.x = min_x;
     min_pt.y = min_y;
-    max_pt.x = max_x; 
+    max_pt.x = max_x;
     max_pt.y = max_y;
     poly.polygon.points.push_back(min_pt);
     poly.polygon.points.push_back(max_pt);
-    pub.publish(poly);
+    ROS1_ROS2_COMPAT::publishMsg(pub, poly);
   }
 }
 
