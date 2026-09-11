@@ -8,23 +8,64 @@
   <maintainer email="garaemon@gmail.com">Ryohei Ueda</maintainer>
   <license>BSD</license>
   <url>http://ros.org/wiki/dynamic_tf_publisher</url>
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
 
+  <!-- geometry_msgs/std_msgs/tf2_ros are released for both ROS1 and
+       ROS2, so no condition. tf2_ros is exec_depend-only (used by the
+       interpreted python scripts, not compiled against) so it stays
+       out of rosidl_auto_generate_interfaces()'s automatic
+       BUILD_DEPENDS list, same reasoning as rclpy/tf_transformations
+       below. -->
   <build_depend>geometry_msgs</build_depend>
-  <build_depend>message_generation</build_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>tf</build_depend>
-  <build_depend>tf2_ros</build_depend>
-  <build_depend>tf2_msgs</build_depend>
-  <build_depend>dynamic_reconfigure</build_depend>
-
+  <build_depend>std_msgs</build_depend>
   <exec_depend>geometry_msgs</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
-  <exec_depend>rospy</exec_depend>
-  <exec_depend>tf</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
-  <exec_depend>tf2_msgs</exec_depend>
+  <!-- ROS2 splits tf2_ros's Python bindings (`import tf2_ros`, used by
+       tf_publish.py/tf_reconfigure_publisher.py) into a separate
+       ament_python package; ROS1's tf2_ros ships both together. -->
+  <exec_depend condition="$ROS_VERSION == 2">tf2_ros_py</exec_depend>
+  <!-- provides rospy_rclpy_compat.py, shared across this repo's ROS2-
+       ported packages. -->
+  <exec_depend>jsk_ros1_ros2_compat</exec_depend>
+
+  <build_depend condition="$ROS_VERSION == 1">message_generation</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">rospy</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">tf</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">tf2_msgs</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">dynamic_reconfigure</build_depend>
+
+  <exec_depend condition="$ROS_VERSION == 1">message_runtime</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">rospy</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">tf</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">tf2_msgs</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">dynamic_reconfigure</exec_depend>
+
+  <!-- ROS2 dependencies. rclpy/tf_transformations are only used
+       by the (interpreted, not compiled) python scripts at runtime, so
+       exec_depend suffices; keeping them off build_depend also keeps
+       them out of rosidl_auto_generate_interfaces()'s automatic
+       dependency list, which requires every BUILD_DEPENDS entry to
+       have a find_package() call. -->
+  <buildtool_depend condition="$ROS_VERSION == 2">rosidl_default_generators</buildtool_depend>
+  <exec_depend condition="$ROS_VERSION == 2">rclpy</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 2">tf_transformations</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 2">rosidl_default_runtime</exec_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_ros</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_testing</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_testing_ament_cmake</test_depend>
 
   <!-- <test_depend>jsk_topic_tools</test_depend> jsk_topic_tools depends on dynamic_tf_publisher -->
 
+  <!-- rosidl_auto_generate_interfaces() requires this unconditioned -->
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <export>
+    <build_type condition="$ROS_VERSION == 1">catkin</build_type>
+    <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
+  </export>
+
 </package>
+
+

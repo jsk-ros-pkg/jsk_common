@@ -1,4 +1,4 @@
-std_msgs/Header header
+Header header
 
 # event type
 int32 KEY_PRESSED=1

@@ -1,4 +1,4 @@
-std_msgs/Header header
+Header header
 
 geometry_msgs/Point[] points
 
