@@ -1318,15 +1318,6 @@ namespace image_view2{
     }
   }
 
-  void ImageView2::publishMonoImage(ros::Publisher& pub,
-                                    cv::Mat& image,
-                                    const std_msgs::Header& header)
-  {
-    cv_bridge::CvImage image_bridge(
-      header, sensor_msgs::image_encodings::MONO8, image);
-    pub.publish(image_bridge.toImageMsg());
-  }
-  
   void ImageView2::publishForegroundBackgroundMask()
   {
     boost::mutex::scoped_lock lock(image_mutex_);
@@ -1349,37 +1340,6 @@ namespace image_view2{
     publishRectFromMaskImage(background_rect_pub_, background_mask, last_msg_->header);
   }
   
-  void ImageView2::publishRectFromMaskImage(
-    ros::Publisher& pub,
-    cv::Mat& image,
-    const std_msgs::Header& header)
-  {
-    int min_x = image.cols;
-    int min_y = image.rows;
-    int max_x = 0;
-    int max_y = 0;
-    for (int j = 0; j < image.rows; j++) {
-      for (int i = 0; i < image.cols; i++) {
-        if (image.at<uchar>(j, i) != 0) {
-          min_x = std::min(min_x, i);
-          min_y = std::min(min_y, j);
-          max_x = std::max(max_x, i);
-          max_y = std::max(max_y, j);
-        }
-      }
-    }
-    geometry_msgs::PolygonStamped poly;
-    poly.header = header;
-    geometry_msgs::Point32 min_pt, max_pt;
-    min_pt.x = min_x; 
-    min_pt.y = min_y;
-    max_pt.x = max_x; 
-    max_pt.y = max_y;
-    poly.polygon.points.push_back(min_pt);
-    poly.polygon.points.push_back(max_pt);
-    pub.publish(poly);
-  }
-
   void ImageView2::publishLinePoints()
   {
     boost::mutex::scoped_lock lock(line_point_mutex_);

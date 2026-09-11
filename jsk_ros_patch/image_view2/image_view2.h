@@ -133,10 +133,19 @@ namespace image_view2
       const image_view2::MouseEvent::ConstPtr& event_msg);
     void pointArrayToMask(std::vector<cv::Point2d>& points,
                           cv::Mat& mask);
-    void publishMonoImage(ros::Publisher& pub,
+    // Templatized (PubT) in preparation for ROS2 support: ROS2's
+    // per-message-type rclcpp::Publisher<T>::SharedPtr will need to
+    // reuse these helpers too. No functional change here -- PubT is
+    // always ros::Publisher under ROS1, so pub.publish(...) below
+    // behaves exactly as before. Template definitions must be visible
+    // at their instantiation sites, so they move to this header,
+    // right after the class, rather than staying in image_view2.cpp.
+    template<typename PubT>
+    void publishMonoImage(PubT& pub,
                           cv::Mat& image,
                           const std_msgs::Header& header);
-    void publishRectFromMaskImage(ros::Publisher& pub,
+    template<typename PubT>
+    void publishRectFromMaskImage(PubT& pub,
                                   cv::Mat& image,
                                   const std_msgs::Header& header);
     ////////////////////////////////////////////////////////
@@ -325,6 +334,48 @@ namespace image_view2
     cv::Point ratioPoint(double x, double y);
     KEY_MODE stringToMode(const std::string& str);
   };
+
+  template<typename PubT>
+  void ImageView2::publishMonoImage(PubT& pub,
+                                    cv::Mat& image,
+                                    const std_msgs::Header& header)
+  {
+    cv_bridge::CvImage image_bridge(
+      header, sensor_msgs::image_encodings::MONO8, image);
+    pub.publish(image_bridge.toImageMsg());
+  }
+
+  template<typename PubT>
+  void ImageView2::publishRectFromMaskImage(
+    PubT& pub,
+    cv::Mat& image,
+    const std_msgs::Header& header)
+  {
+    int min_x = image.cols;
+    int min_y = image.rows;
+    int max_x = 0;
+    int max_y = 0;
+    for (int j = 0; j < image.rows; j++) {
+      for (int i = 0; i < image.cols; i++) {
+        if (image.at<uchar>(j, i) != 0) {
+          min_x = std::min(min_x, i);
+          min_y = std::min(min_y, j);
+          max_x = std::max(max_x, i);
+          max_y = std::max(max_y, j);
+        }
+      }
+    }
+    geometry_msgs::PolygonStamped poly;
+    poly.header = header;
+    geometry_msgs::Point32 min_pt, max_pt;
+    min_pt.x = min_x; 
+    min_pt.y = min_y;
+    max_pt.x = max_x; 
+    max_pt.y = max_y;
+    poly.polygon.points.push_back(min_pt);
+    poly.polygon.points.push_back(max_pt);
+    pub.publish(poly);
+  }
 }
 
 #endif
