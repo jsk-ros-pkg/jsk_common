@@ -1,3 +1,9 @@
+# Fall back to ROS1 when $ROS_VERSION is unset (pre-ros_environment distros,
+# e.g. indigo); every ROS2 environment always sets it via ros_environment.
+if("$ENV{ROS_VERSION}" STREQUAL "")
+  set(ENV{ROS_VERSION} 1)
+endif()
+
 if($ENV{ROS_VERSION} EQUAL 2)
 cmake_minimum_required(VERSION 3.8)
 project(jsk_topic_tools)
@@ -20,6 +26,8 @@ rclcpp_components_register_node(string_relay_lifecycle_component
   PLUGIN "jsk_topic_tools::StringRelayLifecycleNode"
   EXECUTABLE string_relay_lifecycle_node
 )
+ament_auto_add_executable(transform_merger src/transform_merger.cpp)
+ament_auto_add_executable(static_transform_pose_stamped src/static_transform_pose_stamped.cpp)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_clang_format REQUIRED)
@@ -39,6 +47,16 @@ else() # if($ENV{ROS_VERSION} EQUAL 2)
 cmake_minimum_required(VERSION 2.8.3)
 project(jsk_topic_tools)
 
+# jsk_ros1_ros2_compat's headers use C++11 `using Alias = Type;`
+# declarations; indigo/kinetic's GCC (<6) defaults to pre-C++11 and needs
+# this forced explicitly. Newer distros must NOT get this forced: their
+# system headers (e.g. log4cxx's boost-std-configuration.h) require
+# C++14/17 features from the compiler's own newer default, and an
+# explicit -std=c++11 here would downgrade past that and break the build.
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0)
+  add_compile_options(-std=c++11)
+endif()
+
 # Use ccache if installed to make it fast to generate object files
 if (CMAKE_VERSION VERSION_LESS 3.4)
   find_program(CCACHE_FOUND ccache)
@@ -54,6 +72,7 @@ find_package(catkin REQUIRED COMPONENTS
   eigen_conversions
   geometry_msgs
   image_transport
+  jsk_ros1_ros2_compat
   message_generation
   nodelet
   roscpp
@@ -97,7 +116,7 @@ generate_dynamic_reconfigure_options(
 generate_messages()
 catkin_package(
     DEPENDS
-    CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs std_srvs roscpp rostime
+    CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs std_srvs roscpp rostime jsk_ros1_ros2_compat
     INCLUDE_DIRS include
     LIBRARIES jsk_topic_tools
     CFG_EXTRAS nodelet.cmake

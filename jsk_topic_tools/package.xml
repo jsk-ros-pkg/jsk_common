@@ -18,18 +18,27 @@
   <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
   <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake_auto</buildtool_depend>
 
+  <!-- transform_merger/static_transform_pose_stamped: shared ROS1/ROS2
+       compat.h, released for both ROS1 and ROS2, so no condition. -->
+  <depend>jsk_ros1_ros2_compat</depend>
+
   <!-- ROS2 dependencies -->
   <depend condition="$ROS_VERSION == 2">lifecycle_msgs</depend>
   <depend condition="$ROS_VERSION == 2">rclcpp</depend>
   <depend condition="$ROS_VERSION == 2">rclcpp_components</depend>
   <depend condition="$ROS_VERSION == 2">rclcpp_lifecycle</depend>
+  <!-- transform_merger/static_transform_pose_stamped: tf2_msgs is
+       tf/tfMessage's ROS2 spelling; tf2_eigen replaces eigen_conversions
+       (ROS1-only, no ROS2 port). -->
+  <depend condition="$ROS_VERSION == 2">tf2_msgs</depend>
+  <depend condition="$ROS_VERSION == 2">tf2_eigen</depend>
 
   <build_depend condition="$ROS_VERSION == 1">diagnostic_msgs</build_depend>
   <build_depend condition="$ROS_VERSION == 1">diagnostic_updater</build_depend>
   <build_depend condition="$ROS_VERSION == 1">dynamic_reconfigure</build_depend>
-  <build_depend condition="$ROS_VERSION == 1">dynamic_tf_publisher</build_depend>
   <build_depend condition="$ROS_VERSION == 1">eigen_conversions</build_depend>
-  <build_depend condition="$ROS_VERSION == 1">geometry_msgs</build_depend>
+  <!-- geometry_msgs is released for both ROS1 and ROS2, so no condition. -->
+  <build_depend>geometry_msgs</build_depend>
   <build_depend condition="$ROS_VERSION == 1">image_transport</build_depend>
   <build_depend condition="$ROS_VERSION == 1">message_generation</build_depend>
   <build_depend condition="$ROS_VERSION == 1">nodelet</build_depend>
@@ -49,9 +58,8 @@
   <exec_depend condition="$ROS_VERSION == 1">diagnostic_msgs</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">diagnostic_updater</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">dynamic_reconfigure</exec_depend>
-  <exec_depend condition="$ROS_VERSION == 1">dynamic_tf_publisher</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">eigen_conversions</exec_depend>
-  <exec_depend condition="$ROS_VERSION == 1">geometry_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">image_transport</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">iputils-ping</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">message_runtime</exec_depend>
