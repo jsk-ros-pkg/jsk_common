@@ -1,14 +1,12 @@
 #include <ros/ros.h>
-#include <tf/tf.h>
-#include <tf/transform_listener.h>
-#include <tf/transform_broadcaster.h>
+#include <tf2_msgs/TFMessage.h>
 #include <iostream>
 #include <map>
 #include <vector>
 
 std::map<std::string, geometry_msgs::TransformStamped> tf_map;
 
-void transformCallback(const tf::tfMessage::ConstPtr& msg){
+void transformCallback(const tf2_msgs::TFMessage::ConstPtr& msg){
   std::pair<std::map<std::string, geometry_msgs::TransformStamped>::iterator, bool> ret;
   for(int i=0; i<msg->transforms.size(); i++){
     geometry_msgs::TransformStamped tfs = msg->transforms[i];
@@ -26,10 +24,9 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "transform_merger");
   ros::NodeHandle n;
   ros::NodeHandle pnh_("~");
-  tf::TransformListener tfl_;
 
-  ros::Publisher pub_ =  pnh_.advertise<tf::tfMessage> ("/tf_merged", 1);
-  ros::Subscriber sub_ =  pnh_.subscribe<tf::tfMessage>
+  ros::Publisher pub_ =  pnh_.advertise<tf2_msgs::TFMessage> ("/tf_merged", 1);
+  ros::Subscriber sub_ =  pnh_.subscribe<tf2_msgs::TFMessage>
     ("/tf", 100, transformCallback);
 
   double loop_hz;
@@ -56,7 +53,7 @@ int main(int argc, char** argv)
 
   while (ros::ok())
     {
-      tf::tfMessage tf_msg;
+      tf2_msgs::TFMessage tf_msg;
       std::map<std::string, geometry_msgs::TransformStamped>::iterator it = tf_map.begin();
       while( it != tf_map.end() )
 	{
