@@ -311,3 +311,4 @@ jobs:
           cd ~/ws/
           catkin build --no-status -sv ${{ matrix.CATKIN_OPTIONS }} --cmake-args -DCATKIN_ENABLE_TESTING=OFF -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ${{ matrix.CMAKE_OPTIONS }}
         shell: bash
+# CI baseline diagnostic test (no functional change) -- see PR
