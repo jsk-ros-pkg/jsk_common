@@ -97,6 +97,12 @@ jobs:
 
       - name: Run jsk_travis
         uses: jsk-ros-pkg/jsk_travis@master
+        env:
+          # indigo predates the ros_environment package, so $ROS_VERSION is
+          # never set there (unlike kinetic/melodic/noetic); package.xml
+          # tags conditioned on "$ROS_VERSION == 1" would otherwise
+          # silently evaluate false and rosdep would skip installing them.
+          ROS_VERSION: ${{ matrix.ROS_DISTRO == 'indigo' && '1' || '' }}
         with:
           ROS_PARALLEL_JOBS : ${{ matrix.ROS_PARALLEL_JOBS }}
           CATKIN_PARALLEL_JOBS : ${{ matrix.CATKIN_PARALLEL_JOBS }}
