@@ -2,12 +2,13 @@ import os
 import os.path as osp
 
 import numpy as np
-import rosbag
 from scipy.io.wavfile import write as wav_write
 
 from jsk_rosbag_tools.extract import extract_oneshot_topic
 from jsk_rosbag_tools.info import get_topic_dict
 from jsk_rosbag_tools.makedirs import makedirs
+from jsk_ros1_ros2_compat.rosbag import message_type_name
+from jsk_ros1_ros2_compat.rosbag import open_bag
 
 
 def bag_to_audio(bag_filepath,
@@ -31,10 +32,10 @@ def bag_to_audio(bag_filepath,
             samplerate = audio_info.sample_rate
             channels = audio_info.channels
 
-    bag = rosbag.Bag(bag_filepath)
+    bag = open_bag(bag_filepath)
     audio_buffer = []
     for _, msg, _ in bag.read_messages(topics=[topic_name]):
-        if msg._type == 'audio_common_msgs/AudioData':
+        if message_type_name(msg) == 'audio_common_msgs/AudioData':
             buf = np.frombuffer(msg.data, dtype='int16')
             buf = buf.reshape(-1, channels)
             audio_buffer.append(buf)

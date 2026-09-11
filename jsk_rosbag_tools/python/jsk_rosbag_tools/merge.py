@@ -1,6 +1,6 @@
 import os
 
-import rosbag
+from jsk_ros1_ros2_compat.rosbag import open_bag
 
 
 def get_next(bag_iter, reindex=False,
@@ -37,9 +37,9 @@ def merge_bag(main_bagfile, bagfile, outfile=None, topics=None,
     print("topics filter: ", topics)
     print("writing to %s." % outfile)
     # merge bagfile
-    outbag = rosbag.Bag(outfile, 'w')
-    main_bag = rosbag.Bag(main_bagfile).__iter__()
-    bag = rosbag.Bag(bagfile).__iter__()
+    outbag = open_bag(outfile, 'w')
+    main_bag = open_bag(main_bagfile).__iter__()
+    bag = open_bag(bagfile).__iter__()
     main_next = get_next(main_bag)
     next = get_next(bag, reindex, main_limits[0], limits[0], topics)
     try:
@@ -75,7 +75,7 @@ def get_limits(bagfile):
     end_time = None
     start_time = None
 
-    for topic, msg, t in rosbag.Bag(bagfile).read_messages():
+    for topic, msg, t in open_bag(bagfile).read_messages():
         if start_time is None or t < start_time:
             start_time = t
         if end_time is None or t > end_time:
