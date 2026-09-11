@@ -2,14 +2,15 @@
 
 from collections import OrderedDict
 import sys
-import rospy
-from std_msgs.msg import String
 from diagnostic_msgs.msg import DiagnosticArray
 try:
     from colorama import Fore, Style, init
 except:
   print("Please install colorama by pip install colorama")
   sys.exit(1)
+
+from jsk_ros1_ros2_compat import rospy_rclpy_compat as ros_compat
+from jsk_ros1_ros2_compat.rospy_rclpy_compat import ROS_VERSION
 
 
 keep_flag = True
@@ -66,11 +67,23 @@ def output():
 
 if __name__ == '__main__':
     init()
-    rospy.init_node('battery_summary')
-    rospy.Subscriber("/diagnostics_agg", DiagnosticArray, callback)
-
-    while not rospy.is_shutdown() and keep_flag:
-        print("aggregating battery info...")
-        rospy.sleep(1)
+    if ROS_VERSION == 2:
+        ros_compat.rclpy.init()
+        node = ros_compat.rclpy.create_node('battery_summary')
+    else:
+        node = None
+        ros_compat.rospy.init_node('battery_summary')
+    ros_compat.create_subscription(node, "/diagnostics_agg", DiagnosticArray, callback, 1)
+    if ROS_VERSION == 2:
+        while ros_compat.rclpy.ok() and keep_flag:
+            print("aggregating battery info...")
+            ros_compat.rclpy.spin_once(node, timeout_sec=1.0)
+        node.destroy_node()
+        if ros_compat.rclpy.ok():
+            ros_compat.rclpy.shutdown()
+    else:
+        while not ros_compat.rospy.is_shutdown() and keep_flag:
+            print("aggregating battery info...")
+            ros_compat.rospy.sleep(1)
 
     output()
