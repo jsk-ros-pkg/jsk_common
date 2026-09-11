@@ -5,7 +5,7 @@ from mock import patch
 from nose.tools import assert_equal
 import unittest
 
-from jsk_topic_tools.log_utils import _log_msg_with_called_location
+from jsk_ros1_ros2_compat.log_utils import _log_msg_with_called_location
 from jsk_topic_tools.log_utils import jsk_logdebug
 from jsk_topic_tools.log_utils import jsk_loginfo
 from jsk_topic_tools.log_utils import jsk_logwarn
