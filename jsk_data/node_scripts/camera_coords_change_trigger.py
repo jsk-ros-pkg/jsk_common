@@ -5,12 +5,12 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-from termcolor import colored
 
 from geometry_msgs.msg import PoseStamped
-import rospy
 from std_srvs.srv import Trigger
-import tf
+
+from jsk_ros1_ros2_compat import rospy_rclpy_compat as ros_compat
+from jsk_ros1_ros2_compat.rospy_rclpy_compat import ROS_VERSION
 
 
 def compute_pose_delta(pose1, pose2):
@@ -28,44 +28,47 @@ def compute_pose_delta(pose1, pose2):
 
 class CameraCoordsChangeTrigger(object):
 
-    def __init__(self):
-        self.delta_pos = rospy.get_param('~delta_position', 0.03)
-        self.delta_ori = rospy.get_param('~delta_orientation', 0.03)
-        self.velocify_pos = rospy.get_param('~velocify_position', 0.01)
-        self.velocify_ori = rospy.get_param('~velocify_orientation', 0.01)
+    def __init__(self, node=None):
+        self.node = node
+        self.delta_pos = ros_compat.get_param(node, '~delta_position', 0.03)
+        self.delta_ori = ros_compat.get_param(node, '~delta_orientation', 0.03)
+        self.velocify_pos = ros_compat.get_param(node, '~velocify_position', 0.01)
+        self.velocify_ori = ros_compat.get_param(node, '~velocify_orientation', 0.01)
 
-        self.listener = tf.TransformListener()
-        rospy.loginfo("Waiting for service '{}'"
-                      .format(rospy.resolve_name('~trigger')))
-        rospy.wait_for_service('~trigger')
-        self.trigger = rospy.ServiceProxy('~trigger', Trigger)
-        self.timer = rospy.Timer(rospy.Duration(1. / 100),
-                                 self.timer_callback)
+        ros_compat.loginfo(node, "Waiting for service 'trigger'")
+        self.tf_buffer, self.listener = ros_compat.create_tf_buffer_and_listener(node)
+        if ROS_VERSION == 2:
+            self.trigger_client = node.create_client(Trigger, '~/trigger')
+            self.trigger_client.wait_for_service()
+        else:
+            ros_compat.rospy.wait_for_service('~trigger')
+            self.trigger = ros_compat.rospy.ServiceProxy('~trigger', Trigger)
+        self.timer = ros_compat.create_timer(node, 1. / 100, self.timer_callback)
         self.last_pose_stamped = None
         self.last_saved_pose_stamped = None
 
-    def timer_callback(self, event):
-        # Get current camera coords
-        stamp = rospy.Time.now()
-        src_frame = '/world'
-        dst_frame = '/head_mount_kinect_rgb_optical_frame'
-        try:
-            self.listener.waitForTransform(src_frame, dst_frame, stamp,
-                                           timeout=rospy.Duration(1))
-        except Exception as e:
-            rospy.logerr(e)
-            return
-        dst_pose = self.listener.lookupTransform(src_frame, dst_frame, stamp)
+    def _lookup_camera_pose(self, src_frame, dst_frame, stamp):
+        transform = self.tf_buffer.lookup_transform(
+            src_frame, dst_frame, stamp, timeout=ros_compat.duration_from_sec(1.0))
         pose_stamped = PoseStamped()
         pose_stamped.header.frame_id = src_frame
-        pose_stamped.header.stamp = stamp
-        pose_stamped.pose.position.x = dst_pose[0][0]
-        pose_stamped.pose.position.y = dst_pose[0][1]
-        pose_stamped.pose.position.z = dst_pose[0][2]
-        pose_stamped.pose.orientation.x = dst_pose[1][0]
-        pose_stamped.pose.orientation.y = dst_pose[1][1]
-        pose_stamped.pose.orientation.z = dst_pose[1][2]
-        pose_stamped.pose.orientation.w = dst_pose[1][3]
+        pose_stamped.header.stamp = stamp.to_msg() if ROS_VERSION == 2 else stamp
+        pose_stamped.pose.position.x = transform.transform.translation.x
+        pose_stamped.pose.position.y = transform.transform.translation.y
+        pose_stamped.pose.position.z = transform.transform.translation.z
+        pose_stamped.pose.orientation = transform.transform.rotation
+        return pose_stamped
+
+    def timer_callback(self, event=None):
+        stamp = self.node.get_clock().now() if ROS_VERSION == 2 else ros_compat.rospy.Time.now()
+        src_frame = 'world' if ROS_VERSION == 2 else '/world'
+        dst_frame = 'head_mount_kinect_rgb_optical_frame' if ROS_VERSION == 2 \
+            else '/head_mount_kinect_rgb_optical_frame'
+        try:
+            pose_stamped = self._lookup_camera_pose(src_frame, dst_frame, stamp)
+        except Exception as e:
+            ros_compat.logerr(self.node, str(e))
+            return
 
         # Check the change
         delta_saving_pos, delta_saving_ori = np.inf, np.inf
@@ -73,9 +76,11 @@ class CameraCoordsChangeTrigger(object):
         if self.last_pose_stamped is not None:
             delta_pos, delta_ori = compute_pose_delta(
                 pose_stamped.pose, self.last_pose_stamped.pose)
-            delta_time = stamp - self.last_pose_stamped.header.stamp
-            vel_pos = delta_pos / delta_time.to_sec()
-            vel_ori = delta_ori / delta_time.to_sec()
+            delta_time = ros_compat.stamp_to_sec(pose_stamped.header.stamp) - \
+                ros_compat.stamp_to_sec(self.last_pose_stamped.header.stamp)
+            if delta_time > 0:
+                vel_pos = delta_pos / delta_time
+                vel_ori = delta_ori / delta_time
         if self.last_saved_pose_stamped is not None:
             delta_saving_pos, delta_saving_ori = compute_pose_delta(
                 pose_stamped.pose, self.last_saved_pose_stamped.pose)
@@ -86,27 +91,39 @@ class CameraCoordsChangeTrigger(object):
                        'vel_pos: {}, vel_ori: {}'
                        .format(delta_saving_pos,
                                delta_saving_ori, vel_pos, vel_ori))
-        # Save according to the change
         if (delta_saving_pos > self.delta_pos and
                 delta_saving_ori > self.delta_ori and
                 vel_pos < self.velocify_pos and
                 vel_ori < self.velocify_ori):
-            rospy.loginfo(logging_msg)
-            rospy.loginfo(colored('Sending saving result', 'blue'))
-            res = self.trigger()
-            rospy.loginfo(colored('Saving request result success: {}'
-                                  .format(res.success),
-                                  'green' if res.success else 'red'))
-            if res.success:
-                self.last_saved_pose_stamped = pose_stamped
+            ros_compat.loginfo(self.node, logging_msg)
+            ros_compat.loginfo(self.node, 'Sending saving result')
+            if ROS_VERSION == 2:
+                future = self.trigger_client.call_async(Trigger.Request())
+                future.add_done_callback(
+                    lambda f: self._on_trigger_result(f.result(), pose_stamped))
+            else:
+                res = self.trigger()
+                self._on_trigger_result(res, pose_stamped)
         else:
-            rospy.loginfo_throttle(1, logging_msg)
+            ros_compat.loginfo(self.node, logging_msg)
+
+    def _on_trigger_result(self, res, pose_stamped):
+        ros_compat.loginfo(
+            self.node, 'Saving request result success: {}'.format(res.success))
+        if res.success:
+            self.last_saved_pose_stamped = pose_stamped
 
 
 def main():
-    rospy.init_node('camera_coords_change_trigger')
-    CameraCoordsChangeTrigger()
-    rospy.spin()
+    if ROS_VERSION == 2:
+        ros_compat.rclpy.init()
+        node = ros_compat.rclpy.create_node('camera_coords_change_trigger')
+        CameraCoordsChangeTrigger(node)
+        ros_compat.spin_and_shutdown(node)
+    else:
+        ros_compat.rospy.init_node('camera_coords_change_trigger')
+        CameraCoordsChangeTrigger()
+        ros_compat.rospy.spin()
 
 
 if __name__ == '__main__':

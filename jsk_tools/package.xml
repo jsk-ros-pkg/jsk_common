@@ -13,17 +13,24 @@
   <author>Ryohei Ueda (ueda@jsk.t.u-tokyo.ac.jp)</author>
   <author>Rosen Diankov (rosen.diankov@gmail.com)</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
 
-  <build_depend>dynamic_reconfigure</build_depend>
-  <build_depend>git</build_depend>
-  <build_depend>rosgraph_msgs</build_depend>
-  <exec_depend>cv_bridge</exec_depend>
-  <exec_depend>diagnostic_aggregator</exec_depend>
+  <build_depend condition="$ROS_VERSION == 1">dynamic_reconfigure</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">git</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">rosgraph_msgs</build_depend>
+  <build_depend condition="$ROS_VERSION == 2">ament_cmake_python</build_depend>
+  <!-- provides rospy_rclpy_compat.py, shared across this repo's ROS2-
+       ported packages. -->
+  <exec_depend>jsk_ros1_ros2_compat</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">actionlib</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">cv_bridge</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">diagnostic_aggregator</exec_depend>
+  <!-- diagnostic_msgs is released for both ROS1 and ROS2, so no condition -->
   <exec_depend>diagnostic_msgs</exec_depend>
-  <exec_depend>diagnostic_updater</exec_depend>
-  <exec_depend>dynamic_reconfigure</exec_depend>
-  <exec_depend>python-percol</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">diagnostic_updater</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">dynamic_reconfigure</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">python-percol</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-colorama</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-colorama</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-pygithub3</exec_depend>
@@ -32,28 +39,43 @@
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-progressbar</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-rosdep</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-rosdep</exec_depend>
-  <exec_depend>python-slacker-cli</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">python-slacker-cli</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-tabulate</exec_depend> <!-- python-tabulate enable since xenial (16.04) kinetic -->
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-tabulate</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-texttable</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-texttable</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-requests</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-requests</exec_depend>
-  <exec_depend>rosgraph_msgs</exec_depend>
-  <exec_depend>rospy</exec_depend>
-  <exec_depend>rqt_reconfigure</exec_depend>
-  <exec_depend>axis_camera</exec_depend>
-  <exec_depend>pr2_computer_monitor</exec_depend>
-  <exec_depend>iproute2</exec_depend>
-  <exec_depend>jsk_gui_msgs</exec_depend>
-  <exec_depend>jsk_network_tools</exec_depend>
-  <exec_depend>jsk_topic_tools</exec_depend>
-  <exec_depend>rosbag</exec_depend>
-  <exec_depend>rosemacs</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">rosgraph_msgs</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">rospy</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">rqt_reconfigure</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">axis_camera</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">pr2_computer_monitor</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">iproute2</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">jsk_gui_msgs</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">jsk_network_tools</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">jsk_topic_tools</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">rosbag</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">rosemacs</exec_depend>
+  <!-- ROS1-only: sound_play has no ROS2/ament port (confirmed: no
+       ros-jazzy-sound-play). audible_warning.py's ROS2 TTS path is a
+       logged no-op instead, see node_scripts/audible_warning.py. -->
+  <exec_depend condition="$ROS_VERSION == 1">sound_play</exec_depend>
   <!-- <build_depend>mjpeg_server</build_depend> -->
   <!-- <exec_depend>mjpeg_server</exec_depend> -->
   <!-- <test_depend>mjpeg_server</test_depend> -->
-  <test_depend>roslint</test_depend>
-  <test_depend>rostest</test_depend>
+  <test_depend condition="$ROS_VERSION == 1">roslint</test_depend>
+  <test_depend condition="$ROS_VERSION == 1">rostest</test_depend>
+
+  <!-- ROS2 dependencies -->
+  <depend condition="$ROS_VERSION == 2">rclpy</depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_ros</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_testing</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_testing_ament_cmake</test_depend>
+
+  <export>
+    <build_type condition="$ROS_VERSION == 1">catkin</build_type>
+    <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
+  </export>
 
 </package>

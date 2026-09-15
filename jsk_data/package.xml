@@ -7,40 +7,61 @@
   <maintainer email="ueda@jsk.t.u-tokyo.ac.jp">Ryohei Ueda</maintainer>
   <maintainer email="www.kentaro.wada@gmail.com">Kentaro Wada</maintainer>
   <license>BSD</license>
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>dynamic_reconfigure</build_depend>
-  <build_depend>message_generation</build_depend>
-  <exec_depend>baxter_description</exec_depend>
-  <exec_depend>depth_image_proc</exec_depend>
-  <exec_depend>dynamic_reconfigure</exec_depend>
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+  <build_depend condition="$ROS_VERSION == 1">dynamic_reconfigure</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">message_generation</build_depend>
+  <build_depend condition="$ROS_VERSION == 2">ament_cmake_python</build_depend>
+  <exec_depend condition="$ROS_VERSION == 1">baxter_description</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">depth_image_proc</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">dynamic_reconfigure</exec_depend>
+  <!-- cv_bridge, message_filters, std_srvs, image_transport, tf2_ros,
+       geometry_msgs are released for both ROS1 and ROS2, so no condition -->
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>message_filters</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
   <exec_depend>image_transport</exec_depend>
-  <exec_depend>jsk_topic_tools</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
-  <exec_depend>nodelet</exec_depend>
-  <exec_depend>openni_launch</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <!-- provides rospy_rclpy_compat.py, shared across this repo's ROS2-
+       ported packages. -->
+  <exec_depend>jsk_ros1_ros2_compat</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">jsk_topic_tools</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">message_runtime</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">nodelet</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">openni_launch</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-paramiko</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-paramiko</exec_depend>
-  <exec_depend>pr2_description</exec_depend>
-  <exec_depend>pr2_machine</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">pr2_description</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">pr2_machine</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-click</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-click</exec_depend>
   <exec_depend>python-gdown-pip</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-yaml</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-yaml</exec_depend>
-  <exec_depend>rosbag</exec_depend>
-  <exec_depend>rqt_bag</exec_depend>
-  <exec_depend>rviz</exec_depend>
-  <exec_depend>tf2_ros</exec_depend>
-  <exec_depend>wget</exec_depend>
-  <exec_depend>xacro</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">rosbag</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">rqt_bag</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">rviz</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">wget</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">xacro</exec_depend>
   <test_depend condition="$ROS_PYTHON_VERSION == 2">python-freezegun-pip</test_depend>
   <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-freezegun</test_depend>
   <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-imageio</test_depend>
   <test_depend condition="$ROS_PYTHON_VERSION == 2">python-nose</test_depend>
   <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-nose</test_depend>
-  <test_depend>roslaunch</test_depend>
-  <test_depend>roslint</test_depend>
-  <test_depend>rostest</test_depend>
+  <test_depend condition="$ROS_VERSION == 1">roslaunch</test_depend>
+  <test_depend condition="$ROS_VERSION == 1">roslint</test_depend>
+  <test_depend condition="$ROS_VERSION == 1">rostest</test_depend>
+
+  <!-- ROS2 dependencies -->
+  <depend condition="$ROS_VERSION == 2">rclpy</depend>
+  <exec_depend condition="$ROS_VERSION == 2">ros2bag</exec_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_ros</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_testing</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">launch_testing_ament_cmake</test_depend>
+
   <export>
+    <build_type condition="$ROS_VERSION == 1">catkin</build_type>
+    <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
   </export>
 </package>

@@ -3,10 +3,12 @@
 import argparse
 import os
 
-import rosbag
-import rospy
 import termcolor
 from tqdm import tqdm
+
+from jsk_ros1_ros2_compat.rosbag import nanoseconds_from_sec
+from jsk_ros1_ros2_compat.rosbag import open_bag
+from jsk_ros1_ros2_compat.rosbag import stamp_from_nanoseconds
 
 
 def main():
@@ -29,10 +31,10 @@ def main():
     else:
         out = args.out
 
-    input_bag = rosbag.Bag(input_bagfile)
+    input_bag = open_bag(input_bagfile)
     tf_static_messages = list(input_bag.read_messages(('/tf_static')))
 
-    with rosbag.Bag(out, 'w') as outbag:
+    with open_bag(out, 'w') as outbag:
         if args.no_progress_bar is False:
             progress = tqdm(total=input_bag.get_message_count())
         for topic, msg, t in input_bag:
@@ -43,9 +45,9 @@ def main():
             if topic == '/tf':
                 for tsm in tf_static_messages:
                     for tsmtr in tsm.message.transforms:
-                        tsmtr.header.stamp = t
+                        tsmtr.header.stamp = stamp_from_nanoseconds(t)
                     outbag.write('/tf', tsm.message,
-                                 t - rospy.Duration(0.1))
+                                 t - nanoseconds_from_sec(0.1))
             outbag.write(topic, msg, t)
     termcolor.cprint('=> Saved to {}'.format(out), 'green')
 

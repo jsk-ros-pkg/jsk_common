@@ -1,0 +1,42 @@
+---
+Language: Cpp
+Standard: c++17
+
+# -- Indentation --
+IndentWidth: 2
+UseTab: Never
+AccessModifierOffset: -2
+NamespaceIndentation: None
+
+# -- Column limit --
+ColumnLimit: 100
+
+# -- Braces --
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: MultiLine
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+
+# -- Pointer / Reference --
+DerivePointerAlignment: false
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# -- Break rules --
+AlwaysBreakTemplateDeclarations: Yes
+BreakConstructorInitializers: BeforeColon
+ConstructorInitializerIndentWidth: 0
+
+# -- Includes --
+SortIncludes: CaseInsensitive
+IncludeBlocks: Preserve
+
+# -- Misc --
+FixNamespaceComments: true
+MaxEmptyLinesToKeep: 1
+SeparateDefinitionBlocks: Always
+...

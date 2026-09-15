@@ -35,6 +35,34 @@
 
 #include "image_view2.h"
 
+#if ROS_VERSION_MAJOR != 1
+#include <thread>
+
+int main(int argc, char **argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::Node::SharedPtr node = std::make_shared<rclcpp::Node>("image_view2");
+
+  if (node->get_node_base_interface()->resolve_topic_or_service_name("image", false) == "/image") {
+    RCLCPP_WARN(node->get_logger(),
+                "image_view: image has not been remapped! Typical command-line usage:\n"
+                "\t$ ros2 run image_view2 image_view2 --ros-args -r image:=<image topic>");
+  }
+  image_view2::ImageView2 view(node);
+  // ROS2 has no AsyncSpinner; spin on a background thread instead, same
+  // shape as ROS1's spinner+main-thread-GUI-loop split (OpenCV's HighGUI
+  // calls below must run on the main thread).
+  std::thread spin_thread([node]() { rclcpp::spin(node); });
+  while (rclcpp::ok()) {
+    int key = cv::waitKey(1000 / 30);
+    view.pressKey(key);
+    view.showImage();
+  }
+  spin_thread.join();
+  return 0;
+}
+#else
+
 int main(int argc, char **argv)
 {
   //ros::init(argc, argv, "image_view2", ros::init_options::AnonymousName);
@@ -55,4 +83,5 @@ int main(int argc, char **argv)
   }
   return 0;
 }
+#endif
 

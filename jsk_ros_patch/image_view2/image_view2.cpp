@@ -39,16 +39,65 @@ namespace image_view2{
   ImageView2::ImageView2() : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), window_initialized_(false),space_(10)
   {
   }
-  
+
+#if ROS_VERSION_MAJOR != 1
+  ImageView2::ImageView2(rclcpp::Node::SharedPtr node)
+    : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), selecting_fg_(true),
+      left_button_clicked_(false), continuous_ready_(false), window_initialized_(false),
+      line_select_start_point_(true), line_selected_(false), poly_selecting_done_(true),
+      node_(node)
+#else
   ImageView2::ImageView2(ros::NodeHandle& nh)
     : marker_topic_("image_marker"), filename_format_(""), count_(0), mode_(MODE_RECTANGLE), times_(100), selecting_fg_(true),
       left_button_clicked_(false), continuous_ready_(false), window_initialized_(false),
       line_select_start_point_(true), line_selected_(false), poly_selecting_done_(true)
+#endif
   {
+    std::string format_string;
+#if ROS_VERSION_MAJOR != 1
+    ROS1_ROS2_COMPAT::g_node = node;
+    std::string camera = node->get_node_base_interface()->resolve_topic_or_service_name("image", false);
+    std::string camera_info = node->get_node_base_interface()->resolve_topic_or_service_name("camera_info", false);
+    image_transport::ImageTransport it(node);
+    // image_transport under a topic prefix behaves the same as a fresh
+    // ImageTransport since it only ever advertises/subscribes relative
+    // topic names below.
+    image_transport::ImageTransport& local_it = it;
+
+    point_pub_ = node->create_publisher<geometry_msgs::PointStamped>(camera + "/screenpoint", 100);
+    point_array_pub_ = node->create_publisher<sensor_msgs::PointCloud2>(camera + "/screenpoint_array", 100);
+    rectangle_pub_ = node->create_publisher<geometry_msgs::PolygonStamped>(camera + "/screenrectangle", 100);
+    rectangle_img_pub_ = node->create_publisher<sensor_msgs::Image>(camera + "/screenrectangle_image", 100);
+    move_point_pub_ = node->create_publisher<geometry_msgs::PointStamped>(camera + "/movepoint", 100);
+    foreground_mask_pub_ = node->create_publisher<sensor_msgs::Image>(camera + "/foreground", 100);
+    background_mask_pub_ = node->create_publisher<sensor_msgs::Image>(camera + "/background", 100);
+    foreground_rect_pub_ = node->create_publisher<geometry_msgs::PolygonStamped>(camera + "/foreground_rect", 100);
+    background_rect_pub_ = node->create_publisher<geometry_msgs::PolygonStamped>(camera + "/background_rect", 100);
+    line_pub_ = node->create_publisher<geometry_msgs::PolygonStamped>(camera + "/line", 100);
+    poly_pub_ = node->create_publisher<geometry_msgs::PolygonStamped>(camera + "/poly", 100);
+
+    window_name_ = node->declare_parameter("window_name", std::string("image_view2 [") + camera + std::string("]"));
+    skip_draw_rate_ = node->declare_parameter("skip_draw_rate", 0);
+    autosize_ = node->declare_parameter("autosize", false);
+    // image_transport::TransportHints declares/reads the "image_transport"
+    // parameter itself below (unlike ROS1, where it's just a plain string
+    // passed straight to it.subscribe()).
+    draw_grid_ = node->declare_parameter("draw_grid", false);
+    blurry_mode_ = node->declare_parameter("blurry", false);
+    region_continuous_publish_ = node->declare_parameter("region_continuous_publish", false);
+    format_string = node->declare_parameter("filename_format", std::string("frame%04i.jpg"));
+    use_window = node->declare_parameter("use_window", true);
+    show_info_ = node->declare_parameter("show_info", false);
+
+    double xx = node->declare_parameter("resize_scale_x", 1.0);
+    double yy = node->declare_parameter("resize_scale_y", 1.0);
+    tf_timeout_ = node->declare_parameter("tf_timeout", 1.0);
+
+    std::string interaction_mode = node->declare_parameter("interaction_mode", std::string("rectangle"));
+#else
     std::string camera = nh.resolveName("image");
     std::string camera_info = nh.resolveName("camera_info");
     ros::NodeHandle local_nh("~");
-    std::string format_string;
     std::string transport;
     image_transport::ImageTransport it(nh);
     image_transport::ImageTransport local_it(camera);
@@ -79,9 +128,10 @@ namespace image_view2{
     local_nh.param("resize_scale_x", xx, 1.0);
     local_nh.param("resize_scale_y", yy, 1.0);
     local_nh.param("tf_timeout", tf_timeout_, 1.0);
-    
+
     std::string interaction_mode;
     local_nh.param("interaction_mode", interaction_mode, std::string("rectangle"));
+#endif
     setMode(stringToMode(interaction_mode));
     resize_x_ = 1.0/xx;
     resize_y_ = 1.0/yy;
@@ -93,12 +143,88 @@ namespace image_view2{
 
     image_pub_ = it.advertise("image_marked", 1);
     local_image_pub_ = local_it.advertise("marked", 1);
-    
+
+#if ROS_VERSION_MAJOR != 1
+    image_transport::TransportHints transport_hints(node.get());
+    image_sub_ = it.subscribe(camera, 1, &ImageView2::imageCb, this, &transport_hints);
+    info_sub_ = node->create_subscription<sensor_msgs::CameraInfo>(
+      camera_info, 1, std::bind(&ImageView2::infoCb, this, std::placeholders::_1));
+    marker_sub_ = node->create_subscription<image_view2::ImageMarker2>(
+      marker_topic_, 10, std::bind(&ImageView2::markerCb, this, std::placeholders::_1));
+    // `camera` is already the fully-resolved (absolute) "image" topic
+    // name, same as ROS1's local_nh.subscribe(camera + "/event", ...):
+    // ROS1 topic resolution treats a leading-"/" name as global even
+    // from inside a "~private" NodeHandle, so no "~/" prefix here either
+    // (which would otherwise double up the leading slash under ROS2).
+    event_sub_ = node->create_subscription<image_view2::MouseEvent>(
+      camera + "/event", 100, std::bind(&ImageView2::eventCb, this, std::placeholders::_1));
+
+    change_mode_srv_ = node->create_service<image_view2::ChangeMode>(
+      "~/change_mode",
+      [this](const image_view2::ChangeMode::Request::SharedPtr req,
+             image_view2::ChangeMode::Response::SharedPtr res) {
+        changeModeServiceCallback(*req, *res);
+      });
+    rectangle_mode_srv_ = node->create_service<std_srvs::Empty>(
+      "~/rectangle_mode",
+      [this](const std_srvs::Empty::Request::SharedPtr req, std_srvs::Empty::Response::SharedPtr res) {
+        rectangleModeServiceCallback(*req, *res);
+      });
+    grabcut_mode_srv_ = node->create_service<std_srvs::Empty>(
+      "~/grabcut_mode",
+      [this](const std_srvs::Empty::Request::SharedPtr req, std_srvs::Empty::Response::SharedPtr res) {
+        grabcutModeServiceCallback(*req, *res);
+      });
+    grabcut_rect_mode_srv_ = node->create_service<std_srvs::Empty>(
+      "~/grabcut_rect_mode",
+      [this](const std_srvs::Empty::Request::SharedPtr req, std_srvs::Empty::Response::SharedPtr res) {
+        grabcutRectModeServiceCallback(*req, *res);
+      });
+    line_mode_srv_ = node->create_service<std_srvs::Empty>(
+      "~/line_mode",
+      [this](const std_srvs::Empty::Request::SharedPtr req, std_srvs::Empty::Response::SharedPtr res) {
+        lineModeServiceCallback(*req, *res);
+      });
+    poly_mode_srv_ = node->create_service<std_srvs::Empty>(
+      "~/poly_mode",
+      [this](const std_srvs::Empty::Request::SharedPtr req, std_srvs::Empty::Response::SharedPtr res) {
+        polyModeServiceCallback(*req, *res);
+      });
+    none_mode_srv_ = node->create_service<std_srvs::Empty>(
+      "~/none_mode",
+      [this](const std_srvs::Empty::Request::SharedPtr req, std_srvs::Empty::Response::SharedPtr res) {
+        noneModeServiceCallback(*req, *res);
+      });
+
+    // dynamic_reconfigure has no ROS2 equivalent; ImageView2.cfg's 9
+    // scalar bool/int params (grid/fisheye_mode/div_u/div_v/grid_red/
+    // grid_green/grid_blue/grid_thickness/grid_space) become plain
+    // declared parameters with a set-parameters callback below.
+    node->declare_parameter("grid", false);
+    node->declare_parameter("fisheye_mode", false);
+    node->declare_parameter("div_u", 10);
+    node->declare_parameter("div_v", 10);
+    node->declare_parameter("grid_red", 255);
+    node->declare_parameter("grid_green", 0);
+    node->declare_parameter("grid_blue", 0);
+    node->declare_parameter("grid_thickness", 2);
+    node->declare_parameter("grid_space", 10);
+    on_set_parameters_handle_ = node->add_on_set_parameters_callback(
+      [this](const std::vector<rclcpp::Parameter> & parameters) {
+        return config_callback(parameters);
+      });
+    config_callback(node->get_parameters(
+      {"grid", "fisheye_mode", "div_u", "div_v", "grid_red", "grid_green",
+       "grid_blue", "grid_thickness", "grid_space"}));
+
+    tf_buffer_ = boost::make_shared<tf2_ros::Buffer>(node->get_clock());
+    tf_listener_ = boost::make_shared<tf2_ros::TransformListener>(*tf_buffer_, node);
+#else
     image_sub_ = it.subscribe(camera, 1, &ImageView2::imageCb, this, transport);
     info_sub_ = nh.subscribe(camera_info, 1, &ImageView2::infoCb, this);
     marker_sub_ = nh.subscribe(marker_topic_, 10, &ImageView2::markerCb, this);
     event_sub_ = local_nh.subscribe(camera + "/event", 100, &ImageView2::eventCb, this);
-    
+
     change_mode_srv_ = local_nh.advertiseService(
       "change_mode", &ImageView2::changeModeServiceCallback, this);
     rectangle_mode_srv_ = local_nh.advertiseService(
@@ -116,12 +242,19 @@ namespace image_view2{
 
     srv_ = boost::make_shared <dynamic_reconfigure::Server<Config> >(local_nh);
     dynamic_reconfigure::Server<Config>::CallbackType f =
-#if __cplusplus < 201100L
+#if __cplusplus < 201402L
+      // The lambda below uses C++14 generic lambda parameters (auto&,
+      // auto), not just C++11; older/forced-C++11 builds (indigo/kinetic,
+      // see jsk_ros_patch/image_view2/CMakeLists.txt) need this fallback.
       boost::bind(&ImageView2::config_callback, this, _1, _2);
 #else
       [this](auto& config, auto level){ config_callback(config, level); };
 #endif
     srv_->setCallback(f);
+
+    tf_buffer_ = boost::make_shared<tf2_ros::Buffer>(ros::Duration(10));
+    tf_listener_ = boost::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+#endif
   }
 
   ImageView2::~ImageView2()
@@ -131,6 +264,36 @@ namespace image_view2{
     }
   }
 
+#if ROS_VERSION_MAJOR != 1
+  rcl_interfaces::msg::SetParametersResult ImageView2::config_callback(
+    const std::vector<rclcpp::Parameter> &parameters)
+  {
+    // values in `parameters` are the pending new values; the node's own
+    // parameter storage isn't updated until after this callback returns
+    // successfully, so apply from `parameters` where present, falling
+    // back to the current stored value otherwise.
+    auto value = [this](const std::vector<rclcpp::Parameter>& params, const std::string& name) {
+      for (const auto& p : params) {
+        if (p.get_name() == name) return p;
+      }
+      return node_->get_parameter(name);
+    };
+    draw_grid_ = value(parameters, "grid").as_bool();
+    fisheye_mode_ = value(parameters, "fisheye_mode").as_bool();
+    div_u_ = value(parameters, "div_u").as_int();
+    div_v_ = value(parameters, "div_v").as_int();
+
+    grid_red_ = value(parameters, "grid_red").as_int();
+    grid_blue_ = value(parameters, "grid_blue").as_int();
+    grid_green_ = value(parameters, "grid_green").as_int();
+    grid_thickness_ = value(parameters, "grid_thickness").as_int();
+    space_ = value(parameters, "grid_space").as_int();
+
+    rcl_interfaces::msg::SetParametersResult result;
+    result.successful = true;
+    return result;
+  }
+#else
   void ImageView2::config_callback(Config &config, uint32_t level)
   {
     draw_grid_ = config.grid;
@@ -144,13 +307,35 @@ namespace image_view2{
     grid_thickness_ = config.grid_thickness;
     space_  = config.grid_space;
   }
+#endif
 
   void ImageView2::markerCb(const image_view2::ImageMarker2ConstPtr& marker)
   {
     ROS_DEBUG("markerCb");
-    // convert lifetime to duration from Time(0)
-    if(marker->lifetime != ros::Duration(0))
-      boost::const_pointer_cast<image_view2::ImageMarker2>(marker)->lifetime = (ros::Time::now() - ros::Time(0)) + marker->lifetime;
+    // convert lifetime (a relative duration) to an absolute deadline,
+    // stored back into the same field(s) (seconds-since-epoch).
+#if ROS_VERSION_MAJOR != 1
+    bool has_lifetime = (marker->lifetime_sec != 0 || marker->lifetime_nsec != 0);
+    double relative_sec = marker->lifetime_sec + marker->lifetime_nsec * 1e-9;
+#else
+    bool has_lifetime = !marker->lifetime.isZero();
+    double relative_sec = marker->lifetime.toSec();
+#endif
+    if (has_lifetime) {
+      double deadline_sec = ROS1_ROS2_COMPAT::rosTimeNow().toSec() + relative_sec;
+      // marker's ConstPtr is std::shared_ptr under ROS2 (rclcpp message
+      // convention) but boost::shared_ptr under ROS1 (this package's
+      // catkin-generated message convention) -- match the cast to it.
+#if ROS_VERSION_MAJOR != 1
+      auto mutable_marker = std::const_pointer_cast<image_view2::ImageMarker2>(marker);
+      mutable_marker->lifetime_sec = static_cast<int32_t>(deadline_sec);
+      mutable_marker->lifetime_nsec = static_cast<uint32_t>(
+        (deadline_sec - mutable_marker->lifetime_sec) * 1e9);
+#else
+      auto mutable_marker = boost::const_pointer_cast<image_view2::ImageMarker2>(marker);
+      mutable_marker->lifetime = ros::Duration(deadline_sec);
+#endif
+    }
     {
       boost::mutex::scoped_lock lock(queue_mutex_);
       marker_queue_.push_back(marker);
@@ -165,22 +350,22 @@ namespace image_view2{
   }
 
   bool ImageView2::lookupTransformation(
-    std::string frame_id, ros::Time& acquisition_time,
+    std::string frame_id, ROS1_ROS2_COMPAT::RosTime& acquisition_time,
     std::map<std::string, int>& tf_fail,
-    tf::StampedTransform &transform)
+    geometry_msgs::TransformStamped &transform)
   {
-    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
+    ROS1_ROS2_COMPAT::RosDuration timeout = ROS1_ROS2_COMPAT::durationFromSec(tf_timeout_); // wait 0.5 sec
     try {
-      ros::Time tm;
-      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                    acquisition_time, timeout);
-      tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                   acquisition_time, transform);
+      // tf2_ros::Buffer::lookupTransform() waits (up to `timeout`) for
+      // the transform to become available on its own, replacing tf1's
+      // separate getLatestCommonTime()+waitForTransform()+lookupTransform()
+      // three-step dance.
+      transform = tf_buffer_->lookupTransform(cam_model_.tfFrame(), frame_id,
+                                              acquisition_time, timeout);
       tf_fail[frame_id]=0;
       return true;
     }
-    catch (tf::TransformException& ex) {
+    catch (tf2::TransformException& ex) {
       tf_fail[frame_id]++;
       if ( tf_fail[frame_id] < 5 ) {
         ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
@@ -367,37 +552,43 @@ namespace image_view2{
   {
     static std::map<std::string, int> tf_fail;
     BOOST_FOREACH(std::string frame_id, marker->frames) {
-      tf::StampedTransform transform;
-      ros::Time acquisition_time = last_msg_->header.stamp;
+      geometry_msgs::TransformStamped transform;
+      ROS1_ROS2_COMPAT::RosTime acquisition_time = last_msg_->header.stamp;
       if(!lookupTransformation(frame_id, acquisition_time, tf_fail, transform)) {
         return;
       }
       // center point
-      tf::Point pt = transform.getOrigin();
-      cv::Point3d pt_cv(pt.x(), pt.y(), pt.z());
+      cv::Point3d pt_cv(transform.transform.translation.x,
+                        transform.transform.translation.y,
+                        transform.transform.translation.z);
       cv::Point2d uv;
       uv = cam_model_.project3dToPixel(pt_cv);
 
       static const int RADIUS = 3;
       cv::circle(draw_, uv, RADIUS, DEFAULT_COLOR, -1);
 
-      // x, y, z
+      // x, y, z -- `transform` (frame_id -> camera frame, from
+      // lookupTransformation() above) can be reused directly via
+      // tf2::doTransform(), rather than tf1's separate
+      // transformPoint() call (which would each re-lookup the same
+      // transform) for every axis.
       cv::Point2d uv0, uv1, uv2;
-      tf::Stamped<tf::Point> pin, pout;
+      geometry_msgs::PointStamped pin, pout;
+      pin.header.frame_id = frame_id;
+      pin.header.stamp = ROS1_ROS2_COMPAT::stampMsg(acquisition_time);
 
       // x
-      pin = tf::Stamped<tf::Point>(tf::Point(0.05, 0, 0), acquisition_time, frame_id);
-      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-      uv0 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+      pin.point.x = 0.05; pin.point.y = 0; pin.point.z = 0;
+      tf2::doTransform(pin, pout, transform);
+      uv0 = cam_model_.project3dToPixel(cv::Point3d(pout.point.x, pout.point.y, pout.point.z));
       // y
-      pin = tf::Stamped<tf::Point>(tf::Point(0, 0.05, 0), acquisition_time, frame_id);
-      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-      uv1 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
-
+      pin.point.x = 0; pin.point.y = 0.05; pin.point.z = 0;
+      tf2::doTransform(pin, pout, transform);
+      uv1 = cam_model_.project3dToPixel(cv::Point3d(pout.point.x, pout.point.y, pout.point.z));
       // z
-      pin = tf::Stamped<tf::Point>(tf::Point(0, 0, 0.05), acquisition_time, frame_id);
-      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-      uv2 = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+      pin.point.x = 0; pin.point.y = 0; pin.point.z = 0.05;
+      tf2::doTransform(pin, pout, transform);
+      uv2 = cam_model_.project3dToPixel(cv::Point3d(pout.point.x, pout.point.y, pout.point.z));
 
       // draw
       if ( blurry_mode_ ) {
@@ -500,47 +691,31 @@ namespace image_view2{
                                    std::vector<CvScalar>::iterator& col_it)
   {
     static std::map<std::string, int> tf_fail;
-    std::string frame_id = marker->points3D.header.frame_id;
-    tf::StampedTransform transform;
-    ros::Time acquisition_time = last_msg_->header.stamp;
-    //ros::Time acquisition_time = msg->points3D.header.stamp;
-    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
-    try {
-      ros::Time tm;
-      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-      ros::Duration diff = ros::Time::now() - tm;
-      if ( diff > ros::Duration(1.0) ) { return; }
-      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                    acquisition_time, timeout);
-      tf_listener_.lookupTransform(cam_model_.tfFrame(), frame_id,
-                                   acquisition_time, transform);
-      tf_fail[frame_id]=0;
-    }
-    catch (tf::TransformException& ex) {
-      tf_fail[frame_id]++;
-      if ( tf_fail[frame_id] < 5 ) {
-        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-      } else {
-        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-      }
+#if ROS_VERSION_MAJOR != 1
+    const image_view2::PointArrayStamped& points_3d = marker->points_3d;
+#else
+    const image_view2::PointArrayStamped& points_3d = marker->points3D;
+#endif
+    std::string frame_id = points_3d.header.frame_id;
+    geometry_msgs::TransformStamped transform;
+    ROS1_ROS2_COMPAT::RosTime acquisition_time = last_msg_->header.stamp;
+    if(!lookupTransformation(frame_id, acquisition_time, tf_fail, transform)) {
       return;
     }
     std::vector<geometry_msgs::Point> points2D;
-    BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
-      tf::Point pt = transform.getOrigin();
-      geometry_msgs::PointStamped pt_cam, pt_;
-      pt_cam.header.frame_id = cam_model_.tfFrame();
-      pt_cam.header.stamp = acquisition_time;
-      pt_cam.point.x = pt.x();
-      pt_cam.point.y = pt.y();
-      pt_cam.point.z = pt.z();
-      tf_listener_.transformPoint(frame_id, pt_cam, pt_);
-
-      cv::Point2d uv;
-      tf::Stamped<tf::Point> pin, pout;
-      pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
-      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-      uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+    BOOST_FOREACH(geometry_msgs::Point p, points_3d.points) {
+      // p is already expressed in frame_id's own coordinates (points_3d's
+      // frame), so transform it directly to the camera frame via the
+      // frame_id->camera `transform` already looked up above -- no need
+      // for tf1's roundabout "re-express the frame origin, then offset"
+      // dance (which just re-derives the same transform mathematically).
+      geometry_msgs::PointStamped pin, pout;
+      pin.header.frame_id = frame_id;
+      pin.header.stamp = ROS1_ROS2_COMPAT::stampMsg(acquisition_time);
+      pin.point = p;
+      tf2::doTransform(pin, pout, transform);
+      cv::Point2d uv = cam_model_.project3dToPixel(
+        cv::Point3d(pout.point.x, pout.point.y, pout.point.z));
       geometry_msgs::Point point2D;
       point2D.x = uv.x;
       point2D.y = uv.y;
@@ -563,28 +738,26 @@ namespace image_view2{
                                   std::vector<CvScalar>::iterator& col_it)
   {
     static std::map<std::string, int> tf_fail;
-    std::string frame_id = marker->points3D.header.frame_id;
-    tf::StampedTransform transform;
-    ros::Time acquisition_time = last_msg_->header.stamp;
+#if ROS_VERSION_MAJOR != 1
+    const image_view2::PointArrayStamped& points_3d = marker->points_3d;
+#else
+    const image_view2::PointArrayStamped& points_3d = marker->points3D;
+#endif
+    std::string frame_id = points_3d.header.frame_id;
+    geometry_msgs::TransformStamped transform;
+    ROS1_ROS2_COMPAT::RosTime acquisition_time = last_msg_->header.stamp;
     if(!lookupTransformation(frame_id, acquisition_time, tf_fail, transform)) {
       return;
     }
     std::vector<geometry_msgs::Point> points2D;
-    BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
-      tf::Point pt = transform.getOrigin();
-      geometry_msgs::PointStamped pt_cam, pt_;
-      pt_cam.header.frame_id = cam_model_.tfFrame();
-      pt_cam.header.stamp = acquisition_time;
-      pt_cam.point.x = pt.x();
-      pt_cam.point.y = pt.y();
-      pt_cam.point.z = pt.z();
-      tf_listener_.transformPoint(frame_id, pt_cam, pt_);
-
-      cv::Point2d uv;
-      tf::Stamped<tf::Point> pin, pout;
-      pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
-      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-      uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+    BOOST_FOREACH(geometry_msgs::Point p, points_3d.points) {
+      geometry_msgs::PointStamped pin, pout;
+      pin.header.frame_id = frame_id;
+      pin.header.stamp = ROS1_ROS2_COMPAT::stampMsg(acquisition_time);
+      pin.point = p;
+      tf2::doTransform(pin, pout, transform);
+      cv::Point2d uv = cam_model_.project3dToPixel(
+        cv::Point3d(pout.point.x, pout.point.y, pout.point.z));
       geometry_msgs::Point point2D;
       point2D.x = uv.x;
       point2D.y = uv.y;
@@ -607,28 +780,26 @@ namespace image_view2{
                                  std::vector<CvScalar>::iterator& col_it)
   {
     static std::map<std::string, int> tf_fail;
-    std::string frame_id = marker->points3D.header.frame_id;
-    tf::StampedTransform transform;
-    ros::Time acquisition_time = last_msg_->header.stamp;
+#if ROS_VERSION_MAJOR != 1
+    const image_view2::PointArrayStamped& points_3d = marker->points_3d;
+#else
+    const image_view2::PointArrayStamped& points_3d = marker->points3D;
+#endif
+    std::string frame_id = points_3d.header.frame_id;
+    geometry_msgs::TransformStamped transform;
+    ROS1_ROS2_COMPAT::RosTime acquisition_time = last_msg_->header.stamp;
     if(!lookupTransformation(frame_id, acquisition_time, tf_fail, transform)) {
       return;
     }
     std::vector<geometry_msgs::Point> points2D;
-    BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
-      tf::Point pt = transform.getOrigin();
-      geometry_msgs::PointStamped pt_cam, pt_;
-      pt_cam.header.frame_id = cam_model_.tfFrame();
-      pt_cam.header.stamp = acquisition_time;
-      pt_cam.point.x = pt.x();
-      pt_cam.point.y = pt.y();
-      pt_cam.point.z = pt.z();
-      tf_listener_.transformPoint(frame_id, pt_cam, pt_);
-
-      cv::Point2d uv;
-      tf::Stamped<tf::Point> pin, pout;
-      pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
-      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-      uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+    BOOST_FOREACH(geometry_msgs::Point p, points_3d.points) {
+      geometry_msgs::PointStamped pin, pout;
+      pin.header.frame_id = frame_id;
+      pin.header.stamp = ROS1_ROS2_COMPAT::stampMsg(acquisition_time);
+      pin.point = p;
+      tf2::doTransform(pin, pout, transform);
+      cv::Point2d uv = cam_model_.project3dToPixel(
+        cv::Point3d(pout.point.x, pout.point.y, pout.point.z));
       geometry_msgs::Point point2D;
       point2D.x = uv.x;
       point2D.y = uv.y;
@@ -638,6 +809,7 @@ namespace image_view2{
     std::vector<geometry_msgs::Point>::const_iterator it = points2D.begin();
     std::vector<geometry_msgs::Point>::const_iterator end = points2D.end();
     std::vector<cv::Point> points;
+
 
     if (marker->filled) {
       points.push_back(cv::Point(it->x, it->y));
@@ -665,27 +837,25 @@ namespace image_view2{
                                 std::vector<CvScalar>::iterator& col_it)
   {
     static std::map<std::string, int> tf_fail;
-    std::string frame_id = marker->points3D.header.frame_id;
-    tf::StampedTransform transform;
-    ros::Time acquisition_time = last_msg_->header.stamp;
+#if ROS_VERSION_MAJOR != 1
+    const image_view2::PointArrayStamped& points_3d = marker->points_3d;
+#else
+    const image_view2::PointArrayStamped& points_3d = marker->points3D;
+#endif
+    std::string frame_id = points_3d.header.frame_id;
+    geometry_msgs::TransformStamped transform;
+    ROS1_ROS2_COMPAT::RosTime acquisition_time = last_msg_->header.stamp;
     if(!lookupTransformation(frame_id, acquisition_time, tf_fail, transform)) {
       return;
     }
-    BOOST_FOREACH(geometry_msgs::Point p, marker->points3D.points) {
-      tf::Point pt = transform.getOrigin();
-      geometry_msgs::PointStamped pt_cam, pt_;
-      pt_cam.header.frame_id = cam_model_.tfFrame();
-      pt_cam.header.stamp = acquisition_time;
-      pt_cam.point.x = pt.x();
-      pt_cam.point.y = pt.y();
-      pt_cam.point.z = pt.z();
-      tf_listener_.transformPoint(frame_id, pt_cam, pt_);
-
-      cv::Point2d uv;
-      tf::Stamped<tf::Point> pin, pout;
-      pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + p.x, pt_.point.y + p.y, pt_.point.z + p.z), acquisition_time, frame_id);
-      tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-      uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+    BOOST_FOREACH(geometry_msgs::Point p, points_3d.points) {
+      geometry_msgs::PointStamped pin, pout;
+      pin.header.frame_id = frame_id;
+      pin.header.stamp = ROS1_ROS2_COMPAT::stampMsg(acquisition_time);
+      pin.point = p;
+      tf2::doTransform(pin, pout, transform);
+      cv::Point2d uv = cam_model_.project3dToPixel(
+        cv::Point3d(pout.point.x, pout.point.y, pout.point.z));
       cv::circle(draw_, uv, (marker->scale == 0 ? 3 : marker->scale) , *col_it, -1);
     }
   }
@@ -695,26 +865,24 @@ namespace image_view2{
                               std::vector<CvScalar>::iterator& col_it)
   {
     static std::map<std::string, int> tf_fail;
-    std::string frame_id = marker->position3D.header.frame_id;
-    tf::StampedTransform transform;
-    ros::Time acquisition_time = last_msg_->header.stamp;
+#if ROS_VERSION_MAJOR != 1
+    const geometry_msgs::PointStamped& position_3d = marker->position_3d;
+#else
+    const geometry_msgs::PointStamped& position_3d = marker->position3D;
+#endif
+    std::string frame_id = position_3d.header.frame_id;
+    geometry_msgs::TransformStamped transform;
+    ROS1_ROS2_COMPAT::RosTime acquisition_time = last_msg_->header.stamp;
     if(!lookupTransformation(frame_id, acquisition_time, tf_fail, transform)) {
       return;
     }
-    tf::Point pt = transform.getOrigin();
-    geometry_msgs::PointStamped pt_cam, pt_;
-    pt_cam.header.frame_id = cam_model_.tfFrame();
-    pt_cam.header.stamp = acquisition_time;
-    pt_cam.point.x = pt.x();
-    pt_cam.point.y = pt.y();
-    pt_cam.point.z = pt.z();
-    tf_listener_.transformPoint(frame_id, pt_cam, pt_);
-
-    cv::Point2d uv;
-    tf::Stamped<tf::Point> pin, pout;
-    pin = tf::Stamped<tf::Point>(tf::Point(pt_.point.x + marker->position3D.point.x, pt_.point.y + marker->position3D.point.y, pt_.point.z + marker->position3D.point.z), acquisition_time, frame_id);
-    tf_listener_.transformPoint(cam_model_.tfFrame(), pin, pout);
-    uv = cam_model_.project3dToPixel(cv::Point3d(pout.x(), pout.y(), pout.z()));
+    geometry_msgs::PointStamped pin, pout;
+    pin.header.frame_id = frame_id;
+    pin.header.stamp = ROS1_ROS2_COMPAT::stampMsg(acquisition_time);
+    pin.point = position_3d.point;
+    tf2::doTransform(pin, pout, transform);
+    cv::Point2d uv = cam_model_.project3dToPixel(
+      cv::Point3d(pout.point.x, pout.point.y, pout.point.z));
     cv::Size text_size;
     int baseline;
     float scale = marker->scale;
@@ -732,31 +900,20 @@ namespace image_view2{
   {
     static std::map<std::string, int> tf_fail;
     std::string frame_id = marker->pose.header.frame_id;
-    geometry_msgs::PoseStamped pose;
-    ros::Time acquisition_time = last_msg_->header.stamp;
-    ros::Duration timeout(tf_timeout_); // wait 0.5 sec
-    try {
-      ros::Time tm;
-      tf_listener_.getLatestCommonTime(cam_model_.tfFrame(), frame_id, tm, NULL);
-      tf_listener_.waitForTransform(cam_model_.tfFrame(), frame_id,
-                                    acquisition_time, timeout);
-      tf_listener_.transformPose(cam_model_.tfFrame(),
-                                 acquisition_time, marker->pose, frame_id, pose);
-      tf_fail[frame_id]=0;
-    }
-    catch (tf::TransformException& ex) {
-      tf_fail[frame_id]++;
-      if ( tf_fail[frame_id] < 5 ) {
-        ROS_ERROR("[image_view2] TF exception:\n%s", ex.what());
-      } else {
-        ROS_DEBUG("[image_view2] TF exception:\n%s", ex.what());
-      }
+    geometry_msgs::TransformStamped transform;
+    ROS1_ROS2_COMPAT::RosTime acquisition_time = last_msg_->header.stamp;
+    if(!lookupTransformation(frame_id, acquisition_time, tf_fail, transform)) {
       return;
     }
+    geometry_msgs::PoseStamped pose_in, pose;
+    pose_in.header.frame_id = frame_id;
+    pose_in.header.stamp = ROS1_ROS2_COMPAT::stampMsg(acquisition_time);
+    pose_in.pose = marker->pose.pose;
+    tf2::doTransform(pose_in, pose, transform);
 
-    tf::Quaternion q;
-    tf::quaternionMsgToTF(pose.pose.orientation, q);
-    tf::Matrix3x3 rot = tf::Matrix3x3(q);
+    tf2::Quaternion q;
+    tf2::fromMsg(pose.pose.orientation, q);
+    tf2::Matrix3x3 rot(q);
     double angle = (marker->arc == 0 ? 360.0 :marker->angle);
     double scale = (marker->scale == 0 ? DEFAULT_CIRCLE_SCALE : marker->scale);
     int N = 100;
@@ -764,8 +921,8 @@ namespace image_view2{
     std::vector<cv::Point2i> pts;
 
     for (int i=0; i<N; ++i) {
-      double th = angle * i / N * TFSIMD_RADS_PER_DEG;
-      tf::Vector3 v = rot * tf::Vector3(scale * tfCos(th), scale * tfSin(th),0);
+      double th = angle * i / N * M_PI / 180.0;
+      tf2::Vector3 v = rot * tf2::Vector3(scale * std::cos(th), scale * std::sin(th), 0);
       cv::Point2d pt = cam_model_.project3dToPixel(cv::Point3d(pose.pose.position.x + v.getX(), pose.pose.position.y + v.getY(), pose.pose.position.z + v.getZ()));
       pts.push_back(cv::Point2i((int)pt.x, (int)pt.y));
     }
@@ -809,8 +966,13 @@ namespace image_view2{
 
     // check lifetime and remove REMOVE-type marker msg
     for(V_ImageMarkerMessage::iterator it = local_queue_.begin(); it < local_queue_.end(); it++) {
+#if ROS_VERSION_MAJOR != 1
+      double lifetime_sec = (*it)->lifetime_sec + (*it)->lifetime_nsec * 1e-9;
+#else
+      double lifetime_sec = (*it)->lifetime.toSec();
+#endif
       if((*it)->action == image_view2::ImageMarker2::REMOVE ||
-         ((*it)->lifetime.toSec() != 0.0 && (*it)->lifetime.toSec() < ros::Time::now().toSec())) {
+         (lifetime_sec != 0.0 && lifetime_sec < ROS1_ROS2_COMPAT::rosTimeNow().toSec())) {
         it = local_queue_.erase(it);
       }
     }
@@ -1002,9 +1164,9 @@ namespace image_view2{
     }
   }
 
-  void ImageView2::drawInfo(ros::Time& before_rendering)
+  void ImageView2::drawInfo(ROS1_ROS2_COMPAT::RosTime& before_rendering)
   {
-    static ros::Time last_time;
+    static ROS1_ROS2_COMPAT::RosTime last_time;
     static std::string info_str_1, info_str_2;
     // update info_str_1, info_str_2 if possible
     if ( show_info_ && times_.size() > 0 && ( before_rendering.toSec() - last_time.toSec() > 2 ) ) {
@@ -1043,8 +1205,7 @@ namespace image_view2{
       // publish rectangle cropped image
       cv::Rect screen_rect(cv::Point(window_selection_.x, window_selection_.y), cv::Point(window_selection_.x + window_selection_.width, window_selection_.y + window_selection_.height));
       cv::Mat cropped_img = original_image_(screen_rect);
-      rectangle_img_pub_.publish(
-        cv_bridge::CvImage(
+      ROS1_ROS2_COMPAT::publishMsg(rectangle_img_pub_, *cv_bridge::CvImage(
           last_msg_->header,
           last_msg_->encoding,
           cropped_img).toImageMsg());
@@ -1057,7 +1218,7 @@ namespace image_view2{
       ROS_WARN("no image is available yet");
       return;
     }
-    ros::Time before_rendering = ros::Time::now();
+    ROS1_ROS2_COMPAT::RosTime before_rendering = ROS1_ROS2_COMPAT::rosTimeNow();
     original_image_.copyTo(image_);
     // Draw Section
     if ( blurry_mode_ ) {
@@ -1162,11 +1323,11 @@ namespace image_view2{
     else {
       count = 0;
     }
-    static ros::Time old_time;
-    times_.push_front(ros::Time::now().toSec() - old_time.toSec());
-    old_time = ros::Time::now();
+    static ROS1_ROS2_COMPAT::RosTime old_time;
+    times_.push_front(ROS1_ROS2_COMPAT::rosTimeNow().toSec() - old_time.toSec());
+    old_time = ROS1_ROS2_COMPAT::rosTimeNow();
 
-    if(old_time.toSec() - ros::Time::now().toSec() > 0) {
+    if(old_time.toSec() - ROS1_ROS2_COMPAT::rosTimeNow().toSec() > 0) {
       ROS_WARN("TF Cleared for old time");
     }
     {
@@ -1279,11 +1440,11 @@ namespace image_view2{
       p.y = point_array_[i].y;
       pcl_cloud.points.push_back(p);
     }
-    sensor_msgs::PointCloud2::Ptr ros_cloud(new sensor_msgs::PointCloud2);
-    pcl::toROSMsg(pcl_cloud, *ros_cloud);
-    ros_cloud->header.stamp = ros::Time::now();
-    
-    point_array_pub_.publish(ros_cloud);
+    sensor_msgs::PointCloud2 ros_cloud;
+    pcl::toROSMsg(pcl_cloud, ros_cloud);
+    ros_cloud.header.stamp = ROS1_ROS2_COMPAT::stampMsg(ROS1_ROS2_COMPAT::rosTimeNow());
+
+    ROS1_ROS2_COMPAT::publishMsg(point_array_pub_, ros_cloud);
   }
     
   
@@ -1318,15 +1479,6 @@ namespace image_view2{
     }
   }
 
-  void ImageView2::publishMonoImage(ros::Publisher& pub,
-                                    cv::Mat& image,
-                                    const std_msgs::Header& header)
-  {
-    cv_bridge::CvImage image_bridge(
-      header, sensor_msgs::image_encodings::MONO8, image);
-    pub.publish(image_bridge.toImageMsg());
-  }
-  
   void ImageView2::publishForegroundBackgroundMask()
   {
     boost::mutex::scoped_lock lock(image_mutex_);
@@ -1349,37 +1501,6 @@ namespace image_view2{
     publishRectFromMaskImage(background_rect_pub_, background_mask, last_msg_->header);
   }
   
-  void ImageView2::publishRectFromMaskImage(
-    ros::Publisher& pub,
-    cv::Mat& image,
-    const std_msgs::Header& header)
-  {
-    int min_x = image.cols;
-    int min_y = image.rows;
-    int max_x = 0;
-    int max_y = 0;
-    for (int j = 0; j < image.rows; j++) {
-      for (int i = 0; i < image.cols; i++) {
-        if (image.at<uchar>(j, i) != 0) {
-          min_x = std::min(min_x, i);
-          min_y = std::min(min_y, j);
-          max_x = std::max(max_x, i);
-          max_y = std::max(max_y, j);
-        }
-      }
-    }
-    geometry_msgs::PolygonStamped poly;
-    poly.header = header;
-    geometry_msgs::Point32 min_pt, max_pt;
-    min_pt.x = min_x; 
-    min_pt.y = min_y;
-    max_pt.x = max_x; 
-    max_pt.y = max_y;
-    poly.polygon.points.push_back(min_pt);
-    poly.polygon.points.push_back(max_pt);
-    pub.publish(poly);
-  }
-
   void ImageView2::publishLinePoints()
   {
     boost::mutex::scoped_lock lock(line_point_mutex_);
@@ -1392,7 +1513,7 @@ namespace image_view2{
     ros_end_point.y = line_end_point_.y;
     ros_line.polygon.points.push_back(ros_start_point);
     ros_line.polygon.points.push_back(ros_end_point);
-    line_pub_.publish(ros_line);
+    ROS1_ROS2_COMPAT::publishMsg(line_pub_, ros_line);
   }
   
   void ImageView2::publishMouseInteractionResult()
@@ -1418,8 +1539,8 @@ namespace image_view2{
         screen_msg.point.y = window_selection_.y * resize_y_;
         screen_msg.point.z = 0;
         screen_msg.header.stamp = last_msg_->header.stamp;
-        ROS_INFO("Publish screen point %s (%f %f)", point_pub_.getTopic().c_str(), screen_msg.point.x, screen_msg.point.y);
-        point_pub_.publish(screen_msg);
+        ROS_INFO("Publish screen point %s (%f %f)", ROS1_ROS2_COMPAT::topicName(point_pub_).c_str(), screen_msg.point.x, screen_msg.point.y);
+        ROS1_ROS2_COMPAT::publishMsg(point_pub_, screen_msg);
       } else {
         geometry_msgs::PolygonStamped screen_msg;
         screen_msg.polygon.points.resize(2);
@@ -1428,10 +1549,10 @@ namespace image_view2{
         screen_msg.polygon.points[1].x = (window_selection_.x + window_selection_.width) * resize_x_;
         screen_msg.polygon.points[1].y = (window_selection_.y + window_selection_.height) * resize_y_;
         screen_msg.header = last_msg_->header;
-        ROS_INFO("Publish rectangle point %s (%f %f %f %f)", rectangle_pub_.getTopic().c_str(),
+        ROS_INFO("Publish rectangle point %s (%f %f %f %f)", ROS1_ROS2_COMPAT::topicName(rectangle_pub_).c_str(),
                  screen_msg.polygon.points[0].x, screen_msg.polygon.points[0].y,
                  screen_msg.polygon.points[1].x, screen_msg.polygon.points[1].y);
-        rectangle_pub_.publish(screen_msg);
+        ROS1_ROS2_COMPAT::publishMsg(rectangle_pub_, screen_msg);
         continuous_ready_ = true;
       }
     }
@@ -1530,11 +1651,11 @@ namespace image_view2{
       }
       // publish the points
       geometry_msgs::PointStamped move_point;
-      move_point.header.stamp = ros::Time::now();
+      move_point.header.stamp = ROS1_ROS2_COMPAT::stampMsg(ROS1_ROS2_COMPAT::rosTimeNow());
       move_point.point.x = x;
       move_point.point.y = y;
       move_point.point.z = 0;
-      move_point_pub_.publish(move_point);
+      ROS1_ROS2_COMPAT::publishMsg(move_point_pub_, move_point);
     }
     else {
       if (getMode() == MODE_LINE) {
@@ -1606,7 +1727,7 @@ namespace image_view2{
       p.z = 0;
       poly.polygon.points.push_back(p);
     }
-    poly_pub_.publish(poly);
+    ROS1_ROS2_COMPAT::publishMsg(poly_pub_, poly);
   }
 
   void ImageView2::updatePolySelectingPoint(cv::Point p)
