@@ -95,6 +95,23 @@ jobs:
           xhost +local:root
         shell: bash
 
+      - name: Unhide AMENT_IGNORE'd packages for rosdep
+        run: |
+          set -x
+          # AMENT_IGNORE marks packages/stacks not yet ported to ROS2, so
+          # colcon/ament skip them -- but rosdep's own package discovery
+          # (catkin_pkg.find_packages(), used here by jsk_travis'
+          # rosdep-install.sh) treats AMENT_IGNORE the same as CATKIN_IGNORE
+          # by default and skips them too, while catkin/catkin_tools (the
+          # actual ROS1 build here) does not and builds them anyway. That
+          # mismatch silently drops rosdep-resolved dependencies for every
+          # such package (and everything nested under an ignored directory,
+          # e.g. image_view2/dynamic_tf_publisher under jsk_ros_patch/
+          # jsk_coordination_system) -- this job is ROS1-only, so nothing
+          # here needs AMENT_IGNORE honored.
+          find "$GITHUB_WORKSPACE" -name AMENT_IGNORE -exec rm -f {} \;
+        shell: bash
+
       - name: Run jsk_travis
         uses: jsk-ros-pkg/jsk_travis@master
         env:
@@ -135,6 +152,20 @@ jobs:
     steps:
       - name: Chcekout Source
         uses: actions/checkout@v3.0.2
+
+      - name: Unhide AMENT_IGNORE'd packages for rosdep
+        run: |
+          set -x
+          # Must run before "Setup Dependencies Workspace" below, which
+          # also does rosinstall_generator --from-path $GITHUB_WORKSPACE:
+          # that step decides which upstream ROS distro packages to fetch
+          # as source (e.g. cv_bridge for image_view2), so if it still
+          # can't see an AMENT_IGNORE'd (or AMENT_IGNORE-nested) package's
+          # dependencies at that point, they never get fetched/built at
+          # all -- unlike the rosdep-install-based jobs, where the missing
+          # dependency at least fails loudly right there. See the ros-o
+          # job's own copy of this step for the full rationale.
+          find $GITHUB_WORKSPACE -name AMENT_IGNORE -exec rm -f {} \;
 
       - name: Install Buildtools
         run: |
@@ -304,6 +335,15 @@ jobs:
               git clone https://github.com/locusrobotics/catkin_virtualenv.git
           fi
           ln -sf $GITHUB_WORKSPACE .
+          # AMENT_IGNORE marks packages not yet ported to ROS2, so colcon
+          # skips them -- but rosdep's own discovery treats AMENT_IGNORE the
+          # same as CATKIN_IGNORE by default and skips them too, while
+          # catkin (the actual ROS1 build here) does not and builds them
+          # anyway, silently dropping their rosdep-resolved dependencies
+          # (this is exactly how jsk_tilt_laser's laser_assembler dependency
+          # went unresolved). This job is ROS1-only, so unhide them for
+          # rosdep.
+          find $GITHUB_WORKSPACE -name AMENT_IGNORE -exec rm -f {} \;
           rosdep install -qq -r -y --from-path . --ignore-src || echo "OK"
           # check all system packages are able to install, because ROS-O build deb files that needs all packages
           PIP_BREAK_SYSTEM_PACKAGES=1 rosdep install -qq --simulate -y --from-path . --ignore-src -t exec -t buildtool_export -t buildtool -t build -t build_export | tee rosdep-install.sh
