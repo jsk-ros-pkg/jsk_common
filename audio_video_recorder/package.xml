@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>audio_video_recorder</name>
   <version>2.2.16</version>
   <description>ROS package for recording image and audio synchronously</description>
@@ -9,22 +9,43 @@
 
   <license>BSD</license>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
 
-  <build_depend>roscpp</build_depend>
+  <build_depend condition="$ROS_VERSION == 1">roscpp</build_depend>
+  <build_depend condition="$ROS_VERSION == 2">rclcpp</build_depend>
+  <!-- audio_common_msgs/message_filters/sensor_msgs are released for
+       both ROS1 and ROS2, so no condition. audio_common_msgs may lag
+       on some ROS2 distros (e.g. missing on jazzy at the time of
+       writing). -->
   <build_depend>audio_common_msgs</build_depend>
   <build_depend>libgstreamer1.0-dev</build_depend>
   <build_depend>libgstreamer-plugins-base1.0-dev</build_depend>
+  <!-- find_package(Boost COMPONENTS thread) in CMakeLists.txt. Under
+       ROS1 this came in transitively (roscpp itself depends on Boost);
+       ROS2's rosdep-based dependency install only installs what's
+       declared here, so it needs to be explicit. -->
+  <build_depend>libboost-thread-dev</build_depend>
   <build_depend>message_filters</build_depend>
   <build_depend>sensor_msgs</build_depend>
+  <!-- for the shared ROS1/ROS2 detection compat.h -->
+  <build_depend>jsk_ros1_ros2_compat</build_depend>
 
-  <exec_depend>roscpp</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">roscpp</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 2">rclcpp</exec_depend>
   <exec_depend>audio_common_msgs</exec_depend>
   <exec_depend>gstreamer1.0</exec_depend>
   <exec_depend>gstreamer1.0-plugins-base</exec_depend>
   <exec_depend>gstreamer1.0-plugins-good</exec_depend>
   <exec_depend>gstreamer1.0-plugins-ugly</exec_depend>
   <exec_depend>libgstreamer1.0-dev</exec_depend>
+  <exec_depend>libboost-thread-dev</exec_depend>
   <exec_depend>message_filters</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>jsk_ros1_ros2_compat</exec_depend>
+
+  <export>
+    <build_type condition="$ROS_VERSION == 1">catkin</build_type>
+    <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
+  </export>
 </package>

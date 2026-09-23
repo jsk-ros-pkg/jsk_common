@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>jsk_ros1_ros2_compat</name>
+  <version>2.2.16</version>
+  <description>Shared ROS1(roscpp/rospy)/ROS2(rclcpp/rclpy) compatibility helpers used across jsk_common's ROS2-ported packages, so that individual packages don't each maintain their own copy.</description>
+
+  <maintainer email="k-okada@jsk.imi.i.u-tokyo.ac.jp">Kei Okada</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+
+  <build_depend condition="$ROS_VERSION == 2">ament_cmake_python</build_depend>
+
+  <!-- roscpp/rclcpp and rospy/rclpy are released for both ROS1 and
+       ROS2 under different names, so both conditions are needed. -->
+  <depend condition="$ROS_VERSION == 1">roscpp</depend>
+  <depend condition="$ROS_VERSION == 1">rospy</depend>
+  <depend condition="$ROS_VERSION == 2">rclcpp</depend>
+  <depend condition="$ROS_VERSION == 2">rclpy</depend>
+  <!-- tf2_ros is released for both ROS1 and ROS2, so no condition. -->
+  <depend>tf2_ros</depend>
+  <!-- ROS2 splits tf2_ros's Python bindings (`import tf2_ros`, used by
+       rospy_rclpy_compat.py) into a separate ament_python package;
+       ROS1's tf2_ros ships both C++ and Python together. -->
+  <depend condition="$ROS_VERSION == 2">tf2_ros_py</depend>
+
+  <!-- Used only by rosbag.py (the bag-I/O compat layer, for
+       jsk_rosbag_tools); exec_depend suffices since these are only
+       imported at runtime, never compiled against. -->
+  <exec_depend condition="$ROS_VERSION == 2">rosbag2_py</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 2">rosidl_runtime_py</exec_depend>
+
+  <export>
+    <build_type condition="$ROS_VERSION == 1">catkin</build_type>
+    <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
+  </export>
+</package>

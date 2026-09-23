@@ -5,13 +5,9 @@
 #include <boost/thread.hpp>
 #include <gst/gst.h>
 #include <gst/app/gstappsrc.h>
-#include <ros/ros.h>
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/synchronizer.h>
-
-#include "audio_common_msgs/AudioData.h"
-#include "sensor_msgs/Image.h"
 
 namespace audio_video_recorder
 {
@@ -45,6 +41,11 @@ namespace audio_video_recorder
     int video_width;
     std::string video_encoding;
 
+#if ROS_VERSION_MAJOR != 1
+    _nh = rclcpp::Node::make_shared("audio_video_recorder");
+    ROS1_ROS2_COMPAT::g_node = _nh;
+#endif
+
     // common parameters
     ros::param::param<int>("~queue_size", queue_size, 100);
     ros::param::param<std::string>("~file_name", file_name, "/tmp/test.avi");
@@ -63,7 +64,9 @@ namespace audio_video_recorder
     ros::param::param<int>("~video_width", video_width, 640);
     ros::param::param<std::string>("~video_encoding", video_encoding, "RGB");
 
+#if ROS_VERSION_MAJOR == 1
     _nh.reset (new ros::NodeHandle ("~"));
+#endif
     _loop = g_main_loop_new(NULL, false);
     _pipeline = gst_pipeline_new("app_pipeline");
 
@@ -229,8 +232,12 @@ namespace audio_video_recorder
     }
     gst_element_set_state(GST_ELEMENT(_pipeline), GST_STATE_PLAYING);
     _gst_thread = boost::thread( boost::bind(g_main_loop_run, _loop));
-    _sub_image = _nh->subscribe("input/image", queue_size, &AudioVideoRecorder::callbackImage, this);
-    _sub_audio = _nh->subscribe("input/audio", queue_size, &AudioVideoRecorder::callbackAudio, this);
+    _sub_image = ROS1_ROS2_COMPAT::createSubscriber<sensor_msgs::Image>(
+        _nh, "input/image", queue_size,
+        std::bind(&AudioVideoRecorder::callbackImage, this, std::placeholders::_1));
+    _sub_audio = ROS1_ROS2_COMPAT::createSubscriber<audio_common_msgs::AudioData>(
+        _nh, "input/audio", queue_size,
+        std::bind(&AudioVideoRecorder::callbackAudio, this, std::placeholders::_1));
   }
 
   void AudioVideoRecorder::callbackImage(const sensor_msgs::ImageConstPtr &image_msg)
@@ -287,10 +294,19 @@ namespace audio_video_recorder
 
 int main (int argc, char **argv)
 {
+#if ROS_VERSION_MAJOR != 1
+  rclcpp::init(argc, argv);
+#else
   ros::init(argc, argv, "audio_video_recorder");
+#endif
   gst_init(&argc, &argv);
 
   audio_video_recorder::AudioVideoRecorder client;
   client.initialize();
+#if ROS_VERSION_MAJOR != 1
+  rclcpp::spin(client.getNode());
+  rclcpp::shutdown();
+#else
   ros::spin();
+#endif
 }

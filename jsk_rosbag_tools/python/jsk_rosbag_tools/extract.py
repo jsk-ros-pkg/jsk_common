@@ -1,10 +1,11 @@
 import numpy as np
-import rosbag
 
 from jsk_rosbag_tools.cv import compressed_format
 from jsk_rosbag_tools.cv import decompresse_imgmsg
 from jsk_rosbag_tools.cv import msg_to_img
 from jsk_rosbag_tools.info import get_topic_dict
+from jsk_ros1_ros2_compat.rosbag import open_bag
+from jsk_ros1_ros2_compat.rosbag import stamp_to_sec
 
 
 def get_image_topic_names(bag_filepath,
@@ -36,7 +37,7 @@ def extract_oneshot_topic(bag_filepath, topic_name):
                          format(topic_name))
 
     msg = None
-    with rosbag.Bag(bag_filepath, 'r') as input_rosbag:
+    with open_bag(bag_filepath, 'r') as input_rosbag:
         for topic, msg, stamp in input_rosbag.read_messages(
                 topics=[topic_name, ]):
             break
@@ -49,7 +50,7 @@ def extract_image_topic(bag_filepath, topic_name):
         raise ValueError("topic ({}) is not included in bagfile ({})."
                          .format(topic_name, bag_filepath))
 
-    with rosbag.Bag(bag_filepath, 'r') as input_rosbag:
+    with open_bag(bag_filepath, 'r') as input_rosbag:
         for topic, msg, _ in input_rosbag.read_messages(
                 topics=[topic_name]):
             topic_type = topic_dict[topic]['type']
@@ -90,4 +91,4 @@ def extract_image_topic(bag_filepath, topic_name):
                                      .format(bgr_img.shape))
                 bgr_img = np.concatenate([bgr_img, pad_img], axis=1)
 
-            yield msg.header.stamp.to_sec(), topic, bgr_img, encoding
+            yield stamp_to_sec(msg.header.stamp), topic, bgr_img, encoding

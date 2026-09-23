@@ -8,38 +8,53 @@
   <maintainer email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</maintainer>
   <author email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <buildtool_depend condition="$ROS_PYTHON_VERSION == 2">python-catkin-pkg-modules</buildtool_depend>
-  <buildtool_depend condition="$ROS_PYTHON_VERSION == 3">python3-catkin-pkg-modules</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 1 and $ROS_PYTHON_VERSION == 2">python-catkin-pkg-modules</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 1 and $ROS_PYTHON_VERSION == 3">python3-catkin-pkg-modules</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake_python</buildtool_depend>
 
-  <build_depend version_gte="0.5.1">catkin_virtualenv</build_depend>
+  <!-- catkin_virtualenv (pip deps: moviepy, scipy, numpy, Pillow, tqdm,
+       etc, see requirements.in*) is a ROS1-only catkin mechanism;
+       under ROS2 these are just expected to be installed in the
+       ambient python environment (as with jsk_tools/jsk_data). -->
+  <build_depend condition="$ROS_VERSION == 1" version_gte="0.5.1">catkin_virtualenv</build_depend>
   <build_depend>libjpeg</build_depend>
   <build_depend>libwebp-dev</build_depend>
 
+  <!-- audio_common_msgs/cv_bridge/sensor_msgs are released for both
+       ROS1 and ROS2, so no condition. audio_common_msgs may lag on
+       some ROS2 distros (e.g. missing on jazzy at the time of
+       writing), so video.py guards its import and skips audio
+       embedding when unavailable. -->
   <exec_depend>audio_common_msgs</exec_depend>
   <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>jsk_ros1_ros2_compat</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>ffmpeg</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-numpy</exec_depend>
-  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-rospkg-modules</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1 and $ROS_PYTHON_VERSION == 2">python-rospkg-modules</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-scipy</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-setuptools</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-termcolor</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-tqdm</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-yaml</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-numpy</exec_depend>
-  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-rospkg-modules</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1 and $ROS_PYTHON_VERSION == 3">python3-rospkg-modules</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-scipy</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-setuptools</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-termcolor</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-tqdm</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-yaml</exec_depend>
-  <exec_depend>sensor_msgs</exec_depend>
 
-  <test_depend>roslint</test_depend>
-  <test_depend>rostest</test_depend>
+  <test_depend condition="$ROS_VERSION == 1">roslint</test_depend>
+  <test_depend condition="$ROS_VERSION == 1">rostest</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">ament_cmake_pytest</test_depend>
 
   <export>
-    <pip_requirements>requirements.txt</pip_requirements>
+    <build_type condition="$ROS_VERSION == 1">catkin</build_type>
+    <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
+    <pip_requirements condition="$ROS_VERSION == 1">requirements.txt</pip_requirements>
   </export>
 
 </package>

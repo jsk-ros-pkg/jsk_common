@@ -33,9 +33,34 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#include <ros/ros.h>
+#include <jsk_ros1_ros2_compat/compat.h>
+
+// ROS1's eigen_conversions has no ROS2 port; tf2_eigen's tf2::fromMsg/
+// toMsg(Pose, Eigen::Affine3d&) are the drop-in equivalent, so they are
+// reopened here as tf::poseMsgToEigen/poseEigenToMsg, leaving transform()
+// below unchanged.
+#if ROS_VERSION_MAJOR != 1
+// <rclcpp/rclcpp.hpp> already included by compat.h above.
+#include <unistd.h>
+#include <string>
+#include <boost/shared_ptr.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <tf2_eigen/tf2_eigen.hpp>
+namespace tf
+{
+  inline void poseMsgToEigen(const geometry_msgs::msg::Pose& msg, Eigen::Affine3d& out) { tf2::fromMsg(msg, out); }
+  inline void poseEigenToMsg(const Eigen::Affine3d& in, geometry_msgs::msg::Pose& msg) { msg = tf2::toMsg(in); }
+}
+#else
+#include <boost/make_shared.hpp>
 #include <geometry_msgs/PoseStamped.h>
 #include <eigen_conversions/eigen_msg.h>
+#endif
+JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(geometry_msgs, PoseStamped)
+// Last: only safe now that every message header above is already
+// fully parsed -- see const_ptr.h. Needed for the
+// geometry_msgs::PoseStamped::ConstPtr in transform() below.
+#include <jsk_ros1_ros2_compat/const_ptr.h>
 
 namespace jsk_topic_tools
 {
@@ -43,15 +68,28 @@ namespace jsk_topic_tools
   {
   public:
     typedef boost::shared_ptr<PoseStampedTransformer> Ptr;
-    PoseStampedTransformer(double x, double y, double z,
+    PoseStampedTransformer(
+#if ROS_VERSION_MAJOR != 1
+                           rclcpp::Node::SharedPtr node,
+#endif
+                           double x, double y, double z,
                            double yaw, double pitch, double roll,
                            std::string from_topic,
                            std::string to_topic);
     virtual ~PoseStampedTransformer();
   protected:
     void transform(const geometry_msgs::PoseStamped::ConstPtr& pose_msg);
+#if ROS_VERSION_MAJOR != 1
+    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pub_;
+#else
     ros::Subscriber sub_;
-    ros::Publisher pub_;
+    // pub_ is a shared_ptr here (rather than a plain ros::Publisher, as
+    // in the original) purely so that `pub_->publish(...)` in transform()
+    // below can be shared verbatim with ROS2's rclcpp::Publisher::SharedPtr,
+    // with no per-call-site branching needed.
+    boost::shared_ptr<ros::Publisher> pub_;
+#endif
     double x_;
     double y_;
     double z_;
@@ -63,16 +101,26 @@ namespace jsk_topic_tools
   };
 
   PoseStampedTransformer::PoseStampedTransformer(
+#if ROS_VERSION_MAJOR != 1
+    rclcpp::Node::SharedPtr node,
+#endif
     double x, double y, double z,
     double yaw, double pitch, double roll,
     std::string from_topic, std::string to_topic):
     x_(x), y_(y), z_(z), yaw_(yaw), pitch_(pitch), roll_(roll)
   {
+#if ROS_VERSION_MAJOR != 1
+    pub_ = node->create_publisher<geometry_msgs::msg::PoseStamped>(to_topic, 1);
+    sub_ = node->create_subscription<geometry_msgs::msg::PoseStamped>(
+      from_topic, 1,
+      std::bind(&PoseStampedTransformer::transform, this, std::placeholders::_1));
+#else
     ros::NodeHandle nh;
-    pub_ = nh.advertise<geometry_msgs::PoseStamped>(
-      to_topic, 1);
+    pub_ = boost::make_shared<ros::Publisher>(nh.advertise<geometry_msgs::PoseStamped>(
+      to_topic, 1));
     sub_ = nh.subscribe(from_topic, 1,
                         &PoseStampedTransformer::transform, this);
+#endif
   }
 
   PoseStampedTransformer::~PoseStampedTransformer()
@@ -95,7 +143,7 @@ namespace jsk_topic_tools
     geometry_msgs::PoseStamped output_pose_msg;
     tf::poseEigenToMsg(output_transform, output_pose_msg.pose);
     output_pose_msg.header = pose_msg->header;
-    pub_.publish(output_pose_msg);
+    pub_->publish(output_pose_msg);
   }
   
 }
@@ -109,13 +157,32 @@ int usage(char** argv)
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "static_transform_pose_stamped",
-            ros::init_options::AnonymousName);
   // x y z yaw pitch roll
   if (argc != 9) {
     usage(argv);
     exit(1);
   }
+#if ROS_VERSION_MAJOR != 1
+  rclcpp::init(argc, argv);
+  // ROS1's ros::init_options::AnonymousName let multiple instances of
+  // this executable run without a node-name collision; ROS2 has no
+  // such option, so a pid suffix serves the same purpose.
+  rclcpp::Node::SharedPtr node = rclcpp::Node::make_shared(
+    "static_transform_pose_stamped_" + std::to_string(getpid()));
+  jsk_topic_tools::PoseStampedTransformer p(node,
+                                            ::atof(argv[1]),
+                                            ::atof(argv[2]),
+                                            ::atof(argv[3]),
+                                            ::atof(argv[4]),
+                                            ::atof(argv[5]),
+                                            ::atof(argv[6]),
+                                            argv[7],
+                                            argv[8]);
+  rclcpp::spin(node);
+  rclcpp::shutdown();
+#else
+  ros::init(argc, argv, "static_transform_pose_stamped",
+            ros::init_options::AnonymousName);
   // parse argument
   jsk_topic_tools::PoseStampedTransformer p(::atof(argv[1]),
                                             ::atof(argv[2]),
@@ -126,4 +193,5 @@ int main(int argc, char** argv)
                                             argv[7],
                                             argv[8]);
   ros::spin();
+#endif
 }

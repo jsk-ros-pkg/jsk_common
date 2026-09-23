@@ -1,19 +1,19 @@
-import rosbag
 from tqdm import tqdm
 
 from jsk_rosbag_tools.cv import compress_depth_msg
 from jsk_rosbag_tools.cv import compress_img_msg
 from jsk_rosbag_tools.info import get_topic_dict
+from jsk_ros1_ros2_compat.rosbag import open_bag
 
 
 def compress_bag_imgs(input_bagfilepath, output_bagfilepath,
                       compressed_topics=None,
                       show_progress_bar=True):
     compressed_topics = compressed_topics or []
-    input_bag = rosbag.Bag(input_bagfilepath)
+    input_bag = open_bag(input_bagfilepath)
 
     topic_dict = get_topic_dict(input_bagfilepath)
-    with rosbag.Bag(output_bagfilepath, 'w') as outbag:
+    with open_bag(output_bagfilepath, 'w') as outbag:
         if show_progress_bar:
             progress = tqdm(total=input_bag.get_message_count())
         for topic, msg, t in input_bag:

@@ -1,6 +1,61 @@
+# Fall back to ROS1 when $ROS_VERSION is unset (pre-ros_environment distros,
+# e.g. indigo); every ROS2 environment always sets it via ros_environment.
+if("$ENV{ROS_VERSION}" STREQUAL "")
+  set(ENV{ROS_VERSION} 1)
+endif()
+
+if($ENV{ROS_VERSION} EQUAL 2)
+cmake_minimum_required(VERSION 3.8)
+project(jsk_topic_tools)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+find_package(ament_cmake_auto REQUIRED)
+
+ament_auto_find_build_dependencies()
+
+ament_auto_add_library(connection_based_lifecycle_node SHARED
+  src/connection_based_lifecycle_node.cpp
+)
+ament_auto_add_library(string_relay_lifecycle_component SHARED
+  src/string_relay_lifecycle_node.cpp
+)
+rclcpp_components_register_node(string_relay_lifecycle_component
+  PLUGIN "jsk_topic_tools::StringRelayLifecycleNode"
+  EXECUTABLE string_relay_lifecycle_node
+)
+ament_auto_add_executable(transform_merger src/transform_merger.cpp)
+ament_auto_add_executable(static_transform_pose_stamped src/static_transform_pose_stamped.cpp)
+
+if(BUILD_TESTING)
+  find_package(ament_cmake_clang_format REQUIRED)
+  find_package(launch_testing_ament_cmake REQUIRED)
+  ament_clang_format(
+    src/connection_based_lifecycle_node.cpp
+    include/jsk_topic_tools/connection_based_lifecycle_node.hpp
+    CONFIG_FILE ./.clang-format
+  )
+  add_launch_test(test/connection_based_lifecycle.test.py)
+endif()
+
+ament_auto_package()
+
+else() # if($ENV{ROS_VERSION} EQUAL 2)
 # http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
 cmake_minimum_required(VERSION 2.8.3)
 project(jsk_topic_tools)
+
+# jsk_ros1_ros2_compat's headers use C++11 `using Alias = Type;`
+# declarations; indigo/kinetic's GCC (<6) defaults to pre-C++11 and needs
+# this forced explicitly. Newer distros must NOT get this forced: their
+# system headers (e.g. log4cxx's boost-std-configuration.h) require
+# C++14/17 features from the compiler's own newer default, and an
+# explicit -std=c++11 here would downgrade past that and break the build.
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0)
+  add_compile_options(-std=c++11)
+endif()
 
 # Use ccache if installed to make it fast to generate object files
 if (CMAKE_VERSION VERSION_LESS 3.4)
@@ -17,6 +72,7 @@ find_package(catkin REQUIRED COMPONENTS
   eigen_conversions
   geometry_msgs
   image_transport
+  jsk_ros1_ros2_compat
   message_generation
   nodelet
   roscpp
@@ -60,7 +116,7 @@ generate_dynamic_reconfigure_options(
 generate_messages()
 catkin_package(
     DEPENDS
-    CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs std_srvs roscpp rostime
+    CATKIN_DEPENDS topic_tools message_runtime nodelet std_msgs std_srvs roscpp rostime jsk_ros1_ros2_compat
     INCLUDE_DIRS include
     LIBRARIES jsk_topic_tools
     CFG_EXTRAS nodelet.cmake
@@ -267,3 +323,4 @@ install(DIRECTORY cmake config launch sample
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS
 )
+endif() # if($ENV{ROS_VERSION} EQUAL 2)

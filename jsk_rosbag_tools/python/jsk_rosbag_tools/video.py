@@ -11,16 +11,23 @@ import tempfile
 import time
 import wave
 
-import audio_common_msgs.msg
+try:
+    # Not released for every ROS2 distro yet (e.g. missing on jazzy at
+    # the time of writing); only the audio-embedding path below needs
+    # it, so keep the rest of this module usable without it.
+    import audio_common_msgs.msg
+except ImportError:
+    audio_common_msgs = None
 import cv2
 from moviepy.editor import VideoFileClip
 import numpy as np
-import rosbag
-import rospy
 from tqdm import tqdm
 
 from jsk_rosbag_tools.cv import img_to_msg
 from jsk_rosbag_tools.merge import merge_bag
+from jsk_ros1_ros2_compat.rosbag import nanoseconds_from_sec
+from jsk_ros1_ros2_compat.rosbag import open_bag
+from jsk_ros1_ros2_compat.rosbag import stamp_from_nanoseconds
 
 
 def to_seconds(date):
@@ -173,23 +180,24 @@ def video_to_bag(video_filepath, bag_output_filepath,
                            sampling_frequency=sampling_frequency)
     if show_progress_bar:
         progress = tqdm(total=n_frame)
-    with rosbag.Bag(video_out, 'w') as outbag:
+    with open_bag(video_out, 'w') as outbag:
         for img, timestamp in load_frame(
                 video_filepath,
                 sampling_frequency=sampling_frequency):
             if show_progress_bar:
                 progress.update(1)
             msg = img_to_msg(img, compress=compress)
-            sec = int(base_unixtime + timestamp)
-            nsec = ((base_unixtime + timestamp) * (10 ** 9)) % (10 ** 9)
-            ros_timestamp = rospy.rostime.Time(sec, nsec)
-            msg.header.stamp = ros_timestamp
-            outbag.write(topic_name, msg, ros_timestamp)
+            ns = nanoseconds_from_sec(base_unixtime + timestamp)
+            msg.header.stamp = stamp_from_nanoseconds(ns)
+            outbag.write(topic_name, msg, ns)
     if show_progress_bar:
         progress.close()
 
-    extract_audio = True
-    if no_audio is False:
+    extract_audio = audio_common_msgs is not None
+    if extract_audio is False and no_audio is False:
+        print('[video_to_bag] audio_common_msgs is not available on this '
+              'ROS distro; skipping audio.')
+    if no_audio is False and extract_audio:
         wav_filepath = osp.join(tmpdirname, 'tmp.wav')
         cmd = "ffmpeg -i '{}' '{}'".format(
             video_filepath, wav_filepath)
@@ -218,7 +226,7 @@ def video_to_bag(video_filepath, bag_output_filepath,
             channels = data.shape[1]
 
             audio_out = osp.join(tmpdirname, 'audio.tmp.bag')
-            with rosbag.Bag(audio_out, 'w') as outbag:
+            with open_bag(audio_out, 'w') as outbag:
                 audio_info = audio_common_msgs.msg.AudioInfo(
                     channels=channels,
                     sample_rate=sample_rate,
@@ -226,16 +234,13 @@ def video_to_bag(video_filepath, bag_output_filepath,
                     bitrate=int(media_info['bit_rate']),
                     coding_format='wave')
                 outbag.write(audio_topic_name + '_info',
-                             audio_info, ros_timestamp)
+                             audio_info, ns)
                 for i, audio_data in enumerate(nsplit(data, n)):
                     msg = audio_common_msgs.msg.AudioData()
                     msg.data = audio_data.reshape(-1).tobytes()
                     timestamp = i * 0.01
-                    sec = int(base_unixtime + timestamp)
-                    nsec = (
-                        (base_unixtime + timestamp) * (10 ** 9)) % (10 ** 9)
-                    ros_timestamp = rospy.rostime.Time(sec, nsec)
-                    outbag.write(audio_topic_name, msg, ros_timestamp)
+                    ns = nanoseconds_from_sec(base_unixtime + timestamp)
+                    outbag.write(audio_topic_name, msg, ns)
             merge_bag(video_out, audio_out, bag_output_filepath)
         else:
             shutil.move(video_out, bag_output_filepath)
