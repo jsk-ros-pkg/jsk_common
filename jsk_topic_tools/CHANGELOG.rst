@@ -2,6 +2,75 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#1826 <https://github.com/jsk-ros-pkg/jsk_common/issues/1826>`_ from k-okada/ros2-support
+  Add ROS2 support to jsk_ros1_ros2_compat, dynamic_tf_publisher, jsk_topic_tools, jsk_tools, audio_video_recorder, jsk_data, image_view2, jsk_rosbag_tools
+* [jsk_topic_tools] add ROS2 support to log_utils.py
+  jsk_logdebug/jsk_loginfo/jsk_logwarn/jsk_logerr/jsk_logfatal() and
+  their *_throttle() variants keep their exact ROS1 call signature
+  (msg-only, no node argument) under ROS2 too, backed by a module-level
+  node registered once via jsk_ros1_ros2_compat.log_utils.set_node() --
+  the same "reuse the real API" shim pattern used elsewhere in this port.
+  The implementation lives in jsk_ros1_ros2_compat/log_utils.py and is
+  re-exported here unchanged; warn_no_remap() stays local since it needs
+  jsk_topic_tools.name_utils and is ROS1-only anyway
+  (rosgraph.names.resolve_name/get_resolved_mappings have no ROS2
+  equivalent).
+  Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+* [jsk_topic_tools] add ROS2 support to transform_merger/static_transform_pose_stamped
+  Single package.xml/CMakeLists.txt branched on $ROS_VERSION (ROS1-
+  original lines inside the if("$ENV{ROS_VERSION}" ...) blocks left at
+  their original indentation to minimize diff against master). Both
+  nodes switch to tf2_msgs::TFMessage (tf::tfMessage's ROS2 spelling,
+  available under ROS1 too) so their message-handling logic is shared
+  verbatim between versions, and the ROS1/ROS2 self-detection block
+  (__has_include probing for <ros/ros.h>, following posedetection_msgs'
+  pattern) is factored into jsk_ros1_ros2_compat/compat.h, shared with
+  other packages rather than duplicated locally.
+  Also drops jsk_topic_tools' package.xml dependency on
+  dynamic_tf_publisher: it was only for specific_transform_subscriber.cpp,
+  which was never wired into CMakeLists.txt and so was dead code.
+  Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+* [jsk_topic_tools] transform_merger: migrate from tf to tf2_msgs
+  tf::tfMessage is a deprecated ROS1 typedef alias for tf2_msgs::TFMessage
+  (identical fields/md5sum); tf::TransformListener (tfl\_) was unused dead
+  code. Switching to tf2_msgs::TFMessage directly, and dropping tf/tf.h,
+  tf/transform_listener.h, tf/transform_broadcaster.h and tfl\_, is
+  preparation for ROS2 support (tf2_msgs, not the ROS1-only tf1 package,
+  is what ROS2 provides), with no behavior change under ROS1.
+* specify build_type for ros 1 build
+* [GA] enable ros2 CI
+* [jsk_topic_tools] relax clang-format test
+* [jsk_topic_tools] allow both rclcpp_lifecycle, rclcpp publisher in connection_based_lifecycle_node
+* [ros2][jsk_topic_tools] impl connection_based_lifecycle
+* Merge pull request `#1828 <https://github.com/jsk-ros-pkg/jsk_common/issues/1828>`_ from k-okada/ci-robustness-master
+  CI: reduce flakiness in test_synchronized_throttle and ros-o dependency install
+* CI: reduce flakiness in test_synchronized_throttle and ros-o dependency install
+  - test_synchronized_throttle.py: rospy.Subscriber("/foo", ...) had no
+  queue_size, which rospy treats as unbounded. Under CI load, the
+  callback that republishes each /foo message to /baz falls behind
+  real time and works through an ever-growing backlog instead of
+  keeping pace, so exact-stamp synchronization (test_sync) against
+  /bar (throttled straight off /foo, so effectively real-time) never
+  catches up -- confirmed by test_sync still failing after 3 full
+  retries (~31s) while the approximate-sync tests passed within a
+  single ~10s window. Bounding these subscribers to queue_size=1 keeps
+  them tracking the latest message instead of the backlog. Also add
+  wait_with_retry(): reset the throttle bookkeeping and retry within
+  the same test run so a single CI execution can recover from one bad
+  window. test_sync_delay is unaffected: it expects the wait to time
+  out, so no retry is needed there.
+  - config.yml (ros-o job): the generated rosdep-install script ran under
+  `bash -xe`, so one package that's momentarily unbuilt on the
+  community ros-one repo (its build timing is outside our control)
+  aborted the whole script and left every later package uninstalled
+  too, cascading into unrelated "not found" build errors. Drop -e so
+  each install line runs independently.
+  Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+  Claude-Session: https://claude.ai/code/session_01SQVZSMgGb58qGyCtWt5UJB
+* Contributors: Kei Okada, Yoshiki Obinata
+
 2.2.16 (2025-01-06)
 -------------------
 * remove inline from ConnectionBaseNodelet::isSubscribed() (`#1812 <https://github.com/jsk-ros-pkg/jsk_common/issues/1812>`_)

@@ -2,6 +2,87 @@
 Changelog for package jsk_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#1826 <https://github.com/jsk-ros-pkg/jsk_common/issues/1826>`_ from k-okada/ros2-support
+  Add ROS2 support to jsk_ros1_ros2_compat, dynamic_tf_publisher, jsk_topic_tools, jsk_tools, audio_video_recorder, jsk_data, image_view2, jsk_rosbag_tools
+* [jsk_tools] add ROS2 support
+  Single package.xml/CMakeLists.txt branched on $ROS_VERSION. Uses
+  jsk_ros1_ros2_compat's rospy_rclpy_compat.py (get_param, log*,
+  create_publisher/subscription/service, ...), also depended on by other
+  ROS2-ported packages in this repo (jsk_data, dynamic_tf_publisher, ...).
+  audible_warning.py and battery_capacity_summary.py are rewritten as
+  single ROS1/ROS2 dual-support files on top of it, staying close to the
+  ROS1 original: req/res-style naming, line breaks, and control-flow
+  structure (e.g. the seconds_to_start_speaking wait loop, the blacklist
+  parsing loop) are kept as-is rather than rewritten, and the diff is
+  mostly limited to the genuinely ROS-version-dependent lines. ROS1-only
+  pieces kept as such rather than ported: audible_warning.py's ~blacklist/
+  ~run_stop_blacklist (list-of-dict rosparam, no ROS2 equivalent
+  structure) and its sound_play-based TTS (no ROS2/ament port of
+  sound_play; the ROS2 path logs what it would have spoken instead).
+  Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+* touching AMENT_IGNORE some packages
+* Merge pull request `#1607 <https://github.com/jsk-ros-pkg/jsk_common/issues/1607>`_ from iory/audible-warning
+  [jsk_tools] Add audible warnings node
+* [jsk_tools/audible_warning] Set wait_speak_duration_time to wait action server result.
+* [jsk_tools/audible_warning] Add space to published original text.
+* [jsk_tools/audible_warning] Modified default speak rate to speed up.
+* [audible_warning] Add prefix + error name to original text
+* [audible_warning] Add pseudo runstop publisher
+* [audible_warning] Add loginfo to display runstop state
+* [audible_warning] Fixed typo by adding ()
+* [audible_warning] Deserialize image
+* [audible_warning] Don't add heap at first
+* [audible_warning] Make speak_when_runstopped dynamic params
+* [audible_warning] Add AudibleWarningClient for reconfigure
+* [audible_warning] Add publishing text
+* [audible_warning] Convert colon symbol to english text
+* [audible_warning] Convert multiple space to one
+* [audible_warning] Fixed lint
+* [audible_warning] Fixed lint test target path
+* [audible_warning] Move audible_warning.py to node_scripts.
+* [audible_warning] Ignore if self.run_stop\_(disabled|enabled)_time is None
+* [audible_warning] Add ignore after runstop time
+* [audible_warning] Add inflection_utils for camel_to_snake case
+* [audible_warning] Use dynamic reconfigure params
+* [audible_warning/sample] Fixed audible_warning node name
+* [audible_warning] Add dynamic reconfigure parameters
+* [audible_warning] Add diagnostics_level_to_str
+* [jsk_tools/audible_warning] Split sample diagnostics_analyzer
+* [jsk_tools/audible-warning] Fixed test name
+* [jsk_tools/audible-warning] Set volume if it has volume property
+* [jsk_tools/audible_warning] Use LooseVersion for python2
+* [jsk_tools/diagnostics_utils] Import zip_longest for python2
+* [jsk_tools/audible_warning] Add test
+* [jsk_tools/audible_warning] Add sample
+* [jsk_tools/audible_warning] Add blacklist messsage option
+* [jsk_tools/audible_warning] Enable blacklist message option
+* [jsk_tools/audible_warning] Add run_stop blacklist
+* [jsk_tools/audible_warning] Enable regex for blacklist
+* [jsk_tools/audible_warning] Check status is leaf node
+* [jsk_tools/audible_warning] Output error name
+* [jsk_tools/audible_warning] Wait until seconds_to_start_speaking the time has passed.
+* [jsk_tools/audible_warning] Fixed typo language to arg2 and set default value to ""
+* [jsk_tools/audible_warning] Fixed namespace of diagnostics
+* [jsk_tools/audible_warning] Enable language specification
+* [jsk_tools/audible_warning] Add seconds_to_start_speaking option for initialization
+* [jsk_tools/audible_warning] Enable run_stop to suppress audible warning
+* [jsk_tools/audible_warning] Use priority queue instead of history
+* Refactor AudibleWarning node
+* Add prefix to speaking
+* Refactor audible_warning
+* Add is_leaf and filter function to jsk_tools'library
+* Add warn_stale option
+* [jsk_tools] Add speak warnings node
+* Merge pull request `#1818 <https://github.com/jsk-ros-pkg/jsk_common/issues/1818>`_ from mqcmd196/fix-python3-shebang
+  [jsk_tools][ros_console.py] fix ros_console.py shebang issue
+* [jsk_tools][ros_console.py] fix ros_console.py shebang issue
+* Merge pull request `#1816 <https://github.com/jsk-ros-pkg/jsk_common/issues/1816>`_ from k-okada/noble-ros-o
+  enable noble techfak ros-o test `#1814 <https://github.com/jsk-ros-pkg/jsk_common/issues/1814>`_
+* [jammy] [jsk_ros_patch][jsk_tools][jsk_data] fix package.xml to release in jammy
+* Contributors: Kei Okada, Yoshiki Obinata, iory
+
 2.2.16 (2025-01-06)
 -------------------
 

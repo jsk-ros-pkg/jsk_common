@@ -2,6 +2,13 @@
 Changelog for package jsk_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#1826 <https://github.com/jsk-ros-pkg/jsk_common/issues/1826>`_ from k-okada/ros2-support
+  Add ROS2 support to jsk_ros1_ros2_compat, dynamic_tf_publisher, jsk_topic_tools, jsk_tools, audio_video_recorder, jsk_data, image_view2, jsk_rosbag_tools
+* [GA] enable ros2 CI
+* Contributors: Kei Okada, Yoshiki Obinata
+
 2.2.16 (2025-01-06)
 -------------------
 
