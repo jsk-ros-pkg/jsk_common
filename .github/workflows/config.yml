@@ -234,7 +234,10 @@ jobs:
           rosinstall_generator laser_filters laser_assembler map_server --rosdistro noetic --upstream-development | vcs import --force
           ROS_PACKAGE_PATH=/usr/share:$HOME/ws_depend/src/ros-o rosinstall_generator --from-path $HOME/ws_depend/src/3rdparty-src --rosdistro noetic --deps --deps-only --exclude RPP test_catkin_virtualenv test_catkin_virtualenv_inherited | vcs import --shallow
           cd ~/ws_depend
-          rosdep install -qq -r -y --from-path src --ignore-src || echo "OK"
+          # --rosdistro is required now: without it rosdep refuses to
+          # resolve ANY key at all ("ROS distro is not set"), since there's
+          # no /opt/ros/noetic install on jammy/noble to infer it from.
+          rosdep install -qq -r -y --rosdistro noetic --from-path src --ignore-src || echo "OK"
           catkin_make_isolated --ignore-pkg test_catkin_virtualenv test_catkin_virtualenv_inherited --cmake-args -DCATKIN_ENABLE_TESTING=OFF
 
       - name: Setup Workspace
@@ -246,7 +249,7 @@ jobs:
           mkdir -p ~/ws_current/src
           cd ~/ws_current/src
           ln -sf $GITHUB_WORKSPACE .
-          rosdep install -qq -r -y --from-path . --ignore-src || echo "OK"
+          rosdep install -qq -r -y --rosdistro noetic --from-path . --ignore-src || echo "OK"
 
       - name: Compile Packages
         run: |

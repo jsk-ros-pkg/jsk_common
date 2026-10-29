@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>jsk_common</name>
-  <version>2.2.16</version>
+  <version>3.0.0</version>
   <description>
    <p>Metapackage that contains commonly used toolset for jsk-ros-pkg</p>
   </description>
@@ -33,6 +33,7 @@
 
   <export>
     <metapackage condition="$ROS_VERSION == 1"/>
+    <build_type condition="$ROS_VERSION == 1">catkin</build_type>
     <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
   </export>
 </package>

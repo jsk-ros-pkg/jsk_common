@@ -58,11 +58,29 @@ catkin_install_python(PROGRAMS src/tf_publish.py src/tf_set.py src/tf_reconfigur
 elseif("$ENV{ROS_VERSION}" EQUAL 2)
   set(_share_destination share/${PROJECT_NAME})
   set(_scripts
-    src/tf_publish.py
-    src/tf_set.py
-    src/tf_reconfigure_publisher.py
+    tf_publish.py
+    tf_set.py
+    tf_reconfigure_publisher.py
   )
-  install(PROGRAMS ${_scripts}
+  # These scripts use `#!/usr/bin/env python`, which resolves on every
+  # ROS1 distro this package still supports but not on ROS2: Ubuntu
+  # 22.04+/24.04 base images (used by jazzy+) ship no bare `python`
+  # binary at all. Rewrite just the installed ROS2 copies' shebang to
+  # python3 instead of changing the shared source files.
+  foreach(_script ${_scripts})
+    set(_script_out ${CMAKE_CURRENT_BINARY_DIR}/${_script})
+    file(READ src/${_script} _script_content)
+    string(REPLACE "#!/usr/bin/env python\n" "#!/usr/bin/env python3\n" _script_content "${_script_content}")
+    file(WRITE ${_script_out} "${_script_content}")
+    # colcon --symlink-install symlinks straight to this file rather than
+    # going through install()'s own chmod, so it needs +x set directly.
+    execute_process(COMMAND chmod +x ${_script_out})
+  endforeach()
+
+  install(PROGRAMS
+    ${CMAKE_CURRENT_BINARY_DIR}/tf_publish.py
+    ${CMAKE_CURRENT_BINARY_DIR}/tf_set.py
+    ${CMAKE_CURRENT_BINARY_DIR}/tf_reconfigure_publisher.py
     DESTINATION lib/${PROJECT_NAME}
   )
 

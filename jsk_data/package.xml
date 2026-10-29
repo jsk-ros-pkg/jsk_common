@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>jsk_data</name>
-  <version>2.2.16</version>
+  <version>3.0.0</version>
   <description>The jsk_data package</description>
 
   <maintainer email="ueda@jsk.t.u-tokyo.ac.jp">Ryohei Ueda</maintainer>
@@ -36,7 +36,12 @@
   <exec_depend condition="$ROS_VERSION == 1">pr2_machine</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-click</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-click</exec_depend>
-  <exec_depend>python-gdown-pip</exec_depend>
+  <!-- ros/rosdistro dropped the python2 "python-gdown-pip" key upstream
+       (gdown itself is python3-only now); jsk_travis's pinned rosdep
+       snapshot still resolves it for older ROS1 distros, but a live
+       rosdep (e.g. this package's ROS2/jazzy CI) only has python3-gdown-pip. -->
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-gdown-pip</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-gdown-pip</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-yaml</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-yaml</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">rosbag</exec_depend>

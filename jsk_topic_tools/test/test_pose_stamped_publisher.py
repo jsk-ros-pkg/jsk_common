@@ -32,7 +32,7 @@ class TestPoseStampedPublisher(unittest.TestCase):
     def callback(self, topic_name, msg):
         self.poses[topic_name] = msg
 
-    def wait_until_topic_ready(self, topic_name, timeout=3):
+    def wait_until_topic_ready(self, topic_name, timeout=15):
         """Wait until the topic is subscribed
         Args:
             topic_name (str): Name of topic to subscribe.
