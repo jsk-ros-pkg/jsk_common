@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>jsk_ros1_ros2_compat</name>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
   <description>Shared ROS1(roscpp/rospy)/ROS2(rclcpp/rclpy) compatibility helpers used across jsk_common's ROS2-ported packages, so that individual packages don't each maintain their own copy.</description>
 
   <maintainer email="k-okada@jsk.imi.i.u-tokyo.ac.jp">Kei Okada</maintainer>
