@@ -2,6 +2,28 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.0 (2026-10-29)
+------------------
+* Merge pull request `#1826 <https://github.com/jsk-ros-pkg/jsk_common/issues/1826>`_ from k-okada/ros2-support
+  Add ROS2 support to jsk_ros1_ros2_compat, dynamic_tf_publisher, jsk_topic_tools, jsk_tools, audio_video_recorder, jsk_data, image_view2, jsk_rosbag_tools
+* [jsk_data] add ROS2 support
+  Single package.xml/CMakeLists.txt branched on $ROS_VERSION (common
+  lines like project(jsk_data) factored out of the if/elseif branches
+  rather than duplicated in both).
+  camera_coords_change_trigger.py/data_collection_server.py are rewritten
+  as single ROS1/ROS2 dual-support files on top of jsk_ros1_ros2_compat's
+  rospy_rclpy_compat.py, switching from tf to tf2_ros for the transform
+  lookup (tf2_ros is available under ROS1 too, so the lookup logic itself
+  is shared rather than duplicated). The tf listener member keeps its
+  original name (self.listener) rather than the clearer self.tf_listener,
+  to minimize diff against the ROS1 original.
+  Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+* touching AMENT_IGNORE some packages
+* Merge pull request `#1816 <https://github.com/jsk-ros-pkg/jsk_common/issues/1816>`_ from k-okada/noble-ros-o
+  enable noble techfak ros-o test `#1814 <https://github.com/jsk-ros-pkg/jsk_common/issues/1814>`_
+* [jammy] [jsk_ros_patch][jsk_tools][jsk_data] fix package.xml to release in jammy
+* Contributors: Kei Okada, Yoshiki Obinata
+
 2.2.16 (2025-01-06)
 -------------------
 

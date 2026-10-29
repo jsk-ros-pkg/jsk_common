@@ -2,6 +2,77 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.0 (2026-10-29)
+------------------
+* Merge pull request `#1826 <https://github.com/jsk-ros-pkg/jsk_common/issues/1826>`_ from k-okada/ros2-support
+  Add ROS2 support to jsk_ros1_ros2_compat, dynamic_tf_publisher, jsk_topic_tools, jsk_tools, audio_video_recorder, jsk_data, image_view2, jsk_rosbag_tools
+* [dynamic_tf_publisher] add ROS2 support
+  Single package.xml/CMakeLists.txt branched on $ROS_VERSION, and each
+  of tf_publish.py/tf_set.py/tf_reconfigure_publisher.py rewritten as a
+  single ROS1/ROS2 dual-support file built on the tf2_ros-based ROS1
+  code from the previous commit, so the tf-handling logic itself does
+  not need to be duplicated between the two versions:
+  - Uses jsk_ros1_ros2_compat's rospy_rclpy_compat.py (get_param, log*,
+  create_service, ...) rather than a local copy.
+  - CMakeLists.txt: uses rosidl_auto_generate_interfaces() for the ROS2
+  message/service generation, sharing the install() script list with
+  ROS1's catkin_install_python(). ROS1-original lines inside the
+  if("$ENV{ROS_VERSION}" ...) blocks are left at their original
+  indentation to minimize diff against master.
+  - srv/*.srv: Header -> std_msgs/Header (ROS2 rosidl requires explicit
+  package-qualification; equally valid under ROS1).
+  - Service callbacks (set_tf/assoc/dissoc/delete/publish_tf) keep their
+  original req/res-style argument names, threading.Lock()-based
+  locking, and try/except structure -- all ROS-version-independent and
+  so left unchanged from the ROS1 original rather than rewritten.
+  - tf_reconfigure_publisher.py's ROS2 parameter read is a small helper
+  (_ros2_config()) that reuses the same callback() as ROS1's
+  dynamic_reconfigure path, instead of duplicating its body.
+  - Not carried over to the ROS2 code path (ROS1-only, documented in
+  tf_publish.py): the YAML-serialized-parameter restart cache and the
+  wait_for_service-based already-running singleton guard.
+  - test/tf_publish_launch_test.py: launch_testing coverage for the
+  ROS2 path (SetDynamicTF followed by a tf2 lookup_transform).
+  - AMENT_IGNORE removed so this package builds under ROS2 (jsk_coordi
+  nation_system currently contains only this one package).
+  Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+* msg/srv: qualify Header field with std_msgs/ package
+  ROS2's rosidl_adapter requires message-type fields to be fully
+  package-qualified, rejecting the bare `Header` spelling ROS1's message
+  generator has allowed since Header moved from roslib into std_msgs
+  (REP 100: https://github.com/ros-infrastructure/rep/blob/master/rep-0100.rst).
+  Affects dynamic_tf_publisher's AssocTF/DeleteTF/DissocTF.srv and
+  image_view2's MouseEvent.msg/PointArrayStamped.msg.
+  Safe for ROS1: genmsg normalizes a bare `Header` field to
+  `std_msgs/Header` before computing a message/service's MD5 sum
+  (genmsg/msgs.py's resolve_type()), so this text-level change does not
+  change the wire-level type or the computed MD5. Verified directly with
+  genmsg.gentools.compute_md5() on all five files, before and after this
+  change: identical MD5 both ways (also holds regardless of the field's
+  original double-space vs single-space separator). Kept as its own
+  commit, ahead of ROS2 support proper, since it needs no ROS2-specific
+  code to be correct or complete.
+* [dynamic_tf_publisher] migrate tf_publish.py/tf_reconfigure_publisher.py from tf to tf2_ros
+  tf.TransformListener/tf.TransformBroadcaster are tf1 APIs; tf2_ros
+  provides the same functionality and is available under ROS1 too, so
+  this is a standalone ROS1-only change, independent of ROS2 support:
+  - tf_publish.py: tf.TransformListener + waitForTransform/lookupTransform
+  -> tf2_ros.Buffer + TransformListener, using a single lookup_transform
+  call (its timeout argument already blocks until the transform is
+  available, same as the old wait+lookup pair). The /tf publisher
+  switches from tf.msg.tfMessage to tf2_msgs.msg.TFMessage, which is
+  wire-compatible (identical fields/md5sum).
+  - tf_reconfigure_publisher.py: tf.TransformBroadcaster -> tf2_ros.Trans
+  formBroadcaster, which only accepts a TransformStamped (no more
+  positional translation/rotation/time/child/parent sendTransform).
+  - tf_set.py is unaffected: it only uses tf.transformations (pure
+  quaternion math, not part of the tf1/tf2 pub-sub API), so it keeps
+  its `tf` dependency.
+  - package.xml: add tf2_ros/tf2_msgs as build/exec_depend alongside the
+  existing tf dependency.
+  Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+* Contributors: Kei Okada
+
 2.2.16 (2025-01-06)
 -------------------
 

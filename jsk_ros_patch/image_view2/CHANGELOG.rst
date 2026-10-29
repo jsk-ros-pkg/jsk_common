@@ -2,6 +2,82 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.0 (2026-10-29)
+------------------
+* Merge pull request `#1826 <https://github.com/jsk-ros-pkg/jsk_common/issues/1826>`_ from k-okada/ros2-support
+  Add ROS2 support to jsk_ros1_ros2_compat, dynamic_tf_publisher, jsk_topic_tools, jsk_tools, audio_video_recorder, jsk_data, image_view2, jsk_rosbag_tools
+* [image_view2] add ROS2 support
+* [image_view2] migrate tf lookups from tf to tf2_ros/geometry_msgs
+  lookupTransformation() and the draw*3D methods (drawFrames,
+  drawLineStrip3D, drawLineList3D, drawPolygon3D, drawPoints3D,
+  drawText3D, drawCircle3D) used tf::TransformListener/tf::StampedTransform/
+  tf::Stamped<tf::Point>, all tf1-only types with no ROS2 port.
+  Switch to tf2_ros::Buffer/TransformListener and geometry_msgs::
+  TransformStamped/PointStamped/PoseStamped, transforming points via
+  tf2::doTransform() instead of tf1's transformPoint(). Several call
+  sites also reuse the single `transform` already looked up by
+  lookupTransformation() (via tf2::doTransform) instead of independently
+  re-deriving it per axis/point, as tf1's transformPoint() did.
+  Preparation for ROS2 support (tf2_ros/geometry_msgs are what ROS2
+  provides; tf1 is ROS1-only), with no behavior change under ROS1.
+* [image_view2] templatize publish helper methods (no functional change)
+  publishMonoImage()/publishRectFromMaskImage() take a ros::Publisher&
+  today; ROS2's per-message-type rclcpp::Publisher<T>::SharedPtr means
+  they will need to work with more than one concrete publisher type, so
+  templatize them on the publisher type (PubT) now, in preparation for
+  ROS2 support.
+  Template definitions must be visible at their instantiation sites, so
+  they move from image_view2.cpp into image_view2.h, right after the
+  class. No behavior change under ROS1: PubT is always ros::Publisher
+  here, so pub.publish(...) is exactly as before.
+* [dynamic_tf_publisher] add ROS2 support
+  Single package.xml/CMakeLists.txt branched on $ROS_VERSION, and each
+  of tf_publish.py/tf_set.py/tf_reconfigure_publisher.py rewritten as a
+  single ROS1/ROS2 dual-support file built on the tf2_ros-based ROS1
+  code from the previous commit, so the tf-handling logic itself does
+  not need to be duplicated between the two versions:
+  - Uses jsk_ros1_ros2_compat's rospy_rclpy_compat.py (get_param, log*,
+  create_service, ...) rather than a local copy.
+  - CMakeLists.txt: uses rosidl_auto_generate_interfaces() for the ROS2
+  message/service generation, sharing the install() script list with
+  ROS1's catkin_install_python(). ROS1-original lines inside the
+  if("$ENV{ROS_VERSION}" ...) blocks are left at their original
+  indentation to minimize diff against master.
+  - srv/*.srv: Header -> std_msgs/Header (ROS2 rosidl requires explicit
+  package-qualification; equally valid under ROS1).
+  - Service callbacks (set_tf/assoc/dissoc/delete/publish_tf) keep their
+  original req/res-style argument names, threading.Lock()-based
+  locking, and try/except structure -- all ROS-version-independent and
+  so left unchanged from the ROS1 original rather than rewritten.
+  - tf_reconfigure_publisher.py's ROS2 parameter read is a small helper
+  (_ros2_config()) that reuses the same callback() as ROS1's
+  dynamic_reconfigure path, instead of duplicating its body.
+  - Not carried over to the ROS2 code path (ROS1-only, documented in
+  tf_publish.py): the YAML-serialized-parameter restart cache and the
+  wait_for_service-based already-running singleton guard.
+  - test/tf_publish_launch_test.py: launch_testing coverage for the
+  ROS2 path (SetDynamicTF followed by a tf2 lookup_transform).
+  - AMENT_IGNORE removed so this package builds under ROS2 (jsk_coordi
+  nation_system currently contains only this one package).
+  Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+* msg/srv: qualify Header field with std_msgs/ package
+  ROS2's rosidl_adapter requires message-type fields to be fully
+  package-qualified, rejecting the bare `Header` spelling ROS1's message
+  generator has allowed since Header moved from roslib into std_msgs
+  (REP 100: https://github.com/ros-infrastructure/rep/blob/master/rep-0100.rst).
+  Affects dynamic_tf_publisher's AssocTF/DeleteTF/DissocTF.srv and
+  image_view2's MouseEvent.msg/PointArrayStamped.msg.
+  Safe for ROS1: genmsg normalizes a bare `Header` field to
+  `std_msgs/Header` before computing a message/service's MD5 sum
+  (genmsg/msgs.py's resolve_type()), so this text-level change does not
+  change the wire-level type or the computed MD5. Verified directly with
+  genmsg.gentools.compute_md5() on all five files, before and after this
+  change: identical MD5 both ways (also holds regardless of the field's
+  original double-space vs single-space separator). Kept as its own
+  commit, ahead of ROS2 support proper, since it needs no ROS2-specific
+  code to be correct or complete.
+* Contributors: Kei Okada
+
 2.2.16 (2025-01-06)
 -------------------
 

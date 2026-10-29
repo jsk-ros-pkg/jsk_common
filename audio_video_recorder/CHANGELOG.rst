@@ -2,6 +2,26 @@
 Changelog for package audio_video_recorder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.0 (2026-10-29)
+------------------
+* Merge pull request `#1826 <https://github.com/jsk-ros-pkg/jsk_common/issues/1826>`_ from k-okada/ros2-support
+  Add ROS2 support to jsk_ros1_ros2_compat, dynamic_tf_publisher, jsk_topic_tools, jsk_tools, audio_video_recorder, jsk_data, image_view2, jsk_rosbag_tools
+* [audio_video_recorder] add ROS2 support
+  Single package.xml/CMakeLists.txt branched on $ROS_VERSION (ROS1-
+  original lines inside the if("$ENV{ROS_VERSION}" ...) blocks left at
+  their original indentation to minimize diff against master). ROS1/ROS2
+  detection and the compat glue (ROS_INFO/ROS_ERROR logging macros,
+  ros::param::param<T>() reopened under ROS2 backed by a package-scope
+  node singleton) live in jsk_ros1_ros2_compat/compat.h, shared with
+  other packages rather than duplicated locally; only the message-type
+  aliases (sensor_msgs::Image, audio_common_msgs::AudioData, ...) stay in
+  audio_video_recorder's own compat.h. This keeps every
+  ros::param::param<T>("~foo", ...) call site in audio_video_recorder.cpp
+  byte-identical to the ROS1 original.
+  Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+* touching AMENT_IGNORE some packages
+* Contributors: Kei Okada, Yoshiki Obinata
+
 2.2.16 (2025-01-06)
 -------------------
 

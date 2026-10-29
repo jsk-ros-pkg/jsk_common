@@ -2,6 +2,47 @@
 Changelog for package jsk_rosbag_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.0 (2026-10-29)
+------------------
+* Merge pull request `#1826 <https://github.com/jsk-ros-pkg/jsk_common/issues/1826>`_ from k-okada/ros2-support
+  Add ROS2 support to jsk_ros1_ros2_compat, dynamic_tf_publisher, jsk_topic_tools, jsk_tools, audio_video_recorder, jsk_data, image_view2, jsk_rosbag_tools
+* [jsk_rosbag_tools] add ROS2 support
+  Single package.xml/CMakeLists.txt branched on $ROS_VERSION (ROS1-
+  original lines inside the if("$ENV{ROS_VERSION}" ...) blocks, including
+  catkin_download(...), left at their original indentation to minimize
+  diff against master). Adds rosbag_compat.py, a local rosbag1/rosbag2
+  (sqlite3-backed) compat shim, and rewrites bag_to_audio.py/compress.py/
+  extract.py/info.py/merge.py/video.py/tf_static_to_tf.py as single
+  ROS1/ROS2 dual-support scripts on top of it.
+  Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+* touching AMENT_IGNORE some packages
+* Merge branch 'master' into fix-python3-shebang
+* Merge pull request `#1819 <https://github.com/jsk-ros-pkg/jsk_common/issues/1819>`_ from k-okada/update_travis_0.5.28
+  update jsk_travis 0.5.28 (new ROS repository key)
+* jsk_rosbag_tools: pin to proglog==0.1.11
+* Merge pull request `#1816 <https://github.com/jsk-ros-pkg/jsk_common/issues/1816>`_ from k-okada/noble-ros-o
+  enable noble techfak ros-o test `#1814 <https://github.com/jsk-ros-pkg/jsk_common/issues/1814>`_
+* jsk_rosbag_tools: add libjpeg and libwebp-dev
+  pip install moviepy/Pillow requires dev libraries
+  2025-04-05T10:29:31.1856757Z   warning: no previously-included files found matching '.readthedocs.yml'
+  2025-04-05T10:29:31.1856903Z   warning: no previously-included files found matching 'codecov.yml'
+  2025-04-05T10:29:31.1857118Z   warning: no previously-included files matching '.git*' found anywhere in distribution
+  2025-04-05T10:29:31.1857331Z   warning: no previously-included files matching '*.pyc' found anywhere in distribution
+  2025-04-05T10:29:31.1857650Z   warning: no previously-included files matching '*.so' found anywhere in distribution
+  2025-04-05T10:29:31.1857788Z   no previously-included directories found matching '.ci'
+  2025-04-05T10:29:31.1857874Z   adding license file 'LICENSE'
+  2025-04-05T10:29:31.1858004Z   writing manifest file 'src/Pillow.egg-info/SOURCES.txt'
+  2025-04-05T10:29:31.1858070Z   running build_ext
+  2025-04-05T10:29:31.1858076Z
+  2025-04-05T10:29:31.1858080Z
+  2025-04-05T10:29:31.1858205Z   The headers or library files could not be found for jpeg,
+  2025-04-05T10:29:31.1858340Z   a required dependency when compiling Pillow from source.
+  2025-04-05T10:29:31.1858343Z
+  2025-04-05T10:29:31.1858435Z   Please see the install instructions at:
+  2025-04-05T10:29:31.1858586Z      https://pillow.readthedocs.io/en/latest/installation.html
+* jsk_rosbag_tools: imageio:  downloading ffmpeg is no longer supported, see https://github.com/Zulko/moviepy/issues/493
+* Contributors: Kei, Kei Okada, Yoshiki Obinata
+
 2.2.16 (2025-01-06)
 -------------------
 * [ROS-O] fix for ROS-O (`#1802 <https://github.com/jsk-ros-pkg/jsk_common/issues/1802>`_)
