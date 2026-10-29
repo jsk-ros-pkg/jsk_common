@@ -15,7 +15,7 @@ project(jsk_common)
 
 if("$ENV{ROS_VERSION}" EQUAL 1)
 find_package(catkin REQUIRED)
-catkin_metapackage()
+catkin_package()
 elseif("$ENV{ROS_VERSION}" EQUAL 2)
   find_package(ament_cmake REQUIRED)
   ament_package()

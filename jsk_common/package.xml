@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>jsk_common</name>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
   <description>
    <p>Metapackage that contains commonly used toolset for jsk-ros-pkg</p>
   </description>
@@ -32,7 +32,6 @@
   <exec_depend condition="$ROS_VERSION == 1">jsk_tilt_laser</exec_depend>
 
   <export>
-    <metapackage condition="$ROS_VERSION == 1"/>
     <build_type condition="$ROS_VERSION == 1">catkin</build_type>
     <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
   </export>

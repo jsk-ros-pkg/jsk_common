@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>audio_video_recorder</name>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
   <description>ROS package for recording image and audio synchronously</description>
 
   <author email="shingogo.5511@gmail.com">Shingo Kitagawa</author>
