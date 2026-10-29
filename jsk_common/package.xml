@@ -32,7 +32,6 @@
   <exec_depend condition="$ROS_VERSION == 1">jsk_tilt_laser</exec_depend>
 
   <export>
-    <metapackage condition="$ROS_VERSION == 1"/>
     <build_type condition="$ROS_VERSION == 1">catkin</build_type>
     <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
   </export>
