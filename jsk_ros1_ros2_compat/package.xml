@@ -33,6 +33,14 @@
   <exec_depend condition="$ROS_VERSION == 2">rosbag2_py</exec_depend>
   <exec_depend condition="$ROS_VERSION == 2">rosidl_runtime_py</exec_depend>
 
+  <!-- test/test_rospy_rclpy_compat.py -->
+  <test_depend condition="$ROS_VERSION == 1">actionlib</test_depend>
+  <test_depend condition="$ROS_VERSION == 1">actionlib_tutorials</test_depend>
+  <test_depend condition="$ROS_VERSION == 1">rostest</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">ament_cmake_pytest</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">example_interfaces</test_depend>
+  <test_depend>std_msgs</test_depend>
+
   <export>
     <build_type condition="$ROS_VERSION == 1">catkin</build_type>
     <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>

@@ -52,6 +52,11 @@ if("$ENV{ROS_VERSION}" EQUAL 1)
   install(DIRECTORY include/${PROJECT_NAME}/
     DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   )
+
+  if(CATKIN_ENABLE_TESTING)
+    find_package(rostest REQUIRED)
+    add_rostest(test/test_rospy_rclpy_compat.test)
+  endif()
   return()
 endif()
 
@@ -60,4 +65,11 @@ install(DIRECTORY include/${PROJECT_NAME}
 )
 ament_export_include_directories(include)
 ament_export_dependencies(rclcpp)
+
+if(BUILD_TESTING)
+  find_package(ament_cmake_pytest REQUIRED)
+  ament_add_pytest_test(test_rospy_rclpy_compat test/test_rospy_rclpy_compat.py
+    TIMEOUT 120)
+endif()
+
 ament_package(CONFIG_EXTRAS cmake/${PROJECT_NAME}-extras.cmake)
