@@ -26,6 +26,7 @@ if ROS_VERSION == 2:
     import rclpy  # NOQA: F401 (re-exported for convenience)
     from rcl_interfaces.msg import ParameterDescriptor
     from rclpy.duration import Duration as _Duration
+    from rclpy.executors import ExternalShutdownException
     from rosidl_runtime_py.utilities import get_message
 else:
     import roslib.message
@@ -79,6 +80,47 @@ def logerr(node, msg):
 
 def logdebug(node, msg):
     node.get_logger().debug(msg) if ROS_VERSION == 2 else rospy.logdebug(msg)
+
+
+def logfatal(node, msg):
+    node.get_logger().fatal(msg) if ROS_VERSION == 2 else rospy.logfatal(msg)
+
+
+def loginfo_throttle(node, period, msg):
+    if ROS_VERSION == 2:
+        node.get_logger().info(msg, throttle_duration_sec=period)
+    else:
+        rospy.loginfo_throttle(period, msg)
+
+
+def logwarn_throttle(node, period, msg):
+    if ROS_VERSION == 2:
+        node.get_logger().warn(msg, throttle_duration_sec=period)
+    else:
+        rospy.logwarn_throttle(period, msg)
+
+
+def logerr_throttle(node, period, msg):
+    if ROS_VERSION == 2:
+        node.get_logger().error(msg, throttle_duration_sec=period)
+    else:
+        rospy.logerr_throttle(period, msg)
+
+
+def get_name(node):
+    """Fully qualified node name, e.g. '/ns/my_node' (rospy.get_name())."""
+    return node.get_fully_qualified_name() if ROS_VERSION == 2 else rospy.get_name()
+
+
+def signal_shutdown(node, reason):
+    """rospy.signal_shutdown() (ROS1) vs shutting down the rclpy context
+    (ROS2), which makes a spin() in progress (e.g. spin_and_shutdown())
+    return."""
+    if ROS_VERSION == 2:
+        node.get_logger().info('shutdown request: %s' % (reason,))
+        rclpy.try_shutdown()
+    else:
+        rospy.signal_shutdown(reason)
 
 
 def sleep(node, seconds):
@@ -139,11 +181,14 @@ def resolve_message_class(type_str):
         return roslib.message.get_message_class('{}/{}'.format(pkg, name))
 
 
-def create_subscription(node, topic, msg_type, callback, queue_size=1):
+def create_subscription(node, topic, msg_type, callback, queue_size=None):
+    """queue_size=None keeps each side's default: an unbounded queue
+    (rospy) or a depth-1 QoS history (rclpy, which requires a depth)."""
     if ROS_VERSION == 2:
-        return node.create_subscription(msg_type, topic, callback, queue_size)
+        return node.create_subscription(
+            msg_type, topic, callback, 1 if queue_size is None else queue_size)
     else:
-        return rospy.Subscriber(topic, msg_type, callback)
+        return rospy.Subscriber(topic, msg_type, callback, queue_size=queue_size)
 
 
 def create_publisher(node, topic, msg_type, queue_size=1):
@@ -242,16 +287,19 @@ def spin_and_shutdown(node, executor=None):
 
     Assumes rclpy.init() was already called and `node` already
     constructed; this covers only the boilerplate that is otherwise
-    duplicated verbatim across every ROS2-ported node's main()."""
+    duplicated verbatim across every ROS2-ported node's main().
+
+    rclpy's default signal handlers turn SIGINT/SIGTERM into an
+    ExternalShutdownException out of spin() (a KeyboardInterrupt only if
+    it arrives outside the executor), so both mean a normal exit."""
     try:
         if executor is not None:
             executor.add_node(node)
             executor.spin()
         else:
             rclpy.spin(node)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
         node.destroy_node()
-        if rclpy.ok():
-            rclpy.shutdown()
+        rclpy.try_shutdown()
