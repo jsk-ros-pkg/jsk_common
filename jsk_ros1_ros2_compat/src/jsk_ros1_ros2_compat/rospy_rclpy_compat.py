@@ -303,3 +303,212 @@ def spin_and_shutdown(node, executor=None):
     finally:
         node.destroy_node()
         rclpy.try_shutdown()
+
+
+def on_shutdown(node, callback):
+    """rospy.on_shutdown() (ROS1) vs the rclpy context's shutdown hook
+    (ROS2); `callback` takes no argument in both."""
+    if ROS_VERSION == 2:
+        node.context.on_shutdown(callback)
+    else:
+        rospy.on_shutdown(callback)
+
+
+class _SimpleActionClient(object):
+    """actionlib.SimpleActionClient-like wrapper of rclpy's ActionClient,
+    for the commonly used subset. Unlike rclpy's own API, the blocking
+    calls work from any thread other than the one spinning `node`
+    (e.g. a MultiThreadedExecutor callback or a worker thread), and
+    never from a single-threaded executor's own callback."""
+
+    def __init__(self, node, name, action_type):
+        import threading
+        from rclpy.action import ActionClient
+        self._threading = threading
+        self._client = ActionClient(node, action_type, name)
+        self._goal_handle = None
+        self._result = None
+        self._done = threading.Event()
+        self._done.set()
+
+    def wait_for_server(self, timeout=None):
+        return self._client.wait_for_server(timeout_sec=timeout)
+
+    def send_goal(self, goal, feedback_cb=None):
+        self._goal_handle = None
+        self._result = None
+        self._done.clear()
+
+        def goal_response_cb(future):
+            self._goal_handle = future.result()
+            if not self._goal_handle.accepted:
+                self._done.set()
+                return
+            self._goal_handle.get_result_async().add_done_callback(result_cb)
+
+        def result_cb(future):
+            self._result = future.result().result
+            self._done.set()
+
+        kwargs = {}
+        if feedback_cb is not None:
+            kwargs['feedback_callback'] = lambda msg: feedback_cb(msg.feedback)
+        self._client.send_goal_async(goal, **kwargs).add_done_callback(
+            goal_response_cb)
+
+    def wait_for_result(self, timeout=None):
+        return self._done.wait(timeout)
+
+    def send_goal_and_wait(self, goal, timeout=None):
+        self.send_goal(goal)
+        return self.wait_for_result(timeout)
+
+    def get_result(self):
+        return self._result
+
+    def cancel_goal(self):
+        if self._goal_handle is not None:
+            self._goal_handle.cancel_goal_async()
+
+
+def create_simple_action_client(node, name, action_type):
+    """actionlib.SimpleActionClient(name, action_type) (ROS1) or an
+    equivalent wrapper of rclpy's ActionClient (ROS2). Pass `FooAction`
+    under ROS1 and `Foo` under ROS2. wait_for_server(),
+    wait_for_result() and send_goal_and_wait() take timeouts in seconds
+    (None: wait forever) on both."""
+    if ROS_VERSION == 2:
+        return _SimpleActionClient(node, name, action_type)
+    import actionlib
+
+    # actionlib.SimpleActionClient is an old-style class on python2, so
+    # call the base methods explicitly instead of via super()
+    class _ROS1SimpleActionClient(actionlib.SimpleActionClient):
+        def wait_for_server(self, timeout=None):
+            return actionlib.SimpleActionClient.wait_for_server(
+                self, rospy.Duration(timeout or 0))
+
+        def wait_for_result(self, timeout=None):
+            return actionlib.SimpleActionClient.wait_for_result(
+                self, rospy.Duration(timeout or 0))
+
+        def send_goal_and_wait(self, goal, timeout=None):
+            self.send_goal(goal)
+            return self.wait_for_result(timeout)
+    return _ROS1SimpleActionClient(name, action_type)
+
+
+class _SimpleActionServer(object):
+    """actionlib.SimpleActionServer-like wrapper of rclpy's ActionServer,
+    for the commonly used subset: execute_cb(goal) runs to completion and
+    calls set_succeeded()/set_aborted()/set_preempted() once."""
+
+    def __init__(self, node, name, action_type, execute_cb):
+        from rclpy.action import ActionServer, CancelResponse
+        self._action_type = action_type
+        self._execute_cb = execute_cb
+        self._goal_handle = None
+        self._server = ActionServer(
+            node, action_type, name, self._ros2_execute_cb,
+            cancel_callback=lambda goal_handle: CancelResponse.ACCEPT)
+
+    def _ros2_execute_cb(self, goal_handle):
+        self._goal_handle = goal_handle
+        self._status, self._result = None, None
+        self._execute_cb(goal_handle.request)
+        if self._status == 'preempted' and goal_handle.is_cancel_requested:
+            goal_handle.canceled()
+        elif self._status == 'succeeded':
+            goal_handle.succeed()
+        else:
+            goal_handle.abort()
+        return self._result if self._result is not None \
+            else self._action_type.Result()
+
+    def start(self):
+        pass
+
+    def is_preempt_requested(self):
+        return self._goal_handle is not None and \
+            self._goal_handle.is_cancel_requested
+
+    def publish_feedback(self, feedback):
+        self._goal_handle.publish_feedback(feedback)
+
+    def set_succeeded(self, result=None, text=''):
+        self._status, self._result = 'succeeded', result
+
+    def set_aborted(self, result=None, text=''):
+        self._status, self._result = 'aborted', result
+
+    def set_preempted(self, result=None, text=''):
+        self._status, self._result = 'preempted', result
+
+
+def create_simple_action_server(node, name, action_type, execute_cb):
+    """actionlib.SimpleActionServer(name, action_type, execute_cb,
+    auto_start=False) (ROS1) or an equivalent wrapper of rclpy's
+    ActionServer (ROS2); call start() on it in both. Pass `FooAction`
+    under ROS1 and `Foo` under ROS2."""
+    if ROS_VERSION == 2:
+        return _SimpleActionServer(node, name, action_type, execute_cb)
+    import actionlib
+    return actionlib.SimpleActionServer(
+        name, action_type, execute_cb, auto_start=False)
+
+
+class _Config(dict):
+    """dict with attribute access, like dynamic_reconfigure's config."""
+
+    def __getattr__(self, name):
+        try:
+            return self[name]
+        except KeyError:
+            raise AttributeError(name)
+
+    def __setattr__(self, name, value):
+        self[name] = value
+
+
+class _ReconfigureServer(object):
+
+    def __init__(self, node, defaults, callback):
+        from rcl_interfaces.msg import SetParametersResult
+        self._result_type = SetParametersResult
+        self._node = node
+        self._callback = callback
+        self._names = list(defaults.keys())
+        for name, default in defaults.items():
+            get_param(node, name, default)
+        node.add_on_set_parameters_callback(self._on_set_parameters)
+        self.config = self._callback(self._current(), 0)
+
+    def _current(self):
+        return _Config(
+            (name, self._node.get_parameter(name).value)
+            for name in self._names)
+
+    def _on_set_parameters(self, params):
+        config = self._current()
+        changed = False
+        for param in params:
+            if param.name in config:
+                config[param.name] = param.value
+                changed = True
+        if changed:
+            self.config = self._callback(config, 0)
+        return self._result_type(successful=True)
+
+
+def create_reconfigure_server(node, config_type, callback, defaults=None):
+    """dynamic_reconfigure.server.Server(config_type, callback) (ROS1) or
+    the ROS2 equivalent built on node parameters: every key of
+    `defaults` (ROS2 only, since ROS2 has no .cfg; ignored under ROS1)
+    is declared as a parameter, and `callback(config, level)` is called
+    once at start and on every `ros2 param set` of one of them, with
+    `config` supporting both config.name and config['name'] (level is
+    always 0 under ROS2). Pass config_type=None under ROS2."""
+    if ROS_VERSION == 2:
+        return _ReconfigureServer(node, defaults or {}, callback)
+    from dynamic_reconfigure.server import Server
+    return Server(config_type, callback)
