@@ -19,6 +19,7 @@ if("$ENV{ROS_VERSION}" EQUAL 1)
   catkin_python_setup()
   catkin_package(
     INCLUDE_DIRS include
+    CFG_EXTRAS ${PROJECT_NAME}-extras.cmake
     CATKIN_DEPENDS roscpp
   )
 elseif("$ENV{ROS_VERSION}" EQUAL 2)
@@ -43,4 +44,4 @@ install(DIRECTORY include/${PROJECT_NAME}
 )
 ament_export_include_directories(include)
 ament_export_dependencies(rclcpp)
-ament_package()
+ament_package(CONFIG_EXTRAS cmake/${PROJECT_NAME}-extras.cmake)
