@@ -1,20 +1,32 @@
 # CMake helpers shared across ROS2-ported packages, available after
 # find_package(jsk_ros1_ros2_compat REQUIRED).
 
+# uv venv helpers are ROS2 only; ROS1 keeps using catkin_virtualenv
+if("$ENV{ROS_VERSION}" EQUAL 2)
+  include(${CMAKE_CURRENT_LIST_DIR}/catkin_uv.cmake)
+endif()
+
 # jsk_ros1_ros2_compat_install_python(
 #   PROGRAMS <script>...
-#   [DESTINATION <dir>])  # default: lib/${PROJECT_NAME}, for `ros2 run`
+#   [DESTINATION <dir>]   # default: lib/${PROJECT_NAME}, for `ros2 run`
+#   [USE_VENV])           # run with the venv of jsk_ros1_ros2_compat_generate_uv_venv()
 #
 # Installs python scripts whose source keeps the `#!/usr/bin/env python`
 # shebang shared with ROS1 (python2 on indigo..melodic): the installed
 # copy gets `#!/usr/bin/env python3` instead, since ROS2 base images
-# ship no bare `python`.
+# ship no bare `python`, or the venv's python3 with USE_VENV.
 function(jsk_ros1_ros2_compat_install_python)
-  cmake_parse_arguments(ARG "" "DESTINATION" "PROGRAMS" ${ARGN})
+  cmake_parse_arguments(ARG "USE_VENV" "DESTINATION" "PROGRAMS" ${ARGN})
   if(NOT ARG_DESTINATION)
     set(ARG_DESTINATION lib/${PROJECT_NAME})
   endif()
   set(_shebang "#!/usr/bin/env python3")
+  if(ARG_USE_VENV)
+    if(NOT ${PROJECT_NAME}_VENV_INSTALL_DIR)
+      message(FATAL_ERROR "USE_VENV needs jsk_ros1_ros2_compat_generate_uv_venv() first")
+    endif()
+    set(_shebang "#!${${PROJECT_NAME}_VENV_INSTALL_DIR}/bin/python3")
+  endif()
   foreach(_script ${ARG_PROGRAMS})
     get_filename_component(_script_abs ${_script} ABSOLUTE)
     get_filename_component(_script_name ${_script} NAME)

@@ -11,6 +11,8 @@
   <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
 
   <build_depend condition="$ROS_VERSION == 2">ament_cmake_python</build_depend>
+  <!-- uv's installer, see CMakeLists.txt -->
+  <build_depend condition="$ROS_VERSION == 2">curl</build_depend>
 
   <!-- roscpp/rclcpp and rospy/rclpy are released for both ROS1 and
        ROS2 under different names, so both conditions are needed. -->
@@ -30,6 +32,14 @@
        imported at runtime, never compiled against. -->
   <exec_depend condition="$ROS_VERSION == 2">rosbag2_py</exec_depend>
   <exec_depend condition="$ROS_VERSION == 2">rosidl_runtime_py</exec_depend>
+
+  <!-- test/test_rospy_rclpy_compat.py -->
+  <test_depend condition="$ROS_VERSION == 1">actionlib</test_depend>
+  <test_depend condition="$ROS_VERSION == 1">actionlib_tutorials</test_depend>
+  <test_depend condition="$ROS_VERSION == 1">rostest</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">ament_cmake_pytest</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">example_interfaces</test_depend>
+  <test_depend>std_msgs</test_depend>
 
   <export>
     <build_type condition="$ROS_VERSION == 1">catkin</build_type>
