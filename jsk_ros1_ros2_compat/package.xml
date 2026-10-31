@@ -11,6 +11,8 @@
   <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
 
   <build_depend condition="$ROS_VERSION == 2">ament_cmake_python</build_depend>
+  <!-- uv's installer, see CMakeLists.txt -->
+  <build_depend condition="$ROS_VERSION == 2">curl</build_depend>
 
   <!-- roscpp/rclcpp and rospy/rclpy are released for both ROS1 and
        ROS2 under different names, so both conditions are needed. -->
