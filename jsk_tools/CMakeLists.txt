@@ -14,29 +14,13 @@ if($ENV{ROS_VERSION} EQUAL 2)
 
   ament_python_install_package(${PROJECT_NAME} PACKAGE_DIR src/${PROJECT_NAME})
 
-  # The checked-in scripts use `#!/usr/bin/env python`, which resolves on
-  # every ROS1 distro this package still supports (python2 on
-  # indigo/kinetic/melodic, python3 on noetic) but not on ROS2: Ubuntu
-  # 22.04+/24.04 base images (used by jazzy+) ship no bare `python`
-  # binary at all. Rewrite just the installed ROS2 copies' shebang to
-  # python3 instead of changing the shared source file, so ROS1's
-  # rostest (test/test_audible_warning.test, run on all those distros)
-  # keeps using the original, environment-appropriate interpreter.
-  foreach(_script node_scripts/audible_warning.py bin/battery_capacity_summary.py)
-    get_filename_component(_script_name ${_script} NAME)
-    set(_script_out ${CMAKE_CURRENT_BINARY_DIR}/${_script_name})
-    file(READ ${_script} _script_content)
-    string(REPLACE "#!/usr/bin/env python\n" "#!/usr/bin/env python3\n" _script_content "${_script_content}")
-    file(WRITE ${_script_out} "${_script_content}")
-    # colcon --symlink-install symlinks straight to this file rather than
-    # going through install()'s own chmod, so it needs +x set directly.
-    execute_process(COMMAND chmod +x ${_script_out})
-  endforeach()
-
-  install(PROGRAMS
-    ${CMAKE_CURRENT_BINARY_DIR}/audible_warning.py
-    ${CMAKE_CURRENT_BINARY_DIR}/battery_capacity_summary.py
-    DESTINATION lib/${PROJECT_NAME}
+  # The scripts keep `#!/usr/bin/env python` for ROS1 (python2 on
+  # indigo..melodic); ROS2 base images ship no bare `python`, so the
+  # installed ROS2 copies get a python3 shebang.
+  find_package(jsk_ros1_ros2_compat REQUIRED)
+  jsk_ros1_ros2_compat_install_python(PROGRAMS
+    node_scripts/audible_warning.py
+    bin/battery_capacity_summary.py
   )
 
   if(BUILD_TESTING)

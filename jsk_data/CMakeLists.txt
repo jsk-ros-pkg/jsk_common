@@ -121,27 +121,14 @@ if (CATKIN_ENABLE_TESTING)
   add_rostest(tests/data_collection_server.test)
 endif()
 elseif("$ENV{ROS_VERSION}" EQUAL 2)
-  # These scripts use `#!/usr/bin/env python`, which resolves on every
-  # ROS1 distro this package still supports but not on ROS2: Ubuntu
-  # 22.04+/24.04 base images (used by jazzy+) ship no bare `python`
-  # binary at all. Rewrite just the installed ROS2 copies' shebang to
-  # python3 instead of changing the shared source files.
-  foreach(_script scripts/jsk_data node_scripts/data_collection_server.py node_scripts/camera_coords_change_trigger.py)
-    get_filename_component(_script_name ${_script} NAME)
-    set(_script_out ${CMAKE_CURRENT_BINARY_DIR}/${_script_name})
-    file(READ ${_script} _script_content)
-    string(REPLACE "#!/usr/bin/env python\n" "#!/usr/bin/env python3\n" _script_content "${_script_content}")
-    file(WRITE ${_script_out} "${_script_content}")
-    # colcon --symlink-install symlinks straight to this file rather than
-    # going through install()'s own chmod, so it needs +x set directly.
-    execute_process(COMMAND chmod +x ${_script_out})
-  endforeach()
-
-  install(PROGRAMS
-    ${CMAKE_CURRENT_BINARY_DIR}/jsk_data
-    ${CMAKE_CURRENT_BINARY_DIR}/data_collection_server.py
-    ${CMAKE_CURRENT_BINARY_DIR}/camera_coords_change_trigger.py
-    DESTINATION lib/${PROJECT_NAME}
+  # The scripts keep `#!/usr/bin/env python` for ROS1 (python2 on
+  # indigo..melodic); ROS2 base images ship no bare `python`, so the
+  # installed ROS2 copies get a python3 shebang.
+  find_package(jsk_ros1_ros2_compat REQUIRED)
+  jsk_ros1_ros2_compat_install_python(PROGRAMS
+    scripts/jsk_data
+    node_scripts/data_collection_server.py
+    node_scripts/camera_coords_change_trigger.py
   )
 
   if(BUILD_TESTING)
