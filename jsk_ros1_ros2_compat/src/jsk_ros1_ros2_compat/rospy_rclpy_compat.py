@@ -222,17 +222,20 @@ def _latched_qos(depth):
 
 
 def create_subscription(node, topic, msg_type, callback, queue_size=None,
-                        latch=False):
+                        latch=False, callback_group=None):
     """queue_size=None keeps each side's default: an unbounded queue
     (rospy) or a depth-1 QoS history (rclpy, which requires a depth).
     latch=True (ROS2 only, ignored by rospy) subscribes with the
     transient-local QoS needed to receive the last message of a
-    create_publisher(..., latch=True) topic."""
+    create_publisher(..., latch=True) topic. callback_group (ROS2 only,
+    ignored by rospy, whose callbacks each run in their own thread) is
+    the rclpy callback group, e.g. a ReentrantCallbackGroup."""
     if ROS_VERSION == 2:
         depth = 1 if queue_size is None else queue_size
         return node.create_subscription(
             msg_type, private_name(topic), callback,
-            _latched_qos(depth) if latch else depth)
+            _latched_qos(depth) if latch else depth,
+            callback_group=callback_group)
     else:
         return rospy.Subscriber(topic, msg_type, callback, queue_size=queue_size)
 
@@ -248,18 +251,20 @@ def create_publisher(node, topic, msg_type, queue_size=1, latch=False):
         return rospy.Publisher(topic, msg_type, queue_size=queue_size, latch=latch)
 
 
-def create_timer(node, period_sec, callback):
+def create_timer(node, period_sec, callback, callback_group=None):
     if ROS_VERSION == 2:
-        return node.create_timer(period_sec, lambda: callback(None))
+        return node.create_timer(period_sec, lambda: callback(None),
+                                 callback_group=callback_group)
     else:
         return rospy.Timer(rospy.Duration(period_sec), callback)
 
 
-def create_service(node, name, srv_type, callback):
+def create_service(node, name, srv_type, callback, callback_group=None):
     """Generic form: `callback` takes (request, response) and returns
     the (possibly same) response, for both ROS1 and ROS2."""
     if ROS_VERSION == 2:
-        return node.create_service(srv_type, private_name(name), callback)
+        return node.create_service(srv_type, private_name(name), callback,
+                                   callback_group=callback_group)
     else:
         def _wrapped(request):
             response = srv_type._response_class()
@@ -267,7 +272,8 @@ def create_service(node, name, srv_type, callback):
         return rospy.Service(name, srv_type, _wrapped)
 
 
-def create_trigger_service(node, service_name, service_type, callback):
+def create_trigger_service(node, service_name, service_type, callback,
+                           callback_group=None):
     """Trigger-shaped form: `callback` takes a single ROS1-style request
     argument and returns (success: bool, message: str)."""
     def _wrapped(request, response):
@@ -275,7 +281,8 @@ def create_trigger_service(node, service_name, service_type, callback):
         response.success = success
         response.message = message
         return response
-    return create_service(node, private_name(service_name), service_type, _wrapped)
+    return create_service(node, private_name(service_name), service_type, _wrapped,
+                          callback_group=callback_group)
 
 
 def wait_for_service(node, name, srv_type, timeout=None):
@@ -498,11 +505,12 @@ class _SimpleActionClient(object):
     (e.g. a MultiThreadedExecutor callback or a worker thread), and
     never from a single-threaded executor's own callback."""
 
-    def __init__(self, node, name, action_type):
+    def __init__(self, node, name, action_type, callback_group=None):
         import threading
         from rclpy.action import ActionClient
         self._threading = threading
-        self._client = ActionClient(node, action_type, name)
+        self._client = ActionClient(node, action_type, name,
+                                    callback_group=callback_group)
         self._goal_handle = None
         self._result = None
         self._done = threading.Event()
@@ -548,14 +556,15 @@ class _SimpleActionClient(object):
             self._goal_handle.cancel_goal_async()
 
 
-def create_simple_action_client(node, name, action_type):
+def create_simple_action_client(node, name, action_type, callback_group=None):
     """actionlib.SimpleActionClient(name, action_type) (ROS1) or an
     equivalent wrapper of rclpy's ActionClient (ROS2). Pass `FooAction`
     under ROS1 and `Foo` under ROS2. wait_for_server(),
     wait_for_result() and send_goal_and_wait() take timeouts in seconds
-    (None: wait forever) on both."""
+    (None: wait forever) on both. callback_group is ignored by ROS1."""
     if ROS_VERSION == 2:
-        return _SimpleActionClient(node, private_name(name), action_type)
+        return _SimpleActionClient(node, private_name(name), action_type,
+                                   callback_group)
     import actionlib
 
     # actionlib.SimpleActionClient is an old-style class on python2, so
@@ -580,14 +589,15 @@ class _SimpleActionServer(object):
     for the commonly used subset: execute_cb(goal) runs to completion and
     calls set_succeeded()/set_aborted()/set_preempted() once."""
 
-    def __init__(self, node, name, action_type, execute_cb):
+    def __init__(self, node, name, action_type, execute_cb, callback_group=None):
         from rclpy.action import ActionServer, CancelResponse
         self._action_type = action_type
         self._execute_cb = execute_cb
         self._goal_handle = None
         self._server = ActionServer(
             node, action_type, name, self._ros2_execute_cb,
-            cancel_callback=lambda goal_handle: CancelResponse.ACCEPT)
+            cancel_callback=lambda goal_handle: CancelResponse.ACCEPT,
+            callback_group=callback_group)
 
     def _ros2_execute_cb(self, goal_handle):
         self._goal_handle = goal_handle
@@ -622,13 +632,15 @@ class _SimpleActionServer(object):
         self._status, self._result = 'preempted', result
 
 
-def create_simple_action_server(node, name, action_type, execute_cb):
+def create_simple_action_server(node, name, action_type, execute_cb,
+                                callback_group=None):
     """actionlib.SimpleActionServer(name, action_type, execute_cb,
     auto_start=False) (ROS1) or an equivalent wrapper of rclpy's
     ActionServer (ROS2); call start() on it in both. Pass `FooAction`
-    under ROS1 and `Foo` under ROS2."""
+    under ROS1 and `Foo` under ROS2. callback_group is ignored by ROS1."""
     if ROS_VERSION == 2:
-        return _SimpleActionServer(node, private_name(name), action_type, execute_cb)
+        return _SimpleActionServer(node, private_name(name), action_type,
+                                   execute_cb, callback_group)
     import actionlib
     return actionlib.SimpleActionServer(
         name, action_type, execute_cb, auto_start=False)

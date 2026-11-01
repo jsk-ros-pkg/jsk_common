@@ -211,6 +211,34 @@ class TestRospyRclpyCompat(unittest.TestCase):
         self.assertTrue(client.wait_for_result(10.0))
         self.assertLess(len(feedbacks), 99)
 
+    def test_callback_group(self):
+        # accepted (and ignored by ROS1) by every create_* with callbacks
+        if ROS_VERSION == 2:
+            from rclpy.callback_groups import ReentrantCallbackGroup
+            group = ReentrantCallbackGroup()
+        else:
+            group = None
+        sub = ros_compat.create_subscription(
+            self.node, 'test_callback_group', String, lambda msg: None,
+            callback_group=group)
+        srv = ros_compat.create_service(
+            self.node, '~test_callback_group', SetBool,
+            lambda req, res: res, callback_group=group)
+        timer = ros_compat.create_timer(
+            self.node, 10.0, lambda event: None, callback_group=group)
+        server = ros_compat.create_simple_action_server(
+            self.node, '~test_callback_group_action', FibonacciAction,
+            lambda goal: None, callback_group=group)
+        client = ros_compat.create_simple_action_client(
+            self.node, '~test_callback_group_action', FibonacciAction,
+            callback_group=group)
+        if ROS_VERSION == 2:
+            for entity in (sub, srv, timer, server._server, client._client):
+                self.assertIs(entity.callback_group, group)
+            timer.cancel()
+        else:
+            timer.shutdown()
+
     @unittest.skipIf(ROS_VERSION == 1, 'ROS1 is dynamic_reconfigure itself')
     def test_reconfigure_server(self):
         from rclpy.parameter import Parameter

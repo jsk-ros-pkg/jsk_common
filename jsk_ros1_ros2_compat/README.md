@@ -56,6 +56,7 @@ if __name__ == '__main__':
 | `create_timer(node, period, cb)` | `rospy.Timer` | `node.create_timer` (`cb(None)`) |
 | `create_simple_action_client(node, name, type)` | `actionlib.SimpleActionClient` | same subset over `rclpy.action.ActionClient` |
 | `create_simple_action_server(node, name, type, execute_cb)` | `actionlib.SimpleActionServer` | same subset over `rclpy.action.ActionServer` |
+| `callback_group=` of `create_subscription/service/trigger_service/timer/simple_action_client/simple_action_server` | ignored (rospy runs each callback in its own thread) | the rclpy callback group, e.g. `ReentrantCallbackGroup()` with a `MultiThreadedExecutor` |
 | `create_reconfigure_server(node, Config, cb, defaults)` | `dynamic_reconfigure.server.Server` | parameters declared from `defaults` + on-set callback |
 | `now_sec`, `stamp_now`, `stamp_to_sec`, `duration_from_sec`, `sleep`, `Rate` | `rospy.Time/Duration/...` | `node.get_clock()`, ... |
 | `get_name`, `is_shutdown`, `on_shutdown`, `signal_shutdown` | `rospy.*` | node name / rclpy context |
