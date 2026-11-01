@@ -12,9 +12,6 @@ import sys
 import tarfile
 import zipfile
 
-import rosbag.rosbag_main
-import rospkg
-
 
 def is_file_writable(path):
     if not os.path.exists(path):
@@ -86,6 +83,8 @@ def decompress_rosbag(path, quiet=False, chmod=True):
     argv = [path]
     if quiet:
         argv.append('--quiet')
+    # imported here, as rosbag's python API is ROS1 only
+    import rosbag.rosbag_main
     try:
         rosbag.rosbag_main.decompress_cmd(argv)
     finally:
@@ -139,6 +138,18 @@ def is_google_drive_url(url):
 
 
 def _get_package_source_path(pkg_name):
+    if os.getenv('ROS_VERSION') == '2':
+        # rospkg does not know ROS2 packages; the installed share
+        # directory, so pass an absolute path while building it
+        from ament_index_python.packages import get_package_share_directory
+        from ament_index_python.packages import PackageNotFoundError
+        try:
+            return get_package_share_directory(pkg_name)
+        except PackageNotFoundError:
+            print('\033[31m{name} is not found in {path}\033[0m'
+                  .format(name=pkg_name, path=os.getenv('AMENT_PREFIX_PATH')))
+            return
+    import rospkg
     rp = rospkg.RosPack()
     try:
         pkg_path = rp.get_path(pkg_name)
