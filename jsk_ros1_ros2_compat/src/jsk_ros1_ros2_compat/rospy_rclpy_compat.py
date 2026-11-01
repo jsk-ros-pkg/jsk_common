@@ -98,25 +98,49 @@ def logfatal(node, msg):
     _logger(node).fatal(msg) if ROS_VERSION == 2 else rospy.logfatal(msg)
 
 
+# rospy's log*_throttle/log*_once and rclpy's throttle_duration_sec/once
+# tell call sites apart by the calling frame, which would always be the
+# line in this module, so the throttling is done here, per caller of the
+# functions below.
+_last_logged = {}
+
+
+def _log_limited(node, log, msg, period):
+    """Call log(node, msg) unless this caller of log*_throttle/log*_once
+    has logged within `period` seconds (None: ever)."""
+    import sys
+    frame = sys._getframe(2)
+    key = (frame.f_code.co_filename, frame.f_lineno)
+    now = time.time()
+    last = _last_logged.get(key)
+    if last is not None and (period is None or now - last < period):
+        return
+    _last_logged[key] = now
+    log(node, msg)
+
+
 def loginfo_throttle(node, period, msg):
-    if ROS_VERSION == 2:
-        _logger(node).info(msg, throttle_duration_sec=period)
-    else:
-        rospy.loginfo_throttle(period, msg)
+    _log_limited(node, loginfo, msg, period)
 
 
 def logwarn_throttle(node, period, msg):
-    if ROS_VERSION == 2:
-        _logger(node).warn(msg, throttle_duration_sec=period)
-    else:
-        rospy.logwarn_throttle(period, msg)
+    _log_limited(node, logwarn, msg, period)
 
 
 def logerr_throttle(node, period, msg):
-    if ROS_VERSION == 2:
-        _logger(node).error(msg, throttle_duration_sec=period)
-    else:
-        rospy.logerr_throttle(period, msg)
+    _log_limited(node, logerr, msg, period)
+
+
+def loginfo_once(node, msg):
+    _log_limited(node, loginfo, msg, None)
+
+
+def logwarn_once(node, msg):
+    _log_limited(node, logwarn, msg, None)
+
+
+def logerr_once(node, msg):
+    _log_limited(node, logerr, msg, None)
 
 
 def get_name(node):

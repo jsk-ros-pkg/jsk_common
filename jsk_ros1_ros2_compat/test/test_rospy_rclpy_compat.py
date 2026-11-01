@@ -100,6 +100,23 @@ class TestRospyRclpyCompat(unittest.TestCase):
                 self.node, 'test_pubsub_300', String, lambda msg: None, 300)
             self.assertEqual(sub300.impl.queue_size, 300)
 
+    def test_log_once_and_throttle_per_call_site(self):
+        logged = []
+        orig = ros_compat.loginfo
+        ros_compat.loginfo = lambda node, msg: logged.append(msg)
+        try:
+            for i in range(3):
+                ros_compat.loginfo_once(self.node, 'once A')
+                ros_compat.loginfo_once(self.node, 'once B')
+                ros_compat.loginfo_throttle(self.node, 10.0, 'throttle A')
+                ros_compat.loginfo_throttle(self.node, 10.0, 'throttle B')
+        finally:
+            ros_compat.loginfo = orig
+        # each call site logs once, independently of the others
+        self.assertEqual(logged, ['once A', 'once B', 'throttle A', 'throttle B'])
+        for log in (ros_compat.logwarn_once, ros_compat.logerr_once):
+            log(self.node, 'test once message')
+
     def test_latch(self):
         pub = ros_compat.create_publisher(
             self.node, 'test_latch', String, latch=True)

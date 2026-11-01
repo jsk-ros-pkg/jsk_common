@@ -48,7 +48,7 @@ if __name__ == '__main__':
 | `init_node(name, anonymous=False)` | `rospy.init_node`, returns `None` | `rclpy.init()` + a new node, returned |
 | `spin(node)`, `spin_once(node, timeout_sec)`, `shutdown(node)` (after an own `while not is_shutdown(node)` loop) | `rospy.spin`, `rospy.sleep`, - | `spin_and_shutdown`, `rclpy.spin_once`, cleanup |
 | `loginfo/logwarn/logerr/logdebug/logfatal(node, msg)` | `rospy.log*` | `node.get_logger().*` (msg must be a `str`; `node=None` uses a logger named after the script) |
-| `loginfo/logwarn/logerr_throttle(node, period, msg)` | `rospy.log*_throttle` | `throttle_duration_sec=period` |
+| `loginfo/logwarn/logerr_throttle(node, period, msg)`, `loginfo/logwarn/logerr_once(node, msg)` | like `rospy.log*_throttle/_once` | like `throttle_duration_sec=/once=True` (per call site, done in compat) |
 | `create_publisher(node, topic, type, queue_size=1, latch=False)` | `rospy.Publisher` | `node.create_publisher` (`latch`: transient-local QoS) |
 | `create_subscription(node, topic, type, cb, queue_size=None, latch=False)` | `rospy.Subscriber` (`None`: unbounded) | `node.create_subscription` (`None`: depth 1; `latch`: transient-local QoS; `~foo` -> `~/foo`) |
 | `wait_for_service(node, name, type, timeout)` (returns bool), `set_param(node, name, value)` | `rospy.wait_for_service`, `rospy.set_param` | a client's `wait_for_service`, `node.set_parameters` |
