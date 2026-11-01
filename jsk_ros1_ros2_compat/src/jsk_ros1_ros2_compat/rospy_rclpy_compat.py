@@ -536,6 +536,7 @@ class _SimpleActionClient(object):
         import threading
         from rclpy.action import ActionClient
         self._threading = threading
+        self._node = node
         self._client = ActionClient(node, action_type, name,
                                     callback_group=callback_group)
         self._goal_handle = None
@@ -569,7 +570,15 @@ class _SimpleActionClient(object):
             goal_response_cb)
 
     def wait_for_result(self, timeout=None):
-        return self._done.wait(timeout)
+        # in slices, to return on shutdown (SIGINT/SIGTERM), after which
+        # the result never comes and a waiting executor thread would keep
+        # the process alive
+        deadline = None if timeout is None else time.time() + timeout
+        while not self._done.wait(0.1):
+            if not self._node.context.ok() or \
+               (deadline is not None and time.time() >= deadline):
+                return self._done.is_set()
+        return True
 
     def send_goal_and_wait(self, goal, timeout=None):
         self.send_goal(goal)
