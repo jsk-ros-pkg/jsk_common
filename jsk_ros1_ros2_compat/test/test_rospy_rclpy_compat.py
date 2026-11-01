@@ -320,6 +320,29 @@ class TestShutdown(unittest.TestCase):
         self.assertFalse(thread.is_alive())
         self.assertEqual(results, [True])
 
+    @unittest.skipIf(ROS_VERSION == 1, 'shuts rospy down for the other tests')
+    def test_spin_until_future_complete_in_callback_ros2(self):
+        # spin() does not use rclpy's global executor, so a callback can
+        # spin another node with it, as sound_play's SoundClient does
+        from rclpy.task import Future
+        node = ros_compat.init_node('test_spin_in_callback')
+        other = ros_compat.rclpy.create_node('test_spin_in_callback_other')
+        results = []
+
+        def timer_cb(event):
+            timer.cancel()
+            future = Future()
+            other.create_timer(0.1, lambda: future.set_result(True))
+            ros_compat.rclpy.spin_until_future_complete(other, future, timeout_sec=5.0)
+            results.append(future.done())
+            ros_compat.signal_shutdown(node, 'test')
+        timer = ros_compat.create_timer(node, 0.1, timer_cb)
+        thread = threading.Thread(target=ros_compat.spin, args=(node,))
+        thread.start()
+        thread.join(15.0)
+        self.assertFalse(thread.is_alive())
+        self.assertEqual(results, [True])
+
     @unittest.skipIf(ROS_VERSION == 1, 'rospy calls on_shutdown hooks itself')
     def test_on_shutdown_on_sigterm_ros2(self):
         import os

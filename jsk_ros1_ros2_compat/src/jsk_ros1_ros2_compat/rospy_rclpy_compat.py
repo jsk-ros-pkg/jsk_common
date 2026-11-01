@@ -462,8 +462,12 @@ def shutdown(node):
 
 
 def spin_and_shutdown(node, executor=None):
-    """ROS2 only: spin `node` (via `executor` if given, else a plain
-    rclpy.spin(node)) until Ctrl-C, then destroy_node()/shutdown().
+    """ROS2 only: spin `node` (via `executor` if given, else an own
+    SingleThreadedExecutor) until Ctrl-C, then destroy_node()/shutdown().
+    Not rclpy's global executor (rclpy.spin(node)), so that libraries
+    which spin their own node with rclpy.spin_until_future_complete(),
+    such as sound_play's SoundClient(node, blocking=True), can be called
+    from callbacks.
 
     Assumes rclpy.init() was already called and `node` already
     constructed; this covers only the boilerplate that is otherwise
@@ -477,14 +481,15 @@ def spin_and_shutdown(node, executor=None):
         # node was being set up), and rclpy can not even create an
         # executor then
         if node.context.ok():
-            if executor is None and node in _multi_threaded_groups:
-                from rclpy.executors import MultiThreadedExecutor
-                executor = MultiThreadedExecutor()
-            if executor is not None:
-                executor.add_node(node)
-                executor.spin()
-            else:
-                rclpy.spin(node)
+            if executor is None:
+                if node in _multi_threaded_groups:
+                    from rclpy.executors import MultiThreadedExecutor
+                    executor = MultiThreadedExecutor()
+                else:
+                    from rclpy.executors import SingleThreadedExecutor
+                    executor = SingleThreadedExecutor()
+            executor.add_node(node)
+            executor.spin()
     except (KeyboardInterrupt, ExternalShutdownException):
         pass
     except Exception:
