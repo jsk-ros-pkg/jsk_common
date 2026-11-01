@@ -45,7 +45,7 @@ if __name__ == '__main__':
 | | ROS1 | ROS2 |
 |---|---|---|
 | `get_param(node, '~name', default)`, `has_param` | `rospy.get_param` | declares a (dynamically typed) parameter |
-| `init_node(name, anonymous=False)` | `rospy.init_node`, returns `None` | `rclpy.init()` + a new node, returned |
+| `init_node(name, anonymous=False, multi_threaded=False)` | `rospy.init_node`, returns `None` | `rclpy.init()` + a new node, returned (`multi_threaded`: see below) |
 | `spin(node)`, `spin_once(node, timeout_sec)`, `shutdown(node)` (after an own `while not is_shutdown(node)` loop) | `rospy.spin`, `rospy.sleep`, - | `spin_and_shutdown`, `rclpy.spin_once`, cleanup |
 | `loginfo/logwarn/logerr/logdebug/logfatal(node, msg)` | `rospy.log*` | `node.get_logger().*` (msg must be a `str`; `node=None` uses a logger named after the script) |
 | `loginfo/logwarn/logerr_throttle(node, period, msg)`, `loginfo/logwarn/logerr_once(node, msg)` | like `rospy.log*_throttle/_once` | like `throttle_duration_sec=/once=True` (per call site, done in compat) |
@@ -57,6 +57,7 @@ if __name__ == '__main__':
 | `create_simple_action_client(node, name, type)` | `actionlib.SimpleActionClient` | same subset over `rclpy.action.ActionClient` |
 | `create_simple_action_server(node, name, type, execute_cb)` | `actionlib.SimpleActionServer` | same subset over `rclpy.action.ActionServer` |
 | `callback_group=` of `create_subscription/service/trigger_service/timer/simple_action_client/simple_action_server` | ignored (rospy runs each callback in its own thread) | the rclpy callback group, e.g. `ReentrantCallbackGroup()` with a `MultiThreadedExecutor` |
+| `init_node(name, multi_threaded=True)`, for callbacks waiting for other callbacks (e.g. a service callback waiting for a topic) | ignored (as above) | `create_*` default to a `ReentrantCallbackGroup` and `spin()` uses a `MultiThreadedExecutor` |
 | `create_reconfigure_server(node, Config, cb, defaults)` | `dynamic_reconfigure.server.Server` | parameters declared from `defaults` + on-set callback |
 | `now_sec`, `stamp_now`, `stamp_to_sec`, `duration_from_sec`, `sleep`, `Rate` | `rospy.Time/Duration/...` | `node.get_clock()`, ... |
 | `get_name`, `is_shutdown`, `on_shutdown`, `signal_shutdown` | `rospy.*` | node name / rclpy context |

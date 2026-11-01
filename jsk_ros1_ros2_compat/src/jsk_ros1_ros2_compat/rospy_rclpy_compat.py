@@ -217,6 +217,17 @@ def resolve_message_class(type_str):
         return roslib.message.get_message_class('{}/{}'.format(pkg, name))
 
 
+# ROS2 nodes of init_node(..., multi_threaded=True): their reentrant
+# callback group, the default of create_*()
+_multi_threaded_groups = {}
+
+
+def _callback_group(node, callback_group):
+    if callback_group is not None:
+        return callback_group
+    return _multi_threaded_groups.get(node)
+
+
 def _latched_qos(depth):
     return QoSProfile(depth=depth, durability=QoSDurabilityPolicy.TRANSIENT_LOCAL)
 
@@ -235,7 +246,7 @@ def create_subscription(node, topic, msg_type, callback, queue_size=None,
         return node.create_subscription(
             msg_type, private_name(topic), callback,
             _latched_qos(depth) if latch else depth,
-            callback_group=callback_group)
+            callback_group=_callback_group(node, callback_group))
     else:
         return rospy.Subscriber(topic, msg_type, callback, queue_size=queue_size)
 
@@ -254,7 +265,7 @@ def create_publisher(node, topic, msg_type, queue_size=1, latch=False):
 def create_timer(node, period_sec, callback, callback_group=None):
     if ROS_VERSION == 2:
         return node.create_timer(period_sec, lambda: callback(None),
-                                 callback_group=callback_group)
+                                 callback_group=_callback_group(node, callback_group))
     else:
         return rospy.Timer(rospy.Duration(period_sec), callback)
 
@@ -264,7 +275,7 @@ def create_service(node, name, srv_type, callback, callback_group=None):
     the (possibly same) response, for both ROS1 and ROS2."""
     if ROS_VERSION == 2:
         return node.create_service(srv_type, private_name(name), callback,
-                                   callback_group=callback_group)
+                                   callback_group=_callback_group(node, callback_group))
     else:
         def _wrapped(request):
             response = srv_type._response_class()
@@ -388,23 +399,34 @@ def get_params(node, names):
     return {name: node.get_parameter(name).value for name in names}
 
 
-def init_node(name, anonymous=False):
+def init_node(name, anonymous=False, multi_threaded=False):
     """rospy.init_node() (ROS1, returns None) or rclpy.init() (if not
     yet) + a new rclpy node (ROS2, returned); pass the result as `node`
-    to the other functions here."""
+    to the other functions here.
+
+    multi_threaded=True (ROS2; rospy always runs each callback in its own
+    thread) is for nodes whose callbacks wait for other callbacks, e.g. a
+    service callback waiting for a topic or an action result: the
+    callbacks of create_*() run in a ReentrantCallbackGroup (unless given
+    callback_group=) and spin() uses a MultiThreadedExecutor."""
     if ROS_VERSION == 2:
         if not rclpy.ok():
             rclpy.init()
         if anonymous:
             name = '{}_{}_{}'.format(name, os.getpid(), int(time.time() * 1000))
-        return rclpy.create_node(name)
+        node = rclpy.create_node(name)
+        if multi_threaded:
+            from rclpy.callback_groups import ReentrantCallbackGroup
+            _multi_threaded_groups[node] = ReentrantCallbackGroup()
+        return node
     else:
         rospy.init_node(name, anonymous=anonymous)
         return None
 
 
 def spin(node, executor=None):
-    """rospy.spin() (ROS1) or spin_and_shutdown() (ROS2)."""
+    """rospy.spin() (ROS1) or spin_and_shutdown() (ROS2, with a
+    MultiThreadedExecutor for init_node(..., multi_threaded=True))."""
     if ROS_VERSION == 2:
         spin_and_shutdown(node, executor)
     else:
@@ -434,6 +456,7 @@ def shutdown(node):
     nothing to do on ROS1."""
     if ROS_VERSION == 2:
         _run_shutdown_hooks()
+        _multi_threaded_groups.pop(node, None)
         node.destroy_node()
         rclpy.try_shutdown()
 
@@ -454,6 +477,9 @@ def spin_and_shutdown(node, executor=None):
         # node was being set up), and rclpy can not even create an
         # executor then
         if node.context.ok():
+            if executor is None and node in _multi_threaded_groups:
+                from rclpy.executors import MultiThreadedExecutor
+                executor = MultiThreadedExecutor()
             if executor is not None:
                 executor.add_node(node)
                 executor.spin()
@@ -469,6 +495,7 @@ def spin_and_shutdown(node, executor=None):
         # rclpy's signal handlers shut the context down in C, without
         # calling its python on_shutdown() hooks, so call ours here
         _run_shutdown_hooks()
+        _multi_threaded_groups.pop(node, None)
         node.destroy_node()
         rclpy.try_shutdown()
 
@@ -564,7 +591,7 @@ def create_simple_action_client(node, name, action_type, callback_group=None):
     (None: wait forever) on both. callback_group is ignored by ROS1."""
     if ROS_VERSION == 2:
         return _SimpleActionClient(node, private_name(name), action_type,
-                                   callback_group)
+                                   _callback_group(node, callback_group))
     import actionlib
 
     # actionlib.SimpleActionClient is an old-style class on python2, so
@@ -640,7 +667,7 @@ def create_simple_action_server(node, name, action_type, execute_cb,
     under ROS1 and `Foo` under ROS2. callback_group is ignored by ROS1."""
     if ROS_VERSION == 2:
         return _SimpleActionServer(node, private_name(name), action_type,
-                                   execute_cb, callback_group)
+                                   execute_cb, _callback_group(node, callback_group))
     import actionlib
     return actionlib.SimpleActionServer(
         name, action_type, execute_cb, auto_start=False)

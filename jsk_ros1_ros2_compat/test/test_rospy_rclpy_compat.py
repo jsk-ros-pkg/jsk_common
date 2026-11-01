@@ -293,6 +293,33 @@ class TestShutdown(unittest.TestCase):
         ros_compat.shutdown(node)
         self.assertEqual(called, [True])
 
+    @unittest.skipIf(ROS_VERSION == 1, 'shuts rospy down for the other tests')
+    def test_multi_threaded_ros2(self):
+        node = ros_compat.init_node('test_multi_threaded', multi_threaded=True)
+        received = []
+        results = []
+        ros_compat.create_subscription(
+            node, 'test_multi_threaded', String,
+            lambda msg: received.append(msg.data))
+        pub = ros_compat.create_publisher(node, 'test_multi_threaded', String)
+
+        def timer_cb(event):
+            # waits for another callback of the node, which never runs
+            # with a single-threaded executor or the default callback group
+            timer.cancel()
+            start = time.time()
+            while not received and time.time() - start < 5.0:
+                pub.publish(String(data='hello'))
+                time.sleep(0.1)
+            results.append(bool(received))
+            ros_compat.signal_shutdown(node, 'test')
+        timer = ros_compat.create_timer(node, 0.1, timer_cb)
+        thread = threading.Thread(target=ros_compat.spin, args=(node,))
+        thread.start()
+        thread.join(15.0)
+        self.assertFalse(thread.is_alive())
+        self.assertEqual(results, [True])
+
     @unittest.skipIf(ROS_VERSION == 1, 'rospy calls on_shutdown hooks itself')
     def test_on_shutdown_on_sigterm_ros2(self):
         import os
