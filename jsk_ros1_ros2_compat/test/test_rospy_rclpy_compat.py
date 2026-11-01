@@ -7,6 +7,7 @@ import time
 import unittest
 
 from std_msgs.msg import String
+from std_srvs.srv import SetBool
 
 from jsk_ros1_ros2_compat import rospy_rclpy_compat as ros_compat
 from jsk_ros1_ros2_compat.rospy_rclpy_compat import ROS_VERSION
@@ -99,6 +100,44 @@ class TestRospyRclpyCompat(unittest.TestCase):
                 self.node, 'test_pubsub_300', String, lambda msg: None, 300)
             self.assertEqual(sub300.impl.queue_size, 300)
 
+    def test_latch(self):
+        pub = ros_compat.create_publisher(
+            self.node, 'test_latch', String, latch=True)
+        pub.publish(String(data='latched'))
+        time.sleep(0.5)
+        received = []
+        ros_compat.create_subscription(
+            self.node, 'test_latch', String,
+            lambda msg: received.append(msg.data), latch=True)
+        self.assertTrue(wait_until(lambda: received))
+        self.assertEqual(received[0], 'latched')
+
+    def test_get_response_class(self):
+        SetBoolResponse = ros_compat.get_response_class(SetBool)
+        res = SetBoolResponse(True, 'ok')
+        self.assertEqual((res.success, res.message), (True, 'ok'))
+        res = SetBoolResponse(success=True)
+        self.assertEqual((res.success, res.message), (True, ''))
+        if ROS_VERSION == 2:
+            # None is left at the default, as rclpy rejects it
+            res = SetBoolResponse(None, 'only message')
+            self.assertEqual((res.success, res.message), (False, 'only message'))
+
+    def test_log_without_node(self):
+        ros_compat.loginfo(None, 'log without node')
+        ros_compat.logerr(None, 'log without node')
+
+    def test_spin_once(self):
+        start = time.time()
+        if ROS_VERSION == 2:
+            # cls.node is spun by the executor thread; use another node
+            node = ros_compat.rclpy.create_node('test_spin_once')
+            ros_compat.spin_once(node, 0.2)
+            node.destroy_node()
+        else:
+            ros_compat.spin_once(self.node, 0.2)
+        self.assertLess(time.time() - start, 2.0)
+
     def test_action(self):
         def execute_cb(goal):
             sequence = [0, 1]
@@ -174,6 +213,42 @@ class TestShutdown(unittest.TestCase):
         thread.join(10.0)
         self.assertFalse(thread.is_alive())
         self.assertEqual(called, [True])
+
+    @unittest.skipIf(ROS_VERSION == 1, 'shuts rospy down for the other tests')
+    def test_own_loop_shutdown_ros2(self):
+        node = ros_compat.init_node('test_own_loop')
+        called = []
+        ros_compat.on_shutdown(node, lambda: called.append(True))
+        ros_compat.create_timer(
+            node, 0.2, lambda event: ros_compat.signal_shutdown(node, 'test'))
+        start = time.time()
+        while not ros_compat.is_shutdown(node) and time.time() - start < 10:
+            ros_compat.spin_once(node, 0.1)
+        self.assertTrue(ros_compat.is_shutdown(node))
+        ros_compat.shutdown(node)
+        self.assertEqual(called, [True])
+
+    @unittest.skipIf(ROS_VERSION == 1, 'rospy calls on_shutdown hooks itself')
+    def test_on_shutdown_on_sigterm_ros2(self):
+        import os
+        import signal
+        import subprocess
+        import sys
+        import tempfile
+        marker = tempfile.mktemp()
+        script = (
+            'from jsk_ros1_ros2_compat import rospy_rclpy_compat as c\n'
+            'node = c.init_node("test_on_shutdown_sigterm")\n'
+            'c.on_shutdown(node, lambda: open(%r, "w").write("called"))\n'
+            'c.loginfo(node, "ready")\n'
+            'c.spin(node)\n' % marker)
+        proc = subprocess.Popen([sys.executable, '-c', script],
+                                stderr=subprocess.PIPE)
+        self.assertIn(b'ready', proc.stderr.readline())
+        proc.send_signal(signal.SIGTERM)
+        self.assertEqual(proc.wait(10), 0)
+        self.assertTrue(os.path.exists(marker))
+        os.remove(marker)
 
 
 if __name__ == '__main__':

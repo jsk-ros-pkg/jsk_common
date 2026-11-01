@@ -40,6 +40,7 @@
   <test_depend condition="$ROS_VERSION == 2">ament_cmake_pytest</test_depend>
   <test_depend condition="$ROS_VERSION == 2">example_interfaces</test_depend>
   <test_depend>std_msgs</test_depend>
+  <test_depend>std_srvs</test_depend>
 
   <export>
     <build_type condition="$ROS_VERSION == 1">catkin</build_type>

@@ -27,6 +27,8 @@ if ROS_VERSION == 2:
     from rcl_interfaces.msg import ParameterDescriptor
     from rclpy.duration import Duration as _Duration
     from rclpy.executors import ExternalShutdownException
+    from rclpy.qos import QoSDurabilityPolicy
+    from rclpy.qos import QoSProfile
     from rosidl_runtime_py.utilities import get_message
 else:
     import roslib.message
@@ -66,43 +68,53 @@ def has_param(node, name):
         return rospy.has_param(name)
 
 
+def _logger(node):
+    """`node`'s logger, or (ROS2, no node yet, e.g. at import time) the
+    rclpy logger named after the running script."""
+    if node is not None:
+        return node.get_logger()
+    import sys
+    name = os.path.splitext(os.path.basename(sys.argv[0] or 'python'))[0]
+    return rclpy.logging.get_logger(name or 'python')
+
+
 def loginfo(node, msg):
-    node.get_logger().info(msg) if ROS_VERSION == 2 else rospy.loginfo(msg)
+    _logger(node).info(msg) if ROS_VERSION == 2 else rospy.loginfo(msg)
 
 
 def logwarn(node, msg):
-    node.get_logger().warn(msg) if ROS_VERSION == 2 else rospy.logwarn(msg)
+    _logger(node).warn(msg) if ROS_VERSION == 2 else rospy.logwarn(msg)
 
 
 def logerr(node, msg):
-    node.get_logger().error(msg) if ROS_VERSION == 2 else rospy.logerr(msg)
+    _logger(node).error(msg) if ROS_VERSION == 2 else rospy.logerr(msg)
 
 
 def logdebug(node, msg):
-    node.get_logger().debug(msg) if ROS_VERSION == 2 else rospy.logdebug(msg)
+    _logger(node).debug(msg) if ROS_VERSION == 2 else rospy.logdebug(msg)
 
 
 def logfatal(node, msg):
-    node.get_logger().fatal(msg) if ROS_VERSION == 2 else rospy.logfatal(msg)
+    _logger(node).fatal(msg) if ROS_VERSION == 2 else rospy.logfatal(msg)
 
 
 def loginfo_throttle(node, period, msg):
     if ROS_VERSION == 2:
-        node.get_logger().info(msg, throttle_duration_sec=period)
+        _logger(node).info(msg, throttle_duration_sec=period)
     else:
         rospy.loginfo_throttle(period, msg)
 
 
 def logwarn_throttle(node, period, msg):
     if ROS_VERSION == 2:
-        node.get_logger().warn(msg, throttle_duration_sec=period)
+        _logger(node).warn(msg, throttle_duration_sec=period)
     else:
         rospy.logwarn_throttle(period, msg)
 
 
 def logerr_throttle(node, period, msg):
     if ROS_VERSION == 2:
-        node.get_logger().error(msg, throttle_duration_sec=period)
+        _logger(node).error(msg, throttle_duration_sec=period)
     else:
         rospy.logerr_throttle(period, msg)
 
@@ -181,21 +193,35 @@ def resolve_message_class(type_str):
         return roslib.message.get_message_class('{}/{}'.format(pkg, name))
 
 
-def create_subscription(node, topic, msg_type, callback, queue_size=None):
+def _latched_qos(depth):
+    return QoSProfile(depth=depth, durability=QoSDurabilityPolicy.TRANSIENT_LOCAL)
+
+
+def create_subscription(node, topic, msg_type, callback, queue_size=None,
+                        latch=False):
     """queue_size=None keeps each side's default: an unbounded queue
-    (rospy) or a depth-1 QoS history (rclpy, which requires a depth)."""
+    (rospy) or a depth-1 QoS history (rclpy, which requires a depth).
+    latch=True (ROS2 only, ignored by rospy) subscribes with the
+    transient-local QoS needed to receive the last message of a
+    create_publisher(..., latch=True) topic."""
     if ROS_VERSION == 2:
+        depth = 1 if queue_size is None else queue_size
         return node.create_subscription(
-            msg_type, topic, callback, 1 if queue_size is None else queue_size)
+            msg_type, private_name(topic), callback,
+            _latched_qos(depth) if latch else depth)
     else:
         return rospy.Subscriber(topic, msg_type, callback, queue_size=queue_size)
 
 
-def create_publisher(node, topic, msg_type, queue_size=1):
+def create_publisher(node, topic, msg_type, queue_size=1, latch=False):
+    """latch=True: rospy's latched topic, or a transient-local QoS
+    publisher (ROS2), whose subscribers need latch=True too."""
     if ROS_VERSION == 2:
-        return node.create_publisher(msg_type, private_name(topic), queue_size)
+        return node.create_publisher(
+            msg_type, private_name(topic),
+            _latched_qos(queue_size) if latch else queue_size)
     else:
-        return rospy.Publisher(topic, msg_type, queue_size=queue_size)
+        return rospy.Publisher(topic, msg_type, queue_size=queue_size, latch=latch)
 
 
 def create_timer(node, period_sec, callback):
@@ -209,7 +235,7 @@ def create_service(node, name, srv_type, callback):
     """Generic form: `callback` takes (request, response) and returns
     the (possibly same) response, for both ROS1 and ROS2."""
     if ROS_VERSION == 2:
-        return node.create_service(srv_type, name, callback)
+        return node.create_service(srv_type, private_name(name), callback)
     else:
         def _wrapped(request):
             response = srv_type._response_class()
@@ -251,6 +277,25 @@ def create_response(srv_type):
     return srv_type.Response() if ROS_VERSION == 2 else srv_type._response_class()
 
 
+def get_response_class(srv_type):
+    """`FooResponse` (ROS1), or a callable building `Foo.Response` (ROS2)
+    that, like rospy's message classes, also takes the fields as
+    positional arguments in .srv order, so `FooResponse(*values)` keeps
+    working. None values are left at their defaults (rclpy rejects None
+    for most field types)."""
+    if ROS_VERSION != 2:
+        return srv_type._response_class
+    response_type = srv_type.Response
+    fields = list(response_type.get_fields_and_field_types().keys())
+
+    def response(*args, **kwargs):
+        for field, arg in zip(fields, args):
+            kwargs[field] = arg
+        return response_type(**dict(
+            (k, v) for k, v in kwargs.items() if v is not None))
+    return response
+
+
 def duration_from_sec(seconds):
     return _Duration(seconds=seconds) if ROS_VERSION == 2 else rospy.Duration(seconds)
 
@@ -281,6 +326,56 @@ def get_params(node, names):
     return {name: node.get_parameter(name).value for name in names}
 
 
+def init_node(name, anonymous=False):
+    """rospy.init_node() (ROS1, returns None) or rclpy.init() (if not
+    yet) + a new rclpy node (ROS2, returned); pass the result as `node`
+    to the other functions here."""
+    if ROS_VERSION == 2:
+        if not rclpy.ok():
+            rclpy.init()
+        if anonymous:
+            name = '{}_{}_{}'.format(name, os.getpid(), int(time.time() * 1000))
+        return rclpy.create_node(name)
+    else:
+        rospy.init_node(name, anonymous=anonymous)
+        return None
+
+
+def spin(node, executor=None):
+    """rospy.spin() (ROS1) or spin_and_shutdown() (ROS2)."""
+    if ROS_VERSION == 2:
+        spin_and_shutdown(node, executor)
+    else:
+        rospy.spin()
+
+
+def spin_once(node, timeout_sec=0.1):
+    """Process callbacks for up to `timeout_sec`, for nodes with their own
+    main loop: rclpy.spin_once() (ROS2), or just a sleep (ROS1, whose
+    callbacks run in their own threads)."""
+    if ROS_VERSION == 2:
+        try:
+            rclpy.spin_once(node, timeout_sec=timeout_sec)
+        except (KeyboardInterrupt, ExternalShutdownException):
+            pass  # shut down by SIGINT/SIGTERM; see is_shutdown()
+        except Exception:
+            if node.context.ok():
+                raise
+    else:
+        rospy.sleep(timeout_sec)
+
+
+def shutdown(node):
+    """For nodes with their own main loop (spin_once()/is_shutdown()),
+    the cleanup that spin()/spin_and_shutdown() do at the end: run the
+    on_shutdown() hooks, destroy `node` and shut rclpy down (ROS2);
+    nothing to do on ROS1."""
+    if ROS_VERSION == 2:
+        _run_shutdown_hooks()
+        node.destroy_node()
+        rclpy.try_shutdown()
+
+
 def spin_and_shutdown(node, executor=None):
     """ROS2 only: spin `node` (via `executor` if given, else a plain
     rclpy.spin(node)) until Ctrl-C, then destroy_node()/shutdown().
@@ -293,23 +388,50 @@ def spin_and_shutdown(node, executor=None):
     ExternalShutdownException out of spin() (a KeyboardInterrupt only if
     it arrives outside the executor), so both mean a normal exit."""
     try:
-        if executor is not None:
-            executor.add_node(node)
-            executor.spin()
-        else:
-            rclpy.spin(node)
+        # a signal may already have shut the context down (e.g. while the
+        # node was being set up), and rclpy can not even create an
+        # executor then
+        if node.context.ok():
+            if executor is not None:
+                executor.add_node(node)
+                executor.spin()
+            else:
+                rclpy.spin(node)
     except (KeyboardInterrupt, ExternalShutdownException):
         pass
+    except Exception:
+        # shut down by a signal while setting up the executor
+        if node.context.ok():
+            raise
     finally:
+        # rclpy's signal handlers shut the context down in C, without
+        # calling its python on_shutdown() hooks, so call ours here
+        _run_shutdown_hooks()
         node.destroy_node()
         rclpy.try_shutdown()
 
 
+_shutdown_hooks = []
+
+
+def _run_shutdown_hooks():
+    while _shutdown_hooks:
+        _shutdown_hooks.pop(0)()
+
+
 def on_shutdown(node, callback):
     """rospy.on_shutdown() (ROS1) vs the rclpy context's shutdown hook
-    (ROS2); `callback` takes no argument in both."""
+    (ROS2); `callback` takes no argument in both, and is called once,
+    also when spin_and_shutdown()/spin() return on SIGINT/SIGTERM."""
     if ROS_VERSION == 2:
-        node.context.on_shutdown(callback)
+        called = []
+
+        def once():
+            if not called:
+                called.append(True)
+                callback()
+        _shutdown_hooks.append(once)
+        node.context.on_shutdown(once)
     else:
         rospy.on_shutdown(callback)
 

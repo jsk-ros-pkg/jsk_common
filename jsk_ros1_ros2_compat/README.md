@@ -37,25 +37,21 @@ from jsk_ros1_ros2_compat import rospy_rclpy_compat as ros_compat
 from jsk_ros1_ros2_compat.rospy_rclpy_compat import ROS_VERSION
 
 if __name__ == '__main__':
-    if ROS_VERSION == 2:
-        ros_compat.rclpy.init()
-        node = ros_compat.rclpy.create_node('foo')
-        Foo(node)
-        ros_compat.spin_and_shutdown(node)
-    else:
-        rospy.init_node('foo')
-        Foo()
-        rospy.spin()
+    node = ros_compat.init_node('foo')  # None on ROS1
+    Foo(node)
+    ros_compat.spin(node)
 ```
 
 | | ROS1 | ROS2 |
 |---|---|---|
 | `get_param(node, '~name', default)`, `has_param` | `rospy.get_param` | declares a (dynamically typed) parameter |
-| `loginfo/logwarn/logerr/logdebug/logfatal(node, msg)` | `rospy.log*` | `node.get_logger().*` (msg must be a `str`) |
+| `init_node(name, anonymous=False)` | `rospy.init_node`, returns `None` | `rclpy.init()` + a new node, returned |
+| `spin(node)`, `spin_once(node, timeout_sec)`, `shutdown(node)` (after an own `while not is_shutdown(node)` loop) | `rospy.spin`, `rospy.sleep`, - | `spin_and_shutdown`, `rclpy.spin_once`, cleanup |
+| `loginfo/logwarn/logerr/logdebug/logfatal(node, msg)` | `rospy.log*` | `node.get_logger().*` (msg must be a `str`; `node=None` uses a logger named after the script) |
 | `loginfo/logwarn/logerr_throttle(node, period, msg)` | `rospy.log*_throttle` | `throttle_duration_sec=period` |
-| `create_publisher(node, topic, type, queue_size=1)` | `rospy.Publisher` | `node.create_publisher` |
-| `create_subscription(node, topic, type, cb, queue_size=None)` | `rospy.Subscriber` (`None`: unbounded) | `node.create_subscription` (`None`: depth 1) |
-| `create_service`, `create_trigger_service`, `call_service`, `create_request/response` | `rospy.Service/ServiceProxy` | `node.create_service/create_client` |
+| `create_publisher(node, topic, type, queue_size=1, latch=False)` | `rospy.Publisher` | `node.create_publisher` (`latch`: transient-local QoS) |
+| `create_subscription(node, topic, type, cb, queue_size=None, latch=False)` | `rospy.Subscriber` (`None`: unbounded) | `node.create_subscription` (`None`: depth 1; `latch`: transient-local QoS; `~foo` -> `~/foo`) |
+| `create_service`, `create_trigger_service`, `call_service`, `create_request/response`, `get_response_class` (`FooResponse(*values)` on both) | `rospy.Service/ServiceProxy` | `node.create_service/create_client` |
 | `create_timer(node, period, cb)` | `rospy.Timer` | `node.create_timer` (`cb(None)`) |
 | `create_simple_action_client(node, name, type)` | `actionlib.SimpleActionClient` | same subset over `rclpy.action.ActionClient` |
 | `create_simple_action_server(node, name, type, execute_cb)` | `actionlib.SimpleActionServer` | same subset over `rclpy.action.ActionServer` |
@@ -91,6 +87,31 @@ except ImportError:
     class ros_compat(object):
         get_param = staticmethod(lambda node, *args, **kwargs: rospy.get_param(*args, **kwargs))
         loginfo = staticmethod(lambda node, *args, **kwargs: rospy.loginfo(*args, **kwargs))
+```
+
+Or, to keep the original rospy code untouched for its ROS1 users, add a
+jsk_ros1_ros2_compat version next to it and choose by whether
+jsk_ros1_ros2_compat can be imported (not by `ROS_VERSION`):
+
+```python
+try:
+    from jsk_ros1_ros2_compat import rospy_rclpy_compat as ros_compat
+except ImportError:
+    ros_compat = None  # jsk_common < 3.0 (ROS1 only): the original code below
+
+class Foo(object):
+    def run(self):  # the original rospy code, unchanged
+        rospy.init_node('foo')
+        ...
+
+    def run_compat(self, node):  # the same with jsk_ros1_ros2_compat (ROS1/ROS2)
+        ...
+
+if __name__ == '__main__':
+    if ros_compat is None:
+        Foo().run()
+    else:
+        Foo().run_compat(ros_compat.init_node('foo'))
 ```
 
 ## C++: `#include <jsk_ros1_ros2_compat/compat.h>`
