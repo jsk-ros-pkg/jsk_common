@@ -254,6 +254,37 @@ def create_trigger_service(node, service_name, service_type, callback):
     return create_service(node, private_name(service_name), service_type, _wrapped)
 
 
+def wait_for_service(node, name, srv_type, timeout=None):
+    """Wait until the service `name` is available, for up to `timeout`
+    seconds (None: forever); returns whether it is (rospy raises on
+    timeout, this returns False instead on both)."""
+    if ROS_VERSION == 2:
+        client = node.create_client(srv_type, private_name(name))
+        try:
+            return client.wait_for_service(timeout_sec=timeout)
+        finally:
+            node.destroy_client(client)
+    else:
+        try:
+            rospy.wait_for_service(name, timeout)
+            return True
+        except rospy.ROSException:
+            return False
+
+
+def set_param(node, name, value):
+    """rospy.set_param() (ROS1), or set the node parameter `~name`/`name`
+    (ROS2), declaring it first if needed, like get_param()."""
+    if ROS_VERSION == 2:
+        from rclpy.parameter import Parameter
+        name = name[1:] if name.startswith('~') else name
+        if not node.has_parameter(name):
+            _declare_dynamic(node, name, value)
+        node.set_parameters([Parameter(name, value=value)])
+    else:
+        rospy.set_param(name, value)
+
+
 def call_service(node, name, srv_type, request, timeout=5.0):
     """Call the service at `name` with `request` and return the response."""
     if ROS_VERSION == 2:
@@ -500,7 +531,7 @@ def create_simple_action_client(node, name, action_type):
     wait_for_result() and send_goal_and_wait() take timeouts in seconds
     (None: wait forever) on both."""
     if ROS_VERSION == 2:
-        return _SimpleActionClient(node, name, action_type)
+        return _SimpleActionClient(node, private_name(name), action_type)
     import actionlib
 
     # actionlib.SimpleActionClient is an old-style class on python2, so
@@ -573,7 +604,7 @@ def create_simple_action_server(node, name, action_type, execute_cb):
     ActionServer (ROS2); call start() on it in both. Pass `FooAction`
     under ROS1 and `Foo` under ROS2."""
     if ROS_VERSION == 2:
-        return _SimpleActionServer(node, name, action_type, execute_cb)
+        return _SimpleActionServer(node, private_name(name), action_type, execute_cb)
     import actionlib
     return actionlib.SimpleActionServer(
         name, action_type, execute_cb, auto_start=False)

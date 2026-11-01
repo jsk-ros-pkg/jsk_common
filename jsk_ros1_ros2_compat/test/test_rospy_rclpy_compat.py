@@ -112,6 +112,25 @@ class TestRospyRclpyCompat(unittest.TestCase):
         self.assertTrue(wait_until(lambda: received))
         self.assertEqual(received[0], 'latched')
 
+    def test_wait_for_service(self):
+        self.assertFalse(ros_compat.wait_for_service(
+            self.node, 'test_no_such_service', SetBool, 0.5))
+
+        def callback(request, response):
+            response.success = request.data
+            return response
+        ros_compat.create_service(self.node, '~test_set_bool', SetBool, callback)
+        self.assertTrue(ros_compat.wait_for_service(
+            self.node, '~test_set_bool', SetBool, 5.0))
+
+    def test_set_param(self):
+        ros_compat.set_param(self.node, '~test_set_param', 1.5)
+        self.assertEqual(
+            ros_compat.get_param(self.node, '~test_set_param', 0.0), 1.5)
+        ros_compat.set_param(self.node, '~test_set_param', 2.5)
+        self.assertEqual(
+            ros_compat.get_param(self.node, '~test_set_param', 0.0), 2.5)
+
     def test_get_response_class(self):
         SetBoolResponse = ros_compat.get_response_class(SetBool)
         res = SetBoolResponse(True, 'ok')
@@ -153,11 +172,12 @@ class TestRospyRclpyCompat(unittest.TestCase):
             result = FibonacciResult()
             result.sequence = sequence
             server.set_succeeded(result)
+        # a private name, which is ~/ on ROS2
         server = ros_compat.create_simple_action_server(
-            self.node, 'test_fibonacci', FibonacciAction, execute_cb)
+            self.node, '~test_fibonacci', FibonacciAction, execute_cb)
         server.start()
         client = ros_compat.create_simple_action_client(
-            self.node, 'test_fibonacci', FibonacciAction)
+            self.node, '~test_fibonacci', FibonacciAction)
         self.assertTrue(client.wait_for_server(10.0))
 
         goal = FibonacciGoal()

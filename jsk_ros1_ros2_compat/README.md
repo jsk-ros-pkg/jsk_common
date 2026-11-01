@@ -51,6 +51,7 @@ if __name__ == '__main__':
 | `loginfo/logwarn/logerr_throttle(node, period, msg)` | `rospy.log*_throttle` | `throttle_duration_sec=period` |
 | `create_publisher(node, topic, type, queue_size=1, latch=False)` | `rospy.Publisher` | `node.create_publisher` (`latch`: transient-local QoS) |
 | `create_subscription(node, topic, type, cb, queue_size=None, latch=False)` | `rospy.Subscriber` (`None`: unbounded) | `node.create_subscription` (`None`: depth 1; `latch`: transient-local QoS; `~foo` -> `~/foo`) |
+| `wait_for_service(node, name, type, timeout)` (returns bool), `set_param(node, name, value)` | `rospy.wait_for_service`, `rospy.set_param` | a client's `wait_for_service`, `node.set_parameters` |
 | `create_service`, `create_trigger_service`, `call_service`, `create_request/response`, `get_response_class` (`FooResponse(*values)` on both) | `rospy.Service/ServiceProxy` | `node.create_service/create_client` |
 | `create_timer(node, period, cb)` | `rospy.Timer` | `node.create_timer` (`cb(None)`) |
 | `create_simple_action_client(node, name, type)` | `actionlib.SimpleActionClient` | same subset over `rclpy.action.ActionClient` |
