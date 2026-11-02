@@ -16,6 +16,7 @@
 
   <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
   <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ros_environment</buildtool_depend>
 
   <!-- released for both ROS1 and ROS2, so no condition -->
   <exec_depend>audio_video_recorder</exec_depend>

@@ -13,6 +13,7 @@
 
   <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
   <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ros_environment</buildtool_depend>
 
   <!-- cv_bridge, geometry_msgs, image_geometry, image_transport,
        message_filters, sensor_msgs, std_msgs, std_srvs are released for

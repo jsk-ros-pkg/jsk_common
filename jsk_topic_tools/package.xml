@@ -17,6 +17,7 @@
 
   <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
   <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake_auto</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ros_environment</buildtool_depend>
 
   <!-- transform_merger/static_transform_pose_stamped: shared ROS1/ROS2
        compat.h, released for both ROS1 and ROS2, so no condition. -->
