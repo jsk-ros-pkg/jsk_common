@@ -5,7 +5,7 @@ from jsk_ros1_ros2_compat.rosbag import stamp_from_nanoseconds
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float64MultiArray, MultiArrayDimension
 
-from jsk_topic_tools.array_to_heatmap import HeatmapRenderer, message_to_matrix
+from jsk_topic_tools.array_to_heatmap import HeatmapRenderer, message_to_matrix, tobytes
 
 
 class TestHeatmap(unittest.TestCase):
@@ -23,8 +23,8 @@ class TestHeatmap(unittest.TestCase):
 
     def test_image_byte_order_padding_and_header(self):
         msg = Image(height=2, width=2, encoding='16UC1', is_bigendian=1,
-                    step=6, data=np.array([[1, 256, 99], [512, 1024, 99]],
-                                          dtype='>u2').tobytes())
+                    step=6, data=tobytes(np.array([[1, 256, 99], [512, 1024, 99]],
+                                                  dtype='>u2')))
         msg.header.stamp = stamp_from_nanoseconds(12000000034)
         msg.header.frame_id = 'sensor'
         np.testing.assert_array_equal(message_to_matrix(msg), [[1, 256], [512, 1024]])

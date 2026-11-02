@@ -47,7 +47,17 @@ if ROS_VERSION == 2:
     from rosidl_runtime_py.utilities import get_message
     import rosbag2_py
 else:
+    import inspect
+
     import rosbag
+
+    def _has_argument(func, name):
+        getargspec = getattr(inspect, 'getfullargspec', None) or inspect.getargspec
+        return name in getargspec(func).args
+
+    # rosbag < 1.13 (indigo/kinetic) can not read or write the connection
+    # header of raw messages (return_connection_header=/connection_header=)
+    _RAW_CONNECTION_HEADER = _has_argument(rosbag.Bag.write, 'connection_header')
     import rospy
 
 
@@ -224,6 +234,15 @@ else:
                 yield BagMessage(topic, msg, t.to_nsec())
 
         def read_raw_messages(self, topics=None):
+            if not _RAW_CONNECTION_HEADER:
+                # the header of the (first) connection of each topic
+                headers = {}
+                for connection in self._bag._connections.values():
+                    headers.setdefault(connection.topic, connection.header)
+                for topic, raw, t in self._bag.read_messages(
+                        topics=topics, raw=True):
+                    yield RawBagMessage(topic, raw, t.to_nsec(), headers[topic])
+                return
             for topic, raw, t, header in self._bag.read_messages(
                     topics=topics, raw=True, return_connection_header=True):
                 yield RawBagMessage(topic, raw, t.to_nsec(), header)
@@ -254,8 +273,29 @@ else:
             self._bag = rosbag.Bag(path, 'w')
 
         def write_raw(self, topic, data, t, metadata):
+            if not _RAW_CONNECTION_HEADER:
+                if topic not in self._bag._topic_connections:
+                    self._add_connection(topic, metadata, stamp_from_nanoseconds(t))
+                self._bag.write(topic, data, stamp_from_nanoseconds(t), raw=True)
+                return
             self._bag.write(topic, data, stamp_from_nanoseconds(t), raw=True,
                             connection_header=metadata)
+
+        def _add_connection(self, topic, header, t):
+            # rosbag < 1.13: what Bag.write(..., connection_header=header)
+            # does for a new topic, after which write() uses this connection
+            bag = self._bag
+            bag._file.seek(0, os.SEEK_END)
+            if not bag._chunk_open:
+                bag._start_writing_chunk(t)
+            connection = rosbag.bag._ConnectionInfo(
+                len(bag._connections), topic, dict(header))
+            if _has_argument(bag._write_connection_record, 'encrypt'):
+                bag._write_connection_record(connection, False)  # rosbag >= 1.13
+            else:
+                bag._write_connection_record(connection)
+            bag._connections[connection.id] = connection
+            bag._topic_connections[topic] = connection
 
         def write(self, topic, msg, t):
             self._bag.write(topic, msg, stamp_from_nanoseconds(t))

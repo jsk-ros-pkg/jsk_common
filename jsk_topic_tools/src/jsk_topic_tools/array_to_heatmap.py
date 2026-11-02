@@ -9,6 +9,16 @@ from sensor_msgs.msg import Image
 from jsk_ros1_ros2_compat.rospy_rclpy_compat import message_type_name
 
 
+# cv2.LINE_AA (OpenCV >= 3) is cv2.CV_AA (16) in OpenCV 2.4 (indigo)
+LINE_AA = getattr(cv2, 'LINE_AA', 16)
+
+
+def tobytes(array):
+    """ndarray.tobytes(), or tostring() on numpy < 1.9 (indigo), which has
+    no tobytes() (newer numpy has no tostring())."""
+    return array.tobytes() if hasattr(array, 'tobytes') else array.tostring()
+
+
 ARRAY_TYPES = {'std_msgs/' + name + 'MultiArray' for name in (
     'Float32', 'Float64', 'Int8', 'Int16', 'Int32', 'Int64',
     'UInt8', 'UInt16', 'UInt32', 'UInt64')}
@@ -126,7 +136,7 @@ class HeatmapRenderer(object):
                 b, g, r = colors[row, col]
                 ink = (0, 0, 0) if .114*b + .587*g + .299*r > 140 else (255, 255, 255)
                 cv2.putText(image, label, (x + (size - w)//2, y + (size + h)//2),
-                            font, font_scale, ink, 1, cv2.LINE_AA)
+                            font, font_scale, ink, 1, LINE_AA)
         return image
 
     def to_image(self, msg, stamp=None, frame_id='', rows=0, cols=0):
@@ -142,5 +152,5 @@ class HeatmapRenderer(object):
         output.encoding = 'bgr8'
         output.is_bigendian = 0
         output.step = output.width * 3
-        output.data = image.tobytes()
+        output.data = tobytes(image)
         return output
