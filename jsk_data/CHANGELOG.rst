@@ -2,6 +2,48 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.2 (2026-11-02)
+------------------
+* Merge pull request `#1831 <https://github.com/jsk-ros-pkg/jsk_common/issues/1831>`_ from k-okada/ros2-compat-fixes
+  [jsk_ros1_ros2_compat] fix queue_size/shutdown/throttle; add init_node/spin, latch, actionlib, reconfigure, uv venv helpers
+* [jsk_data] make download_data usable on ROS2
+  Import the ROS1-only rosbag (only for compressed_bags) and rospkg
+  lazily, so jsk_data.download_data can be imported on ROS2, and resolve
+  a relative path with ament_index there (the installed share directory;
+  pass an absolute path while the package itself is being built). wget
+  is needed on ROS2 too.
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+* [jsk_ros1_ros2_compat, jsk_tools, jsk_data] fix queue_size/shutdown handling, add missing helpers
+  - create_subscription(): ROS1 silently dropped queue_size, so e.g.
+  audible_warning.py's queue_size=1 subscribers became unbounded. Pass
+  it through, and default to None so each side keeps its own default
+  (unbounded for rospy, depth 1 for rclpy). battery_capacity_summary.py
+  and data_collection_server.py passed 1 only because of the old
+  default; drop it so their ROS1 queues stay unbounded as before.
+  - spin_and_shutdown(): rclpy's signal handlers raise
+  ExternalShutdownException (not KeyboardInterrupt) out of spin() on
+  SIGINT/SIGTERM, which printed a traceback and exited with 1. Treat it
+  as a normal exit, and use rclpy.try_shutdown().
+  - add logfatal(), log{info,warn,err}_throttle(), get_name() and
+  signal_shutdown(), which ROS2-ported packages in jsk_3rdparty
+  otherwise each had to define themselves.
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+* Merge pull request `#1832 <https://github.com/jsk-ros-pkg/jsk_common/issues/1832>`_ from k-okada/ros2-compat-install-python
+  [jsk_ros1_ros2_compat] add jsk_ros1_ros2_compat_install_python() and use it
+* [jsk_tools, jsk_data, dynamic_tf_publisher] use jsk_ros1_ros2_compat_install_python() for the ROS2 script install
+  jsk_tools, jsk_data and dynamic_tf_publisher each carried the same
+  foreach(file(READ)/string(REPLACE)/file(WRITE)) block to give their
+  installed ROS2 scripts a python3 shebang. Use the shared helper instead,
+  which also regenerates the copy when the source changes (the inline
+  blocks ran at configure time only, so a rebuild after editing a script
+  installed the stale copy). jsk_ros1_ros2_compat becomes a ROS2
+  buildtool_depend; it stays off build_depend so that
+  rosidl_auto_generate_interfaces() in dynamic_tf_publisher does not take
+  it as an interface dependency.
+  Co-authored-by: Copilot Autofix powered by AI <175728472+Copilot@users.noreply.github.com>
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+* Contributors: Kei Okada
+
 3.0.0 (2026-10-29)
 ------------------
 * Merge pull request `#1826 <https://github.com/jsk-ros-pkg/jsk_common/issues/1826>`_ from k-okada/ros2-support

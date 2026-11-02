@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.2 (2026-11-02)
+------------------
+
 3.0.0 (2026-10-29)
 ------------------
 * Merge pull request `#1826 <https://github.com/jsk-ros-pkg/jsk_common/issues/1826>`_ from k-okada/ros2-support
@@ -68,7 +71,6 @@ Changelog for package jsk_topic_tools
   too, cascading into unrelated "not found" build errors. Drop -e so
   each install line runs independently.
   Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-  Claude-Session: https://claude.ai/code/session_01SQVZSMgGb58qGyCtWt5UJB
 * Contributors: Kei Okada, Yoshiki Obinata
 
 2.2.16 (2025-01-06)
