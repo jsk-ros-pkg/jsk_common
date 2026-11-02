@@ -22,6 +22,8 @@
        compat.h, released for both ROS1 and ROS2, so no condition. -->
   <depend>jsk_ros1_ros2_compat</depend>
 
+  <build_depend condition="$ROS_VERSION == 2">ament_cmake_python</build_depend>
+
   <!-- ROS2 dependencies -->
   <depend condition="$ROS_VERSION == 2">lifecycle_msgs</depend>
   <depend condition="$ROS_VERSION == 2">rclcpp</depend>
@@ -70,25 +72,31 @@
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-numpy</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-scipy</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-scipy</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">roslib</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">rospy</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">roscpp</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">roslaunch</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">rosnode</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">rostime</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">rostopic</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">sound_play</exec_depend>
-  <exec_depend condition="$ROS_VERSION == 1">sensor_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">std_srvs</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">tf</exec_depend>
   <exec_depend condition="$ROS_VERSION == 1">topic_tools</exec_depend>
 
+  <exec_depend condition="$ROS_VERSION == 2">rclpy</exec_depend>
+
   <!-- list test_depend in alphabetical order -->
+  <test_depend condition="$ROS_VERSION == 2">ament_cmake_pytest</test_depend>
   <test_depend condition="$ROS_VERSION == 2">ament_cmake_clang_format</test_depend>
   <test_depend condition="$ROS_VERSION == 2">launch_ros</test_depend>
   <test_depend condition="$ROS_VERSION == 2">launch_testing</test_depend>
   <test_depend condition="$ROS_VERSION == 2">launch_testing_ament_cmake</test_depend>
   <test_depend condition="$ROS_VERSION == 1">roscpp_tutorials</test_depend>
   <test_depend condition="$ROS_VERSION == 1">roslint</test_depend>
+  <test_depend condition="$ROS_VERSION == 1">rosbag</test_depend>
 
   <export>
     <nodelet plugin="${prefix}/jsk_topic_tools_nodelet.xml"/>

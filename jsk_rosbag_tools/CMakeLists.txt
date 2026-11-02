@@ -30,6 +30,7 @@ catkin_package(
 elseif("$ENV{ROS_VERSION}" EQUAL 2)
   find_package(ament_cmake REQUIRED)
   find_package(ament_cmake_python REQUIRED)
+  find_package(jsk_ros1_ros2_compat REQUIRED)
 endif()
 
 # ROS1 only: catkin_virtualenv builds an isolated venv from
@@ -89,9 +90,7 @@ add_custom_target(download ALL DEPENDS download_audio_data download_video_data)
 elseif("$ENV{ROS_VERSION}" EQUAL 2)
   set(_share_destination share/${PROJECT_NAME})
   ament_python_install_package(${PROJECT_NAME} PACKAGE_DIR python/${PROJECT_NAME})
-  install(PROGRAMS ${SCRIPTS_FILES}
-    DESTINATION lib/${PROJECT_NAME}
-  )
+  jsk_ros1_ros2_compat_install_python(PROGRAMS ${SCRIPTS_FILES})
   # No sample-bag download target for ROS2: the launch test below
   # records its own small rosbag2 bag instead of relying on the ROS1
   # sample .bag files (a different, incompatible container format).
@@ -105,6 +104,8 @@ if(CATKIN_ENABLE_TESTING)
     tests/test_jsk_rosbag_tools.py
     tests/test_bag_to_video.py
   )
+
+  catkin_add_nosetests(tests/test_add_heatmap.py)
 
   roslint_python()
   roslint_python(${python_test_scripts})
@@ -127,6 +128,7 @@ elseif("$ENV{ROS_VERSION}" EQUAL 2)
     # functionality is bag-file I/O, so a plain pytest test (rather
     # than launch_testing) is the right fit.
     find_package(ament_cmake_pytest REQUIRED)
+    ament_add_pytest_test(test_add_heatmap tests/test_add_heatmap.py)
     ament_add_pytest_test(test_jsk_rosbag_tools_ros2 tests/test_jsk_rosbag_tools_ros2.py)
   endif()
 endif()
