@@ -17,9 +17,8 @@ def get_info(bag_filepath):
             'use get_topic_dict() instead under ROS2.')
     if not os.path.exists(bag_filepath):
         raise OSError('bag file {} not exists'.format(bag_filepath))
-    info_dict = yaml.load(
-        rosbag.Bag(bag_filepath)._get_yaml_info(),
-        Loader=yaml.SafeLoader)
+    with rosbag.Bag(bag_filepath) as bag:
+        info_dict = yaml.load(bag._get_yaml_info(), Loader=yaml.SafeLoader)
     return info_dict
 
 

@@ -25,6 +25,7 @@ from __future__ import absolute_import
 import collections
 import os
 
+from jsk_ros1_ros2_compat.rospy_rclpy_compat import message_type_name
 from jsk_ros1_ros2_compat.rospy_rclpy_compat import stamp_to_sec  # NOQA: F401 (re-exported for convenience)
 
 ROS_VERSION = int(os.environ.get('ROS_VERSION', '1'))
@@ -34,6 +35,10 @@ ROS_VERSION = int(os.environ.get('ROS_VERSION', '1'))
 # (topic, msg, t) or .topic/.message/.timestamp attribute access,
 # regardless of ROS_VERSION.
 BagMessage = collections.namedtuple('BagMessage', ['topic', 'message', 'timestamp'])
+# Raw data and metadata are opaque, backend-specific values. Pass them directly
+# to write_raw(); deserialize only topics that actually need processing.
+RawBagMessage = collections.namedtuple(
+    'RawBagMessage', ['topic', 'data', 'timestamp', 'metadata'])
 
 if ROS_VERSION == 2:
     from builtin_interfaces.msg import Time as _Time
@@ -65,15 +70,6 @@ def nanoseconds_from_stamp(stamp):
         return stamp.sec * 10 ** 9 + stamp.nanosec
     else:
         return stamp.to_nsec()
-
-
-def message_type_name(msg):
-    """'pkg/MsgName', matching ROS1's msg._type format."""
-    if ROS_VERSION == 2:
-        pkg = msg.__class__.__module__.split('.')[0]
-        return '{}/{}'.format(pkg, msg.__class__.__name__)
-    else:
-        return msg._type
 
 
 if ROS_VERSION == 2:
@@ -127,6 +123,22 @@ if ROS_VERSION == 2:
             finally:
                 reader.close()
 
+        def read_raw_messages(self, topics=None):
+            if isinstance(topics, str):
+                topics = [topics]
+            reader = _open_reader(self._path)
+            try:
+                metadata = {t.name: t for t in reader.get_all_topics_and_types()}
+                while reader.has_next():
+                    topic, data, t = reader.read_next()
+                    if topics is None or topic in topics:
+                        yield RawBagMessage(topic, data, t, metadata[topic])
+            finally:
+                reader.close()
+
+        def deserialize_raw(self, topic, data):
+            return deserialize_message(data, self._msg_class(topic))
+
         def __iter__(self):
             return self.read_messages()
 
@@ -153,6 +165,13 @@ if ROS_VERSION == 2:
             storage_options = rosbag2_py.StorageOptions(uri=path, storage_id='sqlite3')
             self._writer.open(storage_options, rosbag2_py.ConverterOptions('', ''))
             self._known_topics = set()
+
+        def write_raw(self, topic, data, t, metadata):
+            if topic not in self._known_topics:
+                # Keep original type hashes, serialization format and offered QoS.
+                self._writer.create_topic(metadata)
+                self._known_topics.add(topic)
+            self._writer.write(topic, data, int(t))
 
         def write(self, topic, msg, t):
             if topic not in self._known_topics:
@@ -204,6 +223,14 @@ else:
             for topic, msg, t in self._bag.read_messages(topics=topics):
                 yield BagMessage(topic, msg, t.to_nsec())
 
+        def read_raw_messages(self, topics=None):
+            for topic, raw, t, header in self._bag.read_messages(
+                    topics=topics, raw=True, return_connection_header=True):
+                yield RawBagMessage(topic, raw, t.to_nsec(), header)
+
+        def deserialize_raw(self, topic, data):
+            return data[4]().deserialize(data[1])
+
         def __iter__(self):
             return self.read_messages()
 
@@ -225,6 +252,10 @@ else:
 
         def __init__(self, path):
             self._bag = rosbag.Bag(path, 'w')
+
+        def write_raw(self, topic, data, t, metadata):
+            self._bag.write(topic, data, stamp_from_nanoseconds(t), raw=True,
+                            connection_header=metadata)
 
         def write(self, topic, msg, t):
             self._bag.write(topic, msg, stamp_from_nanoseconds(t))

@@ -203,6 +203,14 @@ def stamp_now(node):
     return node.get_clock().now().to_msg() if ROS_VERSION == 2 else rospy.Time.now()
 
 
+def message_type_name(msg):
+    """Return a ROS-version-independent 'pkg/Type' message name."""
+    if ROS_VERSION == 2:
+        return '{}/{}'.format(msg.__class__.__module__.split('.')[0],
+                             msg.__class__.__name__)
+    return msg._type
+
+
 def resolve_message_class(type_str):
     """Accepts either ROS1-style ("pkg/Type") or ROS2-style
     ("pkg/msg/Type") message type strings."""
@@ -213,7 +221,7 @@ def resolve_message_class(type_str):
             pkg, _, name = type_str.partition('/')
             return get_message('{}/msg/{}'.format(pkg, name))
     else:
-        pkg, _, name = type_str.rpartition('/')
+        pkg, _, name = type_str.replace('/msg/', '/').rpartition('/')
         return roslib.message.get_message_class('{}/{}'.format(pkg, name))
 
 

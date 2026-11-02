@@ -19,6 +19,7 @@
        under ROS2 these are just expected to be installed in the
        ambient python environment (as with jsk_tools/jsk_data). -->
   <build_depend condition="$ROS_VERSION == 1" version_gte="0.5.1">catkin_virtualenv</build_depend>
+  <build_depend condition="$ROS_VERSION == 2">jsk_ros1_ros2_compat</build_depend>
   <build_depend>libjpeg</build_depend>
   <build_depend>libwebp-dev</build_depend>
 
@@ -30,6 +31,8 @@
   <exec_depend>audio_common_msgs</exec_depend>
   <exec_depend>cv_bridge</exec_depend>
   <exec_depend>jsk_ros1_ros2_compat</exec_depend>
+  <exec_depend>jsk_topic_tools</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 1">rosbag</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>ffmpeg</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-numpy</exec_depend>

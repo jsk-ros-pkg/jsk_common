@@ -193,3 +193,95 @@ rosrun jsk_rosbag_tools merge.py \
     $(rospack find jsk_rosbag_tools)/samples/data/20220530173950_go_to_kitchen_rosbag.bag \
     $(rospack find jsk_rosbag_tools)/samples/data/2022-05-07-hello-test.bag
 ```
+
+## add_heatmap.py
+
+Add a numeric MultiArray or single-channel Image topic as a heatmap `bgr8` Image topic in a new ROS 1/ROS 2 bag.
+Each cell shows its numeric value by default.
+No running ROS nodes are required.
+
+### Usage
+
+```
+usage: add_heatmap.py [-h] [--out OUT] --input-topic INPUT_TOPIC
+                      [--output-topic OUTPUT_TOPIC] [--rows ROWS]
+                      [--cols COLS] [--frame-id FRAME_ID]
+                      [--cell-size CELL_SIZE] [--hide-values]
+                      [--precision PRECISION] [--colormap COLORMAP]
+                      [--min-value MIN_VALUE] [--max-value MAX_VALUE]
+                      input_bagfile
+
+Add a numeric MultiArray or single-channel Image topic as a heatmap Image
+(bgr8) topic in a new ROS 1/ROS 2 bag.
+
+positional arguments:
+  input_bagfile         Input ROS 1 bag file or ROS 2 rosbag2 SQLite3
+                        directory
+
+options:
+  -h, --help            show this help message and exit
+  --out OUT, -o OUT     Output path (must not exist). Default: <input-
+                        stem>--heatmap.bag (ROS 1) or <input-
+                        directory>--heatmap (ROS 2)
+  --input-topic INPUT_TOPIC
+                        Numeric MultiArray or single-channel Image topic to
+                        visualize
+  --output-topic OUTPUT_TOPIC
+                        New heatmap Image topic (must not exist). Default:
+                        INPUT_TOPIC/heatmap
+  --rows ROWS           Number of rows; required with --cols for an empty
+                        MultiArray layout
+  --cols COLS           Number of columns; required with --rows for an empty
+                        MultiArray layout
+  --frame-id FRAME_ID   Frame ID for MultiArray input (default: empty). Image
+                        headers are preserved
+  --cell-size CELL_SIZE
+                        Square cell size in pixels, at least 16 (default: 64)
+  --hide-values         Hide cell values (shown by default)
+  --precision PRECISION
+                        Decimal places from 0 to 10 (default: 2). Long values
+                        use scientific notation
+  --colormap COLORMAP   OpenCV colormap name, e.g. jet, hot, viridis (default:
+                        jet)
+  --min-value MIN_VALUE
+                        Lower color bound (default: each frame's finite
+                        minimum)
+  --max-value MAX_VALUE
+                        Upper color bound (default: each frame's finite
+                        maximum)
+
+Use the ROS environment matching the input bag format. The input bag is not
+modified. Set both color bounds to compare frames on a fixed scale; values are
+clipped for coloring only.
+```
+
+### Example
+
+ROS 1:
+
+```bash
+rosrun jsk_rosbag_tools add_heatmap.py /data/pressure.bag \
+  --input-topic /sensor/pressure --output-topic /sensor/pressure/heatmap \
+  --out /tmp/pressure--heatmap.bag
+```
+
+ROS 2:
+
+```bash
+ros2 run jsk_rosbag_tools add_heatmap.py /data/pressure_bag \
+  --input-topic /sensor/pressure --output-topic /sensor/pressure/heatmap \
+  --out /tmp/pressure_bag_heatmap
+```
+
+### Note
+
+All original serialized messages and recording timestamps are retained, along with ROS 1 connection headers (including latching) or ROS 2 topic metadata (including offered QoS).
+Added images use their source message's bag timestamp.
+Image headers are preserved; MultiArrays use the bag timestamp and `--frame-id`.
+Failed conversions do not leave a partial destination bag.
+
+Matrix dimensions come from the two-dimensional MultiArray layout or Image dimensions.
+Empty MultiArray layouts require `--rows` and `--cols`.
+Row padding and Image byte order are respected.
+NaN/Inf cells are gray.
+Text shows original values, even when their color is clipped.
