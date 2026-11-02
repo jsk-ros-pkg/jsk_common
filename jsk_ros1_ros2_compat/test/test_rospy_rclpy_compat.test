@@ -1,0 +1,5 @@
+<launch>
+  <test test-name="test_rospy_rclpy_compat"
+        pkg="jsk_ros1_ros2_compat" type="test_rospy_rclpy_compat.py"
+        time-limit="60" />
+</launch>

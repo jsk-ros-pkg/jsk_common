@@ -134,7 +134,7 @@ class DataCollectionServer(object):
             else:
                 sub = ros_compat.create_subscription(
                     node, topic['name'], msg_class,
-                    lambda msg, name=topic['name']: self.sub_cb(msg, name), 1)
+                    lambda msg, name=topic['name']: self.sub_cb(msg, name))
             self.subs.append(sub)
 
         # add synchoronizer if use_message_filters

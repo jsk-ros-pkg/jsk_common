@@ -73,7 +73,7 @@ if __name__ == '__main__':
     else:
         node = None
         ros_compat.rospy.init_node('battery_summary')
-    ros_compat.create_subscription(node, "/diagnostics_agg", DiagnosticArray, callback, 1)
+    ros_compat.create_subscription(node, "/diagnostics_agg", DiagnosticArray, callback)
     if ROS_VERSION == 2:
         while ros_compat.rclpy.ok() and keep_flag:
             print("aggregating battery info...")
