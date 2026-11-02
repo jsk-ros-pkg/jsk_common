@@ -2,8 +2,8 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.2 (2026-11-02)
+------------------
 * Merge pull request `#1832 <https://github.com/jsk-ros-pkg/jsk_common/issues/1832>`_ from k-okada/ros2-compat-install-python
   [jsk_ros1_ros2_compat] add jsk_ros1_ros2_compat_install_python() and use it
 * [jsk_tools, jsk_data, dynamic_tf_publisher] use jsk_ros1_ros2_compat_install_python() for the ROS2 script install

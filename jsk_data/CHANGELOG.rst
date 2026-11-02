@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.2 (2026-11-02)
+------------------
 * Merge pull request `#1831 <https://github.com/jsk-ros-pkg/jsk_common/issues/1831>`_ from k-okada/ros2-compat-fixes
   [jsk_ros1_ros2_compat] fix queue_size/shutdown/throttle; add init_node/spin, latch, actionlib, reconfigure, uv venv helpers
 * [jsk_data] make download_data usable on ROS2

@@ -2,8 +2,8 @@
 Changelog for package jsk_ros1_ros2_compat
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.2 (2026-11-02)
+------------------
 * Merge pull request `#1831 <https://github.com/jsk-ros-pkg/jsk_common/issues/1831>`_ from k-okada/ros2-compat-fixes
   [jsk_ros1_ros2_compat] fix queue_size/shutdown/throttle; add init_node/spin, latch, actionlib, reconfigure, uv venv helpers
 * [jsk_ros1_ros2_compat] spin() with an own executor, not rclpy's global one
@@ -23,25 +23,25 @@ Forthcoming
   callback waiting for a topic or an action result), which works on
   rospy, as it runs each callback in its own thread, but deadlocks with
   rclpy's single-threaded executor and default (mutually exclusive)
-  callback group. With multi_threaded=True, create\_*() of the node
+  callback group. With multi_threaded=True, create\_\*() of the node
   default to a ReentrantCallbackGroup and spin() uses a
   MultiThreadedExecutor, so the node code needs no rclpy specific
   executor/callback group; ignored on ROS1.
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-* [jsk_ros1_ros2_compat] add callback_group to create\_* (ROS2 only)
+* [jsk_ros1_ros2_compat] add callback_group to create\_\* (ROS2 only)
   create_subscription/service/trigger_service/timer and
   create_simple_action_client/server take callback_group=, passed to
   rclpy (e.g. a ReentrantCallbackGroup with a MultiThreadedExecutor) and
   ignored by rospy, whose callbacks each run in their own thread.
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-* [jsk_ros1_ros2_compat] add log*_once, throttle per call site
-  rospy's log*_throttle/log*_once and rclpy's throttle_duration_sec/once
+* [jsk_ros1_ros2_compat] add log\*_once, throttle per call site
+  rospy's log\*_throttle/log\*_once and rclpy's throttle_duration_sec/once
   tell call sites apart by the calling frame, which for the
-  log*_throttle() wrappers here was always the same line in this module,
+  log\*_throttle() wrappers here was always the same line in this module,
   so e.g. a second throttled message from another place in a node was
   never logged. Do the throttling in compat, keyed on the caller's file
   and line, and add loginfo/logwarn/logerr_once() on top of it (rospy's
-  log*_once, which indigo's rospy lacks, or rclpy's once=True).
+  log\*_once, which indigo's rospy lacks, or rclpy's once=True).
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 * [jsk_ros1_ros2_compat] add wait_for_service/set_param, map ~ in action names
   - wait_for_service(node, name, srv_type, timeout): returns whether the
@@ -60,7 +60,7 @@ Forthcoming
   subscribes with the matching QoS on ROS2.
   - get_response_class(srv_type): FooResponse on ROS1, or a callable
   building Foo.Response that also takes the fields positionally (in
-  .srv order), so FooResponse(*values) keeps working on ROS2. None
+  .srv order), so FooResponse(\*values) keeps working on ROS2. None
   values are left at their defaults, as rclpy rejects them.
   - init_node(name)/spin(node)/spin_once(node, timeout_sec)/shutdown(node),
   so that a main() needs no ROS_VERSION branch: init_node() returns None
@@ -69,7 +69,7 @@ Forthcoming
   their own while-not-is_shutdown loop.
   - create_subscription()/create_service() map ~foo to ~/foo on ROS2 like
   create_publisher() already did.
-  - log*(None, msg): on ROS2, without a node (e.g. at import time), log
+  - log\*(None, msg): on ROS2, without a node (e.g. at import time), log
   with a logger named after the script.
   - on_shutdown() hooks were not called on ROS2 when the node exited on
   SIGINT/SIGTERM: rclpy's signal handlers shut the context down in C
