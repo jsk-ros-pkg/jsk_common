@@ -10,6 +10,7 @@
   <url>http://ros.org/wiki/dynamic_tf_publisher</url>
   <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
   <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ros_environment</buildtool_depend>
 
   <!-- geometry_msgs/std_msgs/tf2_ros are released for both ROS1 and
        ROS2, so no condition. tf2_ros is exec_depend-only (used by the

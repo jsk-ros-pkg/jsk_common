@@ -9,6 +9,7 @@
   <license>BSD</license>
   <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
   <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ros_environment</buildtool_depend>
   <build_depend condition="$ROS_VERSION == 1">dynamic_reconfigure</build_depend>
   <build_depend condition="$ROS_VERSION == 1">message_generation</build_depend>
   <build_depend condition="$ROS_VERSION == 2">ament_cmake_python</build_depend>
