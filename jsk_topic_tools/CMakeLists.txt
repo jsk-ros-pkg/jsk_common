@@ -44,6 +44,8 @@ if(BUILD_TESTING)
     src/jsk_topic_tools/tests/test_array_to_heatmap.py)
   ament_add_pytest_test(test_array_to_heatmap_ros2
     test/test_array_to_heatmap_ros2.py TIMEOUT 40)
+  ament_add_pytest_test(test_filtered_relay_ros2
+    test/test_filtered_relay_ros2.py TIMEOUT 60)
   find_package(ament_cmake_clang_format REQUIRED)
   find_package(launch_testing_ament_cmake REQUIRED)
   ament_clang_format(
@@ -55,7 +57,8 @@ if(BUILD_TESTING)
 endif()
 
 ament_python_install_package(${PROJECT_NAME} PACKAGE_DIR src/${PROJECT_NAME})
-jsk_ros1_ros2_compat_install_python(PROGRAMS scripts/array_to_heatmap.py)
+jsk_ros1_ros2_compat_install_python(PROGRAMS scripts/array_to_heatmap.py
+  scripts/filtered_relay.py)
 
 ament_auto_package()
 
@@ -242,6 +245,7 @@ if (CATKIN_ENABLE_TESTING)
   endmacro()
   find_package(rostest REQUIRED)
   jsk_topic_tools_add_rostest(test/test_boolean_node.test)
+  jsk_topic_tools_add_rostest(test/test_filtered_relay.test)
   jsk_topic_tools_add_rostest(test/test_topic_buffer.test)
   jsk_topic_tools_add_rostest(test/test_topic_buffer_close_wait.test)
   # topic_buffer tests are tend to fail in GA because of CPU high load.
