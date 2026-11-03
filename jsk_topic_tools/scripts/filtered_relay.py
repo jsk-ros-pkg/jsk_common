@@ -55,9 +55,9 @@ class FilteredRelay(object):
                 res = eval(self.transform_expression, self.modules, {'m': m})
             except NameError as e:
                 rospy.logerr("Expression using variables other than 'm': %s"
-                             % e.message)
+                             % e)
             except UnboundLocalError as e:
-                rospy.logerr('Wrong expression:%s' % e.message)
+                rospy.logerr('Wrong expression:%s' % e)
             except Exception as e:
                 rospy.logerr(str(e))
             else:
