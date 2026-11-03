@@ -41,16 +41,37 @@ class FilteredRelay(object):
             self.node, '~output',
             self.output_class, queue_size=1)
 
-        self.topic_name = rospy.resolve_name('~input')
-        self.sub = rospy.Subscriber(
-            self.topic_name,
-            rospy.AnyMsg,
-            callback=lambda msg, tn=self.topic_name: self.callback(tn, msg),
-            queue_size=1)
+        if ros.ROS_VERSION == 1:
+            self.topic_name = rospy.resolve_name('~input')
+            self.sub = rospy.Subscriber(
+                self.topic_name,
+                rospy.AnyMsg,
+                callback=lambda msg, tn=self.topic_name: self.callback(
+                    tn, msg),
+                queue_size=1)
+        else:
+            # ROS2 has no AnyMsg: subscribe once the type of ~input is known
+            self.topic_name = node.resolve_topic_name('~/input')
+            self.sub = None
+            self.timer = ros.create_timer(node, 0.5, self.subscribe)
+
+    def subscribe(self, event):
+        # ROS2 only
+        types = dict(self.node.get_topic_names_and_types()).get(
+            self.topic_name)
+        if not types:
+            return
+        self.timer.cancel()
+        # depth 10, as the ROS1 subscriber re-created in callback() has no
+        # queue_size
+        self.sub = ros.create_subscription(
+            self.node, self.topic_name, ros.resolve_message_class(types[0]),
+            lambda msg, tn=self.topic_name: self.callback(tn, msg),
+            queue_size=10)
 
     def publish(self, m):
         if self.output_type == 'std_msgs/Empty':
-            self.pub_transform.publish()
+            self.pub_transform.publish(self.output_class())
             return
         if self.transform_expression is not None:
             try:
@@ -66,12 +87,20 @@ class FilteredRelay(object):
             else:
                 if not isinstance(res, (list, tuple)):
                     res = [res]
-                self.pub_transform.publish(*res)
+                if ros.ROS_VERSION == 1:
+                    self.pub_transform.publish(*res)
+                elif isinstance(res[0], self.output_class):
+                    self.pub_transform.publish(res[0])
+                else:
+                    # rclpy messages take keyword arguments only
+                    fields = self.output_class.get_fields_and_field_types()
+                    self.pub_transform.publish(self.output_class(
+                        **{f: v for f, v in zip(fields, res)}))
         else:
             self.pub_transform.publish(m)
 
     def callback(self, topic_name, msg):
-        if isinstance(msg, rospy.msg.AnyMsg):
+        if ros.ROS_VERSION == 1 and isinstance(msg, rospy.msg.AnyMsg):
             package, msg_type = msg._connection_header['type'].split('/')
             ros_pkg = package + '.msg'
             msg_class = getattr(import_module(ros_pkg), msg_type)

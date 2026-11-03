@@ -7,6 +7,8 @@
 Transforming while filtering a topic is simple and powerful.
 This node provides a filter and publish (i.e. relay) functions.
 
+It works on both ROS1 and ROS2 (through `jsk_ros1_ros2_compat`).
+
 ## Subscribing Topic
 
 * `~input` (`rospy/AnyMsg`)
@@ -54,6 +56,17 @@ $ rosrun jsk_topic_tools filtered_relay.py ~input:=/right_endeffector/wrench \
     ~output:=/right_endeffector/force_norm \
     _filter:='numpy.linalg.norm([m.wrench.force.x, m.wrench.force.y, m.wrench.force.z]) > 10.0' \
     _output_type:=geometry_msgs/WrenchStamped _import:="[geometry_msgs, numpy]"
+```
+
+ROS2:
+
+```bash
+$ ros2 run jsk_topic_tools filtered_relay.py --ros-args \
+    -r ~/input:=/right_endeffector/wrench \
+    -r ~/output:=/right_endeffector/force_norm \
+    -p filter:='numpy.linalg.norm([m.wrench.force.x, m.wrench.force.y, m.wrench.force.z]) > 10.0' \
+    -p transform:='float(numpy.linalg.norm([m.wrench.force.x, m.wrench.force.y, m.wrench.force.z]))' \
+    -p output_type:=std_msgs/Float32 -p import:="['numpy']"
 ```
 
 ## Example
