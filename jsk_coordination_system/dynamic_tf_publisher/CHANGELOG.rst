@@ -2,8 +2,8 @@
 Changelog for package dynamic_tf_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.3 (2026-11-03)
+------------------
 * Merge pull request `#1835 <https://github.com/jsk-ros-pkg/jsk_common/issues/1835>`_ from k-okada/ros-version-fallback-ament
   Fix ROS2 buildfarm binary jobs: ROS_VERSION without ros_environment, boost for jsk_topic_tools
 * Guess ROS_VERSION from AMENT_PREFIX_PATH when unset, depend on ros_environment

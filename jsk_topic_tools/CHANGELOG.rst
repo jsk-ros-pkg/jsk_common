@@ -2,8 +2,8 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.3 (2026-11-03)
+------------------
 * Merge pull request `#1836 <https://github.com/jsk-ros-pkg/jsk_common/issues/1836>`_ from k-okada/filtered-relay-ros2
   [jsk_topic_tools] Add filtered_relay.py for ROS1 and ROS2 (based on `#1757 <https://github.com/jsk-ros-pkg/jsk_common/issues/1757>`_)
 * [jsk_topic_tools] filtered_relay: support ROS2
