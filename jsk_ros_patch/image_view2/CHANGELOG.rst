@@ -2,6 +2,30 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.3 (2026-11-03)
+------------------
+* Merge pull request `#1835 <https://github.com/jsk-ros-pkg/jsk_common/issues/1835>`_ from k-okada/ros-version-fallback-ament
+  Fix ROS2 buildfarm binary jobs: ROS_VERSION without ros_environment, boost for jsk_topic_tools
+* Guess ROS_VERSION from AMENT_PREFIX_PATH when unset, depend on ros_environment
+  The ROS2 binary jobs of the buildfarm failed at find_package(catkin): they
+  install only the build dependencies, none of which pulls in
+  ros_environment, so $ENV{ROS_VERSION} is empty and the fallback at the top
+  of CMakeLists.txt chose ROS1.
+  - package.xml: add a ROS2 buildtool_depend on ros_environment, which sets
+  ROS_VERSION.
+  - CMakeLists.txt: when ROS_VERSION is still unset, guess it from
+  AMENT_PREFIX_PATH (bloom's ROS2 debian/rules passes it to cmake,
+  setup.sh and colcon set the environment variable, catkin never does)
+  instead of always assuming ROS1, and warn about it. jsk_tools had no
+  fallback at all and gets the same block.
+  Applies to jsk_ros1_ros2_compat, jsk_tools, jsk_topic_tools, jsk_common,
+  jsk_data, jsk_rosbag_tools, dynamic_tf_publisher, audio_video_recorder and
+  image_view2.
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+* Merge pull request `#1833 <https://github.com/jsk-ros-pkg/jsk_common/issues/1833>`_ from k-okada/release-3.0.2
+  3.0.2
+* Contributors: Kei Okada
+
 3.0.2 (2026-11-02)
 ------------------
 

@@ -2,6 +2,47 @@
 Changelog for package jsk_ros1_ros2_compat
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.3 (2026-11-03)
+------------------
+* Merge pull request `#1835 <https://github.com/jsk-ros-pkg/jsk_common/issues/1835>`_ from k-okada/ros-version-fallback-ament
+  Fix ROS2 buildfarm binary jobs: ROS_VERSION without ros_environment, boost for jsk_topic_tools
+* Merge pull request `#1834 <https://github.com/jsk-ros-pkg/jsk_common/issues/1834>`_ from pazeshun/array-to-heatmap
+  [jsk_ros1_ros2_compat, jsk_topic_tools, jsk_rosbag_tools] Add array heatmap tools with ROS 1 and ROS 2 support
+* Guess ROS_VERSION from AMENT_PREFIX_PATH when unset, depend on ros_environment
+  The ROS2 binary jobs of the buildfarm failed at find_package(catkin): they
+  install only the build dependencies, none of which pulls in
+  ros_environment, so $ENV{ROS_VERSION} is empty and the fallback at the top
+  of CMakeLists.txt chose ROS1.
+  - package.xml: add a ROS2 buildtool_depend on ros_environment, which sets
+  ROS_VERSION.
+  - CMakeLists.txt: when ROS_VERSION is still unset, guess it from
+  AMENT_PREFIX_PATH (bloom's ROS2 debian/rules passes it to cmake,
+  setup.sh and colcon set the environment variable, catkin never does)
+  instead of always assuming ROS1, and warn about it. jsk_tools had no
+  fallback at all and gets the same block.
+  Applies to jsk_ros1_ros2_compat, jsk_tools, jsk_topic_tools, jsk_common,
+  jsk_data, jsk_rosbag_tools, dynamic_tf_publisher, audio_video_recorder and
+  image_view2.
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+* Merge pull request `#1 <https://github.com/jsk-ros-pkg/jsk_common/issues/1>`_ from k-okada/array-to-heatmap-old-distros
+  Support indigo/kinetic in array heatmap tools (OpenCV 2.4, numpy < 1.9, rosbag < 1.13)
+* [jsk_ros1_ros2_compat] rosbag: raw messages with connection headers on rosbag < 1.13
+  rosbag of indigo/kinetic has neither read_messages(...,
+  return_connection_header=) nor write(..., connection_header=), which
+  failed test_add_heatmap on the kinetic CI. There, read_raw_messages()
+  takes the header of each topic's connection from the bag, and
+  write_raw() registers a new topic's connection with the given header
+  before writing, as write(..., connection_header=) does on newer rosbag.
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+* Add array heatmap tools with ROS 1 and ROS 2 support
+  - Render numeric MultiArray and scalar Image topics as heatmap images with optional cell values and configurable color scales
+  - Add heatmap topics to bags while preserving original messages, recording timestamps, and connection or QoS metadata
+  - Extend the compatibility layer with raw bag I/O and shared message type helpers
+  - Add installation rules, documentation, and tests for both ROS versions
+* Merge pull request `#1833 <https://github.com/jsk-ros-pkg/jsk_common/issues/1833>`_ from k-okada/release-3.0.2
+  3.0.2
+* Contributors: Kei Okada, Shun Hasegawa
+
 3.0.2 (2026-11-02)
 ------------------
 * Merge pull request `#1831 <https://github.com/jsk-ros-pkg/jsk_common/issues/1831>`_ from k-okada/ros2-compat-fixes
