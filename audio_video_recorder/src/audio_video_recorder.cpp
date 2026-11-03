@@ -5,9 +5,11 @@
 #include <boost/thread.hpp>
 #include <gst/gst.h>
 #include <gst/app/gstappsrc.h>
+#if ROS_VERSION_MAJOR == 1
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/synchronizer.h>
+#endif
 
 namespace audio_video_recorder
 {

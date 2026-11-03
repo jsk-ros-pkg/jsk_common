@@ -146,22 +146,25 @@ add_dependencies(points_rectangle_extractor ${PROJECT_NAME}_gencpp)
 
 elseif("$ENV{ROS_VERSION}" EQUAL 2)
   set_target_properties(${_image_view2_target} PROPERTIES OUTPUT_NAME image_view2)
-  ament_target_dependencies(${_image_view2_target}
-    rclcpp
-    cv_bridge
-    geometry_msgs
-    image_geometry
-    image_transport
-    message_filters
-    sensor_msgs
-    std_msgs
-    std_srvs
-    tf2_ros
-    tf2_geometry_msgs
-    pcl_conversions
-    jsk_ros1_ros2_compat
-  )
-  target_link_libraries(${_image_view2_target} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${Boost_LIBRARIES})
+  # ament_target_dependencies() is gone since lyrical (ament_cmake 2.8);
+  # pcl_conversions exports a target only since lyrical, and
+  # jsk_ros1_ros2_compat none (header only), hence their *_INCLUDE_DIRS.
+  target_include_directories(${_image_view2_target} PUBLIC
+    ${pcl_conversions_INCLUDE_DIRS} ${jsk_ros1_ros2_compat_INCLUDE_DIRS})
+  target_link_libraries(${_image_view2_target}
+    rclcpp::rclcpp
+    cv_bridge::cv_bridge
+    ${geometry_msgs_TARGETS}
+    image_geometry::image_geometry
+    image_transport::image_transport
+    message_filters::message_filters
+    ${sensor_msgs_TARGETS}
+    ${std_msgs_TARGETS}
+    ${std_srvs_TARGETS}
+    tf2_ros::tf2_ros
+    tf2_geometry_msgs::tf2_geometry_msgs
+    ${pcl_conversions_TARGETS}
+    ${OpenCV_LIBS} ${PCL_LIBRARIES} ${Boost_LIBRARIES})
 
   # Not rosidl_auto_generate_interfaces() (which only globs msg/*.msg):
   # ImageMarker2.msg needs a ROS2-only variant (ros2/msg/ImageMarker2.msg,

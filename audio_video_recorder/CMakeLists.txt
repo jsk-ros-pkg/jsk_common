@@ -72,8 +72,12 @@ if("$ENV{ROS_VERSION}" EQUAL 1)
 target_link_libraries(audio_video_recorder ${catkin_LIBRARIES} ${GST1.0_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(audio_video_recorder ${catkin_EXPORTED_TARGETS})
 elseif("$ENV{ROS_VERSION}" EQUAL 2)
-  ament_target_dependencies(audio_video_recorder rclcpp audio_common_msgs message_filters sensor_msgs jsk_ros1_ros2_compat)
-  target_link_libraries(audio_video_recorder ${GST1.0_LIBRARIES} ${Boost_LIBRARIES})
+  # ament_target_dependencies() is gone since lyrical (ament_cmake 2.8);
+  # jsk_ros1_ros2_compat exports no target (header only).
+  target_include_directories(audio_video_recorder PUBLIC ${jsk_ros1_ros2_compat_INCLUDE_DIRS})
+  target_link_libraries(audio_video_recorder rclcpp::rclcpp ${audio_common_msgs_TARGETS}
+    message_filters::message_filters ${sensor_msgs_TARGETS}
+    ${GST1.0_LIBRARIES} ${Boost_LIBRARIES})
 endif()
 
 if("$ENV{ROS_VERSION}" EQUAL 1)
