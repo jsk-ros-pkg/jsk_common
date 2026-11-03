@@ -3,8 +3,9 @@
 
 from importlib import import_module
 
-import roslib.message
-import rospy
+from jsk_ros1_ros2_compat import rospy_rclpy_compat as ros
+if ros.ROS_VERSION == 1:
+    import rospy
 
 
 def expr_eval(expr, modules):
@@ -15,28 +16,29 @@ def expr_eval(expr, modules):
 
 class FilteredRelay(object):
 
-    def __init__(self):
-        import_list = rospy.get_param('~import', [])
+    def __init__(self, node=None):
+        self.node = node
+        import_list = ros.get_param(self.node, '~import', [])
         self.modules = {}
         for module in import_list:
             try:
                 mod = import_module(module)
             except ImportError:
-                rospy.logerr('Failed to import module: %s' % module)
+                ros.logerr(self.node, 'Failed to import module: %s' % module)
             else:
                 self.modules[module] = mod
 
-        self.filter_expression = rospy.get_param('~filter', None)
+        self.filter_expression = ros.get_param(self.node, '~filter', None)
         if self.filter_expression is not None:
             self.filter_expression = expr_eval(
                 self.filter_expression, self.modules)
 
-        self.output_type = rospy.get_param('~output_type')
-        self.output_class = roslib.message.get_message_class(self.output_type)
+        self.output_type = ros.get_param(self.node, '~output_type')
+        self.output_class = ros.resolve_message_class(self.output_type)
 
-        self.transform_expression = rospy.get_param('~transform', 'm')
-        self.pub_transform = rospy.Publisher(
-            '~output',
+        self.transform_expression = ros.get_param(self.node, '~transform', 'm')
+        self.pub_transform = ros.create_publisher(
+            self.node, '~output',
             self.output_class, queue_size=1)
 
         self.topic_name = rospy.resolve_name('~input')
@@ -54,12 +56,13 @@ class FilteredRelay(object):
             try:
                 res = eval(self.transform_expression, self.modules, {'m': m})
             except NameError as e:
-                rospy.logerr("Expression using variables other than 'm': %s"
-                             % e)
+                ros.logerr(self.node,
+                           "Expression using variables other than 'm': %s"
+                           % e)
             except UnboundLocalError as e:
-                rospy.logerr('Wrong expression:%s' % e)
+                ros.logerr(self.node, 'Wrong expression:%s' % e)
             except Exception as e:
-                rospy.logerr(str(e))
+                ros.logerr(self.node, str(e))
             else:
                 if not isinstance(res, (list, tuple)):
                     res = [res]
@@ -79,13 +82,13 @@ class FilteredRelay(object):
             self.sub = deserialized_sub
             msg = msg_class().deserialize(msg._buff)
         if self.filter_expression is not None:
-            if self.filter_expression(topic_name, msg, rospy.Time.now()):
+            if self.filter_expression(topic_name, msg, ros.now_sec(self.node)):
                 self.publish(msg)
         else:
             self.publish(msg)
 
 
 if __name__ == '__main__':
-    rospy.init_node('filtered_relay')
-    node = FilteredRelay()
-    rospy.spin()
+    node = ros.init_node('filtered_relay')
+    app = FilteredRelay(node)
+    ros.spin(node)
