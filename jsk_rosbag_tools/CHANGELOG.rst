@@ -2,8 +2,8 @@
 Changelog for package jsk_rosbag_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.4 (2026-11-04)
+------------------
 * Merge pull request `#1838 <https://github.com/jsk-ros-pkg/jsk_common/issues/1838>`_ from k-okada/no-ament-target-dependencies
   Fix ROS2 buildfarm binary jobs of 3.0.3: lyrical (ament_target_dependencies, message_filters), jsk_rosbag_tools samples/
 * [jsk_rosbag_tools] do not install the missing samples/ on ROS2
