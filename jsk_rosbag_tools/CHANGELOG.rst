@@ -2,6 +2,20 @@
 Changelog for package jsk_rosbag_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.4 (2026-11-04)
+------------------
+* Merge pull request `#1838 <https://github.com/jsk-ros-pkg/jsk_common/issues/1838>`_ from k-okada/no-ament-target-dependencies
+  Fix ROS2 buildfarm binary jobs of 3.0.3: lyrical (ament_target_dependencies, message_filters), jsk_rosbag_tools samples/
+* [jsk_rosbag_tools] do not install the missing samples/ on ROS2
+  The ROS2 binary jobs fail at make install with
+  "jsk-rosbag-tools-3.0.3/samples: No such file or directory". samples/
+  only has samples/data/.gitignore until the ROS1 download targets fill
+  it, and the source package drops .gitignore files, so the directory does
+  not exist on the buildfarm; ROS2 has no download target. Install only
+  scripts/ on ROS2 (the ROS1 line is unchanged).
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+* Contributors: Kei Okada
+
 3.0.3 (2026-11-03)
 ------------------
 * Merge pull request `#1835 <https://github.com/jsk-ros-pkg/jsk_common/issues/1835>`_ from k-okada/ros-version-fallback-ament

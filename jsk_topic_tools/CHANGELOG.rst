@@ -2,6 +2,9 @@
 Changelog for package jsk_topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.4 (2026-11-04)
+------------------
+
 3.0.3 (2026-11-03)
 ------------------
 * Merge pull request `#1836 <https://github.com/jsk-ros-pkg/jsk_common/issues/1836>`_ from k-okada/filtered-relay-ros2
