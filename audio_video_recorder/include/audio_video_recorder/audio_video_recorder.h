@@ -1,12 +1,20 @@
 #include <boost/thread.hpp>
 #include <gst/gst.h>
 #include <gst/app/gstappsrc.h>
+#include <jsk_ros1_ros2_compat/compat.h>
+
+// ROS2 message_filters has *.hpp only since lyrical (*.h deprecated)
+#if ROS_VERSION_MAJOR != 1
+#include <message_filters/subscriber.hpp>
+#include <message_filters/time_synchronizer.hpp>
+#include <message_filters/sync_policies/approximate_time.hpp>
+#include <message_filters/synchronizer.hpp>
+#else
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
 #include <message_filters/synchronizer.h>
-
-#include <jsk_ros1_ros2_compat/compat.h>
+#endif
 
 // ROS1/ROS2 compatibility: reopen the message namespaces with `using`
 // aliases so that `sensor_msgs::Image` and the original ROS1 flat

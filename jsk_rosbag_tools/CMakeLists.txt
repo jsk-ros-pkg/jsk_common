@@ -142,10 +142,20 @@ elseif("$ENV{ROS_VERSION}" EQUAL 2)
   endif()
 endif()
 
+if("$ENV{ROS_VERSION}" EQUAL 1)
 install(DIRECTORY scripts samples
   DESTINATION ${_share_destination}
   USE_SOURCE_PERMISSIONS
 )
+elseif("$ENV{ROS_VERSION}" EQUAL 2)
+  # samples/ only has samples/data/.gitignore until the ROS1 download
+  # targets fill it, and the source package drops .gitignore files, so
+  # it does not exist on the buildfarm.
+  install(DIRECTORY scripts
+    DESTINATION ${_share_destination}
+    USE_SOURCE_PERMISSIONS
+  )
+endif()
 
 if("$ENV{ROS_VERSION}" EQUAL 1)
 install(FILES requirements.txt
