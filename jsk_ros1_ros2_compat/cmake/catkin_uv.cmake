@@ -64,6 +64,10 @@ function(jsk_ros1_ros2_compat_generate_uv_venv)
       message(FATAL_ERROR "failed to import ${_module} in the uv venv of ${PROJECT_NAME}")
     endif()
   endforeach()
+  # modules in site-packages are not run directly, but some wheels ship them
+  # executable with a "#!/usr/bin/env python" shebang (e.g. protobuf's
+  # _parameterized.py), which makes the RHEL rpm build fail
+  execute_process(COMMAND find ${_venv}/lib -name "*.py" -type f -perm /111 -exec chmod a-x {} +)
   if(ARG_STRIP AND CMAKE_STRIP)
     execute_process(COMMAND find ${_venv} -name "*.so*" -type f -exec ${CMAKE_STRIP} --strip-unneeded {} +)
   endif()
