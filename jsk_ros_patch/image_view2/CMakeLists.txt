@@ -190,10 +190,20 @@ endif()
 # install
 ###############################################################################
 # From https://github.com/jsk-ros-pkg/jsk_recognition/pull/2345
+if("$ENV{ROS_VERSION}" EQUAL 2)
+# publish_*.py are ROS1 test scripts, and their "#!/usr/bin/env python"
+# shebang makes the RHEL rpm build fail (ambiguous python shebang)
+install(DIRECTORY test
+  DESTINATION ${_share_destination}
+  USE_SOURCE_PERMISSIONS
+  PATTERN "publish_*.py" EXCLUDE
+)
+else()
 install(DIRECTORY test
   DESTINATION ${_share_destination}
   USE_SOURCE_PERMISSIONS
 )
+endif()
 
 if("$ENV{ROS_VERSION}" EQUAL 1)
 install(TARGETS image_view2 points_rectangle_extractor
