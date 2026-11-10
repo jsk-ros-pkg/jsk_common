@@ -2,6 +2,32 @@
 Changelog for package jsk_rosbag_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.5 (2026-11-10)
+------------------
+* Merge pull request #1841 from k-okada/rosdistro-55117-review
+  rosdistro#55117 review: add LICENSE to each package, use SPDX license identifiers
+* use SPDX license identifiers (BSD-3-Clause, Apache-2.0) in package.xml
+  BSD -> BSD-3-Clause and "Apache License 2.0" -> Apache-2.0 in all
+  packages (ros/rosdistro#55117 review: "BSD is ambiguous. The headers
+  show the 3-clause variant, so BSD-3-Clause (SPDX) is preferred.").
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+* add LICENSE to each package (BSD-3-Clause, jsk_tools: Apache-2.0)
+  The ROS2 release review of jsk_common in ros/rosdistro#55117 says
+  (https://github.com/ros/rosdistro/pull/55117#issuecomment-6757665510):
+  > - [ ] At least one of the following must be present
+  >   - [ ] Top level license file: None. There is no LICENSE/COPYING at
+  >     the repo root (tree @ cbbd0ab).
+  >   - [ ] Per package license files: None. No package directory has a
+  >     license file. The license text only appears in source-file headers
+  >     (e.g. deprecated_relay.h#L1-L33, BSD-3-Clause, "JSK Lab").
+  Since jsk_tools is Apache-2.0 and the others are BSD-3-Clause, add a
+  license file to each package instead of one at the top level. The BSD
+  ones use the same text as the source headers, "Copyright (c) <year>-,
+  JSK Lab" where <year> is when the package.xml was added, and jsk_tools
+  has the Apache License 2.0 text from apache.org.
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+* Contributors: Kei Okada
+
 3.0.4 (2026-11-04)
 ------------------
 * Merge pull request `#1838 <https://github.com/jsk-ros-pkg/jsk_common/issues/1838>`_ from k-okada/no-ament-target-dependencies
