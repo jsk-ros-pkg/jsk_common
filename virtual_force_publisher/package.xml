@@ -5,7 +5,7 @@
     publish end effector's force, which is estmated from joint torque value
   </description>
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
-  <license>BSD</license>
+  <license>BSD-3-Clause</license>
   <url type="website">http://ros.org/wiki/virtual_force_publisher</url>
   <author email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</author>
 

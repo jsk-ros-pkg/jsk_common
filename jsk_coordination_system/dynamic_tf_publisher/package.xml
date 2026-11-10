@@ -6,7 +6,7 @@
   <version>3.0.4</version>
   <author email="saito@jsk.t.u-tokyo.ac.jp">Manabu Saito</author>
   <maintainer email="garaemon@gmail.com">Ryohei Ueda</maintainer>
-  <license>BSD</license>
+  <license>BSD-3-Clause</license>
   <url>http://ros.org/wiki/dynamic_tf_publisher</url>
   <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
   <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
