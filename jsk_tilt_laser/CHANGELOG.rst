@@ -2,8 +2,8 @@
 Changelog for package jsk_tilt_laser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.5 (2026-11-10)
+------------------
 * Merge pull request #1841 from k-okada/rosdistro-55117-review
   rosdistro#55117 review: add LICENSE to each package, use SPDX license identifiers
 * jsk_tilt_laser: declare GPL-2.0-or-later for dynamixel_joint_state_publisher.py

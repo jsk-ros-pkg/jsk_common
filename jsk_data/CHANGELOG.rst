@@ -2,8 +2,8 @@
 Changelog for package jsk_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.5 (2026-11-10)
+------------------
 * Merge pull request #1841 from k-okada/rosdistro-55117-review
   rosdistro#55117 review: add LICENSE to each package, use SPDX license identifiers
 * use SPDX license identifiers (BSD-3-Clause, Apache-2.0) in package.xml

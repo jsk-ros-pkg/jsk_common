@@ -2,8 +2,8 @@
 Changelog for package image_view2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.5 (2026-11-10)
+------------------
 * Merge pull request #1841 from k-okada/rosdistro-55117-review
   rosdistro#55117 review: add LICENSE to each package, use SPDX license identifiers
 * Merge pull request #1840 from k-okada/rhel-ambiguous-shebang
