@@ -6,7 +6,7 @@
 
   <maintainer email="ueda@jsk.t.u-tokyo.ac.jp">Ryohei Ueda</maintainer>
 
-  <license>BSD</license>
+  <license>BSD-3-Clause</license>
 
   <author email="furuta@jsk.imi.i.u-tokyo.ac.jp">Yusuke Furuta</author>
   <buildtool_depend>catkin</buildtool_depend>

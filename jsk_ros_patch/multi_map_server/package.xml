@@ -4,7 +4,7 @@
   <description>multi_map_server provides the</description>
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
 
-  <license>BSD</license>
+  <license>BSD-3-Clause</license>
 
   <url type="website">http://ros.org/wiki/map_server</url>
   <!-- <url type="bugtracker"></url> -->

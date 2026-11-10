@@ -9,7 +9,7 @@
   <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
   <author email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</author>
 
-  <license>BSD</license>
+  <license>BSD-3-Clause</license>
   <url type="website">http://ros.org/wiki/jsk_common</url>
   <url type="repository">https://github.com/jsk-ros-pkg/jsk_common</url>
   <url type="bugtracker">https://github.com/jsk-ros-pkg/jsk_common/issues</url>

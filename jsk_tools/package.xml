@@ -5,7 +5,7 @@
 
   <maintainer email="ueda@jsk.t.u-tokyo.ac.jp">Ryohei Ueda</maintainer>
 
-  <license>Apache License 2.0</license>
+  <license>Apache-2.0</license>
 
   <url type="website">http://ros.org/wiki/jsk_tools</url>
   <!-- <url type="bugtracker"></url> -->

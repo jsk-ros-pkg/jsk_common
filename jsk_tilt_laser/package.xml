@@ -6,7 +6,7 @@
 
   <maintainer email="youhei@jsk.imi.i.u-tokyo.ac.jp">YoheiKakiuchi</maintainer>
 
-  <license>BSD</license>
+  <license>BSD-3-Clause</license>
 
   <!-- <url type="website">http://wiki.ros.org/moge</url> -->
   <author email="youhei@jsk.imi.i.u-tokyo.ac.jp">YoheiKakiuchi</author>

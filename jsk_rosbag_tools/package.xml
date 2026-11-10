@@ -3,7 +3,7 @@
   <name>jsk_rosbag_tools</name>
   <version>3.0.4</version>
   <description>The rosbag tools</description>
-  <license>BSD</license>
+  <license>BSD-3-Clause</license>
 
   <maintainer email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</maintainer>
   <author email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</author>
