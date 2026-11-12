@@ -241,7 +241,7 @@ def _latched_qos(depth):
 
 
 def create_subscription(node, topic, msg_type, callback, queue_size=None,
-                        latch=False, callback_group=None):
+                        latch=False, callback_group=None, qos=None):
     """queue_size=None keeps each side's default: an unbounded queue
     (rospy) or a depth-1 QoS history (rclpy, which requires a depth).
     latch=True (ROS2 only, ignored by rospy) subscribes with the
@@ -251,9 +251,11 @@ def create_subscription(node, topic, msg_type, callback, queue_size=None,
     the rclpy callback group, e.g. a ReentrantCallbackGroup."""
     if ROS_VERSION == 2:
         depth = 1 if queue_size is None else queue_size
+        if qos == None:
+            qos = _latched_qos(depth) if latch else depth
         return node.create_subscription(
             msg_type, private_name(topic), callback,
-            _latched_qos(depth) if latch else depth,
+            qos,
             callback_group=_callback_group(node, callback_group))
     else:
         return rospy.Subscriber(topic, msg_type, callback, queue_size=queue_size)
