@@ -241,18 +241,24 @@ def _latched_qos(depth):
     return QoSProfile(depth=depth, durability=QoSDurabilityPolicy.TRANSIENT_LOCAL)
 
 
+def _any_publisher_qos(depth):
+    """The QoS that reads the topic of any publisher, whenever it joins:
+    BEST_EFFORT and VOLATILE, which every publisher is compatible with."""
+    return QoSProfile(depth=depth,
+                      reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                      durability=QoSDurabilityPolicy.VOLATILE)
+
+
 def _best_available_qos(depth):
-    """The QoS that reads the topic of any publisher: the reliability and
-    the durability of the publishers (BEST_AVAILABLE, ROS2 Iron and
-    later), or BEST_EFFORT and VOLATILE (Humble), which match any of
-    them."""
+    """The reliability and the durability of the publishers discovered when
+    the subscription is created (BEST_AVAILABLE, ROS2 Iron and later); a
+    publisher of a weaker QoS which joins later is not read. Humble has no
+    BEST_AVAILABLE: the QoS of any publisher there."""
     if hasattr(QoSReliabilityPolicy, 'BEST_AVAILABLE'):
         return QoSProfile(depth=depth,
                           reliability=QoSReliabilityPolicy.BEST_AVAILABLE,
                           durability=QoSDurabilityPolicy.BEST_AVAILABLE)
-    return QoSProfile(depth=depth,
-                      reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                      durability=QoSDurabilityPolicy.VOLATILE)
+    return _any_publisher_qos(depth)
 
 
 def create_subscription(node, topic, msg_type, callback, queue_size=None,
@@ -265,17 +271,19 @@ def create_subscription(node, topic, msg_type, callback, queue_size=None,
     ignored by rospy, whose callbacks each run in their own thread) is
     the rclpy callback group, e.g. a ReentrantCallbackGroup.
     qos (ROS2 only, ignored by rospy): the QoS of the subscription, a
-    QoSProfile (e.g. rclpy.qos.qos_profile_sensor_data), a depth, or
-    'best_available' to read the topic whatever QoS its publishers use,
-    e.g. the best-effort topics of sensors (with the depth of
-    queue_size). None (the default) is 'best_available', or the
+    QoSProfile (e.g. rclpy.qos.qos_profile_sensor_data), a depth (reliable),
+    'any' to read the topic whatever QoS its publishers use, whenever they
+    join (BEST_EFFORT and VOLATILE, with the depth of queue_size), or
+    'best_available' for the QoS of the publishers discovered when it is
+    created (Iron and later). None (the default) is 'any', or the
     transient-local QoS of latch=True."""
     if ROS_VERSION == 2:
         depth = 1 if queue_size is None else queue_size
         if qos is None:
-            qos = _latched_qos(depth) if latch else 'best_available'
-        if qos == 'best_available':
-            qos = _best_available_qos(depth)
+            qos = _latched_qos(depth) if latch else 'any'
+        # a str, not compared with a QoSProfile, whose __eq__ fails with a str on Humble
+        if isinstance(qos, str):
+            qos = {'any': _any_publisher_qos, 'best_available': _best_available_qos}[qos](depth)
         return node.create_subscription(
             msg_type, private_name(topic), callback, qos,
             callback_group=_callback_group(node, callback_group))
