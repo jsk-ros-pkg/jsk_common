@@ -129,6 +129,32 @@ class TestRospyRclpyCompat(unittest.TestCase):
         self.assertTrue(wait_until(lambda: received))
         self.assertEqual(received[0], 'latched')
 
+    @unittest.skipIf(ROS_VERSION == 1, 'QoS of ROS2')
+    def test_qos_ros2(self):
+        from rclpy.qos import qos_profile_sensor_data
+        from rclpy.qos import QoSProfile
+        from rclpy.qos import QoSReliabilityPolicy
+        # a best-effort publisher, which a reliable subscription (the
+        # QoS of a depth) does not read
+        pub = self.node.create_publisher(
+            String, 'test_qos', QoSProfile(
+                depth=1, reliability=QoSReliabilityPolicy.BEST_EFFORT))
+        received = {'default': [], 'sensor_data': [], 'best_available': [],
+                    'reliable': []}
+        for name, qos in [('default', None),
+                          ('sensor_data', qos_profile_sensor_data),
+                          ('best_available', 'best_available'),
+                          ('reliable', 1)]:
+            ros_compat.create_subscription(
+                self.node, 'test_qos', String,
+                lambda msg, name=name: received[name].append(msg.data),
+                qos=qos)
+        self.assertTrue(wait_until(lambda: (
+            pub.publish(String(data='qos')) or
+            (received['default'] and received['sensor_data'] and
+             received['best_available']))))
+        self.assertEqual(received['reliable'], [])
+
     def test_wait_for_service(self):
         self.assertFalse(ros_compat.wait_for_service(
             self.node, 'test_no_such_service', SetBool, 0.5))
