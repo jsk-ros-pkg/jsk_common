@@ -177,8 +177,8 @@ class TestRospyRclpyCompat(unittest.TestCase):
         self.assertTrue(wait_until(lambda: (
             reliable.publish(String(data='reliable')) or
             best_effort.publish(String(data='best_effort')) or
-            {'reliable', 'best_effort'} <= set(received['default']))))
-        self.assertIn('reliable', received['best_available'])
+            ({'reliable', 'best_effort'} <= set(received['default']) and
+             'reliable' in received['best_available']))))
 
     def test_wait_for_service(self):
         self.assertFalse(ros_compat.wait_for_service(
