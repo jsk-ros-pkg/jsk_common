@@ -109,13 +109,13 @@ rosrun jsk_topic_tools filtered_relay.py ~input:=/chatter _output_type:=std_msgs
 ROS 2:
 
 ```bash
-ros2 run jsk_topic_tools filtered_relay.py --ros-args -r ~/input:=/chatter \
+ros2 run jsk_topic_tools filtered_relay.py --ros-args -r '~/input:=/chatter' \
   -p output_type:=std_msgs/String -p filter:="m.data != ''"
 
 ros2 run jsk_topic_tools array_to_heatmap.py --ros-args \
-  -r ~/input:=/sensor/pressure -r ~/output:=/sensor/pressure/heatmap
+  -r '~/input:=/sensor/pressure' -r '~/output:=/sensor/pressure/heatmap'
 
-ros2 run jsk_topic_tools string_relay_lifecycle_node --ros-args -r ~/input:=/chatter -r ~/output:=/chatter_relay
+ros2 run jsk_topic_tools string_relay_lifecycle_node --ros-args -r '~/input:=/chatter' -r '~/output:=/chatter_relay'
 ros2 run jsk_topic_tools transform_merger --ros-args -p loop_hz:=1.0
 ```
 
