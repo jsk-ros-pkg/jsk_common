@@ -2,6 +2,60 @@
 
 Tools such as creating video from rosbag and compressing rosbag images.
 
+All tools are command line scripts that read and write bag files offline;
+no running ROS nodes are required.
+
+## ROS 1 / ROS 2
+
+The package builds for both ROS 1 (catkin) and ROS 2 (ament), selected by
+`$ROS_VERSION`. The same scripts are installed on both:
+
+| Script | ROS 1 (`rosrun`) | ROS 2 (`ros2 run`) |
+|---|---|---|
+| `bag_to_video.py` | yes | yes |
+| `bag_to_audio.py` | yes | yes |
+| `video_to_bag.py` | yes | yes |
+| `compress_imgs.py` | yes | yes |
+| `tf_static_to_tf.py` | yes | yes |
+| `merge.py` | yes | yes |
+| `add_heatmap.py` | yes | yes |
+
+```bash
+rosrun jsk_rosbag_tools bag_to_video.py ...    # ROS 1
+ros2 run jsk_rosbag_tools bag_to_video.py ...  # ROS 2
+```
+
+Bag I/O goes through `jsk_ros1_ros2_compat.rosbag`, so the bag format follows
+the ROS environment the script runs in:
+
+- ROS 1 reads and writes `.bag` files (`rosbag`).
+- ROS 2 reads and writes rosbag2 bags, i.e. directories, with the `sqlite3`
+  storage plugin only (`rosbag2_py`). MCAP bags are not supported.
+  A ROS 1 `.bag` file can not be read under ROS 2 and vice versa.
+
+Notes on ROS 2:
+
+- The bundled sample bags (`samples/data/*.bag`) are ROS 1 bags and are only
+  downloaded and installed by the ROS 1 build, so the examples below that use
+  `$(rospack find jsk_rosbag_tools)/samples/data` are ROS 1 only.
+- On ROS 1 the Python dependencies that are not available as system packages
+  (`moviepy==1.0.3`, `Pillow`, ...; see `requirements.in*`) are installed into a
+  `catkin_virtualenv`. On ROS 2 there is no virtualenv: install them into the
+  Python environment yourself, e.g. `pip install moviepy==1.0.3` (the code
+  imports `moviepy.editor`, which moviepy 2.x removed).
+- Default output names are derived as for ROS 1 (e.g. `<input>_merged.bag`,
+  `<video>.bag`), which become directory names under ROS 2. Pass `--out` to
+  choose a name.
+- `compress_imgs.py --replace` moves the output onto the input path with
+  `shutil.move()`. This works for ROS 1 `.bag` files; with a rosbag2 directory
+  the output is moved *into* the input directory instead, so do not use
+  `--replace` on ROS 2.
+- The ROS 2 tests cover the library functions behind `compress_imgs.py`,
+  `merge.py`, `add_heatmap.py` and the topic extraction used by
+  `bag_to_video.py`/`bag_to_audio.py`. The `bag_to_video.py`,
+  `bag_to_audio.py`, `video_to_bag.py` and `tf_static_to_tf.py` command lines
+  are not tested on rosbag2 yet.
+
 ## bag_to_video.py
 
 Create video from rosbag.
@@ -9,7 +63,7 @@ Create video from rosbag.
 ### Usage
 
 ```
-usage: bag_to_video.py [-h] [--out OUT] [--fps FPS] [--samplerate SAMPLERATE] [--channels CHANNELS] [--audio-topic AUDIO_TOPIC] [--image-topic IMAGE_TOPIC [IMAGE_TOPIC ...]] input_bagfile
+usage: bag_to_video.py [-h] [--out OUT] [--fps FPS] [--samplerate SAMPLERATE] [--channels CHANNELS] [--audio-topic AUDIO_TOPIC] [--image-topic IMAGE_TOPIC [IMAGE_TOPIC ...]] [--no-progress-bar] input_bagfile
 
 rosbag to video
 
@@ -29,6 +83,7 @@ optional arguments:
   --audio-topic AUDIO_TOPIC
   --image-topic IMAGE_TOPIC [IMAGE_TOPIC ...]
                         Topic name to extract.
+  --no-progress-bar     Don't show progress bar.
 ```
 
 ### Example
@@ -78,7 +133,7 @@ Convert video file to bagfile.
 ### Usage
 
 ```
-usage: video_to_bag.py [-h] [--out output_file] [--topic-name TOPIC_NAME] [--compress] [--no-progress-bar] inputvideo
+usage: video_to_bag.py [-h] [--out output_file] [--topic-name TOPIC_NAME] [--fps FPS] [--compress] [--no-progress-bar] inputvideo
 
 Convert video to bag.
 
@@ -91,6 +146,7 @@ optional arguments:
                         name of the output bag file
   --topic-name TOPIC_NAME
                         Converted topic name.
+  --fps FPS             Frame Rate.
   --compress            Compress Image flag.
   --no-progress-bar     Don't show progress bar.
 ```
@@ -135,6 +191,8 @@ rosrun jsk_rosbag_tools compress_imgs.py $(rospack find jsk_rosbag_tools)/sample
 ## tf_static_to_tf.py
 
 Convert tf_static to tf and save it as a rosbag.
+
+### Usage
 
 ```
 usage: tf_static_to_tf.py [-h] [--out OUT] [--no-progress-bar] input_bagfile
@@ -197,6 +255,7 @@ rosrun jsk_rosbag_tools merge.py \
 ## add_heatmap.py
 
 Add a numeric MultiArray or single-channel Image topic as a heatmap `bgr8` Image topic in a new ROS 1/ROS 2 bag.
+The heatmap is rendered with `jsk_topic_tools`' `HeatmapRenderer`.
 Each cell shows its numeric value by default.
 No running ROS nodes are required.
 
