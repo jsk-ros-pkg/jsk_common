@@ -4,6 +4,22 @@ Shared ROS1 (roscpp/rospy) / ROS2 (rclcpp/rclpy) compatibility helpers, so
 that a package can keep **one** source tree that builds and runs on both,
 with the ROS1 code left as close to the original as possible.
 
+## ROS 1 / ROS 2
+
+This is a library package (no nodes, scripts or launch files). It builds for
+both ROS 1 (catkin) and ROS 2 (ament), selected by `$ROS_VERSION`:
+
+| | ROS 1 | ROS 2 |
+|---|---|---|
+| C++ headers (`include/jsk_ros1_ros2_compat/*.h`) | yes | yes |
+| Python package `jsk_ros1_ros2_compat` (`rospy_rclpy_compat`, `rosbag`, `log_utils`) | yes | yes |
+| CMake `jsk_ros1_ros2_compat_install_python()` | defined, but meant for ROS 2 builds | yes |
+| CMake `jsk_ros1_ros2_compat_generate_uv_venv()` and the bundled `uv` binary (`lib/jsk_ros1_ros2_compat/uv`) | no (use catkin_virtualenv) | yes |
+
+`ROS_VERSION` in the Python modules is read from the `ROS_VERSION`
+environment variable (default `1`). The C++ headers detect ROS 1 by whether
+`<ros/ros.h>` can be included, so no compile definition is needed.
+
 ## Porting style
 
 - One `package.xml` / `CMakeLists.txt` branched on `$ROS_VERSION`.
@@ -49,8 +65,8 @@ if __name__ == '__main__':
 | `spin(node)`, `spin_once(node, timeout_sec)`, `shutdown(node)` (after an own `while not is_shutdown(node)` loop) | `rospy.spin`, `rospy.sleep`, - | `spin_and_shutdown`, `rclpy.spin_once`, cleanup |
 | `loginfo/logwarn/logerr/logdebug/logfatal(node, msg)` | `rospy.log*` | `node.get_logger().*` (msg must be a `str`; `node=None` uses a logger named after the script) |
 | `loginfo/logwarn/logerr_throttle(node, period, msg)`, `loginfo/logwarn/logerr_once(node, msg)` | like `rospy.log*_throttle/_once` | like `throttle_duration_sec=/once=True` (per call site, done in compat) |
-| `create_publisher(node, topic, type, queue_size=1, latch=False)` | `rospy.Publisher` | `node.create_publisher` (`latch`: transient-local QoS) |
-| `create_subscription(node, topic, type, cb, queue_size=None, latch=False)` | `rospy.Subscriber` (`None`: unbounded) | `node.create_subscription` (`None`: depth 1; `latch`: transient-local QoS; `~foo` -> `~/foo`) |
+| `create_publisher(node, topic, type, queue_size=1, latch=False)` | `rospy.Publisher` | `node.create_publisher` (depth `queue_size`, default reliable QoS; `latch`: transient-local QoS; `~foo` -> `~/foo`) |
+| `create_subscription(node, topic, type, cb, queue_size=None, latch=False, callback_group=None, qos=None)` | `rospy.Subscriber` (`None`: unbounded; `latch`, `qos` ignored) | `node.create_subscription` (`None`: depth 1; QoS: see below; `~foo` -> `~/foo`) |
 | `wait_for_service(node, name, type, timeout)` (returns bool), `set_param(node, name, value)` | `rospy.wait_for_service`, `rospy.set_param` | a client's `wait_for_service`, `node.set_parameters` |
 | `create_service`, `create_trigger_service`, `call_service`, `create_request/response`, `get_response_class` (`FooResponse(*values)` on both) | `rospy.Service/ServiceProxy` | `node.create_service/create_client` |
 | `create_timer(node, period, cb)` | `rospy.Timer` | `node.create_timer` (`cb(None)`) |
@@ -63,6 +79,24 @@ if __name__ == '__main__':
 | `get_name`, `is_shutdown`, `on_shutdown`, `signal_shutdown` | `rospy.*` | node name / rclpy context |
 | `create_tf_buffer_and_listener`, `create_tf_broadcaster` | `tf2_ros` | `tf2_ros` with `node` |
 | `spin_and_shutdown(node, executor=None)` | - | spin until SIGINT/SIGTERM/`signal_shutdown`, then clean up |
+| `private_name(name)`, `message_type_name(msg)`, `resolve_message_class('pkg/Type')` | name unchanged, `msg._type`, `roslib.message` | `~foo` -> `~/foo`, `'pkg/Type'`, `get_message` (accepts `pkg/Type` and `pkg/msg/Type`) |
+| `declare_params(node, defaults)`, `get_params(node, names)` | - | ROS2 only: declare / read several parameters at once |
+
+QoS of `create_subscription()` on ROS2 (ignored on ROS1), from the `qos`
+argument:
+
+| `qos` | QoS |
+|---|---|
+| `None` (default) | `'any'`, or transient-local with depth `queue_size` if `latch=True` |
+| `'any'` | BEST_EFFORT + VOLATILE with depth `queue_size`: reads the topic of any publisher, whenever it joins |
+| `'best_available'` | BEST_AVAILABLE reliability and durability (Iron and later) of the publishers discovered when the subscription is created; a publisher with a weaker QoS that joins later is not read. Falls back to `'any'` on Humble |
+| a `QoSProfile` (e.g. `rclpy.qos.qos_profile_sensor_data`) | as given |
+| an `int` | that depth, rclpy's default (reliable) QoS |
+
+So by default a subscriber receives from both reliable and best-effort
+publishers, but delivery is best effort. Pass `qos=` (e.g. a depth for
+reliable delivery) where lost messages matter, and `latch=True` for the
+last message of a `create_publisher(..., latch=True)` topic.
 
 Action types: pass `FooAction`/`FooGoal` on ROS1 and `Foo`/`Foo.Goal` on
 ROS2; timeouts are in seconds on both. `actionlib`/`dynamic_reconfigure`
@@ -117,16 +151,54 @@ if __name__ == '__main__':
         Foo().run_compat(ros_compat.init_node('foo'))
 ```
 
+### Python: `jsk_ros1_ros2_compat.rosbag`
+
+One `rosbag.Bag`-like interface for ROS1 `.bag` files (`rosbag`) and ROS2
+rosbag2 directories (`rosbag2_py`, `sqlite3` storage only), used by
+jsk_rosbag_tools:
+
+```python
+from jsk_ros1_ros2_compat.rosbag import open_bag, nanoseconds_from_sec
+
+with open_bag('in', 'r') as inbag, open_bag('out', 'w') as outbag:
+    for topic, msg, t in inbag.read_messages(topics=['/tf']):
+        outbag.write(topic, msg, t + nanoseconds_from_sec(1.0))
+```
+
+- `open_bag(path, mode='r')`: a reader with `read_messages(topics=None)`,
+  `read_raw_messages()`/`deserialize_raw()`, `get_message_count()` and
+  iteration, or (`'w'`) a writer with `write(topic, msg, t)` and
+  `write_raw()`. Both are context managers.
+- Bag timestamps are always integer nanoseconds on both versions; convert
+  with `nanoseconds_from_sec()`, `stamp_from_nanoseconds()`,
+  `nanoseconds_from_stamp()` and `stamp_to_sec()`.
+- `get_topic_dict(path)` (ROS2 only): `{topic: {'type': 'pkg/Type', 'messages': n}}`.
+
+### Python: `jsk_ros1_ros2_compat.log_utils`
+
+`jsk_logdebug/info/warn/err/fatal(msg)` (with the node name and caller
+prefixed) and `log*_throttle(period, msg)`. On ROS2 call
+`log_utils.set_node(node)` once first; it is a no-op on ROS1.
+
 ## C++: `#include <jsk_ros1_ros2_compat/compat.h>`
 
-ROS1/ROS2 detection, `ROS_INFO`/`ROS_ERROR`/... and `ros::param::param()`
-for rclcpp, `RosTime`/`RosDuration`/`rosTimeNow()`, `RosPublisher<T>`/
-`RosSubscriber<T>`/`publishMsg()`, and message alias macros. See the
-comments in each header under `include/jsk_ros1_ros2_compat/`.
+| Header | Provides |
+|---|---|
+| `ros_version.h` | ROS1/ROS2 detection: `#if ROS_VERSION_MAJOR != 1` means ROS2 |
+| `logging.h` | ROS2: `ROS_DEBUG`/`ROS_INFO`/`ROS_WARN`/`ROS_ERROR` (and `*_STREAM`) and `ros::param::param<T>("~name", value, default)` (declares a parameter) on `ROS1_ROS2_COMPAT::g_node`, which `main()` sets once |
+| `time.h` | `ROS1_ROS2_COMPAT::RosTime`/`RosDuration`, `rosTimeNow()`, `stampMsg()`, `durationFromSec()`, `durationFromMsg()` |
+| `pubsub.h` | `ROS1_ROS2_COMPAT::RosPublisher<T>`/`RosSubscriber<T>`/`RosServiceServer<T>`, `publishMsg()`, `topicName()`, `privateName()`, `createSubscriber<T>(nh, topic, queue_size, callback)` |
+| `msg_alias.h` | `JSK_ROS1_ROS2_COMPAT_MSG_ALIAS(pkg, Type)` (`pkg::Type` for `pkg::msg::Type`), `_SRV_ALIAS`, `_CONST_PTR_ALIAS` (`pkg::TypeConstPtr`), `_SRV_REQ_RES_ALIAS`; no-ops on ROS1 |
+| `const_ptr.h` | `#define ConstPtr ConstSharedPtr` on ROS2; include it **after** all message headers (not included by `compat.h`) |
+
+`compat.h` includes all of them except `const_ptr.h`. See the comments in
+each header for details.
 
 ## CMake (ROS2)
 
-Available after `find_package(jsk_ros1_ros2_compat REQUIRED)`; add
+Available after `find_package(jsk_ros1_ros2_compat REQUIRED)` (ament) or
+`find_package(catkin REQUIRED COMPONENTS jsk_ros1_ros2_compat)` (catkin, where
+only `jsk_ros1_ros2_compat_install_python()` is defined); add
 `<buildtool_depend condition="$ROS_VERSION == 2">jsk_ros1_ros2_compat</buildtool_depend>`.
 
 ### `jsk_ros1_ros2_compat_install_python()`
