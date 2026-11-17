@@ -129,6 +129,57 @@ class TestRospyRclpyCompat(unittest.TestCase):
         self.assertTrue(wait_until(lambda: received))
         self.assertEqual(received[0], 'latched')
 
+    @unittest.skipIf(ROS_VERSION == 1, 'QoS of ROS2')
+    def test_qos_ros2(self):
+        from rclpy.qos import qos_profile_sensor_data
+        from rclpy.qos import QoSProfile
+        from rclpy.qos import QoSReliabilityPolicy
+        # a best-effort publisher, which a reliable subscription (the
+        # QoS of a depth) does not read
+        pub = self.node.create_publisher(
+            String, 'test_qos', QoSProfile(
+                depth=1, reliability=QoSReliabilityPolicy.BEST_EFFORT))
+        received = {'default': [], 'sensor_data': [], 'any': [],
+                    'reliable': []}
+        for name, qos in [('default', None),
+                          ('sensor_data', qos_profile_sensor_data),
+                          ('any', 'any'),
+                          ('reliable', 1)]:
+            ros_compat.create_subscription(
+                self.node, 'test_qos', String,
+                lambda msg, name=name: received[name].append(msg.data),
+                qos=qos)
+        self.assertTrue(wait_until(lambda: (
+            pub.publish(String(data='qos')) or
+            (received['default'] and received['sensor_data'] and
+             received['any']))))
+        self.assertEqual(received['reliable'], [])
+
+    @unittest.skipIf(ROS_VERSION == 1, 'QoS of ROS2')
+    def test_qos_publisher_joins_later_ros2(self):
+        from rclpy.qos import QoSProfile
+        from rclpy.qos import QoSReliabilityPolicy
+        # a reliable publisher before the subscriptions, and a best-effort
+        # one after them: the default reads both, as 'best_available'
+        # (reliable, of the publisher at the creation) does not
+        reliable = self.node.create_publisher(String, 'test_qos_later', 1)
+        received = {'default': [], 'best_available': []}
+        for name, qos in [('default', None),
+                          ('best_available', 'best_available')]:
+            ros_compat.create_subscription(
+                self.node, 'test_qos_later', String,
+                lambda msg, name=name: received[name].append(msg.data),
+                queue_size=10, qos=qos)
+        time.sleep(0.5)
+        best_effort = self.node.create_publisher(
+            String, 'test_qos_later', QoSProfile(
+                depth=1, reliability=QoSReliabilityPolicy.BEST_EFFORT))
+        self.assertTrue(wait_until(lambda: (
+            reliable.publish(String(data='reliable')) or
+            best_effort.publish(String(data='best_effort')) or
+            ({'reliable', 'best_effort'} <= set(received['default']) and
+             'reliable' in received['best_available']))))
+
     def test_wait_for_service(self):
         self.assertFalse(ros_compat.wait_for_service(
             self.node, 'test_no_such_service', SetBool, 0.5))

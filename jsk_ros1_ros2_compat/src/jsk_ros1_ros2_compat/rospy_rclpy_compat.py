@@ -29,6 +29,7 @@ if ROS_VERSION == 2:
     from rclpy.executors import ExternalShutdownException
     from rclpy.qos import QoSDurabilityPolicy
     from rclpy.qos import QoSProfile
+    from rclpy.qos import QoSReliabilityPolicy
     from rosidl_runtime_py.utilities import get_message
 else:
     import roslib.message
@@ -240,20 +241,51 @@ def _latched_qos(depth):
     return QoSProfile(depth=depth, durability=QoSDurabilityPolicy.TRANSIENT_LOCAL)
 
 
+def _any_publisher_qos(depth):
+    """The QoS that reads the topic of any publisher, whenever it joins:
+    BEST_EFFORT and VOLATILE, which every publisher is compatible with."""
+    return QoSProfile(depth=depth,
+                      reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                      durability=QoSDurabilityPolicy.VOLATILE)
+
+
+def _best_available_qos(depth):
+    """The reliability and the durability of the publishers discovered when
+    the subscription is created (BEST_AVAILABLE, ROS2 Iron and later); a
+    publisher of a weaker QoS which joins later is not read. Humble has no
+    BEST_AVAILABLE: the QoS of any publisher there."""
+    if hasattr(QoSReliabilityPolicy, 'BEST_AVAILABLE'):
+        return QoSProfile(depth=depth,
+                          reliability=QoSReliabilityPolicy.BEST_AVAILABLE,
+                          durability=QoSDurabilityPolicy.BEST_AVAILABLE)
+    return _any_publisher_qos(depth)
+
+
 def create_subscription(node, topic, msg_type, callback, queue_size=None,
-                        latch=False, callback_group=None):
+                        latch=False, callback_group=None, qos=None):
     """queue_size=None keeps each side's default: an unbounded queue
     (rospy) or a depth-1 QoS history (rclpy, which requires a depth).
     latch=True (ROS2 only, ignored by rospy) subscribes with the
     transient-local QoS needed to receive the last message of a
     create_publisher(..., latch=True) topic. callback_group (ROS2 only,
     ignored by rospy, whose callbacks each run in their own thread) is
-    the rclpy callback group, e.g. a ReentrantCallbackGroup."""
+    the rclpy callback group, e.g. a ReentrantCallbackGroup.
+    qos (ROS2 only, ignored by rospy): the QoS of the subscription, a
+    QoSProfile (e.g. rclpy.qos.qos_profile_sensor_data), a depth (reliable),
+    'any' to read the topic whatever QoS its publishers use, whenever they
+    join (BEST_EFFORT and VOLATILE, with the depth of queue_size), or
+    'best_available' for the QoS of the publishers discovered when it is
+    created (Iron and later). None (the default) is 'any', or the
+    transient-local QoS of latch=True."""
     if ROS_VERSION == 2:
         depth = 1 if queue_size is None else queue_size
+        if qos is None:
+            qos = _latched_qos(depth) if latch else 'any'
+        # a str, not compared with a QoSProfile, whose __eq__ fails with a str on Humble
+        if isinstance(qos, str):
+            qos = {'any': _any_publisher_qos, 'best_available': _best_available_qos}[qos](depth)
         return node.create_subscription(
-            msg_type, private_name(topic), callback,
-            _latched_qos(depth) if latch else depth,
+            msg_type, private_name(topic), callback, qos,
             callback_group=_callback_group(node, callback_group))
     else:
         return rospy.Subscriber(topic, msg_type, callback, queue_size=queue_size)
