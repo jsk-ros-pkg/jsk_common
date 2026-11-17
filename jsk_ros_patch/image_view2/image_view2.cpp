@@ -59,10 +59,11 @@ namespace image_view2{
     std::string camera = node->get_node_base_interface()->resolve_topic_or_service_name("image", false);
     std::string camera_info = node->get_node_base_interface()->resolve_topic_or_service_name("camera_info", false);
     image_transport::ImageTransport it(node);
-    // image_transport under a topic prefix behaves the same as a fresh
-    // ImageTransport since it only ever advertises/subscribes relative
-    // topic names below.
+    // ROS2 image_transport has no ImageTransport of a namespace (ROS1
+    // local_it(camera)), so marked is advertised under camera by its full
+    // name, as image/marked of ROS1.
     image_transport::ImageTransport& local_it = it;
+    const std::string marked_topic = camera + "/marked";
 
     point_pub_ = node->create_publisher<geometry_msgs::PointStamped>(camera + "/screenpoint", 100);
     point_array_pub_ = node->create_publisher<sensor_msgs::PointCloud2>(camera + "/screenpoint_array", 100);
@@ -101,6 +102,7 @@ namespace image_view2{
     std::string transport;
     image_transport::ImageTransport it(nh);
     image_transport::ImageTransport local_it(camera);
+    const std::string marked_topic = "marked";
 
     point_pub_ = nh.advertise<geometry_msgs::PointStamped>(camera + "/screenpoint",100);
     point_array_pub_ = nh.advertise<sensor_msgs::PointCloud2>(camera + "/screenpoint_array",100);
@@ -142,7 +144,7 @@ namespace image_view2{
       window_selection_.height = window_selection_.width = 0;
 
     image_pub_ = it.advertise("image_marked", 1);
-    local_image_pub_ = local_it.advertise("marked", 1);
+    local_image_pub_ = local_it.advertise(marked_topic, 1);
 
 #if ROS_VERSION_MAJOR != 1
     image_transport::TransportHints transport_hints(node.get());

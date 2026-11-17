@@ -46,6 +46,16 @@ class TestImageView2(unittest.TestCase):
     def tearDown(self):
         self.node.destroy_node()
 
+    def test_marked_topic(self):
+        # image/marked as ROS1, not marked in the namespace of the node
+        end_time = time.time() + 10.0
+        topics = []
+        while time.time() < end_time and '/camera/image/marked' not in topics:
+            topics = [name for name, _ in self.node.get_topic_names_and_types()]
+            rclpy.spin_once(self.node, timeout_sec=0.2)
+        self.assertIn('/camera/image/marked', topics)
+        self.assertNotIn('/marked', topics)
+
     def test_rectangle_mouse_event(self):
         image_pub = self.node.create_publisher(Image, '/camera/image', 1)
         event_pub = self.node.create_publisher(
