@@ -126,7 +126,8 @@ ROS API
 
 ### Publishing Topics
 
-* `image/marked` (`sensor_msgs/Image`), `image_marked` (`sensor_msgs/Image`)
+* `image/marked` (`sensor_msgs/Image`) on ROS 1, `marked` (`sensor_msgs/Image`, in the namespace of the node, e.g.
+  `/marked`) on ROS 2, and `image_marked` (`sensor_msgs/Image`)
 
   Image with marks drawn.
 
