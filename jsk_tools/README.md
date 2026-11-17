@@ -25,7 +25,9 @@ There are no ROS 2 launch files; use `ros2 run jsk_tools <exe>`.
 ## audible_warning.py
 
 Subscribes `/diagnostics_agg` (`diagnostic_msgs/DiagnosticArray`) and speaks the error contents through the
-`/robotsound` action (`sound_play/SoundRequestAction`); remap it if your sound server has another name.
+`/robotsound` action (`sound_play/SoundRequestAction`) on ROS 1; remap it if your sound server has another name.
+On ROS 2 it does not speak, as there is no `sound_play` of ROS 2: it logs `[TTS disabled under ROS2] would speak: ...`
+and publishes the text (`~output/text`, `~output/original_text`) only.
 
 Main parameters: `~speak_interval` (default `120.0` s, the same error is not repeated within this time), `~volume`, `~language`,
 `~wait_speak`, `~seconds_to_start_speaking`, `~enable`, `~speak_ok` / `~speak_warn` / `~speak_error` / `~speak_stale`,
@@ -40,7 +42,7 @@ On ROS 2, `~blacklist` / `~run_stop_blacklist` are not supported (ROS 2 paramete
 ```bash
 # ROS 1
 roslaunch jsk_tools sample_audible_warning.launch
-# ROS 2
+# ROS 2 (no speech, the log and the text only)
 ros2 run jsk_tools audible_warning.py --ros-args -p speak_interval:=60.0
 ```
 
