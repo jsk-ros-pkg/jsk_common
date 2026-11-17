@@ -37,15 +37,15 @@ they subscribe `~input` only while `~output` has subscribers.
 * **SynchronizedThrottle** -- throttles several topics (`~topics`, up to 8) synchronously and advertises them with `~suffix`
   (default `throttled`). Parameters `~update_rate`, `~approximate_sync`, `~use_wall_time`, ... [doc](../doc/jsk_topic_tools/lib/synchronized_throttle_nodelet.rst)
 * **Relay** -- like `topic_tools/relay`, with lazy mode and `~latch`; `~always_subscribe` disables the lazy mode. [doc](../doc/jsk_topic_tools/lib/relay_nodelet.md)
-* **StealthRelay** -- relays `~input` only while `~monitor_topic` (default: `~input`) is subscribed by other nodes, i.e. subscribes
-  without incrementing the subscriber count. [doc](../doc/jsk_topic_tools/lib/stealth_relay_nodelet.md)
+* **StealthRelay** -- relays `~input` only while `~monitor_topic` (default: `~input`) is subscribed by other nodes; it
+  counts the subscribers of `~monitor_topic` without itself, while its own subscription of `~input` is a normal one. [doc](../doc/jsk_topic_tools/lib/stealth_relay_nodelet.md)
 * **Passthrough** -- relays only for a given duration. Services `~request`, `~stop` (`std_srvs/Empty`) and
   `~request_duration` (`jsk_topic_tools/PassthroughDuration`); parameter `~default_duration` (default `10.0` s). [doc](../doc/jsk_topic_tools/lib/passthrough_nodelet.md)
 * **HzMeasure** -- publishes the rate of `~input` as `std_msgs/Float32` on `~output` and a diagnostic status.
   Parameters `~measure_time`, `~message_num`, `~warning_hz`. [doc](../doc/jsk_topic_tools/class/hz_measure_nodelet.md)
 * **VitalCheckerNodelet** -- checks whether `~input` is alive and publishes the status to `/diagnostics`.
-* **MUX** -- nodelet version of `topic_tools/mux`: selects one of `~topics`; services `~select`, `~add`, `~delete`, `~list_topics`,
-  the selected topic is published on `~selected`.
+* **MUX** -- nodelet version of `topic_tools/mux`: relays the selected one of `~topics` to `~output`; services `~select`,
+  `~add`, `~delete`, `~list_topics`, and the name of the selected topic is published on `~selected` (`std_msgs/String`).
 * **Block** -- makes a chain of non-lazy nodes lazy: relays `~input` to `~input_original` and `~output_original` to `~output`,
   subscribing only while `~output` is subscribed (checked at `~check_rate`).
 * **Snapshot** -- publishes a single `~input` message to `~output` each time the `~request` service (`std_srvs/Empty`) is called.
