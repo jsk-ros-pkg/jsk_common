@@ -35,6 +35,8 @@
 #   python3 .github/tools/ros_one_badge.py ros_one.json
 # published on the branch badges by .github/workflows/ros_one_badge.yml (from opencv_apps).
 
+from __future__ import print_function
+
 import json
 import re
 import sys
