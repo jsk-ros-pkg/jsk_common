@@ -53,5 +53,8 @@ mkdir -p ~/ws/src && cd ~/ws/src
 git clone https://github.com/jsk-ros-pkg/jsk_common.git
 rosdep install -y -r --from-paths . --ignore-src
 cd ~/ws
-colcon build  # ROS 2, or catkin build for ROS 1
+# ROS 2: skip the packages of ROS 1 only, which need catkin
+colcon build --packages-skip jsk_network_tools jsk_tilt_laser multi_map_server virtual_force_publisher
+# ROS 1
+catkin build
 ```
