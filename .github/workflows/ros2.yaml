@@ -10,8 +10,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # rolling: the APIs of the next distributions (e.g. image_transport and tf2_ros taking the node interfaces)
-        ROS_DISTRO: [jazzy, rolling]
+        # all the distributions jsk_common is released for, and rolling for the APIs of the next ones (e.g.
+        # image_transport and tf2_ros taking the node interfaces)
+        ROS_DISTRO: [jazzy, kilted, lyrical, rolling]
     name: build_and_test (${{ matrix.ROS_DISTRO }})
     steps:
       - uses: actions/checkout@v4
