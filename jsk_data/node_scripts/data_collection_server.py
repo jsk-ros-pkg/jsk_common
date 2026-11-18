@@ -22,8 +22,6 @@ from jsk_ros1_ros2_compat import rospy_rclpy_compat as ros_compat
 from jsk_ros1_ros2_compat.rospy_rclpy_compat import ROS_VERSION
 
 if ROS_VERSION == 2:
-    import rclpy
-    from rclpy.executors import MultiThreadedExecutor
     from rosidl_runtime_py import message_to_yaml
     from std_srvs.srv import Trigger
 else:
@@ -128,7 +126,10 @@ class DataCollectionServer(object):
             msg_class = ros_compat.resolve_message_class(topic['msg_class'])
             if use_message_filters:
                 if ROS_VERSION == 2:
-                    sub = message_filters.Subscriber(node, msg_class, topic['name'])
+                    # in the callback group of the other callbacks (see main())
+                    sub = message_filters.Subscriber(
+                        node, msg_class, topic['name'],
+                        callback_group=ros_compat._callback_group(node, None))
                 else:
                     sub = message_filters.Subscriber(topic['name'], msg_class)
             else:
@@ -364,10 +365,15 @@ class DataCollectionServer(object):
                     return False, msg
             # NOTE: under ROS2 this runs inside a service callback that is
             # itself dispatched by the node's executor, so it must not call
-            # rclpy.spin_once() here (that would re-enter the executor). A
-            # MultiThreadedExecutor (see main()) keeps subscription
+            # rclpy.spin_once() here (that would re-enter the executor). The
+            # multi-threaded node (see main()) keeps subscription
             # callbacks running concurrently on other worker threads while
             # this one sleeps.
+            # Unlike rospy.sleep() of ROS1, time.sleep() of ROS2 does not
+            # end on shutdown, and the executor waits for this callback
+            # forever when no new message comes.
+            if ROS_VERSION == 2 and ros_compat.is_shutdown(self.node):
+                return False, 'shutdown while waiting for the messages'
             ros_compat.sleep(self.node, 0.01)
 
         if self.timestamp_save_dir:
@@ -406,6 +412,9 @@ class DataCollectionServer(object):
         for msg_key in self.msg.keys():
             time_diff = None
             while time_diff is None or time_diff < 0:
+                # as _save()
+                if ROS_VERSION == 2 and ros_compat.is_shutdown(self.node):
+                    return
                 stamp_sec = ros_compat.stamp_to_sec(self.msg[msg_key]['stamp'])
                 time_diff = stamp_sec - now
                 if ROS_VERSION == 1:
@@ -440,12 +449,15 @@ class DataCollectionServer(object):
 
 def main():
     if ROS_VERSION == 2:
-        rclpy.init()
-        node = rclpy.create_node('data_collection_server')
+        # multi_threaded: a ReentrantCallbackGroup for the callbacks and a
+        # MultiThreadedExecutor, so that subscription callbacks keep
+        # running while a service/timer callback blocks in
+        # _save()/wait_msgs_update(). A MultiThreadedExecutor alone does
+        # not do it, as the callbacks are then all in the default
+        # MutuallyExclusiveCallbackGroup of the node.
+        node = ros_compat.init_node('data_collection_server', multi_threaded=True)
         DataCollectionServer(node)
-        # MultiThreadedExecutor so subscription callbacks keep running
-        # while a service callback blocks in _save()/wait_msgs_update().
-        ros_compat.spin_and_shutdown(node, executor=MultiThreadedExecutor())
+        ros_compat.spin(node)
     else:
         rospy.init_node('data_collection_server')
         DataCollectionServer()
