@@ -19,11 +19,18 @@ The package builds for both ROS 1 (catkin) and ROS 2 (ament), selected by
 | `points_rectangle_extractor` executable (PCL / `pcl_ros`) | yes | no |
 | `scale_interaction.py` | yes (not installed, run from the source/devel space) | no |
 | `sample/sample_rectangle_mouse_event.launch` | yes | no |
+| `sample/sample_image_view2.launch.xml` | no | yes |
 | `test-imageview2.l`, `test-toolframe.l` (EusLisp) | yes | no |
 | dynamic reconfigure (`cfg/ImageView2.cfg`) | yes | as plain node parameters |
 
-On ROS 2 there are no launch files; run the node with `ros2 run` and remap
-`image` (and `camera_info`, if markers are drawn in 3D):
+On ROS 2, try it with the sample (see [Sample](#sample)):
+
+```bash
+ros2 launch image_view2 sample_image_view2.launch.xml
+```
+
+or run the node with `ros2 run` and remap `image` (and `camera_info`, if
+markers are drawn in 3D):
 
 ```bash
 ros2 run image_view2 image_view2 --ros-args \
@@ -274,3 +281,29 @@ roslaunch image_view2 sample_rectangle_mouse_event.launch
 # Add markers
 rosrun image_view2 test-imageview2.l
 ```
+
+On ROS 2
+
+```bash
+ros2 launch image_view2 sample_image_view2.launch.xml
+```
+
+`sample/publish_sample_image.py` publishes `sample/kiva_pod_image_color.jpg`
+on `/camera/image` (and `/camera/camera_info`) and `image_view2/ImageMarker2`
+markers (a line strip, a polygon, points, texts and a moving circle) on
+`/image_marker`, and `image_view2` shows them in a window and publishes the
+image with the markers drawn on `/camera/image/marked`.
+Arguments: `gui` (default: `true`; `false` for no window), `file_name` (the
+image to publish) and `interaction_mode` (default: `rectangle`).
+To draw your own markers, publish them on `/image_marker`, e.g.
+
+```bash
+ros2 topic pub --once /image_marker image_view2/msg/ImageMarker2 \
+  "{ns: mine, id: 0, type: 0, position: {x: 500, y: 100}, scale: 30.0,
+    outline_color: {r: 0.0, g: 1.0, b: 1.0, a: 1.0}}"
+```
+
+`sample/kiva_pod_image_color.jpg` is
+`jsk_rqt_plugins/sample/kiva_pod_image_color.jpg` of
+[jsk_visualization](https://github.com/jsk-ros-pkg/jsk_visualization) resized
+to 640x360 (BSD license).
