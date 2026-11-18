@@ -26,6 +26,10 @@ def generate_test_description():
             'save_dir': save_dir,
             'method': 'request',
             'timestamp_save_dir': False,
+            # the request saves the message received within ~slop of it;
+            # the default 0.1 is about the period of the publisher of the
+            # test, too tight for the delivery and the scheduling on CI
+            'slop': 1.0,
             'topics_name': ['/test_topic'],
             'topics_msg_class': ['std_msgs/msg/String'],
             'topics_fname': ['data.yaml'],
@@ -69,8 +73,13 @@ class TestDataCollectionServer(unittest.TestCase):
             pub.publish(String(data='hello'))
             rclpy.spin_once(self.node, timeout_sec=0.1)
 
+        # keep publishing until the server answers, as rostopic pub -r 10
+        # of the ROS 1 data_collection_server.test
         future = client.call_async(Trigger.Request())
-        rclpy.spin_until_future_complete(self.node, future, timeout_sec=10.0)
+        end_time = time.time() + 10.0
+        while time.time() < end_time and not future.done():
+            pub.publish(String(data='hello'))
+            rclpy.spin_once(self.node, timeout_sec=0.05)
         self.assertTrue(future.done())
         response = future.result()
         self.assertTrue(response.success, response.message)

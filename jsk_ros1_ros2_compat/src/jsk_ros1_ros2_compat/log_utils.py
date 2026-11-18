@@ -35,7 +35,7 @@ if ROS_VERSION == 2:
         g_node.get_logger().info(msg)
 
     def logwarn(msg):
-        g_node.get_logger().warn(msg)
+        g_node.get_logger().warning(msg)
 
     def logerr(msg):
         g_node.get_logger().error(msg)

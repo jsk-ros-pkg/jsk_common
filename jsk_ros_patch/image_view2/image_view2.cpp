@@ -58,7 +58,12 @@ namespace image_view2{
     ROS1_ROS2_COMPAT::g_node = node;
     std::string camera = node->get_node_base_interface()->resolve_topic_or_service_name("image", false);
     std::string camera_info = node->get_node_base_interface()->resolve_topic_or_service_name("camera_info", false);
+#if __has_include(<image_transport/node_interfaces.hpp>)
+    // image_transport of rolling (lyrical and later) takes the node, not its pointer
+    image_transport::ImageTransport it(*node);
+#else
     image_transport::ImageTransport it(node);
+#endif
     // ROS2 image_transport has no ImageTransport of a namespace (ROS1
     // local_it(camera)), so marked is advertised under camera by its full
     // name, as image/marked of ROS1.
@@ -147,7 +152,11 @@ namespace image_view2{
     local_image_pub_ = local_it.advertise(marked_topic, 1);
 
 #if ROS_VERSION_MAJOR != 1
+#if __has_include(<image_transport/node_interfaces.hpp>)
+    image_transport::TransportHints transport_hints(*node);
+#else
     image_transport::TransportHints transport_hints(node.get());
+#endif
     image_sub_ = it.subscribe(camera, 1, &ImageView2::imageCb, this, &transport_hints);
     info_sub_ = node->create_subscription<sensor_msgs::CameraInfo>(
       camera_info, 1, std::bind(&ImageView2::infoCb, this, std::placeholders::_1));
@@ -220,7 +229,12 @@ namespace image_view2{
        "grid_blue", "grid_thickness", "grid_space"}));
 
     tf_buffer_ = boost::make_shared<tf2_ros::Buffer>(node->get_clock());
+#if __has_include(<image_transport/node_interfaces.hpp>)
+    // tf2_ros of rolling also takes the node, not its pointer
+    tf_listener_ = boost::make_shared<tf2_ros::TransformListener>(*tf_buffer_, *node);
+#else
     tf_listener_ = boost::make_shared<tf2_ros::TransformListener>(*tf_buffer_, node);
+#endif
 #else
     image_sub_ = it.subscribe(camera, 1, &ImageView2::imageCb, this, transport);
     info_sub_ = nh.subscribe(camera_info, 1, &ImageView2::infoCb, this);
@@ -264,6 +278,17 @@ namespace image_view2{
     if ( use_window ) {
       cv::destroyWindow(window_name_.c_str());
     }
+#if ROS_VERSION_MAJOR != 1
+    // ROS1_ROS2_COMPAT::g_node, set by the constructor, is a global and
+    // would otherwise keep the node alive until the exit handlers, which
+    // destroy its services and subscriptions after the middleware (e.g.
+    // the participant of Fast DDS) is already gone, and the node crashes
+    // at shutdown (SIGSEGV/SIGABRT). Release it with the view, so that the
+    // node is destroyed at the end of main().
+    if (ROS1_ROS2_COMPAT::g_node == node_) {
+      ROS1_ROS2_COMPAT::g_node.reset();
+    }
+#endif
   }
 
 #if ROS_VERSION_MAJOR != 1
