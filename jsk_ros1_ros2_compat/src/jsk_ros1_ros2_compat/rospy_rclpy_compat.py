@@ -84,7 +84,7 @@ def loginfo(node, msg):
 
 
 def logwarn(node, msg):
-    _logger(node).warn(msg) if ROS_VERSION == 2 else rospy.logwarn(msg)
+    _logger(node).warning(msg) if ROS_VERSION == 2 else rospy.logwarn(msg)
 
 
 def logerr(node, msg):
