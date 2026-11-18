@@ -183,6 +183,7 @@ elseif("$ENV{ROS_VERSION}" EQUAL 2)
   if(BUILD_TESTING)
     find_package(launch_testing_ament_cmake REQUIRED)
     add_launch_test(test/rectangle_mouse_event_launch_test.py)
+    add_launch_test(test/sample_image_view2_launch_test.py)
   endif()
 endif()
 
