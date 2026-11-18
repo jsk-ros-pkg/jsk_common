@@ -278,6 +278,17 @@ namespace image_view2{
     if ( use_window ) {
       cv::destroyWindow(window_name_.c_str());
     }
+#if ROS_VERSION_MAJOR != 1
+    // ROS1_ROS2_COMPAT::g_node, set by the constructor, is a global and
+    // would otherwise keep the node alive until the exit handlers, which
+    // destroy its services and subscriptions after the middleware (e.g.
+    // the participant of Fast DDS) is already gone, and the node crashes
+    // at shutdown (SIGSEGV/SIGABRT). Release it with the view, so that the
+    // node is destroyed at the end of main().
+    if (ROS1_ROS2_COMPAT::g_node == node_) {
+      ROS1_ROS2_COMPAT::g_node.reset();
+    }
+#endif
   }
 
 #if ROS_VERSION_MAJOR != 1
