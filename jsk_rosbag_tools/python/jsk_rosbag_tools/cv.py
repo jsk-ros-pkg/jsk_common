@@ -9,6 +9,12 @@ import sensor_msgs.msg
 _bridge = cv_bridge.CvBridge()
 
 
+def _tobytes(array):
+    """ndarray.tobytes(), or tostring() on numpy < 1.9 (indigo), which has
+    no tobytes() (numpy >= 2.3 has no tostring())."""
+    return array.tobytes() if hasattr(array, 'tobytes') else array.tostring()
+
+
 def img_to_msg(img, encoding="bgr8",
                compress=True):
     """Convert numpy image to ROS message.
@@ -187,8 +193,8 @@ def compress_img_msg(msg):
     compressed_msg.format = msg.encoding + '; jpeg compressed bgr8'
 
     img = msg_to_bgr(msg, compressed=False)
-    compressed_msg.data = np.array(cv2.imencode(
-        '.jpg', img)[1]).tostring()
+    compressed_msg.data = _tobytes(np.array(cv2.imencode(
+        '.jpg', img)[1]))
     return compressed_msg
 
 
@@ -211,8 +217,8 @@ def compress_depth_msg(msg, depth_quantization=100, depth_max=None):
 
         compressed_msg.data = struct.pack(
             'iff', 0, depth_quant_a, depth_quant_b)
-        compressed_msg.data += np.array(
-            cv2.imencode('.png', inv_depth_img)[1]).tostring()
+        compressed_msg.data += _tobytes(np.array(
+            cv2.imencode('.png', inv_depth_img)[1]))
     elif msg.encoding == '16UC1':
         depth = msg_to_np_depth(
             msg, compressed=False, rescale=False).copy()
@@ -222,8 +228,8 @@ def compress_depth_msg(msg, depth_quantization=100, depth_max=None):
         depth[depth > depth_max_ushort] = 0
 
         compressed_msg.data = " " * 12
-        compressed_msg.data += np.array(
-            cv2.imencode('.png', depth)[1]).tostring()
+        compressed_msg.data += _tobytes(np.array(
+            cv2.imencode('.png', depth)[1]))
     else:
         raise NotImplementedError(
             'Unsupported compressed depth image format {}'
