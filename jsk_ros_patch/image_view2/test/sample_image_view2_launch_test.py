@@ -6,6 +6,7 @@ import launch
 from launch.launch_description_sources import AnyLaunchDescriptionSource
 import launch_testing
 import launch_testing.actions
+from launch_ros.actions import PushRosNamespace
 import pytest
 
 import rclpy
@@ -14,6 +15,8 @@ from sensor_msgs.msg import Image
 
 
 SAMPLE_DIR = os.path.join(os.path.dirname(__file__), '..', 'sample')
+# not to receive the images of the other launch tests running at the same time
+NAMESPACE = 'sample_image_view2_test'
 
 
 @pytest.mark.launch_test
@@ -28,7 +31,7 @@ def generate_test_description():
         }.items(),
     )
     return launch.LaunchDescription([
-        sample,
+        launch.actions.GroupAction([PushRosNamespace(NAMESPACE), sample]),
         launch_testing.actions.ReadyToTest(),
     ])
 
@@ -52,7 +55,8 @@ class TestSampleImageView2(unittest.TestCase):
     def test_marked(self):
         marked = []
         self.node.create_subscription(
-            Image, '/camera/image/marked', lambda msg: marked.append(msg), 1)
+            Image, '/%s/camera/image/marked' % NAMESPACE,
+            lambda msg: marked.append(msg), 1)
         bridge = CvBridge()
 
         # the outline of the shelf (a green LINE_STRIP of
