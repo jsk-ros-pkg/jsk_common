@@ -32,6 +32,9 @@
        jsk_rosbag_tools); exec_depend suffices since these are only
        imported at runtime, never compiled against. -->
   <exec_depend condition="$ROS_VERSION == 2">rosbag2_py</exec_depend>
+  <!-- rosbag.py opens bags with storage_id='sqlite3', and rosbag2_py does
+       not bring the storage plugins on every distribution (e.g. kilted) -->
+  <exec_depend condition="$ROS_VERSION == 2">rosbag2_storage_sqlite3</exec_depend>
   <exec_depend condition="$ROS_VERSION == 2">rosidl_runtime_py</exec_depend>
 
   <!-- test/test_rospy_rclpy_compat.py -->
