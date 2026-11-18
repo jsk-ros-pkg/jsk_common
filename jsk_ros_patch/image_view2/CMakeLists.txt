@@ -229,5 +229,15 @@ elseif("$ENV{ROS_VERSION}" EQUAL 2)
   install(TARGETS ${_image_view2_target}
     RUNTIME DESTINATION lib/${PROJECT_NAME}
   )
+  # ROS2 sample (ros2 launch image_view2 sample_image_view2.launch.xml);
+  # the ROS1 *.launch files there do not run on ROS2.
+  install(PROGRAMS sample/publish_sample_image.py
+    DESTINATION lib/${PROJECT_NAME}
+  )
+  install(DIRECTORY sample/
+    DESTINATION share/${PROJECT_NAME}/sample
+    PATTERN "*.py" EXCLUDE
+    PATTERN "*.launch" EXCLUDE
+  )
   ament_package()
 endif()

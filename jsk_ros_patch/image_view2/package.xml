@@ -85,6 +85,11 @@
   <buildtool_depend condition="$ROS_VERSION == 2">rosidl_default_generators</buildtool_depend>
   <depend condition="$ROS_VERSION == 2">rclcpp</depend>
   <exec_depend condition="$ROS_VERSION == 2">rosidl_default_runtime</exec_depend>
+  <!-- sample/publish_sample_image.py and sample/sample_image_view2.launch.xml -->
+  <exec_depend condition="$ROS_VERSION == 2">ament_index_python</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 2">python3-opencv</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 2">rclpy</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 2">ros2launch</exec_depend>
   <test_depend condition="$ROS_VERSION == 2">launch_ros</test_depend>
   <test_depend condition="$ROS_VERSION == 2">launch_testing</test_depend>
   <test_depend condition="$ROS_VERSION == 2">launch_testing_ament_cmake</test_depend>
