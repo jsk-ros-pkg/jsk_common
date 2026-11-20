@@ -65,9 +65,14 @@ class ConnectionBasedTransport(rospy.SubscribeListener):
 
     __metaclass__ = MetaConnectionBasedTransport
 
-    def __init__(self, node=None):
-        # node: the rclpy node of the ROS 2 version (transport_ros2.py),
-        # unused here, so that a subclass is written once for both
+    # the node of jsk_ros1_ros2_compat.rospy_rclpy_compat, which is the
+    # transport itself on ROS 2 (transport_ros2.py)
+    node = None
+
+    def __init__(self, node_name=None):
+        # node_name: of the ROS 2 version, a lifecycle node; unused here,
+        # where rospy.init_node() names the node, so that a subclass is
+        # written once for both
         super(ConnectionBasedTransport, self).__init__()
         self.is_initialized = False
         self._publishers = []
