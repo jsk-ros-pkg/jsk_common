@@ -83,9 +83,11 @@ class TestConnectionBasedTransportROS2(unittest.TestCase):
         client = self.create_node('client')
         sub = client.create_subscription(
             String, '/relay/output', lambda msg: None, 1)
-        self.spin_until(lambda: relay.pub.get_subscription_count() > 0)
+        self.assertTrue(self.spin_until(
+            lambda: relay.pub.get_subscription_count() > 0))
         client.destroy_subscription(sub)
-        self.spin_until(lambda: relay.pub.get_subscription_count() == 0)
+        self.assertTrue(self.spin_until(
+            lambda: relay.pub.get_subscription_count() == 0))
         self.spin_until(lambda: False, 0.5)
         self.assertTrue(relay.is_subscribed())
 
