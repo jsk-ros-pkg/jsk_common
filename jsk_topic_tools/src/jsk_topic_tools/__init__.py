@@ -7,5 +7,7 @@ import os
 if int(os.environ.get('ROS_VERSION', '1')) == 1:
     from .timered_diagnostic_updater import TimeredDiagnosticUpdater
     from .transport import *
+else:
+    from .transport_ros2 import *
 from .log_utils import *
 from .name_utils import *
