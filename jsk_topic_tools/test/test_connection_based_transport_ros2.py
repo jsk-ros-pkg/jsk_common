@@ -28,6 +28,19 @@ class Relay(ConnectionBasedTransport):
         self.sub = None
 
 
+class MessageFiltersRelay(Relay):
+    """Relay of message_filters.Subscriber of the arguments of ROS 1."""
+
+    def subscribe(self):
+        import message_filters
+        self.sub = message_filters.Subscriber('~input', String, queue_size=1)
+        self.sub.registerCallback(self.pub.publish)
+
+    def unsubscribe(self):
+        self.sub.unregister()
+        self.sub = None
+
+
 class TestConnectionBasedTransportROS2(unittest.TestCase):
 
     def setUp(self):
@@ -74,6 +87,24 @@ class TestConnectionBasedTransportROS2(unittest.TestCase):
         self.assertTrue(self.spin_until(lambda: not relay.is_subscribed()))
         self.assertFalse(relay.is_active())
         self.assertIsNone(relay.sub)
+
+    def test_message_filters_of_ros1(self):
+        relay = self.add_node(MessageFiltersRelay('mf_relay'))
+        client = self.add_node(rclpy.create_node('client'))
+        received = []
+        sub = client.create_subscription(
+            String, '/mf_relay/output', received.append, 1)
+        self.assertTrue(self.spin_until(relay.is_subscribed))
+        self.assertIs(relay.sub.node, relay)
+        pub = client.create_publisher(String, '/mf_relay/input', 1)
+        self.assertTrue(self.spin_until(
+            lambda: pub.get_subscription_count() > 0))
+        self.assertTrue(self.spin_until(
+            lambda: pub.publish(String(data='hello')) or received))
+        client.destroy_subscription(sub)
+        self.assertTrue(self.spin_until(lambda: not relay.is_subscribed()))
+        self.assertTrue(self.spin_until(
+            lambda: pub.get_subscription_count() == 0))
 
     def test_always_subscribe(self):
         relay = self.add_node(Relay(parameter_overrides=[

@@ -9,7 +9,9 @@ subscribe() when an advertised topic gets its first subscriber, then
 deactivated with unsubscribe() when none of them has any, which the
 matched events of the publishers tell. ~always_subscribe and
 ~verbose_connection are supported; the vital check (~enable_vital_check)
-and --inout are of ROS 1 only.
+and --inout are of ROS 1 only. In subscribe(), message_filters.Subscriber
+also takes the arguments of ROS 1 (topic, msg_type), and subscribes with
+the transport (jsk_ros1_ros2_compat).
 """
 
 import abc
@@ -68,7 +70,7 @@ class ConnectionBasedTransport(MetaConnectionBasedTransport(
         self.trigger_configure()
         if self._always_subscribe:
             self.trigger_activate()
-            self.subscribe()
+            self._subscribe()
             self._connection_status = SUBSCRIBED
             self._ever_subscribed = True
         else:
@@ -92,6 +94,12 @@ class ConnectionBasedTransport(MetaConnectionBasedTransport(
     def unsubscribe(self):
         raise NotImplementedError
 
+    def _subscribe(self):
+        # message_filters.Subscriber(topic, msg_type) of ROS1 in subscribe()
+        # subscribes with this node (jsk_ros1_ros2_compat)
+        with ros.default_node(self):
+            self.subscribe()
+
     def is_subscribed(self):
         return self._connection_status == SUBSCRIBED
 
@@ -108,7 +116,7 @@ class ConnectionBasedTransport(MetaConnectionBasedTransport(
                     ros.loginfo(self, 'Subscribe input topics.')
                 if not self._active:
                     self.trigger_activate()
-                self.subscribe()
+                self._subscribe()
                 self._connection_status = SUBSCRIBED
                 self._ever_subscribed = True
         elif self._connection_status == SUBSCRIBED:

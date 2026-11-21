@@ -100,6 +100,35 @@ class TestRospyRclpyCompat(unittest.TestCase):
                 self.node, 'test_pubsub_300', String, lambda msg: None, 300)
             self.assertEqual(sub300.impl.queue_size, 300)
 
+    @unittest.skipIf(ROS_VERSION != 2, 'the arguments of ROS1 on ROS2')
+    def test_message_filters_subscriber_of_ros1(self):
+        import message_filters
+        received = []
+        with ros_compat.default_node(self.node):
+            sub = message_filters.Subscriber(
+                '/compat_test/test_message_filters', String, queue_size=1)
+        self.assertIs(sub.node, self.node)
+        sub.registerCallback(lambda msg: received.append(msg.data))
+        pub = ros_compat.create_publisher(
+            self.node, '/compat_test/test_message_filters', String)
+        self.assertTrue(wait_until(lambda: pub.get_subscription_count() > 0))
+        for _ in range(10):
+            pub.publish(String(data='hello'))
+            if wait_until(lambda: received, timeout=0.5):
+                break
+        self.assertEqual(received[0], 'hello')
+        sub.unregister()
+        self.assertTrue(wait_until(lambda: pub.get_subscription_count() == 0))
+        # the arguments of ROS2 as before
+        sub2 = message_filters.Subscriber(
+            self.node, String, '/compat_test/test_message_filters')
+        self.assertIs(sub2.node, self.node)
+        sub2.unregister()
+        # no default node
+        with ros_compat.default_node(None):
+            with self.assertRaises(RuntimeError):
+                message_filters.Subscriber('/compat_test/x', String)
+
     def test_log_once_and_throttle_per_call_site(self):
         logged = []
         orig = ros_compat.loginfo

@@ -39,6 +39,7 @@
 
   <!-- test/test_rospy_rclpy_compat.py -->
   <test_depend condition="$ROS_VERSION == 1">actionlib</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">message_filters</test_depend>
   <test_depend condition="$ROS_VERSION == 1">actionlib_tutorials</test_depend>
   <test_depend condition="$ROS_VERSION == 1">rostest</test_depend>
   <test_depend condition="$ROS_VERSION == 2">ament_cmake_pytest</test_depend>
