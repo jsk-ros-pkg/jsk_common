@@ -15,6 +15,7 @@ import this as ``from jsk_ros1_ros2_compat.rospy_rclpy_compat import
 ...``. jsk_ros1_ros2_compat has no dependencies of its own on any other
 jsk_common package, so depending on it never risks a dependency cycle.
 """
+import contextlib
 import os
 import time
 
@@ -34,6 +35,73 @@ if ROS_VERSION == 2:
 else:
     import roslib.message
     import rospy
+
+
+# the node with which message_filters.Subscriber subscribes when given the
+# arguments of ROS1 (topic, msg_type, ...) on ROS2: the one of init_node(),
+# or the one of default_node(), e.g. a ConnectionBasedTransport of
+# jsk_topic_tools in its subscribe()
+_default_node = None
+
+
+def get_default_node():
+    return _default_node
+
+
+@contextlib.contextmanager
+def default_node(node):
+    """Make node the default node in the block."""
+    global _default_node
+    previous = _default_node
+    _default_node = node
+    try:
+        yield node
+    finally:
+        _default_node = previous
+
+
+def _patch_message_filters():
+    """message_filters.Subscriber of ROS2 also takes the arguments of ROS1,
+    (topic, msg_type, queue_size=...): with the default node, '~foo' as
+    '~/foo' and queue_size as the depth of its QoS; and has unregister() as
+    on ROS1. The arguments of ROS2, (node, msg_type, topic, ...), are as
+    before."""
+    try:
+        import message_filters
+    except ImportError:
+        return
+    subscriber = message_filters.Subscriber
+    if hasattr(subscriber, '__init_orig__'):
+        return
+    subscriber.__init_orig__ = subscriber.__init__
+
+    def __init__(self, *args, **kwargs):
+        if args and isinstance(args[0], str):
+            topic, msg_type = args[0], args[1]
+            node = _default_node
+            if node is None:
+                raise RuntimeError(
+                    'message_filters.Subscriber({}, ...) of ROS1 needs a '
+                    'default node on ROS2: init_node() or default_node()'
+                    .format(topic))
+            queue_size = kwargs.pop('queue_size', None)
+            # the other arguments of rospy.Subscriber
+            for key in ('buff_size', 'tcp_nodelay'):
+                kwargs.pop(key, None)
+            if queue_size is not None:
+                kwargs['qos_profile'] = queue_size
+            args = (node, msg_type, private_name(topic)) + tuple(args[2:])
+        subscriber.__init_orig__(self, *args, **kwargs)
+
+    def unregister(self):
+        self.node.destroy_subscription(self.sub)
+
+    subscriber.__init__ = __init__
+    subscriber.unregister = unregister
+
+
+if ROS_VERSION == 2:
+    _patch_message_filters()
 
 
 def _declare_dynamic(node, name, default):
@@ -458,6 +526,8 @@ def init_node(name, anonymous=False, multi_threaded=False):
         if multi_threaded:
             from rclpy.callback_groups import ReentrantCallbackGroup
             _multi_threaded_groups[node] = ReentrantCallbackGroup()
+        global _default_node
+        _default_node = node
         return node
     else:
         rospy.init_node(name, anonymous=anonymous)

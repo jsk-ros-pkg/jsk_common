@@ -46,6 +46,8 @@ if(BUILD_TESTING)
     test/test_array_to_heatmap_ros2.py TIMEOUT 40)
   ament_add_pytest_test(test_filtered_relay_ros2
     test/test_filtered_relay_ros2.py TIMEOUT 60)
+  ament_add_pytest_test(test_connection_based_transport_ros2
+    test/test_connection_based_transport_ros2.py TIMEOUT 60)
   find_package(ament_cmake_clang_format REQUIRED)
   find_package(launch_testing_ament_cmake REQUIRED)
   ament_clang_format(

@@ -4,7 +4,7 @@ Utilities to relay, throttle, filter, buffer and inspect ROS topics.
 The package provides a set of nodelets (lazy relays and throttles, mux, passthrough, Hz measurement, ...),
 Python nodes and command line tools, and base classes for writing nodes that subscribe to their inputs
 only while their outputs are subscribed (`ConnectionBasedNodelet`, `DiagnosticNodelet` in C++,
-`ConnectionBasedTransport` in Python, and `ConnectionBasedLifecycleNode` on ROS 2).
+`ConnectionBasedTransport` in Python, and `ConnectionBasedLifecycleNode` in C++ on ROS 2).
 
 ## ROS 1 / ROS 2
 
@@ -19,6 +19,7 @@ The package builds for both ROS 1 (catkin) and ROS 2 (ament_cmake); `CMakeLists.
 | C++ library `connection_based_lifecycle_node` (`ConnectionBasedLifecycleNode`) | - | yes |
 | Component `jsk_topic_tools::StringRelayLifecycleNode` (executable `string_relay_lifecycle_node`) | - | yes |
 | Python module `jsk_topic_tools` | yes | yes |
+| Python class `jsk_topic_tools.ConnectionBasedTransport` | yes | yes (a lifecycle node) |
 | `array_to_heatmap.py`, `filtered_relay.py` | yes | yes |
 | Other scripts (`boolean_node.py`, `is_synchronized`, `rostopic_connection_list`, `synchronize_republish.py`, `static_tf_republisher.py`, `tf_to_pose.py`, `tf_to_transform.py`, `transform_wrench.py`, `pose_stamped_publisher.py`, `static_image_publisher.py`, `joint_state_pruner.py`, `topic_compare.py`, `topic_statistics.py`, `rosping_existence.py`, `bag2csv.py`) | yes | - |
 | Launch files in `launch/` and `sample/` | yes | - |
@@ -87,9 +88,11 @@ See [standalone_complexed_nodelet.rst](../doc/jsk_topic_tools/lib/standalone_com
   [doc](../doc/jsk_topic_tools/class/connection_based_nodelet.md)
 * `jsk_topic_tools::DiagnosticNodelet` (C++, ROS 1) -- `ConnectionBasedNodelet` that also publishes diagnostics (`~vital_rate`, `~use_warn`).
   [doc](../doc/jsk_topic_tools/class/diagnostic_nodelet.md)
-* `jsk_topic_tools.ConnectionBasedTransport` (Python, ROS 1) -- the same pattern for rospy nodes; implement `subscribe()` / `unsubscribe()`
-  and create publishers with `self.advertise()`. [doc](../doc/jsk_topic_tools/class/python_connection_based_transport.md),
-  example [sample/simple_image_transport.py](sample/simple_image_transport.py)
+* `jsk_topic_tools.ConnectionBasedTransport` (Python, ROS 1 / ROS 2) -- the same pattern for rospy and rclpy nodes; implement
+  `subscribe()` / `unsubscribe()` and create publishers with `self.advertise()`. On ROS 2 it is an `rclpy.lifecycle.LifecycleNode`
+  like `ConnectionBasedLifecycleNode`: inactive without subscribers, activated with `subscribe()` by the first one.
+  [doc](../doc/jsk_topic_tools/class/python_connection_based_transport.md),
+  example [sample/simple_image_transport.py](sample/simple_image_transport.py) (ROS 1)
 * `jsk_topic_tools::ConnectionBasedLifecycleNode` (C++, ROS 2) -- `rclcpp_lifecycle::LifecycleNode` with the same lazy subscription
   behavior; see [src/string_relay_lifecycle_node.cpp](src/string_relay_lifecycle_node.cpp) for a minimal subclass.
 

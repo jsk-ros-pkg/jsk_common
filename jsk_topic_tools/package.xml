@@ -98,6 +98,7 @@
   <test_depend condition="$ROS_VERSION == 2">launch_ros</test_depend>
   <test_depend condition="$ROS_VERSION == 2">launch_testing</test_depend>
   <test_depend condition="$ROS_VERSION == 2">launch_testing_ament_cmake</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">message_filters</test_depend>
   <test_depend condition="$ROS_VERSION == 1">roscpp_tutorials</test_depend>
   <test_depend condition="$ROS_VERSION == 1">roslint</test_depend>
   <test_depend condition="$ROS_VERSION == 1">rosbag</test_depend>

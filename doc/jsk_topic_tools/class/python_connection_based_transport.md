@@ -160,3 +160,96 @@ the error message will change to `/simple_image_transport is not running`.
 ![](images/diagnostics_is_not_running.jpg)
 
 You can check if the node is running correctly like these.
+
+## ROS 2
+
+On ROS 2, `ConnectionBasedTransport` is an `rclpy.lifecycle.LifecycleNode`, like the C++
+`jsk_topic_tools::ConnectionBasedLifecycleNode`, so the processing state of the node is in the lifecycle system:
+
+* it is `inactive` (configured) when created;
+* when an advertised topic gets its first subscriber, it is activated (its publishers, which are lifecycle publishers, are
+  enabled) and `subscribe()` is called;
+* when none of the advertised topics has any subscriber, `unsubscribe()` is called and it is deactivated;
+* `~always_subscribe` activates it and calls `subscribe()` at once; `cleanup` and `shutdown` call `unsubscribe()`.
+
+The subscribers are told by the matched events of the publishers (Iron and later). `is_active()` returns whether it is active.
+
+The differences from ROS 1:
+
+* The transport is the node itself: the constructor takes the node name (and the keyword arguments of
+  `rclpy.node.Node`, e.g. `parameter_overrides`), and `self.node` is the transport itself, to be given to
+  `jsk_ros1_ros2_compat.rospy_rclpy_compat`. On ROS 1, the constructor takes the node name too but ignores it
+  (`rospy.init_node()` names the node), and `self.node` is `None`.
+* Parameters: `~always_subscribe` and `~verbose_connection` (Bool, default: `false`, logs the connections and the
+  subscription changes). The vital check (`~enable_vital_check`, `~vital_rate`, `~use_warn`, `/diagnostics`) and
+  `--inout` are of ROS 1 only; `poke()` does nothing.
+
+A subclass for both ROS 1 and ROS 2:
+
+```python
+from sensor_msgs.msg import Image
+
+from jsk_ros1_ros2_compat import rospy_rclpy_compat as ros
+from jsk_topic_tools import ConnectionBasedTransport
+
+
+class SimpleImageTransport(ConnectionBasedTransport):
+    def __init__(self, node_name='simple_image_transport'):
+        super(SimpleImageTransport, self).__init__(node_name)
+        self._pub = self.advertise('~output', Image, queue_size=1)
+
+    def subscribe(self):
+        self.sub_img = ros.create_subscription(
+            self.node, '~input', Image, self._process, queue_size=1)
+
+    def unsubscribe(self):
+        if ros.ROS_VERSION == 1:
+            self.sub_img.unregister()
+        else:
+            self.destroy_subscription(self.sub_img)
+
+    def _process(self, img_msg):
+        self._pub.publish(img_msg)
+
+
+if __name__ == '__main__':
+    if ros.ROS_VERSION == 1:
+        ros.init_node('simple_image_transport')
+        img_trans = SimpleImageTransport()
+        ros.spin(None)
+    else:
+        ros.rclpy.init()
+        img_trans = SimpleImageTransport()
+        ros.spin(img_trans)
+```
+
+How it behaves on ROS 2:
+
+```bash
+# terminal 1:
+$ python3 simple_image_transport.py
+
+# terminal 2:
+$ ros2 lifecycle get /simple_image_transport
+inactive [2]
+
+# terminal 3:
+$ ros2 topic echo /simple_image_transport/output
+
+# terminal 2:
+$ ros2 lifecycle get /simple_image_transport
+active [3]
+$ ros2 topic info /simple_image_transport/input
+Type: sensor_msgs/msg/Image
+Publisher count: 0
+Subscription count: 1
+
+# terminal 3:
+$ ^C  # cancel
+
+# terminal 2:
+$ ros2 lifecycle get /simple_image_transport
+inactive [2]
+$ ros2 topic info /simple_image_transport/input
+Unknown topic '/simple_image_transport/input'
+```
